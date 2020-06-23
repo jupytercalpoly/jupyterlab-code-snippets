@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # code_snippets
 
 ![Github Actions Status](https://github.com/jupytercalpoly/project2.git/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/project2.git/master?urlpath=lab)
@@ -93,6 +92,3 @@ Now every change will be built locally and bundled into JupyterLab. Be sure to r
 pip uninstall code_snippets
 jupyter labextension uninstall code-snippets
 ```
-=======
-# project2
->>>>>>> 724927aa8c7be0c6b29461467cca8f6b56ded7df
