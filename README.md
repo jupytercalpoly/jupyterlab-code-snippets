@@ -4,11 +4,11 @@
 
 Save, reuse, and share code snippets using JupyterLab Code Snippets
 
+Read [press release](./PRESSRELEASE.md) for more information.
 
 This extension is composed of a Python package named `code_snippets`
 for the server extension and a NPM package named `code-snippets`
 for the frontend extension.
-
 
 ## Requirements
 
