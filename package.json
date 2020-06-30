@@ -39,10 +39,19 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@elyra/application": "^1.0.0-beta.0",
-    "@elyra/ui-components": "^1.0.0-beta.0",
+    "@elyra/application": "^1.0.0-beta.1",
+    "@elyra/ui-components": "^1.0.0-beta.1",
     "@jupyterlab/application": "^2.1.2",
+    "@jupyterlab/apputils": "^2.1.1",
+    "@jupyterlab/cells": "^2.1.2",
     "@jupyterlab/coreutils": "^4.1.0",
+    "@jupyterlab/docmanager": "^2.1.2",
+    "@jupyterlab/docregistry": "^2.1.2",
+    "@jupyterlab/fileeditor": "^2.1.2",
+    "@jupyterlab/notebook": "^2.1.2",
+    "@jupyterlab/rendermime": "^2.1.1",
+    "@lumino/messaging": "^1.4.2",
+    "@lumino/signaling": "^1.4.2",
     "@lumino/widgets": "^1.13.2"
   },
   "devDependencies": {

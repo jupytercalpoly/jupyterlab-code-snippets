@@ -14,7 +14,7 @@ import { Widget } from '@lumino/widgets';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
-const CODE_SNIPPET_EXTENSION_ID = 'elyra-code-snippet-extension';
+const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
 /**
  * Initialization data for the code_snippets extension.
@@ -37,7 +37,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     const codeSnippetWidget = new CodeSnippetWidget(getCurrentWidget);
     codeSnippetWidget.id = CODE_SNIPPET_EXTENSION_ID;
     codeSnippetWidget.title.icon = codeSnippetIcon;
-    codeSnippetWidget.title.caption = 'Code Snippet';
+    codeSnippetWidget.title.caption = 'Jupyter Code Snippet';
 
     restorer.add(codeSnippetWidget, CODE_SNIPPET_EXTENSION_ID);
 
