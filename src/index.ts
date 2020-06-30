@@ -3,7 +3,7 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import { requestAPI } from './codesnippets';
+//import { requestAPI } from './codesnippets';
 
 /**
  * Initialization data for the code_snippets extension.
@@ -18,13 +18,15 @@ const extension: JupyterFrontEndPlugin<void> = {
     const commandID = 'my-command';
     const toggled = false;
     app.commands.addCommand(commandID, {
-      label: 'Tester Command',
+      label: 'Save As Code Snippet',
       isEnabled: () => true,
       isVisible: () => true,
       isToggled: () => toggled,
       iconClass: 'some-css-icon-class',
       execute: () => {
         console.log(`Executed ${commandID}`);
+        let temp = getSelectedText();
+        console.log(`Highlight trial: ${temp}`);
         /* TODO: Replace command with command 
         that saves snippet to snippet bar */
     }});
@@ -35,7 +37,21 @@ const extension: JupyterFrontEndPlugin<void> = {
       selector: '.jp-CodeCell'
     })
 
-    requestAPI<any>('get_example')
+    function getSelectedText() { 
+      let selectedText; 
+
+      // window.getSelection 
+      if (window.getSelection) { 
+          selectedText = window.getSelection(); 
+      } 
+      // document.getSelection 
+      else if (document.getSelection) { 
+          selectedText = document.getSelection(); 
+      } 
+      return selectedText;
+  } 
+
+    /*requestAPI<any>('get_example', {body: 'hi', method: 'POST'})
       .then(data => {
         console.log(data);
       })
@@ -43,7 +59,7 @@ const extension: JupyterFrontEndPlugin<void> = {
         console.error(
           `The code_snippets server extension appears to be missing.\n${reason}`
         );
-      });
+      });*/
   }
 };
 
