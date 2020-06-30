@@ -18,10 +18,24 @@ for the frontend extension.
 
 Note: You will need NodeJS to install the extension.
 
-```bash
-pip install code_snippets
-jupyter lab build
+Right now, this extension is only available from source.
+
+First clone this repo:
 ```
+git clone https://github.com/jupytercalpoly/jupyterlab-code-snippets
+```
+
+Move into the root directory and install a development version of the server extension. This extension uses the Elyra metadata service as a backend and creates a `"code-snippets"` namespace for storing code snippets from this extension.
+
+```bash
+# Move into the root directory
+cd jupyterlab-code-snippets
+# Install a development version of the server extension backend.
+pip install -e .
+```
+
+**NEED INSTRUCTIONS FOR INSTALLING JAVASCRIPT!**
+
 
 ## Troubleshoot
 
