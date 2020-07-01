@@ -3,7 +3,17 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
+import { RequestHandler } from '@elyra/application';
 //import { requestAPI } from './codesnippets';
+import { URLExt } from '@jupyterlab/coreutils';
+
+export interface ICodeSnippet {
+  name: string;
+  displayName: string;
+  description: string;
+  language: string;
+  code: string[];
+}
 
 /**
  * Initialization data for the code_snippets extension.
@@ -13,6 +23,7 @@ const extension: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   activate: (app: JupyterFrontEnd) => {
     console.log('JupyterLab extension code-snippets is activated!');
+    const url = "elyra/metadata/code-snippets";
 
     //Add an application command
     const commandID = 'my-command';
@@ -26,6 +37,24 @@ const extension: JupyterFrontEndPlugin<void> = {
       execute: () => {
         console.log(`Executed ${commandID}`);
         let temp = getSelectedText();
+        RequestHandler.makePostRequest(
+          url,
+          JSON.stringify({ 
+            display_name: "highlighted2",
+            metadata: {
+                code: [
+                    JSON.stringify(temp)
+                ],
+                description: "Print highlighted code 2",
+                language: "python",
+            },
+            name: "highlighted2",
+            schema_name: "code-snippet",
+          }),
+          false
+        );
+        
+        //console.log(`Highlight trial: ${JSON.stringify(response)}`);
         console.log(`Highlight trial: ${temp}`);
         /* TODO: Replace command with command 
         that saves snippet to snippet bar */
@@ -36,31 +65,26 @@ const extension: JupyterFrontEndPlugin<void> = {
       command: commandID,
       selector: '.jp-CodeCell'
     })
-
-    function getSelectedText() { 
-      let selectedText; 
-
-      // window.getSelection 
-      if (window.getSelection) { 
-          selectedText = window.getSelection(); 
-      } 
-      // document.getSelection 
-      else if (document.getSelection) { 
-          selectedText = document.getSelection(); 
-      } 
-      return selectedText;
+    
+    // Example Get Request
+    RequestHandler.makeGetRequest(
+     URLExt.join(url, '/example2'),
+      false);
+  
   } 
-
-    /*requestAPI<any>('get_example', {body: 'hi', method: 'POST'})
-      .then(data => {
-        console.log(data);
-      })
-      .catch(reason => {
-        console.error(
-          `The code_snippets server extension appears to be missing.\n${reason}`
-        );
-      });*/
   }
+function getSelectedText() { 
+  let selectedText; 
+
+  // window.getSelection 
+  if (window.getSelection) { 
+      selectedText = window.getSelection(); 
+  } 
+  // document.getSelection 
+  else if (document.getSelection) { 
+      selectedText = document.getSelection(); 
+  } 
+  return selectedText;
 };
 
 export default extension;
