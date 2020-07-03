@@ -14,6 +14,18 @@ import { Widget } from '@lumino/widgets';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
+
+import { RequestHandler } from '@elyra/application';
+import { URLExt } from '@jupyterlab/coreutils';
+
+export interface ICodeSnippet {
+  name: string;
+  displayName: string;
+  description: string;
+  language: string;
+  code: string[];
+}
+
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
 /**
@@ -29,6 +41,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer
     ) => {
     console.log('JupyterLab extension code-snippets is activated!');
+    const url = "elyra/metadata/code-snippets";
 
     const getCurrentWidget = (): Widget => {
       return app.shell.currentWidget;
@@ -44,7 +57,67 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     // Rank has been chosen somewhat arbitrarily to give priority to the running
     // sessions widget in the sidebar.
     app.shell.add(codeSnippetWidget, 'left', { rank: 900 });
-  }
+
+    //Add an application command
+    const commandID = 'my-command';
+    const toggled = false;
+    app.commands.addCommand(commandID, {
+      label: 'Save As Code Snippet',
+      isEnabled: () => true,
+      isVisible: () => true,
+      isToggled: () => toggled,
+      iconClass: 'some-css-icon-class',
+      execute: () => {
+        console.log(`Executed ${commandID}`);
+        let temp = getSelectedText();
+        RequestHandler.makePostRequest(
+          url,
+          JSON.stringify({ 
+            display_name: "highlighted2",
+            metadata: {
+                code: [
+                    JSON.stringify(temp)
+                ],
+                description: "Print highlighted code 2",
+                language: "python",
+            },
+            name: "highlighted2",
+            schema_name: "code-snippet",
+          }),
+          false
+        );
+        
+        //console.log(`Highlight trial: ${JSON.stringify(response)}`);
+        console.log(`Highlight trial: ${temp}`);
+        /* TODO: Replace command with command 
+        that saves snippet to snippet bar */
+    }});
+    
+    //Put the command above in context menu
+    app.contextMenu.addItem({
+      command: commandID,
+      selector: '.jp-CodeCell'
+    })
+    
+    // Example Get Request
+    RequestHandler.makeGetRequest(
+     URLExt.join(url, '/example2'),
+      false);
+  
+  } 
+}
+function getSelectedText() { 
+  let selectedText; 
+
+  // window.getSelection 
+  if (window.getSelection) { 
+      selectedText = window.getSelection(); 
+  } 
+  // document.getSelection 
+  else if (document.getSelection) { 
+      selectedText = document.getSelection(); 
+  } 
+  return selectedText;
 };
 
 export default code_snippet_extension;
