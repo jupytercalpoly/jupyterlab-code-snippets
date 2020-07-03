@@ -21,6 +21,19 @@ ensure_python(">=3.5")
 # Get our version
 version = get_version(os.path.join(name, "_version.py"))
 
+lab_path = os.path.join(HERE, name, "labextension")
+
+# Representative files that should exist after a successful build
+jstargets = [
+    os.path.join(HERE, "lib", "CodeSnippetService.js"),
+]
+
+package_data_spec = {
+    name: [
+        "*"
+    ]
+}
+
 data_files_spec = [
     ("share/jupyter/metadata/code-snippets", "share/jupyter/metadata/code-snippets", "*.json")
 ]
