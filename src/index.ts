@@ -10,8 +10,6 @@ import {
 
 import { ICommandPalette } from '@jupyterlab/apputils';
 
-import { Widget } from '@lumino/widgets';
-
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 
