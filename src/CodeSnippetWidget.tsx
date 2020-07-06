@@ -16,6 +16,7 @@
 
 import '../style/index.css';
 
+import { RequestHandler } from '@elyra/application';
 import { ExpandableComponent } from '@elyra/ui-components';
 import { 
     ReactWidget,
@@ -24,9 +25,9 @@ import {
     Dialog,
     showDialog
  } from '@jupyterlab/apputils';
-import { Cell, CodeCell, MarkdownCell, ICellModel } from '@jupyterlab/cells';
+import { Cell, CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
-import { PathExt, IChangedArgs } from '@jupyterlab/coreutils';
+import { PathExt } from '@jupyterlab/coreutils';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
@@ -36,15 +37,10 @@ import { copyIcon, addIcon } from '@jupyterlab/ui-components';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
 import { Widget, PanelLayout } from '@lumino/widgets';
-// import {JSONObject } from '@lumino/coreutils';
-import { ArrayExt, each } from '@lumino/algorithm';
 import { AttachedProperty } from '@lumino/properties';
 
-// import { MimeData } from '@phosphor/coreutils';
 import { IDragEvent } from '@lumino/dragdrop';
-
-import { INotebookModel } from '@jupyterlab/notebook';
-import * as nbformat from '@jupyterlab/nbformat';
+import { MimeData } from '@lumino/coreutils';
 
 import React from 'react';
 
@@ -70,7 +66,7 @@ const DROP_TARGET_CLASS = 'jp-mod-dropTarget';
 /**
  * The class name added to notebook widget cells.
  */
-const NB_CELL_CLASS = 'jp-Notebook-cell';
+// const NB_CELL_CLASS = 'jp-Notebook-cell';
 
 /**
  * CodeSnippetDisplay props.
@@ -218,7 +214,6 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
                 >
                     <textarea defaultValue={codeSnippet.code.join('\n')}></textarea>
                 </ExpandableComponent>
-
             </div>
         );
     };
@@ -239,12 +234,12 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
  * A widget for Code Snippets.
  */
 export class CodeSnippetWidget extends ReactWidget {
-    private _model: INotebookModel | null = null;
-    private _activeCellIndex = -1;
+    // private _model: INotebookModel | null = null;
+    // private _activeCellIndex = -1;
     private _activeCell: Cell | null = null;
-    private _activeCellChanged = new Signal<this, Cell>(this);
-    private _stateChanged = new Signal<this, IChangedArgs<any>>(this);
-    private _selectionChanged = new Signal<this, void>(this);
+    // private _activeCellChanged = new Signal<this, Cell>(this);
+    // private _stateChanged = new Signal<this, IChangedArgs<any>>(this);
+    // private _selectionChanged = new Signal<this, void>(this);
 
     codeSnippetManager: CodeSnippetService;
     renderCodeSnippetsSignal: Signal<this, ICodeSnippet[]>;
@@ -278,44 +273,6 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   /**
-   * The active cell index of the notebook.
-   * 
-   * #### Notes
-   * The index will be clamped to the bounds of the notebook cells.
-   */
-  get activeCellIndex(): number {
-    if (!this.model) {
-        return -1;
-    }
-    return this.model.cells.length ? this._activeCellIndex : -1;
-  }
-
-  set activeCellIndex(newValue: number) {
-      const oldValue = this._activeCellIndex;
-      if (!this.model || !this.model.cells.length) {
-          newValue = -1;
-      } else {
-          newValue = Math.max(newValue, 0);
-          newValue = Math.min(newValue, this.model.cells.length - 1);
-      }
-
-      this._activeCellIndex = newValue;
-      const cell = this.widgets[newValue];
-      if (cell !== this._activeCell) {
-          // Post an update request.
-          this.update();
-          this._activeCell = cell;
-          this._activeCellChanged.emit(cell);
-      }
-      this._ensureFocus();
-      if (newValue === oldValue) {
-          return;
-      }
-      this._trimSelections();
-      this._stateChanged.emit({ name: 'activeCellIndex', oldValue, newValue });
-  }
-
-  /**
    * Ensure that the notebook has proper focus.
    */
   private _ensureFocus(force = false): void {
@@ -329,14 +286,14 @@ export class CodeSnippetWidget extends ReactWidget {
    * Remove selections from inactive cells to avoid
    * spurious cursors.
    */
-  private _trimSelections(): void {
-      for (let i = 0; i < this.widgets.length; i++){
-          if (i !== this._activeCellIndex) {
-              const cell = this.widgets[i];
-              cell.model.selections.delete(cell.editor.uuid);
-          }
-      }
-  }
+//   private _trimSelections(): void {
+//       for (let i = 0; i < this.widgets.length; i++){
+//           if (i !== this._activeCellIndex) {
+//               const cell = this.widgets[i];
+//               cell.model.selections.delete(cell.editor.uuid);
+//           }
+//       }
+//   }
 
   /**
    * Get the active cell widget.
@@ -384,10 +341,14 @@ export class CodeSnippetWidget extends ReactWidget {
   protected onAfterAttach(msg: Message): void {
       super.onAfterAttach(msg);
       const node = this.node;
+      console.log(node);
       node.addEventListener('lm-dragenter', this);
       node.addEventListener('lm-dragleave', this);
       node.addEventListener('lm-dragover', this);
       node.addEventListener('lm-drop', this);
+    //   this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
+    //     this.renderCodeSnippetsSignal.emit(codeSnippets);
+    //   });
   }
 
   /**
@@ -400,6 +361,7 @@ export class CodeSnippetWidget extends ReactWidget {
       node.removeEventListener('lm-dragleave', this);
       node.removeEventListener('lm-dragover', this);
       node.removeEventListener('lm-drop', this);
+      console.log("Detached");
   }
 
   /**
@@ -434,21 +396,23 @@ export class CodeSnippetWidget extends ReactWidget {
       event.preventDefault();
       event.stopPropagation();
 
-      const target = event.target as HTMLElement;
-      console.log(target);
-      const index = this._findCell(target);
-      if (index === -1){
-          return;
-      }
+    //   const target = event.target as HTMLElement;
 
-      const widget = (this.layout as PanelLayout).widgets[index];
-      widget.node.classList.add(DROP_TARGET_CLASS);
+    //   const index = this._findCell(target);
+    //   if (index === -1){
+    //       return;
+    //   }
+
+    //   const widget = (this.layout as PanelLayout).widgets[index];
+    //   console.log(widget);
+    //   widget.node.classList.add(DROP_TARGET_CLASS);
   }
 
   /**
    * Handle the `'lm-dragleave'` event for the widget.
    */
   private _evtDragLeave(event: IDragEvent): void {
+    //   console.log("DragLeave" + event.mimeData);
       if (!event.mimeData.hasData(JUPYTER_CELL_MIME)) {
           return;
       }
@@ -464,292 +428,101 @@ export class CodeSnippetWidget extends ReactWidget {
    * Handle the `'lm-dragover'` event for the widget.
    */
   private _evtDragOver(event: IDragEvent): void {
-      if (!event.mimeData.hasData(JUPYTER_CELL_MIME)){
+    //   console.log("DragOver" + event.mimeData);
+      
+      const data = Private.findData(event.mimeData);
+      if (data === undefined) {
           return;
       }
+
       event.preventDefault();
       event.stopPropagation();
       event.dropAction = event.proposedAction;
-      const elements = this.node.getElementsByClassName(DROP_TARGET_CLASS);
-      if (elements.length) {
-          (elements[0] as HTMLElement).classList.remove(DROP_TARGET_CLASS);
-      }
-      const target = event.target as HTMLElement;
-      const index = this._findCell(target);
-      if (index === - 1) {
-          return;
-      }
-      const widget = (this.layout as PanelLayout).widgets[index];
-      widget.node.classList.add(DROP_TARGET_CLASS);
+
+    //   const elements = this.node.getElementsByClassName(DROP_TARGET_CLASS);
+    //   if (elements.length) {
+    //       (elements[0] as HTMLElement).classList.remove(DROP_TARGET_CLASS);
+    //   }
+    //   const target = event.target as HTMLElement;
+    //   const index = this._findCell(target);
+    //   if (index === - 1) {
+    //       return;
+    //   }
+    //   const widget = (this.layout as PanelLayout).widgets[index];
+    //   widget.node.classList.add(DROP_TARGET_CLASS);
   }
 
   /**
    * Hanlde the `'lm-drop'` event for the widget.
    */
   private _evtDrop(event: IDragEvent): void {
-      if (!event.mimeData.hasData(JUPYTER_CELL_MIME)) {
+    //   if (!event.mimeData.hasData(JUPYTER_CELL_MIME)) {
+    //       return;
+    //   }
+      const data = Private.findData(event.mimeData);
+      if (data === undefined) {
           return;
       }
+
+    //   console.log(data);
+
+      // TODO: remove CLASS
       event.preventDefault();
       event.stopPropagation();
+
       if (event.proposedAction === 'none'){
           event.dropAction = 'none';
           return;
       }
 
-      let target = event.target as HTMLElement;
-      while (target && target.parentElement) {
-          if (target.classList.contains(DROP_TARGET_CLASS)) {
-              target.classList.remove(DROP_TARGET_CLASS);
-              break;
-          }
-          target = target.parentElement;
-      }
+    //   let target = event.target as HTMLElement;
+    //   console.log(target);
+    //   console.log(target.parentElement);
+    //   while (target && target.parentElement) {
+    //       if (target.classList.contains(DROP_TARGET_CLASS)) {
+    //           target.classList.remove(DROP_TARGET_CLASS);
+    //           break;
+    //       }
+    //       target = target.parentElement;
+    //   }
 
     /**
      * TODO: WE CAN ADD FUNCTIONALITY TO DRAG AND DROP WITHIN THE SNIPPET PANEL
      */
-    const model = this.model!;
+    // const model = this.model!;
 
     // const source: Notebook = event.source;
     // Handle the case where we are copying cells
     event.dropAction = 'copy';
+
+    
     /**
      *  TODO: the one saved in our snippet panel should not be a cell; 
      *        NEED TO DEFINE THE STRUCTURE OF SNIPPET!!!!
      * */ 
-    // Find the target cell and insert the copied cells
-    let index = this._findCell(target);
-    console.log(index);
-    if (index === - 1) {
-        index = this.widgets.length;
-    }
-    const start = index;
-    const values = event.mimeData.getData(JUPYTER_CELL_MIME);
-    const factory = model.contentFactory;
 
-    // Insert the copies of the original cells.
-    model.cells.beginCompoundOperation();
-    each(values, (cell: nbformat.ICell) => {
-        let value: ICellModel;
-        switch (cell.cell_type) {
-            case 'code':
-                value = factory.createCodeCell({ cell });
-                break;
-            case 'markdown':
-                value = factory.createMarkdownCell({ cell });
-                break;
-            default:
-                value = factory.createRawCell({ cell });
-                break;
-        }
-        model.cells.insert(index++, value);
+    const url = "elyra/metadata/code-snippets";
+    let code = Private.findData(event.mimeData);
+    console.log(code);
+    RequestHandler.makePostRequest(
+        url,
+        JSON.stringify({ 
+          display_name: "drag_dropped",
+          metadata: {
+              code: [
+                  code
+              ],
+              description: "Print dragged and dropped",
+              language: "python",
+          },
+          name: "dragdropped",
+          schema_name: "code-snippet",
+        }),
+        false
+      );
+    this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
+    this.renderCodeSnippetsSignal.emit(codeSnippets);
     });
-    model.cells.endCompoundOperation();
-    // Select the inserted cells.
-    this.deselectAll();
-    this.activeCellIndex = start;
-    this.extendContiguousSelectionTo(index - 1);
-  }
-
-  /**
-   * Move the head of an existing contiguous selection to extend the selection.
-   *
-   * @param index - The new head of the existing selection.
-   *
-   * #### Notes
-   * If there is no existing selection, the active cell is considered an
-   * existing one-cell selection.
-   *
-   * If the new selection is a single cell, that cell becomes the active cell
-   * and all cells are deselected.
-   *
-   * There is no change if there are no cells (i.e., activeCellIndex is -1).
-   */
-  extendContiguousSelectionTo(index: number): void {
-    let { head, anchor } = this.getContiguousSelection();
-    let i: number;
-
-    // Handle the case of no current selection.
-    if (anchor === null || head === null) {
-      if (index === this.activeCellIndex) {
-        // Already collapsed selection, nothing more to do.
-        return;
-      }
-
-      // We will start a new selection below.
-      head = this.activeCellIndex;
-      anchor = this.activeCellIndex;
-    }
-
-    // Move the active cell. We do this before the collapsing shortcut below.
-    this.activeCellIndex = index;
-
-    // Make sure the index is valid, according to the rules for setting and clipping the
-    // active cell index. This may change the index.
-    index = this.activeCellIndex;
-
-    // Collapse the selection if it is only the active cell.
-    if (index === anchor) {
-      this.deselectAll();
-      return;
-    }
-
-    let selectionChanged = false;
-
-    if (head < index) {
-      if (head < anchor) {
-        Private.selectedProperty.set(this.widgets[head], false);
-        selectionChanged = true;
-      }
-
-      // Toggle everything strictly between head and index except anchor.
-      for (i = head + 1; i < index; i++) {
-        if (i !== anchor) {
-          Private.selectedProperty.set(
-            this.widgets[i],
-            !Private.selectedProperty.get(this.widgets[i])
-          );
-          selectionChanged = true;
-        }
-      }
-    } else if (index < head) {
-      if (anchor < head) {
-        Private.selectedProperty.set(this.widgets[head], false);
-        selectionChanged = true;
-      }
-
-      // Toggle everything strictly between index and head except anchor.
-      for (i = index + 1; i < head; i++) {
-        if (i !== anchor) {
-          Private.selectedProperty.set(
-            this.widgets[i],
-            !Private.selectedProperty.get(this.widgets[i])
-          );
-          selectionChanged = true;
-        }
-      }
-    }
-
-    // Anchor and index should *always* be selected.
-    if (!Private.selectedProperty.get(this.widgets[anchor])) {
-      selectionChanged = true;
-    }
-    Private.selectedProperty.set(this.widgets[anchor], true);
-
-    if (!Private.selectedProperty.get(this.widgets[index])) {
-      selectionChanged = true;
-    }
-    Private.selectedProperty.set(this.widgets[index], true);
-
-    if (selectionChanged) {
-      this._selectionChanged.emit(void 0);
-    }
-  }
-
-   /**
-   * Get the head and anchor of a contiguous cell selection.
-   *
-   * The head of a contiguous selection is always the active cell.
-   *
-   * If there are no cells selected, `{head: null, anchor: null}` is returned.
-   *
-   * Throws an error if the currently selected cells do not form a contiguous
-   * selection.
-   */
-  getContiguousSelection():
-    | { head: number; anchor: number }
-    | { head: null; anchor: null } {
-    const cells = this.widgets;
-    const first = ArrayExt.findFirstIndex(cells, c => this.isSelected(c));
-
-    // Return early if no cells are selected.
-    if (first === -1) {
-      return { head: null, anchor: null };
-    }
-
-    const last = ArrayExt.findLastIndex(
-      cells,
-      c => this.isSelected(c),
-      -1,
-      first
-    );
-
-    // Check that the selection is contiguous.
-    for (let i = first; i <= last; i++) {
-      if (!this.isSelected(cells[i])) {
-        throw new Error('Selection not contiguous');
-      }
-    }
-
-    // Check that the active cell is one of the endpoints of the selection.
-    const activeIndex = this.activeCellIndex;
-    if (first !== activeIndex && last !== activeIndex) {
-      throw new Error('Active cell not at endpoint of selection');
-    }
-
-    // Determine the head and anchor of the selection.
-    if (first === activeIndex) {
-      return { head: first, anchor: last };
-    } else {
-      return { head: last, anchor: first };
-    }
-  }
-
-  /**
-   * Whether a cell is selected.
-   */
-  isSelected(widget: Cell): boolean {
-    return Private.selectedProperty.get(widget);
-  }
-
-  /**
-   * Deselect all of the cells.
-   */
-  deselectAll(): void {
-      let changed = false;
-      each(this.widgets, widget => {
-          if (Private.selectedProperty.get(widget)) {
-              changed = true;
-          }
-          Private.selectedProperty.set(widget, false);
-      });
-      if (changed) {
-          this._selectionChanged.emit(void 0);
-      }
-      // Make sure we have a valid active cell.
-      this.activeCellIndex = this.activeCellIndex;
-      this.update();
-  }
-
-  get model(): INotebookModel | null {
-    return this._model;
-  }
-
-   /**
-   * Find the cell index containing the target html element.
-   *
-   * #### Notes
-   * Returns -1 if the cell is not found.
-   */
-  private _findCell(node: HTMLElement): number {
-    // Trace up the DOM hierarchy to find the root cell node.
-    // Then find the corresponding child and select it.
-    let n: HTMLElement | null = node;
-    while (n && n !== this.node) {
-      if (n.classList.contains(NB_CELL_CLASS)) {
-        const i = ArrayExt.findFirstIndex(
-          this.widgets,
-          widget => widget.node === n
-        );
-        if (i !== -1) {
-          return i;
-        }
-        break;
-      }
-      n = n.parentElement;
-    }
-    return -1;
   }
 
   render(): React.ReactElement {
@@ -776,8 +549,16 @@ export class CodeSnippetWidget extends ReactWidget {
  */
 namespace Private {
     /**
-     * An attached property for the selected state of a cell.
+     * Given a MimeData instance, extract the data, if any.
      */
+    export function findData(mime: MimeData): string | undefined {
+        // const types = mime.types();
+        // console.log(types);
+        // application/vnd.jupyter.cells
+        const data = mime.getData("text/plain");
+        return data;
+    }
+
     export const selectedProperty = new AttachedProperty<Cell, boolean>({
       name: 'selected',
       create: () => false
