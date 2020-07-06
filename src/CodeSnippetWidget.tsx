@@ -33,7 +33,7 @@ import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
-import { copyIcon, addIcon } from '@jupyterlab/ui-components';
+import { copyIcon, addIcon, closeIcon } from '@jupyterlab/ui-components';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
 import { Widget, PanelLayout } from '@lumino/widgets';
@@ -85,6 +85,7 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
     // Handle code snippet insert into an editor
     private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
         const widget: Widget = this.props.getCurrentWidget();
+        console.log('current widget: ' + widget);
         const snippetStr: string = snippet.code.join('\n');
 
         // if the widget is document widget and it's a file?? in the file editor 
@@ -133,6 +134,25 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
             this.showErrDialog('Code snippet insert failed: Unsupported widget');
         }
     };
+
+    // Handle deleting code snippet
+    private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
+        console.log(this.props.getCurrentWidget instanceof CodeSnippetWidget);
+        console.log(snippet);
+        const name = snippet.name;
+        const url = 'elyra/metadata/code-snippets/' + name;
+        console.log(url);
+        await RequestHandler.makeServerRequest(
+            url,
+            { method: 'DELETE' },
+            false
+        );
+        // arr = arr.filter(item => item !== value)
+        const idx = this.props.codeSnippets.indexOf(snippet);
+        this.props.codeSnippets.splice(idx, 1);
+        console.log(idx);
+        console.log(this.props.codeSnippets);
+    }
 
     // Handle language compatibility between code snippet and editor
     private verifyLanguageAndInsert = async (
@@ -186,6 +206,8 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
 
     // Render display of code snippet list
     private renderCodeSnippet = (codeSnippet: ICodeSnippet): JSX.Element => {
+        console.log('rendering');
+        console.log(codeSnippet);
         const displayName = 
             '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
@@ -202,6 +224,13 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
                 icon: addIcon,
                 onClick: (): void => {
                     this.insertCodeSnippet(codeSnippet);
+                }
+            },
+            {
+                title: 'Delete',
+                icon: closeIcon,
+                onClick: (): void => {
+                    this.deleteCodeSnippet(codeSnippet);
                 }
             }
         ];
@@ -254,11 +283,13 @@ export class CodeSnippetWidget extends ReactWidget {
     }
   // Request code snippets from server
   async fetchData(): Promise<ICodeSnippet[]> {
+      console.log('fetching');
     return await this.codeSnippetManager.findAll();
   }
 
   // Triggered when the widget button on side palette is clicked
   onAfterShow(msg: Message): void {
+      console.log('here');
     this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
       this.renderCodeSnippetsSignal.emit(codeSnippets);
     });
@@ -361,7 +392,7 @@ export class CodeSnippetWidget extends ReactWidget {
       node.removeEventListener('lm-dragleave', this);
       node.removeEventListener('lm-dragover', this);
       node.removeEventListener('lm-drop', this);
-      console.log("Detached");
+      console.log('Detached');
   }
 
   /**
@@ -455,7 +486,7 @@ export class CodeSnippetWidget extends ReactWidget {
   /**
    * Hanlde the `'lm-drop'` event for the widget.
    */
-  private _evtDrop(event: IDragEvent): void {
+    private async _evtDrop(event: IDragEvent): Promise<void> {
     //   if (!event.mimeData.hasData(JUPYTER_CELL_MIME)) {
     //       return;
     //   }
@@ -501,22 +532,22 @@ export class CodeSnippetWidget extends ReactWidget {
      *        NEED TO DEFINE THE STRUCTURE OF SNIPPET!!!!
      * */ 
 
-    const url = "elyra/metadata/code-snippets";
-    let code = Private.findData(event.mimeData);
+    const url = 'elyra/metadata/code-snippets';
+    const code = Private.findData(event.mimeData);
     console.log(code);
-    RequestHandler.makePostRequest(
+    await RequestHandler.makePostRequest(
         url,
         JSON.stringify({ 
-          display_name: "drag_dropped",
+          display_name: 'drag_dropped',
           metadata: {
               code: [
                   code
               ],
-              description: "Print dragged and dropped",
-              language: "python",
+              description: 'Print dragged and dropped',
+              language: 'python',
           },
-          name: "dragdropped",
-          schema_name: "code-snippet",
+          name: 'dragdropped',
+          schema_name: 'code-snippet',
         }),
         false
       );
@@ -526,6 +557,7 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   render(): React.ReactElement {
+      console.log('widget rendering');
     return (
       <div className={CODE_SNIPPETS_CLASS}>
         <header className={CODE_SNIPPETS_HEADER_CLASS}>
@@ -555,7 +587,7 @@ namespace Private {
         // const types = mime.types();
         // console.log(types);
         // application/vnd.jupyter.cells
-        const data = mime.getData("text/plain");
+        const data = mime.getData('text/plain');
         return data;
     }
 

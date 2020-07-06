@@ -238,7 +238,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     restorer: ILayoutRestorer
-    ) => {
+  ) => {
     console.log('JupyterLab extension code-snippets is activated!');
     const url = "elyra/metadata/code-snippets";
 
