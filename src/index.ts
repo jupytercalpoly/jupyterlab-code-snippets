@@ -8,6 +8,7 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 
+import { Widget } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
@@ -18,7 +19,7 @@ import { URLExt } from '@jupyterlab/coreutils';
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-import { Dialog, showDialog, /*showErrorMessage*/ } from '@jupyterlab/apputils';
+import { Dialog, showDialog} from '@jupyterlab/apputils';
 
 //import { PathExt } from '@jupyterlab/coreutils';
 
@@ -26,7 +27,6 @@ import { Contents } from '@jupyterlab/services';
 
 import { JSONObject } from '@lumino/coreutils';
 
-import { Widget } from '@lumino/widgets';
 
 import { IDocumentManager } from '@jupyterlab/docmanager';
 
@@ -56,20 +56,41 @@ export interface IFileContainer extends JSONObject {
 
 /**
  * Rename a file with a dialog. This is what actually displays everything. 
- * Result.value is the value retrieved from .getValue(). ---> .getValue() is what I need to change to an array.
+ * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
 export function renameDialog(
-  oldPath: string
+  oldPath: string,
+  url: string,
+  inputCode: string
 ): Promise<Contents.IModel | null> {
   return showDialog({
     title: 'Save Code Snippet',
-    body: new RenameHandler(oldPath),
+    body: new RenameHandler(),
     focusNodeSelector: 'input',
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
   }).then(result => {
     console.log(result.value);
     if (!result.value) {
       return null;
+    }
+    else {
+      /* TODO: if name is already there call shouldOverwrite and change to a put request*/
+      RequestHandler.makePostRequest(
+      url,
+      JSON.stringify({ 
+        display_name: result.value[0],
+        metadata: {
+            code: [
+              inputCode
+            ],
+            description: result.value[1],
+            language: result.value[2],
+        },
+        name: result.value[0].replace(' ','').toLowerCase(),
+        schema_name: "code-snippet",
+      }),
+      false
+    );
     }
     // if (!isValidFileName(result.value)) {
     //   void showErrorMessage(
@@ -133,48 +154,25 @@ export function isValidFileName(name: string): boolean {
 }
 
 /**
- * A widget used to rename a file.
+ * A widget used to get input data.
  */
 class RenameHandler extends Widget {
   /**
    * Construct a new "rename" dialog.
    * readonly inputNode: HTMLInputElement; <--- in Widget class
    */
-  constructor(oldPath: string) {
-    super({ node: Private.createRenameNode(oldPath) });
+  constructor() {
+    super({ node: Private.createRenameNode() });
     this.addClass(FILE_DIALOG_CLASS);
-    //const ext = PathExt.extname(oldPath);
-    //const value = (this.inputNode.value = PathExt.basename(oldPath));
-    //this.inputNode.setSelectionRange(0, value.length - ext.length);
-    //let inputs = [];
   }
-
-  /**
-   * Get the input text node. Put in loop maybe and append to some sort of class field.
-   * Make it a single string separated by commas and then cast the HTMLInputElement.
-   */
-  // get inputNode(): HTMLInputElement {
-  //   let temp = [];
-  //   temp.push(this.node.getElementsByTagName('input')[0] as HTMLInputElement, this.node.getElementsByTagName('input')[1] as HTMLInputElement);
-  //   console.log(temp[0].value);
-  //   console.log(temp[1].value);
-  //   return this.node.getElementsByTagName('input')[0] as HTMLInputElement;
-  //   //gets input as HTMLInputElement object. Can then get the value by doing inputNode.value.
-  // }
 
   getValue(): string[] {
     let inputs = [];
-    inputs.push((this.node.getElementsByTagName('input')[0] as HTMLInputElement).value, (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value);
+    inputs.push((this.node.getElementsByTagName('input')[0] as HTMLInputElement).value, 
+    (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
+    (this.node.getElementsByTagName('input')[2] as HTMLInputElement).value);
     return inputs;
   }
-
-  /**
-   * Get the value of the widget. String of multiple values which can then be split and used separately?
-   */
-  // getValue(): string {
-  //   //console.log(this.inputNode.value);
-  //   return this.inputNode.value;
-  // }
 }
 
 /**
@@ -184,12 +182,12 @@ namespace Private {
   /**
    * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
    */
-  export function createRenameNode(oldPath: string): HTMLElement {
+  export function createRenameNode(): HTMLElement {
     const body = document.createElement('div');
-    const existingLabel = document.createElement('label');
-    existingLabel.textContent = 'File Path';
-    const existingPath = document.createElement('span');
-    existingPath.textContent = oldPath;
+    // const existingLabel = document.createElement('label');
+    // existingLabel.textContent = 'File Path';
+    // const existingPath = document.createElement('span');
+    // existingPath.textContent = oldPath;
 
     const nameTitle = document.createElement('label');
     nameTitle.textContent = 'Snippet Name*';
@@ -201,12 +199,17 @@ namespace Private {
     nameTitle2.className = RENAME_NEWNAME_TITLE_CLASS;
     const name2 = document.createElement('input');
 
-    body.appendChild(existingLabel);
-    body.appendChild(existingPath);
+    const nameTitle3 = document.createElement('label');
+    nameTitle3.textContent = 'Language*';
+    nameTitle3.className = RENAME_NEWNAME_TITLE_CLASS;
+    const name3 = document.createElement('input');
+
     body.appendChild(nameTitle);
     body.appendChild(name);
     body.appendChild(nameTitle2);
     body.appendChild(name2);
+    body.appendChild(nameTitle3);
+    body.appendChild(name3);
     return body;
   }
 }
@@ -282,18 +285,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         //   }),
         //   false
         // );
-        // InputDialog.getText({
-        //   title: "Please enter the necessary information and the press ok.",
-        //   text: "Name",
-        //   placeholder: "Trial1"
-        // })
 
-        renameDialog("src/codesnippets");
-
-        //console.log(`Highlight trial: ${JSON.stringify(response)}`);
+        renameDialog("src/codesnippets",url,temp);
         console.log(`Highlight trial: ${temp}`);
-        /* TODO: Replace command with command 
-        that saves snippet to snippet bar */
     }});
     
     //Put the command above in context menu
