@@ -184,8 +184,31 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
         });
     };
 
+    // Pick color for side of snippet box based on number of code lines
+    private codeLinesToColor = (codeSnippet: ICodeSnippet): string => {
+        let color : string;
+        let i,counter = 0;
+        for (i=0; i<codeSnippet.code[0].length; i++) {
+            if (codeSnippet.code[0][i] === "\n") {
+                counter++;
+            }
+        }
+        if (counter < 25) {
+            color = "8px solid #BBDEFB";
+        }
+        else if (counter >= 25 && counter<= 50) {
+            color = "8px solid #64B5F6";
+        }
+        else {
+            color = "8px solid #1976D2";
+        }
+        return color;
+    }
+    
     // Render display of code snippet list
+    // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
     private renderCodeSnippet = (codeSnippet: ICodeSnippet): JSX.Element => {
+        let barColor = this.codeLinesToColor(codeSnippet);
         const displayName = 
             '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
@@ -204,9 +227,9 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
                     this.insertCodeSnippet(codeSnippet);
                 }
             }
-        ];
+        ]; // REplace the borderleft color with options! Save on repetitive code this way!
         return (
-            <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM}>
+            <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM} style={{borderLeft: barColor}}>
                 <ExpandableComponent
                     displayName={displayName}
                     tooltip={codeSnippet.description}

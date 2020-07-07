@@ -21,8 +21,6 @@ import { URLExt } from '@jupyterlab/coreutils';
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 import { Dialog, showDialog} from '@jupyterlab/apputils';
 
-//import { PathExt } from '@jupyterlab/coreutils';
-
 import { Contents } from '@jupyterlab/services';
 
 import { JSONObject } from '@lumino/coreutils';
@@ -55,11 +53,10 @@ export interface IFileContainer extends JSONObject {
 }
 
 /**
- * Rename a file with a dialog. This is what actually displays everything. 
+ * Save an input with a dialog. This is what actually displays everything. 
  * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
-export function renameDialog(
-  oldPath: string,
+export function inputDialog(
   url: string,
   inputCode: string
 ): Promise<Contents.IModel | null> {
@@ -91,6 +88,8 @@ export function renameDialog(
       }),
       false
     );
+    //CodeSnippetWidget.fetchData().then((codeSnippets: ICodeSnippet[]) => {
+    //CodeSnippetWidget.renderCodeSnippetsSignal.emit(codeSnippets);
     }
     // if (!isValidFileName(result.value)) {
     //   void showErrorMessage(
@@ -268,7 +267,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'some-css-icon-class',
       execute: () => {
         console.log(`Executed ${commandID}`);
-        let temp = getSelectedText();
+        let highlightedCode = getSelectedText();
         // RequestHandler.makePostRequest(
         //   url,
         //   JSON.stringify({ 
@@ -286,8 +285,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         //   false
         // );
 
-        renameDialog("src/codesnippets",url,temp);
-        console.log(`Highlight trial: ${temp}`);
+        inputDialog(url,highlightedCode);
+        console.log(`Highlight trial: ${highlightedCode}`);
     }});
     
     //Put the command above in context menu
