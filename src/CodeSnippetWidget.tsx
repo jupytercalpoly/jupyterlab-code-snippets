@@ -16,7 +16,9 @@
 
 import '../style/index.css';
 
-import { RequestHandler } from '@elyra/application';
+import { renameDialog } from './index';
+import { URLExt } from '@jupyterlab/coreutils';
+import { ServerConnection } from '@jupyterlab/services';
 import { ExpandableComponent } from '@elyra/ui-components';
 import { 
     ReactWidget,
@@ -141,17 +143,19 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
         console.log(snippet);
         const name = snippet.name;
         const url = 'elyra/metadata/code-snippets/' + name;
-        console.log(url);
-        await RequestHandler.makeServerRequest(
-            url,
-            { method: 'DELETE' },
-            false
-        );
-        // arr = arr.filter(item => item !== value)
+
+        const settings = ServerConnection.makeSettings();
+        const requestUrl = URLExt.join(settings.baseUrl, url);
+
+        await ServerConnection.makeRequest(requestUrl, { method: 'DELETE' }, settings)
+
         const idx = this.props.codeSnippets.indexOf(snippet);
         this.props.codeSnippets.splice(idx, 1);
         console.log(idx);
         console.log(this.props.codeSnippets);
+
+        // Delete the selected snippet // TODO: give each snippet an id
+        this.setState( { codeSnippets: this.props.codeSnippets} )
     }
 
     // Handle language compatibility between code snippet and editor
@@ -206,8 +210,6 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
 
     // Render display of code snippet list
     private renderCodeSnippet = (codeSnippet: ICodeSnippet): JSX.Element => {
-        console.log('rendering');
-        console.log(codeSnippet);
         const displayName = 
             '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
@@ -263,13 +265,6 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
  * A widget for Code Snippets.
  */
 export class CodeSnippetWidget extends ReactWidget {
-    // private _model: INotebookModel | null = null;
-    // private _activeCellIndex = -1;
-    private _activeCell: Cell | null = null;
-    // private _activeCellChanged = new Signal<this, Cell>(this);
-    // private _stateChanged = new Signal<this, IChangedArgs<any>>(this);
-    // private _selectionChanged = new Signal<this, void>(this);
-
     codeSnippetManager: CodeSnippetService;
     renderCodeSnippetsSignal: Signal<this, ICodeSnippet[]>;
     getCurrentWidget: () => Widget;
@@ -283,57 +278,23 @@ export class CodeSnippetWidget extends ReactWidget {
     }
   // Request code snippets from server
   async fetchData(): Promise<ICodeSnippet[]> {
-      console.log('fetching');
     return await this.codeSnippetManager.findAll();
   }
 
   // Triggered when the widget button on side palette is clicked
   onAfterShow(msg: Message): void {
-      console.log('here');
     this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
       this.renderCodeSnippetsSignal.emit(codeSnippets);
     });
-  }
-
-    /**
-   * A read-only sequence of the widgets in the notebook.
-   */
-  get widgets(): ReadonlyArray<Cell> {
-    console.log(this.layout as PanelLayout);
-    return (this.layout as PanelLayout).widgets as ReadonlyArray<Cell>;
   }
 
   /**
    * Ensure that the notebook has proper focus.
    */
   private _ensureFocus(force = false): void {
-    //   const activeCell = this.activeCell;
       if (force && !this.node.contains(document.activeElement)) {
           this.node.focus();
       }
-  }
-
-  /**
-   * Remove selections from inactive cells to avoid
-   * spurious cursors.
-   */
-//   private _trimSelections(): void {
-//       for (let i = 0; i < this.widgets.length; i++){
-//           if (i !== this._activeCellIndex) {
-//               const cell = this.widgets[i];
-//               cell.model.selections.delete(cell.editor.uuid);
-//           }
-//       }
-//   }
-
-  /**
-   * Get the active cell widget.
-   *
-   * #### Notes
-   * This is a cell or `null` if there is no active cell.
-   */
-  get activeCell(): Cell | null {
-    return this._activeCell;
   }
 
   /**
@@ -377,9 +338,6 @@ export class CodeSnippetWidget extends ReactWidget {
       node.addEventListener('lm-dragleave', this);
       node.addEventListener('lm-dragover', this);
       node.addEventListener('lm-drop', this);
-    //   this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-    //     this.renderCodeSnippetsSignal.emit(codeSnippets);
-    //   });
   }
 
   /**
@@ -392,7 +350,6 @@ export class CodeSnippetWidget extends ReactWidget {
       node.removeEventListener('lm-dragleave', this);
       node.removeEventListener('lm-dragover', this);
       node.removeEventListener('lm-drop', this);
-      console.log('Detached');
   }
 
   /**
@@ -403,21 +360,6 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   /**
-   * Handle `update-request` messages sent to the widget.
-   */
-//   protected onUpdateRequest(msg: Message): void {
-//       const activeCell = this.activeCell;
-
-//       let count = 0;
-//       each(this.widgets, widget => {
-//           if (widget !== activeCell ) {
-//               widget.removeClass(ACTIVE_CLASS);
-//           }
-//           widget.removeClass(OTHER_SELECTED_CLASS);
-//       })
-//   }
-
-  /**
    * Handle the `'lm-dragenter'` event for the widget.
    */
   private _evtDragEnter(event: IDragEvent): void {
@@ -426,24 +368,12 @@ export class CodeSnippetWidget extends ReactWidget {
       }
       event.preventDefault();
       event.stopPropagation();
-
-    //   const target = event.target as HTMLElement;
-
-    //   const index = this._findCell(target);
-    //   if (index === -1){
-    //       return;
-    //   }
-
-    //   const widget = (this.layout as PanelLayout).widgets[index];
-    //   console.log(widget);
-    //   widget.node.classList.add(DROP_TARGET_CLASS);
   }
 
   /**
    * Handle the `'lm-dragleave'` event for the widget.
    */
   private _evtDragLeave(event: IDragEvent): void {
-    //   console.log("DragLeave" + event.mimeData);
       if (!event.mimeData.hasData(JUPYTER_CELL_MIME)) {
           return;
       }
@@ -458,44 +388,24 @@ export class CodeSnippetWidget extends ReactWidget {
   /**
    * Handle the `'lm-dragover'` event for the widget.
    */
-  private _evtDragOver(event: IDragEvent): void {
-    //   console.log("DragOver" + event.mimeData);
-      
+  private _evtDragOver(event: IDragEvent): void {      
       const data = Private.findData(event.mimeData);
       if (data === undefined) {
           return;
       }
-
       event.preventDefault();
       event.stopPropagation();
       event.dropAction = event.proposedAction;
-
-    //   const elements = this.node.getElementsByClassName(DROP_TARGET_CLASS);
-    //   if (elements.length) {
-    //       (elements[0] as HTMLElement).classList.remove(DROP_TARGET_CLASS);
-    //   }
-    //   const target = event.target as HTMLElement;
-    //   const index = this._findCell(target);
-    //   if (index === - 1) {
-    //       return;
-    //   }
-    //   const widget = (this.layout as PanelLayout).widgets[index];
-    //   widget.node.classList.add(DROP_TARGET_CLASS);
   }
 
   /**
    * Hanlde the `'lm-drop'` event for the widget.
    */
     private async _evtDrop(event: IDragEvent): Promise<void> {
-    //   if (!event.mimeData.hasData(JUPYTER_CELL_MIME)) {
-    //       return;
-    //   }
       const data = Private.findData(event.mimeData);
       if (data === undefined) {
           return;
       }
-
-    //   console.log(data);
 
       // TODO: remove CLASS
       event.preventDefault();
@@ -506,26 +416,12 @@ export class CodeSnippetWidget extends ReactWidget {
           return;
       }
 
-    //   let target = event.target as HTMLElement;
-    //   console.log(target);
-    //   console.log(target.parentElement);
-    //   while (target && target.parentElement) {
-    //       if (target.classList.contains(DROP_TARGET_CLASS)) {
-    //           target.classList.remove(DROP_TARGET_CLASS);
-    //           break;
-    //       }
-    //       target = target.parentElement;
-    //   }
-
     /**
      * TODO: WE CAN ADD FUNCTIONALITY TO DRAG AND DROP WITHIN THE SNIPPET PANEL
      */
-    // const model = this.model!;
 
-    // const source: Notebook = event.source;
     // Handle the case where we are copying cells
     event.dropAction = 'copy';
-
     
     /**
      *  TODO: the one saved in our snippet panel should not be a cell; 
@@ -534,23 +430,25 @@ export class CodeSnippetWidget extends ReactWidget {
 
     const url = 'elyra/metadata/code-snippets';
     const code = Private.findData(event.mimeData);
+
+    await renameDialog(url, code);
     console.log(code);
-    await RequestHandler.makePostRequest(
-        url,
-        JSON.stringify({ 
-          display_name: 'drag_dropped',
-          metadata: {
-              code: [
-                  code
-              ],
-              description: 'Print dragged and dropped',
-              language: 'python',
-          },
-          name: 'dragdropped',
-          schema_name: 'code-snippet',
-        }),
-        false
-      );
+    // await RequestHandler.makePostRequest(
+    //     url,
+    //     JSON.stringify({ 
+    //       display_name: 'drag_dropped',
+    //       metadata: {
+    //           code: [
+    //               code
+    //           ],
+    //           description: 'Print dragged and dropped',
+    //           language: 'python',
+    //       },
+    //       name: 'dragdropped',
+    //       schema_name: 'code-snippet',
+    //     }),
+    //     false
+    //   );
     this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
     this.renderCodeSnippetsSignal.emit(codeSnippets);
     });
