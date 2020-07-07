@@ -27,7 +27,7 @@ import {
     Dialog,
     showDialog
  } from '@jupyterlab/apputils';
-import { Cell, CodeCell, MarkdownCell } from '@jupyterlab/cells';
+import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
 import { PathExt } from '@jupyterlab/coreutils';
 import { IDocumentManager } from '@jupyterlab/docmanager';
@@ -39,7 +39,6 @@ import { copyIcon, addIcon, closeIcon } from '@jupyterlab/ui-components';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
 import { Widget, PanelLayout } from '@lumino/widgets';
-import { AttachedProperty } from '@lumino/properties';
 
 import { IDragEvent } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
@@ -64,11 +63,6 @@ const CODE_SNIPPET_ITEM = 'elyra-codeSnippet-item';
  * A class used to indicate a drop target.
  */
 const DROP_TARGET_CLASS = 'jp-mod-dropTarget';
-
-/**
- * The class name added to notebook widget cells.
- */
-// const NB_CELL_CLASS = 'jp-Notebook-cell';
 
 /**
  * CodeSnippetDisplay props.
@@ -455,7 +449,6 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   render(): React.ReactElement {
-      console.log('widget rendering');
     return (
       <div className={CODE_SNIPPETS_CLASS}>
         <header className={CODE_SNIPPETS_HEADER_CLASS}>
@@ -488,11 +481,6 @@ namespace Private {
         const data = mime.getData('text/plain');
         return data;
     }
-
-    export const selectedProperty = new AttachedProperty<Cell, boolean>({
-      name: 'selected',
-      create: () => false
-    });
   
     /**
      * A custom panel layout for the notebook.
