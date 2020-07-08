@@ -64,15 +64,6 @@
 
 }
 
-.jp-Dialog-content {
-  resize: both;
-}
-
-.jp-Dialog-content {
-  max-width: 100vw;
-  max-height: 100vh;
-}
-
 .jp-Message-content {
   display: flex;
   flex-direction: column;
