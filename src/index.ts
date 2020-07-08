@@ -1,8 +1,6 @@
 import '../style/index.css';
 
 import { codeSnippetIcon } from '@elyra/ui-components';
-//import checkSVGstr from '../style/check.svg';
-// import { LabIcon } from '@jupyterlab/ui-components';
 
 import {
   JupyterFrontEnd,
@@ -14,11 +12,6 @@ import { Widget } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-
-//import { showMessage } from './ConfirmMessage';
-
-
-// import { URLExt } from '@jupyterlab/coreutils';
 
 
 import { inputDialog } from './CodeSnippetForm'

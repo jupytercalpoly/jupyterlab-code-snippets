@@ -1,7 +1,7 @@
 
 import { Widget } from '@lumino/widgets';
 import { RequestHandler } from '@elyra/application';
-//import { requestAPI } from './CodeSnippetServer';
+
 import checkSVGstr from '../style/check.svg';
 import { showMessage } from './ConfirmMessage';
 
@@ -11,7 +11,6 @@ import { Contents } from '@jupyterlab/services';
 
 import { JSONObject } from '@lumino/coreutils';
 
-//import { JupyterFrontEnd } from '@jupyterlab/application'
 import {ICodeSnippet} from './CodeSnippetService'
 
 import { IDocumentManager } from '@jupyterlab/docmanager';
@@ -25,7 +24,7 @@ const FILE_DIALOG_CLASS = 'jp-FileDialog';
 /**
  * The class name added for the new name label in the rename dialog
  */
-const RENAME_NEWNAME_TITLE_CLASS = 'jp-new-name-title';
+const INPUT_NEWNAME_TITLE_CLASS = 'jp-new-name-title';
 
 /**
  * A stripped-down interface for a file container.
@@ -52,7 +51,7 @@ export function inputDialog(
 ): Promise<Contents.IModel | null> {
   return showDialog({
     title: 'Save Code Snippet',
-    body: new RenameHandler(),
+    body: new InputHandler(),
     focusNodeSelector: 'input',
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
   }).then(result => {
@@ -150,13 +149,13 @@ export function isValidFileName(name: string): boolean {
 /**
  * A widget used to get input data.
  */
-class RenameHandler extends Widget {
+class InputHandler extends Widget {
   /**
    * Construct a new "rename" dialog.
    * readonly inputNode: HTMLInputElement; <--- in Widget class
    */
   constructor() {
-    super({ node: Private.createRenameNode() });
+    super({ node: Private.createInputNode() });
     this.addClass(FILE_DIALOG_CLASS);
   }
 
@@ -183,30 +182,30 @@ namespace Private {
   /**
    * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
    */
-  export function createRenameNode(): HTMLElement {
+  export function createInputNode(): HTMLElement {
     const body = document.createElement('div');
 
     const nameTitle = document.createElement('label');
     nameTitle.textContent = 'Snippet Name*';
-    nameTitle.className = RENAME_NEWNAME_TITLE_CLASS;
+    nameTitle.className = INPUT_NEWNAME_TITLE_CLASS;
     const name = document.createElement('input');
     
-    const nameTitle2 = document.createElement('label');
-    nameTitle2.textContent = 'Description*';
-    nameTitle2.className = RENAME_NEWNAME_TITLE_CLASS;
-    const name2 = document.createElement('input');
+    const descriptionTitle = document.createElement('label');
+    descriptionTitle.textContent = 'Description*';
+    descriptionTitle.className = INPUT_NEWNAME_TITLE_CLASS;
+    const description = document.createElement('input');
 
-    const nameTitle3 = document.createElement('label');
-    nameTitle3.textContent = 'Language*';
-    nameTitle3.className = RENAME_NEWNAME_TITLE_CLASS;
-    const name3 = document.createElement('input');
+    const languageTitle = document.createElement('label');
+    languageTitle.textContent = 'Language*';
+    languageTitle.className = INPUT_NEWNAME_TITLE_CLASS;
+    const language = document.createElement('input');
 
     body.appendChild(nameTitle);
     body.appendChild(name);
-    body.appendChild(nameTitle2);
-    body.appendChild(name2);
-    body.appendChild(nameTitle3);
-    body.appendChild(name3);
+    body.appendChild(descriptionTitle);
+    body.appendChild(description);
+    body.appendChild(languageTitle);
+    body.appendChild(language);
     return body;
   }
 
