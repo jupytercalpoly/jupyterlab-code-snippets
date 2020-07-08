@@ -1,35 +1,19 @@
-import '../style/index.css';
-
-import { codeSnippetIcon } from '@elyra/ui-components';
-import checkSVGstr from '../style/check.svg';
-// import { LabIcon } from '@jupyterlab/ui-components';
-
-import {
-  JupyterFrontEnd,
-  JupyterFrontEndPlugin,
-  ILayoutRestorer
-} from '@jupyterlab/application';
 
 import { Widget } from '@lumino/widgets';
-import { ICommandPalette } from '@jupyterlab/apputils';
-
-import { CodeSnippetWidget } from './CodeSnippetWidget';
-
-import { showMessage } from './ConfirmMessage';
-
 import { RequestHandler } from '@elyra/application';
-<<<<<<< HEAD
-// import { URLExt } from '@jupyterlab/coreutils';
+//import { requestAPI } from './CodeSnippetServer';
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 import { Dialog, showDialog} from '@jupyterlab/apputils';
 
 import { Contents } from '@jupyterlab/services';
 
 import { JSONObject } from '@lumino/coreutils';
 
+//import { JupyterFrontEnd } from '@jupyterlab/application'
+import {ICodeSnippet} from './CodeSnippetService'
 
 import { IDocumentManager } from '@jupyterlab/docmanager';
+import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 /**
  * The class name added to file dialogs.
@@ -60,6 +44,7 @@ export interface IFileContainer extends JSONObject {
  * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
 export function inputDialog(
+  codeSnippet: CodeSnippetWidget,
   url: string,
   inputCode: string
 ): Promise<Contents.IModel | null> {
@@ -75,7 +60,8 @@ export function inputDialog(
     }
     else {
       /* TODO: if name is already there call shouldOverwrite and change to a put request*/
-      RequestHandler.makePostRequest(
+      // Workaround: make a get request with result.value[0] to check... but could be slow
+      RequestHandler.makePostRequest(  //If i use their handler then I can't interrupt any error messages without editing their stuff.
       url,
       JSON.stringify({ 
         display_name: result.value[0],
@@ -90,19 +76,10 @@ export function inputDialog(
         schema_name: "code-snippet",
       }),
       false
-    );
-    showMessage({
-      body: /*"Saved as Snippet"*/new MessageHandler()
-    });
-    // showDialog({
-    //   body: new ConfirmHandler(),
-    //   buttons: []
-    // });
-    // new ConfirmHandler();
-
-    //CodeSnippetWidget.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-    //CodeSnippetWidget.renderCodeSnippetsSignal.emit(codeSnippets);
-
+      )
+      codeSnippet.fetchData().then((codeSnippets: ICodeSnippet[]) => {
+        console.log("HELLLO");
+        codeSnippet.renderCodeSnippetsSignal.emit(codeSnippets)});
     }
     // if (!isValidFileName(result.value)) {
     //   void showErrorMessage(
@@ -187,11 +164,6 @@ class RenameHandler extends Widget {
   }
 }
 
-class MessageHandler extends Widget {
-  constructor() {
-    super({ node: Private.createConfirmMessageNode() });
-  }
-}
 /**
  * A namespace for private data.
  */
@@ -201,10 +173,6 @@ namespace Private {
    */
   export function createRenameNode(): HTMLElement {
     const body = document.createElement('div');
-    // const existingLabel = document.createElement('label');
-    // existingLabel.textContent = 'File Path';
-    // const existingPath = document.createElement('span');
-    // existingPath.textContent = oldPath;
 
     const nameTitle = document.createElement('label');
     nameTitle.textContent = 'Snippet Name*';
@@ -229,132 +197,4 @@ namespace Private {
     body.appendChild(name3);
     return body;
   }
-
-  export function createConfirmMessageNode(): HTMLElement {
-    const body = document.createElement('div');
-    body.innerHTML = checkSVGstr;
-
-    const messageContainer = document.createElement('div');
-    messageContainer.className = 'jp-confirm-text';
-    const message = document.createElement('text');
-    message.textContent = 'Saved as Snippet!';
-    messageContainer.appendChild(message)
-    body.append(messageContainer);
-    return body;
-  }
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-import { URLExt } from '@jupyterlab/coreutils';
-
-import { inputDialog } from './CodeSnippetForm'
->>>>>>> Refactored and cleaned up code. No refresh required after creating code snippet.
-
-
-export interface ICodeSnippet {
-  name: string;
-  displayName: string;
-  description: string;
-  language: string;
-  code: string[];
-}
-
-const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
-
-/**
- * Initialization data for the code_snippets extension.
- */
-const code_snippet_extension: JupyterFrontEndPlugin<void> = {
-  id: CODE_SNIPPET_EXTENSION_ID,
-  autoStart: true,
-  requires: [ICommandPalette, ILayoutRestorer],
-  activate: (
-    app: JupyterFrontEnd,
-    palette: ICommandPalette,
-    restorer: ILayoutRestorer
-  ) => {
-    console.log('JupyterLab extension code-snippets is activated!');
-    const url = "elyra/metadata/code-snippets";
-
-    const getCurrentWidget = (): Widget => {
-      return app.shell.currentWidget;
-    };
-
-    const codeSnippetWidget = new CodeSnippetWidget(getCurrentWidget);
-    codeSnippetWidget.id = CODE_SNIPPET_EXTENSION_ID;
-    codeSnippetWidget.title.icon = codeSnippetIcon;
-    codeSnippetWidget.title.caption = 'Jupyter Code Snippet';
-
-    restorer.add(codeSnippetWidget, CODE_SNIPPET_EXTENSION_ID);
-
-    // Rank has been chosen somewhat arbitrarily to give priority to the running
-    // sessions widget in the sidebar.
-    app.shell.add(codeSnippetWidget, 'left', { rank: 900 });
-
-    //Add an application command
-    const commandID = 'my-command';
-    const toggled = false;
-    app.commands.addCommand(commandID, {
-      label: 'Save As Code Snippet',
-      isEnabled: () => true,
-      isVisible: () => true,
-      isToggled: () => toggled,
-      iconClass: 'some-css-icon-class',
-      execute: () => {
-        console.log(`Executed ${commandID}`);
-        let highlightedCode = getSelectedText();
-        // RequestHandler.makePostRequest(
-        //   url,
-        //   JSON.stringify({ 
-        //     display_name: "highlighted3",
-        //     metadata: {
-        //         code: [
-        //             temp
-        //         ],
-        //         description: "Print highlighted code 3",
-        //         language: "python",
-        //     },
-        //     name: "highlighted3",
-        //     schema_name: "code-snippet",
-        //   }),
-        //   false
-        // );
-<<<<<<< HEAD
-        inputDialog(url,highlightedCode);
-=======
-
-        inputDialog(codeSnippetWidget,url,highlightedCode)
->>>>>>> Refactored and cleaned up code. No refresh required after creating code snippet.
-        console.log(`Highlight trial: ${highlightedCode}`);
-    }});
-    
-    //Put the command above in context menu
-    app.contextMenu.addItem({
-      command: commandID,
-      selector: '.jp-CodeCell'
-    })
-    
-    // Example Get Request
-    // RequestHandler.makeGetRequest(
-    //  URLExt.join(url, '/example2'),
-    //   false);
-  
-  } 
-  }
-
-function getSelectedText() : string { 
-  let selectedText; 
-
-  // window.getSelection 
-  if (window.getSelection) { 
-      selectedText = window.getSelection(); 
-  } 
-  // document.getSelection 
-  else if (document.getSelection) { 
-      selectedText = document.getSelection(); 
-  } 
-  return selectedText.toString();
-};
-
-export default code_snippet_extension;

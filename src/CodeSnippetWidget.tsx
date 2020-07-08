@@ -292,6 +292,7 @@ export class CodeSnippetWidget extends ReactWidget {
         this.codeSnippetManager = new CodeSnippetService();
         this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
     }
+  
   // Request code snippets from server
   async fetchData(): Promise<ICodeSnippet[]> {
     return await this.codeSnippetManager.findAll();
