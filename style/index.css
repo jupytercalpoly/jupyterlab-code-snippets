@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
- /* #elyra-code-snippet-extension {
-    background-color: #fff;
-  } */
+ #code-snippet-extension {
+    overflow: scroll;
+  }
 
  .elyra-codeSnippetsHeader {
     font-weight: bold;
@@ -46,4 +46,60 @@
     word-wrap: normal;
     overflow-x: scroll;
   }
-  
+
+  .jp-confirm {
+    position: absolute;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    top: 0px;
+    left: 0px;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--jp-dialog-background);
+
+}
+
+.jp-Dialog-content {
+  resize: both;
+}
+
+.jp-Dialog-content {
+  max-width: 100vw;
+  max-height: 100vh;
+}
+
+.jp-Message-content {
+  display: flex;
+  flex-direction: column;
+  background: var(--jp-layout-color1);
+  padding: 10px;
+  border: 3px solid #388E3C;
+  min-width: 250px;
+  max-width: 1000px;
+  box-sizing: border-box;
+  box-shadow: var(--jp-elevation-z20);
+  word-wrap: break-word;
+  border-radius: var(--jp-border-radius);
+  font-size: var(--jp-ui-font-size1);
+  color: var(--jp-ui-font-color1);
+  margin: auto 6px 30px auto;
+}
+
+.jp-Message-body {
+  display: flex;
+  align-items: center;
+}
+
+.jp-confirm-text{
+  width: 183px;
+  font-family: helvetica;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  text-align: center;
+}

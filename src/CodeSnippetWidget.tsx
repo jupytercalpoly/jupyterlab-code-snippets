@@ -38,7 +38,7 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { copyIcon, addIcon, closeIcon } from '@jupyterlab/ui-components';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
-import { Widget, PanelLayout } from '@lumino/widgets';
+import { Widget } from '@lumino/widgets';
 
 import { IDragEvent } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
@@ -291,7 +291,6 @@ export class CodeSnippetWidget extends ReactWidget {
         this.getCurrentWidget = getCurrentWidget;
         this.codeSnippetManager = new CodeSnippetService();
         this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
-        this.layout = new Private.SnippetPanelLayout();
     }
   // Request code snippets from server
   async fetchData(): Promise<ICodeSnippet[]> {
@@ -503,22 +502,6 @@ namespace Private {
         // application/vnd.jupyter.cells
         const data = mime.getData('text/plain');
         return data;
-    }
-  
-    /**
-     * A custom panel layout for the notebook.
-     */
-    export class SnippetPanelLayout extends PanelLayout {
-      /**
-       * A message handler invoked on an `'update-request'` message.
-       *
-       * #### Notes
-       * This is a reimplementation of the base class method,
-       * and is a no-op.
-       */
-      protected onUpdateRequest(msg: Message): void {
-        // This is a no-op.
-      }
     }
 }
 
