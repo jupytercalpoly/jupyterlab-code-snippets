@@ -16,7 +16,7 @@
 
 import '../style/index.css';
 
-import { renameDialog } from './index';
+import { inputDialog } from './index';
 import { URLExt } from '@jupyterlab/coreutils';
 import { ServerConnection } from '@jupyterlab/services';
 import { ExpandableComponent } from '@elyra/ui-components';
@@ -447,7 +447,7 @@ export class CodeSnippetWidget extends ReactWidget {
     const url = 'elyra/metadata/code-snippets';
     const code = Private.findData(event.mimeData);
 
-    await renameDialog(url, code);
+    await inputDialog(url, code);
     console.log(code);
     // await RequestHandler.makePostRequest(
     //     url,
