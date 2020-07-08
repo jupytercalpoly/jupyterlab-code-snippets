@@ -15,7 +15,7 @@ import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 
 import { RequestHandler } from '@elyra/application';
-import { URLExt } from '@jupyterlab/coreutils';
+// import { URLExt } from '@jupyterlab/coreutils';
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,6 @@ export interface IFileContainer extends JSONObject {
  * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
 export function renameDialog(
-  oldPath: string,
   url: string,
   inputCode: string
 ): Promise<Contents.IModel | null> {
@@ -238,7 +237,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     restorer: ILayoutRestorer
-    ) => {
+  ) => {
     console.log('JupyterLab extension code-snippets is activated!');
     const url = "elyra/metadata/code-snippets";
 
@@ -286,7 +285,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         //   false
         // );
 
-        renameDialog("src/codesnippets",url,temp);
+        renameDialog(url,temp);
         console.log(`Highlight trial: ${temp}`);
     }});
     
@@ -297,9 +296,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     })
     
     // Example Get Request
-    RequestHandler.makeGetRequest(
-     URLExt.join(url, '/example2'),
-      false);
+    // RequestHandler.makeGetRequest(
+    //  URLExt.join(url, '/example2'),
+    //   false);
   
   } 
   }
