@@ -418,7 +418,7 @@ export class CodeSnippetWidget extends ReactWidget {
   /**
    * Hanlde the `'lm-drop'` event for the widget.
    */
-    private async _evtDrop(event: IDragEvent): Promise<void> {
+    private _evtDrop(event: IDragEvent): Promise<void> {
       const data = Private.findData(event.mimeData);
       if (data === undefined) {
           return;
@@ -448,27 +448,8 @@ export class CodeSnippetWidget extends ReactWidget {
     const url = 'elyra/metadata/code-snippets';
     const code = Private.findData(event.mimeData);
 
-    await inputDialog(this,url, code);
+    inputDialog(this,url, code);
     console.log(code);
-    // await RequestHandler.makePostRequest(
-    //     url,
-    //     JSON.stringify({ 
-    //       display_name: 'drag_dropped',
-    //       metadata: {
-    //           code: [
-    //               code
-    //           ],
-    //           description: 'Print dragged and dropped',
-    //           language: 'python',
-    //       },
-    //       name: 'dragdropped',
-    //       schema_name: 'code-snippet',
-    //     }),
-    //     false
-    //   );
-    this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-    this.renderCodeSnippetsSignal.emit(codeSnippets);
-    });
   }
 
   render(): React.ReactElement {
