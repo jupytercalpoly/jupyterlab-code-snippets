@@ -62,7 +62,7 @@ export function inputDialog(
   url: string,
   inputCode: string
 ): Promise<Contents.IModel | null> {
-  return await showDialog({
+  return showDialog({
     title: 'Save Code Snippet',
     body: new RenameHandler(),
     focusNodeSelector: 'input',
