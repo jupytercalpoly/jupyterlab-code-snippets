@@ -15,7 +15,7 @@ import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 
 import { RequestHandler } from '@elyra/application';
-import { URLExt } from '@jupyterlab/coreutils';
+// import { URLExt } from '@jupyterlab/coreutils';
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +56,7 @@ export interface IFileContainer extends JSONObject {
  * Save an input with a dialog. This is what actually displays everything. 
  * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
+
 export function inputDialog(
   url: string,
   inputCode: string
@@ -237,7 +238,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     restorer: ILayoutRestorer
-    ) => {
+  ) => {
     console.log('JupyterLab extension code-snippets is activated!');
     const url = "elyra/metadata/code-snippets";
 
@@ -296,9 +297,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     })
     
     // Example Get Request
-    RequestHandler.makeGetRequest(
-     URLExt.join(url, '/example2'),
-      false);
+    // RequestHandler.makeGetRequest(
+    //  URLExt.join(url, '/example2'),
+    //   false);
   
   } 
   }
