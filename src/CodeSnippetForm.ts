@@ -2,6 +2,8 @@
 import { Widget } from '@lumino/widgets';
 import { RequestHandler } from '@elyra/application';
 //import { requestAPI } from './CodeSnippetServer';
+import checkSVGstr from '../style/check.svg';
+import { showMessage } from './ConfirmMessage';
 
 import { Dialog, showDialog} from '@jupyterlab/apputils';
 
@@ -76,10 +78,13 @@ export function inputDialog(
         schema_name: "code-snippet",
       }),
       false
-      )
+      );
       codeSnippet.fetchData().then((codeSnippets: ICodeSnippet[]) => {
         console.log("HELLLO");
         codeSnippet.renderCodeSnippetsSignal.emit(codeSnippets)});
+      showMessage({
+        body: /*"Saved as Snippet"*/new MessageHandler()
+        });
     }
     // if (!isValidFileName(result.value)) {
     //   void showErrorMessage(
@@ -164,6 +169,13 @@ class RenameHandler extends Widget {
   }
 }
 
+
+class MessageHandler extends Widget {
+    constructor() {
+      super({ node: Private.createConfirmMessageNode() });
+    }
+  }  
+
 /**
  * A namespace for private data.
  */
@@ -195,6 +207,19 @@ namespace Private {
     body.appendChild(name2);
     body.appendChild(nameTitle3);
     body.appendChild(name3);
+    return body;
+  }
+
+  export function createConfirmMessageNode(): HTMLElement {
+    const body = document.createElement('div');
+    body.innerHTML = checkSVGstr;
+
+    const messageContainer = document.createElement('div');
+    messageContainer.className = 'jp-confirm-text';
+    const message = document.createElement('text');
+    message.textContent = 'Saved as Snippet!';
+    messageContainer.appendChild(message)
+    body.append(messageContainer);
     return body;
   }
 }
