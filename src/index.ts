@@ -1,6 +1,8 @@
 import '../style/index.css';
 
 import { codeSnippetIcon } from '@elyra/ui-components';
+import checkSVGstr from '../style/check.svg';
+// import { LabIcon } from '@jupyterlab/ui-components';
 
 import {
   JupyterFrontEnd,
@@ -13,10 +15,10 @@ import { ICommandPalette } from '@jupyterlab/apputils';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
+import { showMessage } from './ConfirmMessage';
 
 import { RequestHandler } from '@elyra/application';
 // import { URLExt } from '@jupyterlab/coreutils';
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 import { Dialog, showDialog} from '@jupyterlab/apputils';
@@ -58,11 +60,11 @@ export interface IFileContainer extends JSONObject {
  * Rename a file with a dialog. This is what actually displays everything. 
  * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
-export function renameDialog(
+export async function renameDialog(
   url: string,
   inputCode: string
 ): Promise<Contents.IModel | null> {
-  return showDialog({
+  return await showDialog({
     title: 'Save Code Snippet',
     body: new RenameHandler(),
     focusNodeSelector: 'input',
@@ -90,6 +92,14 @@ export function renameDialog(
       }),
       false
     );
+    showMessage({
+      body: /*"Saved as Snippet"*/new MessageHandler()
+    });
+    // showDialog({
+    //   body: new ConfirmHandler(),
+    //   buttons: []
+    // });
+    // new ConfirmHandler();
     }
     // if (!isValidFileName(result.value)) {
     //   void showErrorMessage(
@@ -174,6 +184,11 @@ class RenameHandler extends Widget {
   }
 }
 
+class MessageHandler extends Widget {
+  constructor() {
+    super({ node: Private.createConfirmMessageNode() });
+  }
+}
 /**
  * A namespace for private data.
  */
@@ -209,6 +224,19 @@ namespace Private {
     body.appendChild(name2);
     body.appendChild(nameTitle3);
     body.appendChild(name3);
+    return body;
+  }
+
+  export function createConfirmMessageNode(): HTMLElement {
+    const body = document.createElement('div');
+    body.innerHTML = checkSVGstr;
+
+    const messageContainer = document.createElement('div');
+    messageContainer.className = 'jp-confirm-text';
+    const message = document.createElement('text');
+    message.textContent = 'Saved as Snippet!';
+    messageContainer.appendChild(message)
+    body.append(messageContainer);
     return body;
   }
 }
@@ -284,8 +312,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         //   }),
         //   false
         // );
-
-        renameDialog(url,temp);
+        renameDialog(url,temp)
+      
         console.log(`Highlight trial: ${temp}`);
     }});
     
