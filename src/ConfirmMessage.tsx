@@ -9,7 +9,6 @@ import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
 
-
 /**
  * The class name for confirmation box
  */
@@ -23,40 +22,39 @@ const CONFIRM_CLASS = 'jp-confirm';
  * @returns A promise that resolves with whether the dialog was accepted.
  */
 export function showMessage<T>(
-    options: Partial<ConfirmMessage.IOptions<T>> = {}
-  ): Promise<void> {
-    console.log(options);
-    const confirmMessage = new ConfirmMessage(options);
-    return confirmMessage.launch();
-  }
+  options: Partial<ConfirmMessage.IOptions<T>> = {}
+): Promise<void> {
+  console.log(options);
+  const confirmMessage = new ConfirmMessage(options);
+  return confirmMessage.launch();
+}
 
 /**
  * A widget used to show confirmation message.
  */
 export class ConfirmMessage<T> extends Widget {
+  constructor(options: Partial<ConfirmMessage.IOptions<T>> = {}) {
+    super();
+    this.addClass(CONFIRM_CLASS);
+    const renderer = ConfirmMessage.defaultRenderer;
 
-    constructor(options: Partial<ConfirmMessage.IOptions<T>> = {}){
-        super();
-        this.addClass(CONFIRM_CLASS);
-        const renderer = ConfirmMessage.defaultRenderer; 
+    this._host = options.host || document.body;
+    const layout = (this.layout = new PanelLayout());
+    const content = new Panel();
+    content.addClass('jp-Message-content');
+    layout.addWidget(content);
 
-        this._host = options.host || document.body;
-        const layout = (this.layout = new PanelLayout());
-        const content = new Panel();
-        content.addClass('jp-Message-content');
-        layout.addWidget(content);
+    const body = renderer.createBody(options.body || '');
+    // body.addClass('jp-Message-body');
+    // const icon = renderer.createIcon();
+    // content.addWidget(icon);
+    content.addWidget(body);
 
-        const body = renderer.createBody(options.body || '');
-        // body.addClass('jp-Message-body');
-        // const icon = renderer.createIcon();
-        // content.addWidget(icon);
-        content.addWidget(body);
+    console.log(content);
 
-        console.log(content);
-
-        void ConfirmMessage.tracker.add(this);
-    }
-     /**
+    void ConfirmMessage.tracker.add(this);
+  }
+  /**
    * Launch the dialog as a modal window.
    *
    * @returns a promise that resolves with the result of the dialog.
@@ -102,7 +100,7 @@ export class ConfirmMessage<T> extends Widget {
     }
   }
 
-    /**
+  /**
    * Handle the `'click'` event for a dialog button.
    *
    * @param event - The DOM event sent to the widget
@@ -240,11 +238,11 @@ export class ConfirmMessage<T> extends Widget {
 }
 
 export namespace ConfirmMessage {
-    /**
+  /**
    * The body input types.
    */
-    export type Body<T> = IBodyWidget<T> | React.ReactElement<any> | string;
-/**
+  export type Body<T> = IBodyWidget<T> | React.ReactElement<any> | string;
+  /**
    * The options used to create a dialog.
    */
   /**
@@ -290,7 +288,7 @@ export namespace ConfirmMessage {
   }
 
   export interface IRenderer {
-      /**
+    /**
      * Create the body of the dialog.
      *
      * @param value - The input value for the body.
@@ -310,24 +308,24 @@ export namespace ConfirmMessage {
      * @returns A widget for the body.
      */
     createBody(value: Body<any>): Widget {
-        let body: Widget;
-        if (typeof value === 'string') {
-          body = new Widget({ node: document.createElement('span') });
-          body.node.textContent = value;
-        } else if (value instanceof Widget) {
-          body = value;
-        } else {
-          body = ReactWidget.create(value);
-          // Immediately update the body even though it has not yet attached in
-          // order to trigger a render of the DOM nodes from the React element.
-          MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
-        }
-        // const iconNode = new Widget({ node: document.createElement('div') });
-        // iconNode.title.icon = checkIcon;
-        // body.
-        body.addClass('jp-Message-body');
-        // Styling.styleNode(body.node);
-        return body;
+      let body: Widget;
+      if (typeof value === 'string') {
+        body = new Widget({ node: document.createElement('span') });
+        body.node.textContent = value;
+      } else if (value instanceof Widget) {
+        body = value;
+      } else {
+        body = ReactWidget.create(value);
+        // Immediately update the body even though it has not yet attached in
+        // order to trigger a render of the DOM nodes from the React element.
+        MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
+      }
+      // const iconNode = new Widget({ node: document.createElement('div') });
+      // iconNode.title.icon = checkIcon;
+      // body.
+      body.addClass('jp-Message-body');
+      // Styling.styleNode(body.node);
+      return body;
     }
 
     // createIcon(): Widget {
@@ -344,7 +342,7 @@ export namespace ConfirmMessage {
     //   return iconWidget
     // }
   }
-   /**
+  /**
    * The default renderer instance.
    */
   export const defaultRenderer = new Renderer();
@@ -353,7 +351,7 @@ export namespace ConfirmMessage {
    * The dialog widget tracker.
    */
   export const tracker = new WidgetTracker<ConfirmMessage<any>>({
-      namespace: '@jupyterlab/code_snippet:ConfirmWidget'
+    namespace: '@jupyterlab/code_snippet:ConfirmWidget'
   });
 }
 

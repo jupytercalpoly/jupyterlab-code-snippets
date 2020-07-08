@@ -1,17 +1,16 @@
-
 import { Widget } from '@lumino/widgets';
 import { RequestHandler } from '@elyra/application';
 
 import checkSVGstr from '../style/check.svg';
 import { showMessage } from './ConfirmMessage';
 
-import { Dialog, showDialog} from '@jupyterlab/apputils';
+import { Dialog, showDialog } from '@jupyterlab/apputils';
 
 import { Contents } from '@jupyterlab/services';
 
 import { JSONObject } from '@lumino/coreutils';
 
-import {ICodeSnippet} from './CodeSnippetService'
+import { ICodeSnippet } from './CodeSnippetService';
 
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
@@ -41,7 +40,7 @@ export interface IFileContainer extends JSONObject {
 }
 
 /**
- * Save an input with a dialog. This is what actually displays everything. 
+ * Save an input with a dialog. This is what actually displays everything.
  * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
 export function inputDialog(
@@ -58,32 +57,31 @@ export function inputDialog(
     console.log(result.value);
     if (!result.value) {
       return null;
-    }
-    else {
+    } else {
       /* TODO: if name is already there call shouldOverwrite and change to a put request*/
       // Workaround: make a get request with result.value[0] to check... but could be slow
-      RequestHandler.makePostRequest(  //If i use their handler then I can't interrupt any error messages without editing their stuff.
-      url,
-      JSON.stringify({ 
-        display_name: result.value[0],
-        metadata: {
-            code: [
-              inputCode
-            ],
+      RequestHandler.makePostRequest(
+        //If i use their handler then I can't interrupt any error messages without editing their stuff.
+        url,
+        JSON.stringify({
+          display_name: result.value[0],
+          metadata: {
+            code: [inputCode],
             description: result.value[1],
-            language: result.value[2],
-        },
-        name: result.value[0].replace(' ','').toLowerCase(),
-        schema_name: "code-snippet",
-      }),
-      false
+            language: result.value[2]
+          },
+          name: result.value[0].replace(' ', '').toLowerCase(),
+          schema_name: 'code-snippet'
+        }),
+        false
       );
       codeSnippet.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-        console.log("HELLLO");
-        codeSnippet.renderCodeSnippetsSignal.emit(codeSnippets)});
+        console.log('HELLLO');
+        codeSnippet.renderCodeSnippetsSignal.emit(codeSnippets);
+      });
       showMessage({
-        body: /*"Saved as Snippet"*/new MessageHandler()
-        });
+        body: /*"Saved as Snippet"*/ new MessageHandler()
+      });
     }
     // if (!isValidFileName(result.value)) {
     //   void showErrorMessage(
@@ -161,19 +159,20 @@ class InputHandler extends Widget {
 
   getValue(): string[] {
     let inputs = [];
-    inputs.push((this.node.getElementsByTagName('input')[0] as HTMLInputElement).value, 
-    (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
-    (this.node.getElementsByTagName('input')[2] as HTMLInputElement).value);
+    inputs.push(
+      (this.node.getElementsByTagName('input')[0] as HTMLInputElement).value,
+      (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
+      (this.node.getElementsByTagName('input')[2] as HTMLInputElement).value
+    );
     return inputs;
   }
 }
 
-
 class MessageHandler extends Widget {
-    constructor() {
-      super({ node: Private.createConfirmMessageNode() });
-    }
-  }  
+  constructor() {
+    super({ node: Private.createConfirmMessageNode() });
+  }
+}
 
 /**
  * A namespace for private data.
@@ -189,7 +188,7 @@ namespace Private {
     nameTitle.textContent = 'Snippet Name*';
     nameTitle.className = INPUT_NEWNAME_TITLE_CLASS;
     const name = document.createElement('input');
-    
+
     const descriptionTitle = document.createElement('label');
     descriptionTitle.textContent = 'Description*';
     descriptionTitle.className = INPUT_NEWNAME_TITLE_CLASS;
@@ -217,7 +216,7 @@ namespace Private {
     messageContainer.className = 'jp-confirm-text';
     const message = document.createElement('text');
     message.textContent = 'Saved as Snippet!';
-    messageContainer.appendChild(message)
+    messageContainer.appendChild(message);
     body.append(messageContainer);
     return body;
   }

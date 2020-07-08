@@ -13,9 +13,7 @@ import { ICommandPalette } from '@jupyterlab/apputils';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
-
-import { inputDialog } from './CodeSnippetForm'
-
+import { inputDialog } from './CodeSnippetForm';
 
 export interface ICodeSnippet {
   name: string;
@@ -40,7 +38,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer
   ) => {
     console.log('JupyterLab extension code-snippets is activated!');
-    const url = "elyra/metadata/code-snippets";
+    const url = 'elyra/metadata/code-snippets';
 
     const getCurrentWidget = (): Widget => {
       return app.shell.currentWidget;
@@ -71,7 +69,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         let highlightedCode = getSelectedText();
         // RequestHandler.makePostRequest(
         //   url,
-        //   JSON.stringify({ 
+        //   JSON.stringify({
         //     display_name: "highlighted3",
         //     metadata: {
         //         code: [
@@ -86,36 +84,36 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         //   false
         // );
 
-        inputDialog(codeSnippetWidget,url,highlightedCode)
+        inputDialog(codeSnippetWidget, url, highlightedCode);
         console.log(`Highlight trial: ${highlightedCode}`);
-    }});
-    
+      }
+    });
+
     //Put the command above in context menu
     app.contextMenu.addItem({
       command: commandID,
       selector: '.jp-CodeCell'
-    })
-    
+    });
+
     // Example Get Request
     // RequestHandler.makeGetRequest(
     //  URLExt.join(url, '/example2'),
     //   false);
-  
-  } 
   }
-
-function getSelectedText() : string { 
-  let selectedText; 
-
-  // window.getSelection 
-  if (window.getSelection) { 
-      selectedText = window.getSelection(); 
-  } 
-  // document.getSelection 
-  else if (document.getSelection) { 
-      selectedText = document.getSelection(); 
-  } 
-  return selectedText.toString();
 };
+
+function getSelectedText(): string {
+  let selectedText;
+
+  // window.getSelection
+  if (window.getSelection) {
+    selectedText = window.getSelection();
+  }
+  // document.getSelection
+  else if (document.getSelection) {
+    selectedText = document.getSelection();
+  }
+  return selectedText.toString();
+}
 
 export default code_snippet_extension;
