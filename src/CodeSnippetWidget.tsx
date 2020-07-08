@@ -16,7 +16,7 @@
 
 import '../style/index.css';
 
-import { inputDialog } from './index';
+import { inputDialog } from './CodeSnippetForm';
 import { URLExt } from '@jupyterlab/coreutils';
 import { ServerConnection } from '@jupyterlab/services';
 import { ExpandableComponent } from '@elyra/ui-components';
@@ -292,6 +292,7 @@ export class CodeSnippetWidget extends ReactWidget {
         this.codeSnippetManager = new CodeSnippetService();
         this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
     }
+  
   // Request code snippets from server
   async fetchData(): Promise<ICodeSnippet[]> {
     return await this.codeSnippetManager.findAll();
@@ -447,7 +448,7 @@ export class CodeSnippetWidget extends ReactWidget {
     const url = 'elyra/metadata/code-snippets';
     const code = Private.findData(event.mimeData);
 
-    await inputDialog(url, code);
+    await inputDialog(this,url, code);
     console.log(code);
     // await RequestHandler.makePostRequest(
     //     url,
