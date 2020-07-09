@@ -15,6 +15,9 @@ import { ICodeSnippet } from './CodeSnippetService';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
+// import { ServerConnection } from '@jupyterlab/services';
+// import { URLExt } from '@jupyterlab/coreutils';
+
 /**
  * The class name added to file dialogs.
  */
@@ -60,7 +63,7 @@ export function inputDialog(
     } else {
       /* TODO: if name is already there call shouldOverwrite and change to a put request*/
       // Workaround: make a get request with result.value[0] to check... but could be slow
-      RequestHandler.makePostRequest(
+      const request = RequestHandler.makePostRequest(
         //If i use their handler then I can't interrupt any error messages without editing their stuff.
         url,
         JSON.stringify({
@@ -75,27 +78,18 @@ export function inputDialog(
         }),
         false
       );
-      codeSnippet.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-        console.log('HELLLO');
-        codeSnippet.renderCodeSnippetsSignal.emit(codeSnippets);
-      });
-      showMessage({
-        body: /*"Saved as Snippet"*/ new MessageHandler()
-      });
+      // console.log(request);
+      request.then(_ => {
+          codeSnippet.fetchData().then((codeSnippets: ICodeSnippet[]) => {
+            console.log('HELLLO');
+            codeSnippet.renderCodeSnippetsSignal.emit(codeSnippets);
+          });
+          showMessage({
+            body: /*"Saved as Snippet"*/ new MessageHandler()
+          });
+        }
+      );
     }
-    // if (!isValidFileName(result.value)) {
-    //   void showErrorMessage(
-    //     'Rename Error',
-    //     Error(
-    //       `"${result.value}" is not a valid name for a file. ` +
-    //         `Names must have nonzero length, ` +
-    //         `and cannot include "/", "\\", or ":"`
-    //     )
-    //   );
-    //   return null;
-    // }
-    //const basePath = PathExt.dirname(oldPath);
-    //const newPath = PathExt.join(basePath, result.value);
   });
 }
 
