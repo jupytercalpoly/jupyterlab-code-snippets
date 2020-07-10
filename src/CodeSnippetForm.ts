@@ -57,7 +57,9 @@ export function inputDialog(
     focusNodeSelector: 'input',
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
   }).then(result => {
-    console.log(result.value);
+    if (validateForm(result)===false) {
+      return inputDialog(codeSnippet,url,inputCode); // This works but it wipes out all the data they entered previously...
+    }
     if (!result.value) {
       return null;
     } else {
@@ -139,6 +141,35 @@ export function isValidFileName(name: string): boolean {
 }
 
 /**
+ * Test whether user typed in all required inputs.
+ */
+export function validateForm(input: Dialog.IResult<string[]>): boolean {
+    let status = true;
+    let message: string = "";
+    let name = input.value[0];
+    let description = input.value[1];
+    let language = input.value[2];
+    if (name === "") {
+      message += "Name must be filled out\n";
+      //alert("Description must be filled out");
+      status = false;
+    }
+    if (description === "") {
+      message += "Description must be filled out\n";
+      //alert("");
+      status = false;
+    }
+    if (language === "") {
+      message += "Language must be filled out";
+      //alert("Description ");
+      status = false;
+    }
+    if (status == false) {
+      alert(message);
+    }
+    return status;
+}
+/**
  * A widget used to get input data.
  */
 class InputHandler extends Widget {
@@ -176,7 +207,7 @@ namespace Private {
    * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
    */
   export function createInputNode(): HTMLElement {
-    const body = document.createElement('div');
+    const body = document.createElement('form');
 
     const nameTitle = document.createElement('label');
     nameTitle.textContent = 'Snippet Name*';
@@ -187,6 +218,7 @@ namespace Private {
     descriptionTitle.textContent = 'Description*';
     descriptionTitle.className = INPUT_NEWNAME_TITLE_CLASS;
     const description = document.createElement('input');
+    description.required = true;
 
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language*';
