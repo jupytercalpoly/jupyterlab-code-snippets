@@ -93,3 +93,8 @@
   font-size: 13px;
   text-align: center;
 }
+
+.elyra-CodeSnippets.jp-snippet-dropTarget {
+  border: var(--jp-border-width) solid var(--jp-input-active-border-color);
+  box-shadow: var(--jp-input-box-shadow);
+}
