@@ -46,6 +46,7 @@ import { MimeData } from '@lumino/coreutils';
 import React from 'react';
 
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
+import { SearchBar } from './SearchBar';
 
 /**
  * The mimetype used for Jupyter cell data.
@@ -72,11 +73,20 @@ interface ICodeSnippetDisplayProps {
   getCurrentWidget: () => Widget;
 }
 
+/**
+ * CodeSnippetDisplay state.
+ */
+interface ICodeSnippetDisplayState {
+    codeSnippets: ICodeSnippet[];
+    filterValue: string;
+}
 
 /**
  * A React Component for code-snippets display list.
  */
-class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
+class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICodeSnippetDisplayState> {
+
+    state = {codeSnippets: this.props.codeSnippets, filterValue: "" };
 
     // Handle code snippet insert into an editor
     private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
@@ -149,7 +159,7 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
         console.log(this.props.codeSnippets);
 
         // Delete the selected snippet // TODO: give each snippet an id
-        this.setState( { codeSnippets: this.props.codeSnippets} )
+        this.setState( { codeSnippets: this.props.codeSnippets } )
     }
 
     // Handle language compatibility between code snippet and editor
@@ -266,11 +276,32 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps> {
         );
     };
 
+    static getDerivedStateFromProps(props: ICodeSnippetDisplayProps, state: ICodeSnippetDisplayState) {
+        // console.log(state.codeSnippets);
+        // console.log(props.codeSnippets);
+        // console.log(state.filterValue);
+        if (props.codeSnippets.length !== state.codeSnippets.length && state.filterValue === "") {
+          return {
+            codeSnippets: props.codeSnippets
+          };
+        }
+        return null;
+    }
+
+    filterSnippets = (filterValue: string): void => {
+        const newSnippets = this.props.codeSnippets.filter(codeSnippet => codeSnippet.displayName.includes(filterValue));
+        this.setState({ codeSnippets: newSnippets, filterValue: filterValue }, () => {
+            console.log('CodeSnippets are successfully filtered.');
+        }); 
+
+    }
+
     render(): React.ReactElement {
         return (
             <div>
+                 <SearchBar onFilter={ this.filterSnippets } />
                 <div id="codeSnippets">
-                    <div>{this.props.codeSnippets.map(this.renderCodeSnippet)}</div>
+                    <div>{this.state.codeSnippets.map(this.renderCodeSnippet)}</div>
                 </div>
             </div>
         );
@@ -460,10 +491,12 @@ export class CodeSnippetWidget extends ReactWidget {
         </header>
         <UseSignal signal={this.renderCodeSnippetsSignal} initialArgs={[]}>
           {(_, codeSnippets): React.ReactElement => (
-            <CodeSnippetDisplay
-              codeSnippets={codeSnippets}
-              getCurrentWidget={this.getCurrentWidget}
-            />
+            <div>
+                <CodeSnippetDisplay
+                codeSnippets={codeSnippets}
+                getCurrentWidget={this.getCurrentWidget}
+                />
+            </div>
           )}
         </UseSignal>
       </div>
