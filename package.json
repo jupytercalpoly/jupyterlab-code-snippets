@@ -64,7 +64,7 @@
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
     "mkdirp": "^1.0.3",
-    "prettier": "1.16.4",
+    "prettier": "^1.16.4",
     "rimraf": "^2.6.1",
     "typescript": "~3.7.3"
   },
@@ -83,5 +83,13 @@
       }
     },
     "extension": true
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": ["eslint --cache --fix", "prettier --write"]
   }
 }

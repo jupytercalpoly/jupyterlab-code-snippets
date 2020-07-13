@@ -14,54 +14,53 @@
  * limitations under the License.
  */
 
- #code-snippet-extension {
-    overflow: scroll;
-  }
+#code-snippet-extension {
+  overflow: scroll;
+}
 
- .elyra-codeSnippetsHeader {
-    font-weight: bold;
-    padding: 8px 10px;
-    border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
-  }
-  
-  .elyra-codeSnippet-item {
-    border-bottom: 1px solid #eeeeee;
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .elyra-codeSnippet-item textarea {
-    background-color: inherit;
-    border: none;
-    font-family: var(--jp-code-font-family);
-    font-size: var(--jp-code-font-size);
-    line-height: var(--jp-code-line-height);
-    min-height: 125px;
-    height: 100%;
-    width: 100%;
-    resize: vertical;
-    white-space: pre;
-    word-wrap: normal;
-    overflow-x: scroll;
-  }
+.elyra-codeSnippetsHeader {
+  font-weight: bold;
+  padding: 8px 10px;
+  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+}
 
-  .jp-confirm {
-    position: absolute;
-    z-index: 10000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    top: 0px;
-    left: 0px;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--jp-dialog-background);
+.elyra-codeSnippet-item {
+  border-bottom: 1px solid #eeeeee;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
 
+.elyra-codeSnippet-item textarea {
+  background-color: inherit;
+  border: none;
+  font-family: var(--jp-code-font-family);
+  font-size: var(--jp-code-font-size);
+  line-height: var(--jp-code-line-height);
+  min-height: 125px;
+  height: 100%;
+  width: 100%;
+  resize: vertical;
+  white-space: pre;
+  word-wrap: normal;
+  overflow-x: scroll;
+}
+
+.jp-confirm {
+  position: absolute;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: 0px;
+  left: 0px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--jp-dialog-background);
 }
 
 .jp-Message-content {
@@ -69,7 +68,7 @@
   flex-direction: column;
   background: var(--jp-layout-color1);
   padding: 10px;
-  border: 3px solid #388E3C;
+  border: 3px solid #388e3c;
   min-width: 250px;
   max-width: 1000px;
   box-sizing: border-box;
@@ -86,7 +85,7 @@
   align-items: center;
 }
 
-.jp-confirm-text{
+.jp-confirm-text {
   width: 183px;
   font-family: helvetica;
   font-style: normal;
