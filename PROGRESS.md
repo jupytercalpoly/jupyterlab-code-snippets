@@ -1,8 +1,8 @@
 # Log of Features and Updates
 
 ## Feature List
-- [ ] Scrollable snippet panel displaying snippets
-- [ ] Right click and save highlighted code (lines of code)
+- [X] Scrollable snippet panel displaying snippets
+- [x] Right click and save highlighted code (lines of code)
 - [ ] Copy snippet
 - [ ] Delete snippet
 - [ ] Insert snippet
