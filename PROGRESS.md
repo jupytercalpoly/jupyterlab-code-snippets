@@ -3,11 +3,11 @@
 ## Feature List
 - [X] Scrollable snippet panel displaying snippets
 - [x] Right click and save highlighted code (lines of code)
-- [ ] Copy snippet
-- [ ] Delete snippet
-- [ ] Insert snippet
-- [ ] Drag cell into panel to save (lines of code)
-- [ ] Search bar for snippets
+- [x] Copy snippet
+- [x] Delete snippet
+- [x] Insert snippet
+- [x] Drag cell into panel to save (lines of code)
+- [x] Search bar for snippets
 - [ ] Snippet preview (on the side)
 - [ ] Drag snippet into notebook
 - [ ] Organize snippets by folders
