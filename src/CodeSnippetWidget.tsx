@@ -59,6 +59,9 @@ import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 // import { SnippetModel } from './SnippetModel';
 // import { ArrayExt } from '@lumino/algorithm';
 
+import { showMessage } from './PreviewSnippet';
+//import checkSVGstr from '../style/check.svg';
+
 /**
  * The CSS class added to code snippet widget.
  */
@@ -296,6 +299,8 @@ class CodeSnippetDisplay extends React.Component<
         className={CODE_SNIPPET_ITEM}
         id={id}
         style={{ borderLeft: barColor }}
+        onClick={():void => {showMessage({
+          body: new MessageHandler(codeSnippet)})}}
       >
         <ExpandableComponent
           displayName={displayName}
@@ -677,6 +682,15 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 }
 
+class MessageHandler extends Widget {
+    constructor(codeSnippet: ICodeSnippet) {
+      super({ node: Private.createConfirmMessageNode(codeSnippet) });
+    }
+}
+
+/**
+ * A namespace for private data.
+ */
 namespace Private {
   /**
    * Given a MimeData instance, extract the data, if any.
@@ -688,6 +702,29 @@ namespace Private {
     const data = mime.getData('text/plain');
     return data;
   }
+
+  /**
+     * Create structure for preview of snippet data.
+     */
+    export function createConfirmMessageNode(codeSnippet: ICodeSnippet ): HTMLElement {
+      let code:string = codeSnippet.code[0];
+      console.log(code);
+      
+      const body = document.createElement('div');
+      body.innerHTML = "<span style='color: #1976D2;'>[1]: </span>";
+  
+      const messageContainer = document.createElement('div');
+      messageContainer.className = 'jp-preview-text';
+      const message = document.createElement('text');
+      message.className = 'jp-preview-textarea';
+      message.textContent = codeSnippet.code.join('\n').replace('\n','\r\n');
+      //console.log("this is the text: "+ message.textContent);
+      messageContainer.appendChild(message);
+      body.append(messageContainer);
+      return body;
+      }
+  }
+  
   /**
    * A custom panel layout for the notebook.
    */
@@ -702,8 +739,9 @@ namespace Private {
     protected onUpdateRequest(msg: Message): void {
       // This is a no-op.
     }
-  }
 }
+
+
 
 /**
  * A namespace for CodeSnippet statics.
