@@ -22,6 +22,8 @@ export interface ICodeSnippet {
   description: string;
   language: string;
   code: string[];
+  // is_cell: bool
+  // keyIndex: number;
 }
 
 export class CodeSnippetService {
