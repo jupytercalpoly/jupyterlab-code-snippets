@@ -48,6 +48,9 @@ import React from 'react';
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { SearchBar } from './SearchBar';
 
+import { showMessage } from './PreviewSnippet';
+//import checkSVGstr from '../style/check.svg';
+
 /**
  * The mimetype used for Jupyter cell data.
  */
@@ -237,6 +240,8 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
     // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
     private renderCodeSnippet = (codeSnippet: ICodeSnippet): JSX.Element => {
         let barColor = this.codeLinesToColor(codeSnippet);
+        document.documentElement.style.setProperty('--jp-snippet-view-width', "180px");
+        console.log(getComputedStyle(document.documentElement).getPropertyValue('--jp-snippet-view-width'));
         const displayName = 
             '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
@@ -264,7 +269,11 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
             }
         ]; // REplace the borderleft color with options! Save on repetitive code this way!
         return (
-            <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM} style={{borderLeft: barColor}}>
+            <div key={codeSnippet.name}
+            className={CODE_SNIPPET_ITEM} 
+            style={{borderLeft: barColor}} 
+            onClick={():void => {showMessage({
+                body: new MessageHandler(codeSnippet)})}}>
                 <ExpandableComponent
                     displayName={displayName}
                     tooltip={codeSnippet.description}
@@ -504,6 +513,12 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 }
 
+class MessageHandler extends Widget {
+    constructor(codeSnippet: ICodeSnippet) {
+      super({ node: Private.createConfirmMessageNode(codeSnippet) });
+    }
+}
+
 /**
  * A namespace for private data.
  */
@@ -517,6 +532,28 @@ namespace Private {
         // application/vnd.jupyter.cells
         const data = mime.getData('text/plain');
         return data;
+    }
+
+    
+    /**
+     * Create structure for preview of snippet data.
+     */
+    export function createConfirmMessageNode(codeSnippet: ICodeSnippet ): HTMLElement {
+    let code:string = codeSnippet.code[0];
+    console.log(code);
+    
+    const body = document.createElement('div');
+    body.innerHTML = "<span style='color: #1976D2;'>[1]: </span>";
+
+    const messageContainer = document.createElement('div');
+    messageContainer.className = 'jp-preview-text';
+    const message = document.createElement('text');
+    message.className = 'jp-preview-textarea';
+    message.textContent = codeSnippet.code.join('\n').replace('\n','\r\n');
+    //console.log("this is the text: "+ message.textContent);
+    messageContainer.appendChild(message);
+    body.append(messageContainer);
+    return body;
     }
 }
 
