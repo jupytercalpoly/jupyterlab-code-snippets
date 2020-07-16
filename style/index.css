@@ -167,3 +167,13 @@
   overflow-y: scroll;
   padding-left: 5px;
 }
+
+#triangle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 17px 17px 0;
+  border-color: transparent #E5E5E5 transparent transparent;
+  right: 0;
+  position: absolute;
+}

@@ -60,7 +60,6 @@ import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 // import { ArrayExt } from '@lumino/algorithm';
 
 import { showMessage } from './PreviewSnippet';
-//import checkSVGstr from '../style/check.svg';
 
 /**
  * The CSS class added to code snippet widget.
@@ -254,6 +253,26 @@ class CodeSnippetDisplay extends React.Component<
     }
     return color;
   };
+    //Render snippet bookmark based on state of bookmarked field
+    // private bookmarkSnippetRender = (codeSnippet: ICodeSnippet): string => {
+    //     if(codeSnippet.bookmarked===false) {
+    //         return "transparent #E5E5E5 transparent transparent";
+    //     }
+    //     return "transparent blue transparent transparent";
+    // }
+    
+    //Change bookmark field and color onclick
+    private bookmarkSnippetClick = (codeSnippet: ICodeSnippet, event:React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+        const target = event.target as HTMLElement;
+        if(codeSnippet.bookmarked===false) {
+            codeSnippet.bookmarked = true;
+            target.style.borderColor = "transparent blue transparent transparent";
+        }
+        else if(codeSnippet.bookmarked===true) {
+            codeSnippet.bookmarked = false;
+            target.style.borderColor = "transparent #E5E5E5 transparent transparent";
+        }
+    }
 
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
@@ -299,19 +318,21 @@ class CodeSnippetDisplay extends React.Component<
         className={CODE_SNIPPET_ITEM}
         id={id}
         style={{ borderLeft: barColor }}
-        onClick={():void => {showMessage({
-          body: new MessageHandler(codeSnippet)})}}
       >
-        <ExpandableComponent
-          displayName={displayName}
-          tooltip={codeSnippet.description}
-          actionButtons={actionButtons}
-        >
-          <textarea defaultValue={codeSnippet.code.join('\n')}></textarea>
-        </ExpandableComponent>
+        <div id="triangle" title="Bookmark" onClick={(event) => {this.bookmarkSnippetClick(codeSnippet,event)}}></div>
+        <div onClick={():void => {showMessage({
+                body: new MessageHandler(codeSnippet)})}}>
+          <ExpandableComponent
+            displayName={displayName}
+            tooltip={codeSnippet.description}
+            actionButtons={actionButtons}
+          >
+            <textarea defaultValue={codeSnippet.code.join('\n')}></textarea>
+          </ExpandableComponent>
+        </div>
       </div>
     );
-  };
+  }
 
   static getDerivedStateFromProps(
     props: ICodeSnippetDisplayProps,
