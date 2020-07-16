@@ -49,7 +49,6 @@ import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { SearchBar } from './SearchBar';
 
 import { showMessage } from './PreviewSnippet';
-//import checkSVGstr from '../style/check.svg';
 
 /**
  * The mimetype used for Jupyter cell data.
@@ -236,12 +235,32 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
         return color;
     }
     
+    //Render snippet bookmark based on state of bookmarked field
+    // private bookmarkSnippetRender = (codeSnippet: ICodeSnippet): string => {
+    //     if(codeSnippet.bookmarked===false) {
+    //         return "transparent #E5E5E5 transparent transparent";
+    //     }
+    //     return "transparent blue transparent transparent";
+    // }
+    
+    //Change bookmark field and color onclick
+    private bookmarkSnippetClick = (codeSnippet: ICodeSnippet, event:React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+        const target = event.target as HTMLElement;
+        if(codeSnippet.bookmarked===false) {
+            codeSnippet.bookmarked = true;
+            target.style.borderColor = "transparent blue transparent transparent";
+        }
+        else if(codeSnippet.bookmarked===true) {
+            codeSnippet.bookmarked = false;
+            target.style.borderColor = "transparent #E5E5E5 transparent transparent";
+        }
+    }
+    
     // Render display of code snippet list
     // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
-    private renderCodeSnippet = (codeSnippet: ICodeSnippet): JSX.Element => {
+    private renderCodeSnippet = (codeSnippet: ICodeSnippet, index:number) : JSX.Element => {
         let barColor = this.codeLinesToColor(codeSnippet);
-        document.documentElement.style.setProperty('--jp-snippet-view-width', "180px");
-        console.log(getComputedStyle(document.documentElement).getPropertyValue('--jp-snippet-view-width'));
+        
         const displayName = 
             '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
@@ -267,20 +286,22 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
                     this.deleteCodeSnippet(codeSnippet);
                 }
             }
-        ]; // REplace the borderleft color with options! Save on repetitive code this way!
+        ];
         return (
             <div key={codeSnippet.name}
             className={CODE_SNIPPET_ITEM} 
-            style={{borderLeft: barColor}} 
-            onClick={():void => {showMessage({
+            style={{borderLeft: barColor}}>
+                <div id="triangle" title="Bookmark" onClick={(event) => {this.bookmarkSnippetClick(codeSnippet,event)}}></div>
+                <div onClick={():void => {showMessage({
                 body: new MessageHandler(codeSnippet)})}}>
-                <ExpandableComponent
-                    displayName={displayName}
-                    tooltip={codeSnippet.description}
-                    actionButtons={actionButtons}
-                >
-                    <textarea defaultValue={codeSnippet.code.join('\n')}></textarea>
-                </ExpandableComponent>
+                    <ExpandableComponent
+                        displayName={displayName}
+                        tooltip={codeSnippet.description}
+                        actionButtons={actionButtons}
+                    >    
+                        <textarea defaultValue={codeSnippet.code.join('\n')}></textarea>
+                    </ExpandableComponent>
+                </div>
             </div>
         );
     };
@@ -310,7 +331,7 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
             <div>
                  <SearchBar onFilter={ this.filterSnippets } />
                 <div id="codeSnippets">
-                    <div>{this.state.codeSnippets.map(this.renderCodeSnippet)}</div>
+                    <div>{this.state.codeSnippets.map((codeSnippet, index) => this.renderCodeSnippet(codeSnippet, index))}</div>
                 </div>
             </div>
         );

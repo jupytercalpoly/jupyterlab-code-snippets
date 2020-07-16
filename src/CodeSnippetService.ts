@@ -22,6 +22,7 @@ export interface ICodeSnippet {
   description: string;
   language: string;
   code: string[];
+  bookmarked: boolean;
 }
 
 export class CodeSnippetService {
@@ -38,7 +39,8 @@ export class CodeSnippetService {
         displayName: jsonCodeSnippet.display_name,
         description: jsonCodeSnippet.metadata.description,
         language: jsonCodeSnippet.metadata.language,
-        code: jsonCodeSnippet.metadata.code
+        code: jsonCodeSnippet.metadata.code,
+        bookmarked: false
       };
       allCodeSnippets.push(codeSnippet);
     }
