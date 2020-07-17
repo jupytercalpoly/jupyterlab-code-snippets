@@ -1,8 +1,4 @@
 import '../style/index.css';
-
-// import checkSVGstr from '../style/check.svg';
-// import { LabIcon } from '@jupyterlab/ui-components';
-
 import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
@@ -351,7 +347,7 @@ export namespace ConfirmMessage {
    * The dialog widget tracker.
    */
   export const tracker = new WidgetTracker<ConfirmMessage<any>>({
-    namespace: '@jupyterlab/code_snippet:ConfirmWidget'
+    namespace: '@jupyterlab/code_snippet:ConfirmWidget',
   });
 }
 

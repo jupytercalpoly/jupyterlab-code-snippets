@@ -73,7 +73,7 @@ export function inputDialog(
         description: result.value[1],
         language: result.value[2],
         code: [inputCode]
-      }
+      };
       /**
        * TODO: NEED in memory data store instead of making request every time.
        */
@@ -95,17 +95,18 @@ export function inputDialog(
         false
       );
 
-
       // console.log(request);
       request.then(_ => {
-          // add the new snippet to the snippet model
+        // add the new snippet to the snippet model
         //   console.log(idx);
-            codeSnippet.codeSnippetWidgetModel.addSnippet({ codeSnippet: newSnippet, id: idx}, idx);
+        codeSnippet.codeSnippetWidgetModel.addSnippet(
+          { codeSnippet: newSnippet, id: idx },
+          idx
+        );
 
-            const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-            codeSnippet.codeSnippets = newSnippets;
-            codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
-
+        const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+        codeSnippet.codeSnippets = newSnippets;
+        codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
 
         //   codeSnippetWrapper.fetchData().then((codeSnippets: ICodeSnippet[]) => {
         //     let newCodeSnippets = codeSnippets;
@@ -115,24 +116,22 @@ export function inputDialog(
         //     console.log('HELLLO');
         //     codeSnippet.renderCodeSnippetsSignal.emit(newCodeSnippets);
         //   });
-          showMessage({
-            body: /*"Saved as Snippet"*/ new MessageHandler()
-          });
-        }
-      );
+        showMessage({
+          body: /*"Saved as Snippet"*/ new MessageHandler()
+        });
+      });
     }
   });
 }
 
 // /**
 //  * Compare two snippets based on the unique name.
-//  * @param thisSnippet 
-//  * @param otherSnippet 
+//  * @param thisSnippet
+//  * @param otherSnippet
 //  */
 // function compareSnippets(thisSnippet: ICodeSnippet, otherSnippet: ICodeSnippet) {
 //   return thisSnippet.name === otherSnippet.name;
 // }
-
 
 /**
  * Rename a file, asking for confirmation if it is overwriting another.
