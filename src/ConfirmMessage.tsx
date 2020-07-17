@@ -311,7 +311,7 @@ export namespace ConfirmMessage {
       } else if (value instanceof Widget) {
         body = value;
       } else {
-        body = ReactWidget.create(value);
+        body = ReactWidget.create(value) as Widget;
         // Immediately update the body even though it has not yet attached in
         // order to trigger a render of the DOM nodes from the React element.
         MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);

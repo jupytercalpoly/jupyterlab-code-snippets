@@ -62,7 +62,7 @@ export function inputDialog(
     body: new InputHandler(),
     focusNodeSelector: 'input',
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
-  }).then(result => {
+  }).then((result: Dialog.IResult<string[]>) => {
     console.log(result.value);
     if (!result.value) {
       return null;
