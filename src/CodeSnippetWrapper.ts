@@ -41,7 +41,7 @@ export class CodeSnippetWrapper extends Widget {
       this.getCurrentWidget
     );
     codeSnippetWidget.addClass(CODE_SNIPPETS_CLASS);
-    layout.insertWidget(0, codeSnippetWidget);
+    layout.insertWidget(0, codeSnippetWidget as Widget);
   }
 
   // Request code snippets from server

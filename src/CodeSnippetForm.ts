@@ -62,7 +62,7 @@ export function inputDialog(
     body: new InputHandler(),
     focusNodeSelector: 'input',
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
-  }).then(result => {
+  }).then((result: Dialog.IResult<string[]>) => {
     if (validateForm(result)===false) {
       return inputDialog(codeSnippet,url,inputCode); // This works but it wipes out all the data they entered previously...
     }
