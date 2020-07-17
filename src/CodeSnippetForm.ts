@@ -64,7 +64,7 @@ export function inputDialog(
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
   }).then((result: Dialog.IResult<string[]>) => {
     if (validateForm(result)===false) {
-      return inputDialog(codeSnippet,url,inputCode); // This works but it wipes out all the data they entered previously...
+      return inputDialog(codeSnippet,url,inputCode,idx); // This works but it wipes out all the data they entered previously...
     }
     if (!result.value) {
       return null;
