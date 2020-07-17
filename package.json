@@ -36,7 +36,8 @@
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
     "prepare": "jlpm run clean && jlpm run build",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "format": "prettier \"src/**/*.{ts, tsx}\" --check"
   },
   "dependencies": {
     "@elyra/application": "^1.0.0-beta.1",
@@ -64,9 +65,11 @@
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
     "mkdirp": "^1.0.3",
-    "prettier": "^1.16.4",
+    "prettier": "1.19.1",
     "rimraf": "^2.6.1",
-    "typescript": "~3.7.3"
+    "typescript": "~3.7.3",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11"
   },
   "sideEffects": [
     "style/*.css"
@@ -90,6 +93,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": ["eslint --cache --fix", "prettier --write"]
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --cache --fix"
+    ]
   }
 }
