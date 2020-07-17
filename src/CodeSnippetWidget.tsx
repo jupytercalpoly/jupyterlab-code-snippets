@@ -271,6 +271,7 @@ class CodeSnippetDisplay extends React.Component<
         else if(codeSnippet.bookmarked===true) {
             codeSnippet.bookmarked = false;
             target.style.borderColor = "transparent #E5E5E5 transparent transparent";
+            target.style.transition = "border-color 0.2s linear";
         }
     }
 
@@ -319,7 +320,7 @@ class CodeSnippetDisplay extends React.Component<
         id={id}
         style={{ borderLeft: barColor }}
       >
-        <div id="triangle" title="Bookmark" onClick={(event) => {this.bookmarkSnippetClick(codeSnippet,event)}}></div>
+        <div className="triangle" title="Bookmark" onClick={(event) => {this.bookmarkSnippetClick(codeSnippet,event)}}></div>
         <div onClick={():void => {showMessage({
                 body: new MessageHandler(codeSnippet)})}}>
           <ExpandableComponent
