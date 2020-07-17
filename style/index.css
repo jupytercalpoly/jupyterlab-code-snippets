@@ -18,6 +18,10 @@
   overflow: scroll;
 }
 
+.elyra-CodeSnippets {
+  height: 100%;
+}
+
 .elyra-codeSnippetsHeader {
   font-weight: bold;
   padding: 8px 10px;
