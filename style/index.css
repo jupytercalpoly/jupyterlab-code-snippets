@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-#code-snippet-extension {
+/* #code-snippet-extension {
   overflow: scroll;
-}
+} */
 
 .elyra-CodeSnippets {
   height: 100%;
+  overflow: scroll;
 }
 
 .elyra-codeSnippetsHeader {
