@@ -1,7 +1,7 @@
 import { Widget } from '@lumino/widgets';
 import { RequestHandler } from '@elyra/application';
 
-import checkSVGstr from '../style/check.svg';
+import checkSVGstr from '../style/icon/check.svg';
 import { showMessage } from './ConfirmMessage';
 
 import { Dialog, showDialog } from '@jupyterlab/apputils';
@@ -29,6 +29,11 @@ const FILE_DIALOG_CLASS = 'jp-FileDialog';
 const INPUT_NEWNAME_TITLE_CLASS = 'jp-new-name-title';
 
 /**
+ * Metadata schema name
+ */
+const SCHEMA_NAME = 'code-snippet';
+
+/**
  * A stripped-down interface for a file container.
  */
 export interface IFileContainer extends JSONObject {
@@ -49,7 +54,8 @@ export interface IFileContainer extends JSONObject {
 export function inputDialog(
   codeSnippet: CodeSnippetWidget,
   url: string,
-  inputCode: string
+  inputCode: string,
+  idx: number
 ): Promise<Contents.IModel | null> {
   return showDialog({
     title: 'Save Code Snippet',
@@ -63,37 +69,71 @@ export function inputDialog(
     if (!result.value) {
       return null;
     } else {
+      const newSnippet: ICodeSnippet = {
+        name: result.value[0].replace(' ', '').toLowerCase(),
+        displayName: result.value[0],
+        description: result.value[1],
+        language: result.value[2],
+        code: [inputCode]
+      };
+      /**
+       * TODO: NEED in memory data store instead of making request every time.
+       */
       /* TODO: if name is already there call shouldOverwrite and change to a put request*/
       // Workaround: make a get request with result.value[0] to check... but could be slow
       const request = RequestHandler.makePostRequest(
         //If i use their handler then I can't interrupt any error messages without editing their stuff.
         url,
         JSON.stringify({
-          display_name: result.value[0],
+          display_name: newSnippet.displayName,
           metadata: {
             code: [inputCode],
-            description: result.value[1],
-            language: result.value[2]
+            description: newSnippet.description,
+            language: newSnippet.language
           },
-          name: result.value[0].replace(' ', '').toLowerCase(),
-          schema_name: 'code-snippet'
+          name: newSnippet.name,
+          schema_name: SCHEMA_NAME
         }),
         false
       );
+
       // console.log(request);
       request.then(_ => {
-          codeSnippet.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-            console.log('HELLLO');
-            codeSnippet.renderCodeSnippetsSignal.emit(codeSnippets);
-          });
-          showMessage({
-            body: /*"Saved as Snippet"*/ new MessageHandler()
-          });
-        }
-      );
+        // add the new snippet to the snippet model
+        //   console.log(idx);
+        codeSnippet.codeSnippetWidgetModel.addSnippet(
+          { codeSnippet: newSnippet, id: idx },
+          idx
+        );
+
+        const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+        codeSnippet.codeSnippets = newSnippets;
+        codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+
+        //   codeSnippetWrapper.fetchData().then((codeSnippets: ICodeSnippet[]) => {
+        //     let newCodeSnippets = codeSnippets;
+        //     console.log(codeSnippets);
+        //     console.log(newSnippet);
+        //     console.log(codeSnippets.findIndex(snippet => compareSnippets(snippet, newSnippet)));
+        //     console.log('HELLLO');
+        //     codeSnippet.renderCodeSnippetsSignal.emit(newCodeSnippets);
+        //   });
+        showMessage({
+          body: /*"Saved as Snippet"*/ new MessageHandler()
+        });
+      });
     }
   });
 }
+
+// /**
+//  * Compare two snippets based on the unique name.
+//  * @param thisSnippet
+//  * @param otherSnippet
+//  */
+// function compareSnippets(thisSnippet: ICodeSnippet, otherSnippet: ICodeSnippet) {
+//   return thisSnippet.name === otherSnippet.name;
+// }
 
 /**
  * Rename a file, asking for confirmation if it is overwriting another.

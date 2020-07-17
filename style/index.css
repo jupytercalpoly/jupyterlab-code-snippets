@@ -54,6 +54,10 @@
     overflow-x: scroll;
   }
 
+.elyra-CodeSnippets {
+  height: 100%;
+}
+
 .elyra-codeSnippetsHeader {
   font-weight: bold;
   padding: 8px 10px;
@@ -130,7 +134,8 @@
   text-align: center;
 }
 
-.elyra-CodeSnippets.jp-snippet-dropTarget {
-  border: var(--jp-border-width) solid var(--jp-input-active-border-color);
-  box-shadow: var(--jp-input-box-shadow);
+.elyra-codeSnippet-item.jp-snippet-dropTarget {
+  border-top: 2px solid #42A5F5;
+  /* border: var(--jp-border-width) solid var(--jp-input-active-border-color);
+  box-shadow: var(--jp-input-box-shadow); */
 }

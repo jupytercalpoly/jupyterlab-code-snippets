@@ -8,12 +8,18 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 
-import { Widget } from '@lumino/widgets';
+import { Widget, PanelLayout } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
 
-import { CodeSnippetWidget } from './CodeSnippetWidget';
+// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
+// import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 import { inputDialog } from './CodeSnippetForm';
+import { INotebookTracker } from '@jupyterlab/notebook';
+import { CodeSnippetWrapper } from './CodeSnippetWrapper';
+import { CodeSnippetWidget } from './CodeSnippetWidget';
+// import { CodeSnippetWidget } from './CodeSnippetWidget';
+// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 
 export interface ICodeSnippet {
   name: string;
@@ -31,7 +37,7 @@ const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   id: CODE_SNIPPET_EXTENSION_ID,
   autoStart: true,
-  requires: [ICommandPalette, ILayoutRestorer],
+  requires: [ICommandPalette, ILayoutRestorer, INotebookTracker],
   activate: (
     app: JupyterFrontEnd,
     palette: ICommandPalette,
@@ -44,19 +50,19 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       return app.shell.currentWidget;
     };
 
-    const codeSnippetWidget = new CodeSnippetWidget(getCurrentWidget);
-    codeSnippetWidget.id = CODE_SNIPPET_EXTENSION_ID;
-    codeSnippetWidget.title.icon = codeSnippetIcon;
-    codeSnippetWidget.title.caption = 'Jupyter Code Snippet';
+    const codeSnippetWrapper = new CodeSnippetWrapper(getCurrentWidget);
+    codeSnippetWrapper.id = CODE_SNIPPET_EXTENSION_ID;
+    codeSnippetWrapper.title.icon = codeSnippetIcon;
+    codeSnippetWrapper.title.caption = 'Jupyter Code Snippet';
 
-    restorer.add(codeSnippetWidget, CODE_SNIPPET_EXTENSION_ID);
+    restorer.add(codeSnippetWrapper, CODE_SNIPPET_EXTENSION_ID);
 
     // Rank has been chosen somewhat arbitrarily to give priority to the running
     // sessions widget in the sidebar.
-    app.shell.add(codeSnippetWidget, 'left', { rank: 900 });
+    app.shell.add(codeSnippetWrapper, 'left', { rank: 900 });
 
     //Add an application command
-    const commandID = 'my-command';
+    const commandID = 'save as code snippet';
     const toggled = false;
     app.commands.addCommand(commandID, {
       label: 'Save As Code Snippet',
@@ -83,8 +89,14 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         //   }),
         //   false
         // );
+        const layout = codeSnippetWrapper.layout as PanelLayout;
 
-        inputDialog(codeSnippetWidget, url, highlightedCode);
+        inputDialog(
+          layout.widgets[0] as CodeSnippetWidget,
+          url,
+          highlightedCode,
+          -1
+        );
         console.log(`Highlight trial: ${highlightedCode}`);
       }
     });
