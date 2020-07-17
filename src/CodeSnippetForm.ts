@@ -1,7 +1,7 @@
 import { Widget } from '@lumino/widgets';
 import { RequestHandler } from '@elyra/application';
 
-import checkSVGstr from '../style/check.svg';
+import checkSVGstr from '../style/icon/check.svg';
 import { showMessage } from './ConfirmMessage';
 
 import { Dialog, showDialog } from '@jupyterlab/apputils';
@@ -55,7 +55,7 @@ export function inputDialog(
   codeSnippet: CodeSnippetWidget,
   url: string,
   inputCode: string,
-  targetIndex: number | null
+  idx: number
 ): Promise<Contents.IModel | null> {
   return showDialog({
     title: 'Save Code Snippet',
@@ -94,21 +94,27 @@ export function inputDialog(
         }),
         false
       );
+
+
       // console.log(request);
       request.then(_ => {
-          codeSnippet.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-            let newCodeSnippets = codeSnippets;
-            console.log(codeSnippets);
-            console.log(targetIndex);
-            console.log(newSnippet);
-            console.log(codeSnippets.findIndex(snippet => compareSnippets(snippet, newSnippet)));
-            if (targetIndex){
-              newCodeSnippets = orderSnippets(codeSnippets, targetIndex, newSnippet);
-              console.log(newCodeSnippets);
-            }
-            console.log('HELLLO');
-            codeSnippet.renderCodeSnippetsSignal.emit(newCodeSnippets);
-          });
+          // add the new snippet to the snippet model
+        //   console.log(idx);
+            codeSnippet.codeSnippetWidgetModel.addSnippet({ codeSnippet: newSnippet, id: idx}, idx);
+
+            const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+            codeSnippet.codeSnippets = newSnippets;
+            codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+
+
+        //   codeSnippetWrapper.fetchData().then((codeSnippets: ICodeSnippet[]) => {
+        //     let newCodeSnippets = codeSnippets;
+        //     console.log(codeSnippets);
+        //     console.log(newSnippet);
+        //     console.log(codeSnippets.findIndex(snippet => compareSnippets(snippet, newSnippet)));
+        //     console.log('HELLLO');
+        //     codeSnippet.renderCodeSnippetsSignal.emit(newCodeSnippets);
+        //   });
           showMessage({
             body: /*"Saved as Snippet"*/ new MessageHandler()
           });
@@ -118,47 +124,15 @@ export function inputDialog(
   });
 }
 
-/**
- * Compare two snippets based on the unique name.
- * @param thisSnippet 
- * @param otherSnippet 
- */
-function compareSnippets(thisSnippet: ICodeSnippet, otherSnippet: ICodeSnippet) {
-  return thisSnippet.name === otherSnippet.name;
-}
+// /**
+//  * Compare two snippets based on the unique name.
+//  * @param thisSnippet 
+//  * @param otherSnippet 
+//  */
+// function compareSnippets(thisSnippet: ICodeSnippet, otherSnippet: ICodeSnippet) {
+//   return thisSnippet.name === otherSnippet.name;
+// }
 
-/**
- * Order new snippet to the specified target index.
- * @param codeSnippets the current code snippets
- * @param targetIndex the target index of a new snippet
- * @param newSnippet 
- */
-function orderSnippets(codeSnippets: ICodeSnippet[], targetIndex: number | null, newSnippet: ICodeSnippet) {
-  const newCodeSnippets = codeSnippets.slice();
-
-  const index = codeSnippets.findIndex(snippet => compareSnippets(snippet, newSnippet));
-
-  // when target is the widget - should add to the last snippet
-  if (targetIndex === -1){
-    targetIndex = newCodeSnippets.length - 1;
-  }
-
-  if(index == targetIndex){
-    return newCodeSnippets;
-  }
-
-  // remove the new snippet in the current code snippets
-  newCodeSnippets.splice(index, 1);
-
-  // add the new snippet to the right location
-  if(index < targetIndex){
-    newCodeSnippets.splice(targetIndex - 1, 0, newSnippet);
-  }
-  else{
-    newCodeSnippets.splice(targetIndex, 0, newSnippet);
-  }
-  return newCodeSnippets
-}
 
 /**
  * Rename a file, asking for confirmation if it is overwriting another.
