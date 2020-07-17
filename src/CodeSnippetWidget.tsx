@@ -90,6 +90,7 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
 
     state = {codeSnippets: this.props.codeSnippets, filterValue: "" };
 
+    currDisplay:string = null;
     // Handle code snippet insert into an editor
     private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
         const widget: Widget = this.props.getCurrentWidget();
@@ -253,12 +254,13 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
         else if(codeSnippet.bookmarked===true) {
             codeSnippet.bookmarked = false;
             target.style.borderColor = "transparent #E5E5E5 transparent transparent";
+            target.style.transition = "border-color 0.2s linear";
         }
     }
     
     // Render display of code snippet list
     // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
-    private renderCodeSnippet = (codeSnippet: ICodeSnippet, index:number) : JSX.Element => {
+    private renderCodeSnippet = (codeSnippet: ICodeSnippet) : JSX.Element => {
         let barColor = this.codeLinesToColor(codeSnippet);
         
         const displayName = 
@@ -291,7 +293,7 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
             <div key={codeSnippet.name}
             className={CODE_SNIPPET_ITEM} 
             style={{borderLeft: barColor}}>
-                <div id="triangle" title="Bookmark" onClick={(event) => {this.bookmarkSnippetClick(codeSnippet,event)}}></div>
+                <div className="triangle" title="Bookmark" onClick={(event) => {this.bookmarkSnippetClick(codeSnippet,event)}}></div>
                 <div onClick={():void => {showMessage({
                 body: new MessageHandler(codeSnippet)})}}>
                     <ExpandableComponent
@@ -331,7 +333,7 @@ class CodeSnippetDisplay extends React.Component<ICodeSnippetDisplayProps, ICode
             <div>
                  <SearchBar onFilter={ this.filterSnippets } />
                 <div id="codeSnippets">
-                    <div>{this.state.codeSnippets.map((codeSnippet, index) => this.renderCodeSnippet(codeSnippet, index))}</div>
+                    <div>{this.state.codeSnippets.map(this.renderCodeSnippet)}</div>
                 </div>
             </div>
         );
@@ -560,7 +562,7 @@ namespace Private {
      * Create structure for preview of snippet data.
      */
     export function createConfirmMessageNode(codeSnippet: ICodeSnippet ): HTMLElement {
-    let code:string = codeSnippet.code[0];
+    let code:string = codeSnippet.code[0]; //use name to somehow run a check to see if its still open?
     console.log(code);
     
     const body = document.createElement('div');

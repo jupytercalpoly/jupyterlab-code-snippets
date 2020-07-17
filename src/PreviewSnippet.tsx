@@ -24,8 +24,9 @@ const PREVIEW_CLASS = 'jp-preview';
 export function showMessage<T>(
   options: Partial<Preview.IOptions<T>> = {}
 ): Promise<void> {
-  console.log(options);
+  //Insert check method to see if the preview is already open
   const preview = new Preview(options);
+  //console.log(preview.);
   return preview.launch();
 }
 
@@ -37,22 +38,23 @@ export class Preview<T> extends Widget {
     super();
     this.addClass(PREVIEW_CLASS);
     const renderer = Preview.defaultRenderer;
-
-    this._host = options.host || document.body;
+    //this._host = options.host || document.body;
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
     content.addClass('jp-Preview-content');
     layout.addWidget(content);
 
     const body = renderer.createBody(options.body || '');
-    // body.addClass('jp-Message-body');
-    // const icon = renderer.createIcon();
-    // content.addWidget(icon);
     content.addWidget(body);
 
     console.log(content);
-
+    if (Preview.tracker.size > 0) {
+      let previous = Preview.tracker.currentWidget;
+      previous.reject();
+      Preview.tracker.dispose();
+    }
     void Preview.tracker.add(this);
+    console.log(Preview.tracker);
   }
   /**
    * Launch the dialog as a modal window.
@@ -68,7 +70,7 @@ export class Preview<T> extends Widget {
     const promises = Promise.all(Private.launchQueue);
     Private.launchQueue.push(this._promise.promise);
     return promises.then(() => {
-      Widget.attach(this, this._host);
+      Widget.attach(this, document.getElementById('jp-main-dock-panel'));
       return promise.promise;
     });
   }
@@ -106,9 +108,11 @@ export class Preview<T> extends Widget {
    * @param event - The DOM event sent to the widget
    */
   protected _evtClick(event: MouseEvent): void {
+    console.log("If this function hasn't been hit for the same snippet then don't launchhhh for that snippet");
     const content = this.node.getElementsByClassName(
       'jp-Preview-content'
     )[0] as HTMLElement;
+    console.log(content);
     if (!content.contains(event.target as HTMLElement)) {
       event.stopPropagation();
       event.preventDefault();
@@ -213,6 +217,7 @@ export class Preview<T> extends Widget {
    *  A message handler invoked on an `'after-attach'` message.
    */
   protected onAfterAttach(msg: Message): void {
+    console.log("I have reached this stageeee");
     const node = this.node;
     node.addEventListener('keydown', this, true);
     node.addEventListener('contextmenu', this, true);
@@ -225,6 +230,7 @@ export class Preview<T> extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     const node = this.node;
+    console.log("Itgjhgjhj");
     node.removeEventListener('keydown', this, true);
     node.removeEventListener('contextmenu', this, true);
     node.removeEventListener('click', this, true);
@@ -233,7 +239,7 @@ export class Preview<T> extends Widget {
   }
 
   private _promise: PromiseDelegate<void> | null;
-  private _host: HTMLElement;
+  //private _host: HTMLElement;
   private _original: HTMLElement;
 }
 
@@ -284,7 +290,7 @@ export namespace Preview {
      * An optional renderer for dialog items.  Defaults to a shared
      * default renderer.
      */
-    renderer: IRenderer;
+    renderer: IRenderer; //add something here to pass in?
   }
 
   export interface IRenderer {

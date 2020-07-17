@@ -22,42 +22,6 @@
     overflow: scroll;
   }
 
- .elyra-codeSnippetsHeader {
-    font-weight: bold;
-    padding: 8px 10px;
-    border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
-  }
-  
-  .elyra-codeSnippet-item {
-    border-bottom: 1px solid #eeeeee;
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    transition: outline 0.2s linear;
-  }
-  
-  .elyra-codeSnippet-item:hover { 
-    outline: solid 3px #388E3C; 
-    margin: 0.15em;
-  }
-  
-  .elyra-codeSnippet-item textarea {
-    background-color: inherit;
-    border: none;
-    font-family: var(--jp-code-font-family);
-    font-size: var(--jp-code-font-size);
-    line-height: var(--jp-code-line-height);
-    min-height: 125px;
-    height: 100%;
-    width: 100%;
-    resize: vertical;
-    white-space: pre;
-    word-wrap: normal;
-    overflow-x: scroll;
-  }
-
 .elyra-codeSnippetsHeader {
   font-weight: bold;
   padding: 8px 10px;
@@ -137,14 +101,10 @@
 
 .jp-preview {
   position: absolute;
-  
   display: flex;
   flex-direction: row;
-  
-  
   top: 0px;
   left: 0px;
-  margin-left: 215px; /*MAKE THIS ADJUST TO THE FRIKIN PANEL AFHSKFJDSKJFSD*/
   padding: 0;
   width: 100%;
   height: 100%;
@@ -156,7 +116,6 @@
   flex-direction: row;
   background: var(--jp-layout-color1);
   padding: 10px;
-  
   min-width: 960px; /*This can be standard*/
   max-width: 1000px;
   height: auto; /*I want this to depend on the size of code*/
@@ -203,7 +162,7 @@
   padding-left: 5px;
 }
 
-#triangle {
+.triangle {
   width: 0;
   height: 0;
   border-style: solid;
@@ -211,4 +170,9 @@
   border-color: transparent #E5E5E5 transparent transparent;
   right: 0;
   position: absolute;
+  transition: border-color 0.2s linear;
+}
+
+.triangle:hover { 
+  border-color: transparent blue transparent transparent; 
 }

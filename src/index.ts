@@ -85,7 +85,6 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         // );
 
         inputDialog(codeSnippetWidget, url, highlightedCode);
-        console.log(`Highlight trial: ${highlightedCode}`);
       }
     });
 
