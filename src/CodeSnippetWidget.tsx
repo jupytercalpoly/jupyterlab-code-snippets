@@ -265,13 +265,11 @@ class CodeSnippetDisplay extends React.Component<
         const target = event.target as HTMLElement;
         if(codeSnippet.bookmarked===false) {
             codeSnippet.bookmarked = true;
-            target.style.borderColor = "transparent blue transparent transparent";
+            target.classList.add("selected");
         }
         else if(codeSnippet.bookmarked===true) {
             codeSnippet.bookmarked = false;
-            console.log("TARGET: ", target.className);
-            target.style.borderColor = "transparent #E5E5E5 transparent transparent";
-            target.style.transition = "border-color 0.2s linear";
+            target.classList.remove("selected");
         }
     }
 
