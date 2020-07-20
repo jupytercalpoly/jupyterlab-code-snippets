@@ -26,7 +26,9 @@ export function showMessage<T>(
 ): Promise<void> {
   //Insert check method to see if the preview is already open
   const preview = new Preview(options);
-  //console.log(preview.);
+  if (preview.ready === false) {
+    return;
+  }
   return preview.launch();
 }
 
@@ -34,8 +36,12 @@ export function showMessage<T>(
  * A widget used to show confirmation message.
  */
 export class Preview<T> extends Widget {
+  displayName:string
+  ready:boolean
   constructor(options: Partial<Preview.IOptions<T>> = {}) {
     super();
+    this.ready = true; ///
+    this.displayName = options.displayName; ///
     this.addClass(PREVIEW_CLASS);
     const renderer = Preview.defaultRenderer;
     //this._host = options.host || document.body;
@@ -46,15 +52,19 @@ export class Preview<T> extends Widget {
 
     const body = renderer.createBody(options.body || '');
     content.addWidget(body);
-
-    console.log(content);
+    
     if (Preview.tracker.size > 0) {
       let previous = Preview.tracker.currentWidget;
+      if (previous.displayName === this.displayName) {
+        this.ready = false;
+      }
+      console.log(previous);
       previous.reject();
       Preview.tracker.dispose();
     }
-    void Preview.tracker.add(this);
-    console.log(Preview.tracker);
+    if (this.ready === true) {
+      void Preview.tracker.add(this);
+    }
   }
   /**
    * Launch the dialog as a modal window.
@@ -68,6 +78,7 @@ export class Preview<T> extends Widget {
     }
     const promise = (this._promise = new PromiseDelegate<void>());
     const promises = Promise.all(Private.launchQueue);
+    console.log(promises);
     Private.launchQueue.push(this._promise.promise);
     return promises.then(() => {
       Widget.attach(this, document.getElementById('jp-main-dock-panel'));
@@ -291,6 +302,9 @@ export namespace Preview {
      * default renderer.
      */
     renderer: IRenderer; //add something here to pass in?
+
+    //ADD DESCRIPTION
+    displayName: string;
   }
 
   export interface IRenderer {

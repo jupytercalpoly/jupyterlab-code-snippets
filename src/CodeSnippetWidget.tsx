@@ -56,8 +56,7 @@ import { MimeData } from '@lumino/coreutils';
 
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 
-// import { SnippetModel } from './SnippetModel';
-// import { ArrayExt } from '@lumino/algorithm';
+//import {Preview} from './PreviewSnippet'
 
 import { showMessage } from './PreviewSnippet';
 
@@ -235,24 +234,24 @@ class CodeSnippetDisplay extends React.Component<
   };
 
   // Pick color for side of snippet box based on number of code lines
-  private codeLinesToColor = (codeSnippet: ICodeSnippet): string => {
-    let color: string;
-    let i,
-      counter = 0;
-    for (i = 0; i < codeSnippet.code[0].length; i++) {
-      if (codeSnippet.code[0][i] === '\n') {
-        counter++;
-      }
-    }
-    if (counter < 25) {
-      color = '8px solid #BBDEFB';
-    } else if (counter >= 25 && counter <= 50) {
-      color = '8px solid #64B5F6';
-    } else {
-      color = '8px solid #1976D2';
-    }
-    return color;
-  };
+  // private codeLinesToColor = (codeSnippet: ICodeSnippet): string => {
+  //   let color: string;
+  //   let i,
+  //     counter = 0;
+  //   for (i = 0; i < codeSnippet.code[0].length; i++) {
+  //     if (codeSnippet.code[0][i] === '\n') {
+  //       counter++;
+  //     }
+  //   }
+  //   if (counter < 25) {
+  //     color = '8px solid #BBDEFB';
+  //   } else if (counter >= 25 && counter <= 50) {
+  //     color = '8px solid #64B5F6';
+  //   } else {
+  //     color = '8px solid #1976D2';
+  //   }
+  //   return color;
+  // };
     //Render snippet bookmark based on state of bookmarked field
     // private bookmarkSnippetRender = (codeSnippet: ICodeSnippet): string => {
     //     if(codeSnippet.bookmarked===false) {
@@ -270,6 +269,7 @@ class CodeSnippetDisplay extends React.Component<
         }
         else if(codeSnippet.bookmarked===true) {
             codeSnippet.bookmarked = false;
+            console.log("TARGET: ", target.className);
             target.style.borderColor = "transparent #E5E5E5 transparent transparent";
             target.style.transition = "border-color 0.2s linear";
         }
@@ -281,7 +281,6 @@ class CodeSnippetDisplay extends React.Component<
     codeSnippet: ICodeSnippet,
     id: string
   ): JSX.Element => {
-    let barColor = this.codeLinesToColor(codeSnippet);
     const displayName =
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
@@ -318,11 +317,10 @@ class CodeSnippetDisplay extends React.Component<
         key={codeSnippet.name}
         className={CODE_SNIPPET_ITEM}
         id={id}
-        style={{ borderLeft: barColor }}
       >
         <div className="triangle" title="Bookmark" onClick={(event) => {this.bookmarkSnippetClick(codeSnippet,event)}}></div>
         <div onClick={():void => {showMessage({
-                body: new MessageHandler(codeSnippet)})}}>
+          body: new MessageHandler(codeSnippet), displayName: codeSnippet.displayName})}}>
           <ExpandableComponent
             displayName={displayName}
             tooltip={codeSnippet.description}
@@ -729,11 +727,10 @@ namespace Private {
      * Create structure for preview of snippet data.
      */
     export function createConfirmMessageNode(codeSnippet: ICodeSnippet ): HTMLElement {
-      let code:string = codeSnippet.code[0];
-      console.log(code);
+      //let code:string = codeSnippet.code[0];
       
       const body = document.createElement('div');
-      body.innerHTML = "<span style='color: #1976D2;'>[1]: </span>";
+      
   
       const messageContainer = document.createElement('div');
       messageContainer.className = 'jp-preview-text';
