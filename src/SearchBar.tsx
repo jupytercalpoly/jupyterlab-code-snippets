@@ -7,7 +7,7 @@ interface ISearchProp {
 
 export class SearchBar extends React.Component<ISearchProp> {
   state = {
-    value: '',
+    value: ''
   };
 
   updateValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,7 +24,7 @@ export class SearchBar extends React.Component<ISearchProp> {
         <InputGroup
           className="jp-codesnippet-searchwrapper"
           type="text"
-          placeholder="Type Here..."
+          placeholder="SEARCH SNIPPETS"
           onChange={this.updateValue}
           rightIcon="search"
           value={this.state.value}

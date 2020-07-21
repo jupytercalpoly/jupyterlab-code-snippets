@@ -263,3 +263,7 @@
 .triangle:hover {
   border-color: transparent blue transparent transparent;
 }
+
+.jp-codesnippet-searchbar {
+  margin: 5px;
+}
