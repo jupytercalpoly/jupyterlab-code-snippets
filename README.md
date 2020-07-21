@@ -6,7 +6,7 @@
 
 Read [Press Release](./PRESSRELEASE.md) for more information.
 
-Check out [the current progress](./PROGRESS.md) to keep up with our feature updates!
+Check out [the Current Progress](./PROGRESS.md) to keep up with our feature updates!
 
 This extension is composed of a Python package named `code_snippets`
 for the server extension and a NPM package named `code-snippets`
