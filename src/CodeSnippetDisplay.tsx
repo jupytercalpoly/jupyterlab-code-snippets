@@ -7,7 +7,8 @@ import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
 import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
-import { PathExt } from '@jupyterlab/coreutils';
+import { PathExt, URLExt } from '@jupyterlab/coreutils';
+import { ServerConnection } from '@jupyterlab/services';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
@@ -126,22 +127,19 @@ export class CodeSnippetDisplay extends React.Component<
   private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
     console.log(this.props.getCurrentWidget instanceof CodeSnippetWidget);
     console.log(snippet);
-    // const name = snippet.name;
-    // const url = 'elyra/metadata/code-snippets/' + name;
+    const name = snippet.name;
+    const url = 'elyra/metadata/code-snippets/' + name;
 
-    // const settings = ServerConnection.makeSettings();
-    // const requestUrl = URLExt.join(settings.baseUrl, url);
+    const settings = ServerConnection.makeSettings();
+    const requestUrl = URLExt.join(settings.baseUrl, url);
 
-    // await ServerConnection.makeRequest(requestUrl, { method: 'DELETE' }, settings)
+    await ServerConnection.makeRequest(
+      requestUrl,
+      { method: 'DELETE' },
+      settings
+    );
+
     this.props.onDelete(snippet);
-
-    // const idx = this.props.codeSnippets.indexOf(snippet);
-    // this.props.codeSnippets.splice(idx, 1);
-    // console.log(idx);
-    // console.log(this.props.codeSnippets);
-
-    // Delete the selected snippet // TODO: give each snippet an id
-    // this.setState( { codeSnippets: this.props.codeSnippets } )
   };
 
   // Handle language compatibility between code snippet and editor
