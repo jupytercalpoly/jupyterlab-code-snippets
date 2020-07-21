@@ -20,13 +20,16 @@ import '../style/index.css';
 // import { ServerConnection } from '@jupyterlab/services';
 import insertSVGstr from '../style/icon/insertsnippet.svg';
 import { LabIcon } from '@jupyterlab/ui-components';
-import { ExpandableComponent } from '@elyra/ui-components';
+import {
+  ExpandableComponent,
+  IExpandableActionButton
+} from '@elyra/ui-components';
 import {
   ReactWidget,
   UseSignal,
   Clipboard,
   Dialog,
-  showDialog,
+  showDialog
 } from '@jupyterlab/apputils';
 import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
@@ -40,6 +43,7 @@ import { copyIcon, closeIcon } from '@jupyterlab/ui-components';
 import { Widget, PanelLayout } from '@lumino/widgets';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
+// import { Cell } from '@jupyterlab/cells';
 
 import React from 'react';
 
@@ -48,7 +52,7 @@ import { SearchBar } from './SearchBar';
 
 import { IDragEvent } from '@lumino/dragdrop';
 
-import { inputDialog } from './CodeSnippetForm';
+// import { inputDialog } from './CodeSnippetForm';
 
 // import { Cell } from '@jupyterlab/cells';
 
@@ -58,8 +62,12 @@ import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 
 //import {Preview} from './PreviewSnippet'
 
-import { showMessage } from './PreviewSnippet';
+import { showPreview } from './PreviewSnippet';
 
+/**
+ * The class added to snippet cells
+ */
+// const CODE_SNIPPET_CELL_CLASS = 'jp-CodeSnippet-cell';
 /**
  * The CSS class added to code snippet widget.
  */
@@ -80,6 +88,13 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  * A class used to indicate a drop target.
  */
 const DROP_TARGET_CLASS = 'jp-snippet-dropTarget';
+
+const DISPLAY_NAME_CLASS = 'elyra-expandableContainer-name';
+const ELYRA_BUTTON_CLASS = 'elyra-button';
+const BUTTON_CLASS = 'elyra-expandableContainer-button';
+const TITLE_CLASS = 'elyra-expandableContainer-title';
+const ACTION_BUTTONS_WRAPPER_CLASS = 'elyra-expandableContainer-action-buttons';
+const ACTION_BUTTON_CLASS = 'elyra-expandableContainer-actionButton';
 
 /**
  * CodeSnippetDisplay props.
@@ -123,12 +138,12 @@ class CodeSnippetDisplay extends React.Component<
       const fileEditor = (documentWidget.content as FileEditor).editor;
       const markdownRegex = /^\.(md|mkdn?|mdown|markdown)$/;
 
-      if (PathExt.extname(widget.context.path).match(markdownRegex) != null) {
+      if (PathExt.extname(widget.context.path).match(markdownRegex) !== null) {
         // Wrap snippet into a code block when inserting it into a markdown file
         fileEditor.replaceSelection(
           '```' + snippet.language + '\n' + snippetStr + '\n```'
         );
-      } else if (widget.constructor.name == 'PythonFileEditor') {
+      } else if (widget.constructor.name === 'PythonFileEditor') {
         this.verifyLanguageAndInsert(snippet, 'python', fileEditor);
       } else {
         fileEditor.replaceSelection(snippetStr);
@@ -220,7 +235,7 @@ class CodeSnippetDisplay extends React.Component<
         '" is incompatible with ' +
         editorLanguage +
         '. Continue?',
-      buttons: [Dialog.cancelButton(), Dialog.okButton()],
+      buttons: [Dialog.cancelButton(), Dialog.okButton()]
     });
   };
 
@@ -229,7 +244,7 @@ class CodeSnippetDisplay extends React.Component<
     return showDialog({
       title: 'Error',
       body: errMsg,
-      buttons: [Dialog.okButton()],
+      buttons: [Dialog.okButton()]
     });
   };
 
@@ -252,6 +267,7 @@ class CodeSnippetDisplay extends React.Component<
   //   }
   //   return color;
   // };
+
     //Render snippet bookmark based on state of bookmarked field
     // private bookmarkSnippetRender = (codeSnippet: ICodeSnippet): string => {
     //     if(codeSnippet.bookmarked===false) {
@@ -271,20 +287,23 @@ class CodeSnippetDisplay extends React.Component<
             codeSnippet.bookmarked = false;
             target.classList.remove("selected");
         }
-    }
+  };
 
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
   private renderCodeSnippet = (
     codeSnippet: ICodeSnippet,
-    id: string
+    id: string,
+    type: string
   ): JSX.Element => {
+    const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
+
     const displayName =
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
     const insertIcon = new LabIcon({
       name: 'ui-compnents:insert',
-      svgstr: insertSVGstr,
+      svgstr: insertSVGstr
     });
     const actionButtons = [
       {
@@ -292,33 +311,41 @@ class CodeSnippetDisplay extends React.Component<
         icon: copyIcon,
         onClick: (): void => {
           Clipboard.copyToSystem(codeSnippet.code.join('\n'));
-        },
+        }
       },
       {
         title: 'Insert',
         icon: insertIcon,
         onClick: (): void => {
           this.insertCodeSnippet(codeSnippet);
-        },
+        }
       },
       {
         title: 'Delete',
         icon: closeIcon,
         onClick: (): void => {
           this.deleteCodeSnippet(codeSnippet);
-        },
-      },
+        }
+      }
     ]; // Replace the borderleft color with options! Save on repetitive code this way!
     /** TODO: if the type is a cell then display cell */
+    // type of code snippet: plain code or cell
     return (
-      <div
-        key={codeSnippet.name}
-        className={CODE_SNIPPET_ITEM}
-        id={id}
-      >
-        <div className="triangle" title="Bookmark" onClick={(event) => {this.bookmarkSnippetClick(codeSnippet,event)}}></div>
-        <div onClick={():void => {showMessage({
-          body: new MessageHandler(codeSnippet), displayName: codeSnippet.displayName})}}>
+      <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM} id={id}>
+        <div
+          className="triangle"
+          title="Bookmark"
+          onClick={event => {
+            this.bookmarkSnippetClick(codeSnippet, event);
+          }}
+        ></div>
+        <div
+          onClick={(): void => {
+            showPreview({
+              body: new PreviewHandler(codeSnippet, type)
+            });
+          }}
+        >
           <ExpandableComponent
             displayName={displayName}
             tooltip={codeSnippet.description}
@@ -329,25 +356,28 @@ class CodeSnippetDisplay extends React.Component<
         </div>
       </div>
     );
-  }
+  };
 
   static getDerivedStateFromProps(
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
-  ) {
+  ): ICodeSnippetDisplayState {
+    console.log(props);
+    console.log(state);
     if (
       props.codeSnippets.length !== state.codeSnippets.length &&
       state.filterValue === ''
     ) {
       return {
         codeSnippets: props.codeSnippets,
+        filterValue: ''
       };
     }
     return null;
   }
 
   filterSnippets = (filterValue: string): void => {
-    const newSnippets = this.props.codeSnippets.filter((codeSnippet) =>
+    const newSnippets = this.props.codeSnippets.filter(codeSnippet =>
       codeSnippet.displayName.includes(filterValue)
     );
     this.setState(
@@ -362,10 +392,11 @@ class CodeSnippetDisplay extends React.Component<
     return (
       <div>
         <SearchBar onFilter={this.filterSnippets} />
+        <header className={CODE_SNIPPETS_HEADER_CLASS}>{'Snippets'}</header>
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
-              this.renderCodeSnippet(codeSnippet, id.toString())
+              this.renderCodeSnippet(codeSnippet, id.toString(), 'cell')
             )}
           </div>
         </div>
@@ -431,6 +462,9 @@ export class CodeSnippetWidget extends ReactWidget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
       case 'lm-dragenter':
         this._evtDragEnter(event as IDragEvent);
         break;
@@ -462,6 +496,7 @@ export class CodeSnippetWidget extends ReactWidget {
     node.addEventListener('lm-dragleave', this);
     node.addEventListener('lm-dragover', this);
     node.addEventListener('lm-drop', this);
+    node.addEventListener('mousedown', this);
   }
 
   /**
@@ -495,6 +530,11 @@ export class CodeSnippetWidget extends ReactWidget {
       n = n.parentElement;
     }
     return undefined;
+  }
+
+  private _evtMouseDown(event: MouseEvent): void {
+    console.log(event.clientX);
+    console.log(event.clientY);
   }
 
   /**
@@ -543,7 +583,7 @@ export class CodeSnippetWidget extends ReactWidget {
    * Handle the `'lm-dragover'` event for the widget.
    */
   private _evtDragOver(event: IDragEvent): void {
-    const data = Private.findData(event.mimeData);
+    const data = Private.findCellData(event.mimeData);
     if (data === undefined) {
       return;
     }
@@ -570,12 +610,19 @@ export class CodeSnippetWidget extends ReactWidget {
    * Hanlde the `'lm-drop'` event for the widget.
    */
   private _evtDrop(event: IDragEvent): Promise<void> {
-    const data = Private.findData(event.mimeData);
+    const data = Private.findCellData(event.mimeData);
     if (data === undefined) {
       return;
     }
 
     console.log(data);
+
+    // const cell_mime = event.mimeData.getData(JUPYTER_CELL_MIME);
+    // // const cells = event.mimeData.getData('internal:cells');
+
+    // console.log(cell_mime);
+
+    // console.log(cells);
 
     event.preventDefault();
     event.stopPropagation();
@@ -604,6 +651,20 @@ export class CodeSnippetWidget extends ReactWidget {
     console.log(this.node);
     console.log('target');
     console.log(target);
+
+    // const cell_mime = event.mimeData.getData(JUPYTER_CELL_MIME);
+
+    /**
+     * Dragged and dropped cells onto the snippet panel
+     */
+    // const cells: Cell[] = event.mimeData.getData('internal:cells');
+    // const cellList: string[] = [];
+    // const data = cells.forEach(cell => cellList.push(cell.node.innerHTML));
+    // console.log(cellList.join(''));
+    // console.log(data);
+
+    // // console.log(cell_mime);
+    // console.log(cells);
 
     // path to the list of snippets from the current widget
     // const path = this.node.childNodes[0].childNodes[1].childNodes[0].childNodes[1].childNodes[0].childNodes;
@@ -665,10 +726,28 @@ export class CodeSnippetWidget extends ReactWidget {
      *        NEED TO DEFINE THE STRUCTURE OF SNIPPET!!!!
      * */
 
-    const url = 'elyra/metadata/code-snippets';
+    const newSnippet: ICodeSnippet = {
+      name: 'testingCodeCell',
+      displayName: 'testingCodeCell',
+      description: 'testingCodeCell',
+      language: 'Python',
+      code: data
+    };
 
-    inputDialog(this, url, data, idx);
-    console.log(data);
+    this.codeSnippetWidgetModel.addSnippet(
+      { codeSnippet: newSnippet, id: idx },
+      idx
+    );
+
+    const newSnippets = this.codeSnippetWidgetModel.snippets;
+    this._codeSnippets = newSnippets;
+    console.log(this._codeSnippets);
+    this.renderCodeSnippetsSignal.emit(this._codeSnippets);
+
+    // const url = 'elyra/metadata/code-snippets';
+
+    // inputDialog(this, url, data, idx, 'cell');
+    // console.log(data.split('\n'));
   }
 
   deleteCodeSnippet(snippet: ICodeSnippet): void {
@@ -681,9 +760,6 @@ export class CodeSnippetWidget extends ReactWidget {
   render(): React.ReactElement {
     return (
       <div>
-        <header className={CODE_SNIPPETS_HEADER_CLASS}>
-          {'</> Code Snippets'}
-        </header>
         <UseSignal signal={this.renderCodeSnippetsSignal} initialArgs={[]}>
           {(_, codeSnippets): React.ReactElement => (
             <div>
@@ -700,10 +776,10 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 }
 
-class MessageHandler extends Widget {
-    constructor(codeSnippet: ICodeSnippet) {
-      super({ node: Private.createConfirmMessageNode(codeSnippet) });
-    }
+class PreviewHandler extends Widget {
+  constructor(codeSnippet: ICodeSnippet, type: string) {
+    super({ node: Private.createPreviewNode(codeSnippet, type) });
+  }
 }
 
 /**
@@ -713,52 +789,79 @@ namespace Private {
   /**
    * Given a MimeData instance, extract the data, if any.
    */
-  export function findData(mime: MimeData): string | undefined {
+  export function findCellData(mime: MimeData): string[] {
     // const types = mime.types();
     // console.log(types);
     // application/vnd.jupyter.cells
-    const data = mime.getData('text/plain');
+    const cells = mime.getData(JUPYTER_CELL_MIME);
+    const data: string[] = [];
+    cells.forEach((cell: any) => data.push(cell.source));
+
     return data;
   }
 
   /**
-     * Create structure for preview of snippet data.
-     */
-    export function createConfirmMessageNode(codeSnippet: ICodeSnippet ): HTMLElement {
-      //let code:string = codeSnippet.code[0];
-      
-      const body = document.createElement('div');
-      
-  
-      const messageContainer = document.createElement('div');
-      messageContainer.className = 'jp-preview-text';
-      const message = document.createElement('text');
-      message.className = 'jp-preview-textarea';
-      message.textContent = codeSnippet.code.join('\n').replace('\n','\r\n');
-      //console.log("this is the text: "+ message.textContent);
-      messageContainer.appendChild(message);
-      body.append(messageContainer);
-      return body;
-      }
-  }
-  
-  /**
-   * A custom panel layout for the notebook.
+   * Create structure for preview of snippet data.
    */
-  export class SnippetPanelLayout extends PanelLayout {
-    /**
-     * A message handler invoked on an `'update-request'` message.
-     *
-     * #### Notes
-     * This is a reimplementation of the base class method,
-     * and is a no-op.
-     */
-    protected onUpdateRequest(msg: Message): void {
-      // This is a no-op.
-    }
+  export function createPreviewNode(
+    codeSnippet: ICodeSnippet,
+    type: string
+  ): HTMLElement {
+    //let code:string = codeSnippet.code[0];
+
+    return createPreviewContent(codeSnippet, type);
+  }
 }
 
+function createPreviewContent(
+  codeSnippet: ICodeSnippet,
+  type: string
+): HTMLElement {
+  const body = document.createElement('div');
+  console.log(codeSnippet.code);
+  for (let i = 0; i < codeSnippet.code.length; i++) {
+    const previewContainer = document.createElement('div');
+    const preview = document.createElement('text');
+    preview.contentEditable = 'true';
 
+    if (type === 'code') {
+      previewContainer.className = 'jp-preview-text';
+      preview.className = 'jp-preview-textarea';
+      preview.textContent = codeSnippet.code.join('\n').replace('\n', '\r\n');
+    } else if (type === 'cell') {
+      previewContainer.className = 'jp-preview-cell';
+      const previewPrompt = document.createElement('div');
+      previewPrompt.className = 'jp-preview-cell-prompt';
+      previewPrompt.innerText = '[ ]:';
+      previewContainer.appendChild(previewPrompt);
+      preview.className = 'jp-preview-cellarea';
+      preview.textContent = codeSnippet.code[i];
+    } else {
+      alert('Invalid type to preview');
+    }
+
+    //console.log("this is the text: "+ message.textContent);
+    previewContainer.appendChild(preview);
+    body.append(previewContainer);
+  }
+  return body;
+}
+
+/**
+ * A custom panel layout for the notebook.
+ */
+export class SnippetPanelLayout extends PanelLayout {
+  /**
+   * A message handler invoked on an `'update-request'` message.
+   *
+   * #### Notes
+   * This is a reimplementation of the base class method,
+   * and is a no-op.
+   */
+  protected onUpdateRequest(msg: Message): void {
+    // This is a no-op.
+  }
+}
 
 /**
  * A namespace for CodeSnippet statics.

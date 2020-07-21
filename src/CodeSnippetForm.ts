@@ -63,8 +63,8 @@ export function inputDialog(
     focusNodeSelector: 'input',
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
   }).then((result: Dialog.IResult<string[]>) => {
-    if (validateForm(result)===false) {
-      return inputDialog(codeSnippet,url,inputCode,idx); // This works but it wipes out all the data they entered previously...
+    if (validateForm(result) === false) {
+      return inputDialog(codeSnippet, url, inputCode, idx); // This works but it wipes out all the data they entered previously...
     }
     if (!result.value) {
       return null;
@@ -184,30 +184,30 @@ export function isValidFileName(name: string): boolean {
  * Test whether user typed in all required inputs.
  */
 export function validateForm(input: Dialog.IResult<string[]>): boolean {
-    let status = true;
-    let message: string = "";
-    let name = input.value[0];
-    let description = input.value[1];
-    let language = input.value[2];
-    if (name === "") {
-      message += "Name must be filled out\n";
-      //alert("Description must be filled out");
-      status = false;
-    }
-    if (description === "") {
-      message += "Description must be filled out\n";
-      //alert("");
-      status = false;
-    }
-    if (language === "") {
-      message += "Language must be filled out";
-      //alert("Description ");
-      status = false;
-    }
-    if (status == false) {
-      alert(message);
-    }
-    return status;
+  let status = true;
+  let message: string = '';
+  let name = input.value[0];
+  let description = input.value[1];
+  let language = input.value[2];
+  if (name === '') {
+    message += 'Name must be filled out\n';
+    //alert("Description must be filled out");
+    status = false;
+  }
+  if (description === '') {
+    message += 'Description must be filled out\n';
+    //alert("");
+    status = false;
+  }
+  if (language === '') {
+    message += 'Language must be filled out';
+    //alert("Description ");
+    status = false;
+  }
+  if (status == false) {
+    alert(message);
+  }
+  return status;
 }
 /**
  * A widget used to get input data.

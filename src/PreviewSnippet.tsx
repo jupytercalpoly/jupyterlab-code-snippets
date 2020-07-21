@@ -1,19 +1,19 @@
 import '../style/index.css';
 
-// import checkSVGstr from '../style/check.svg';
-// import { LabIcon } from '@jupyterlab/ui-components';
-
 import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
 
+import * as React from 'react';
+
 /**
  * The class name for confirmation box
  */
 const PREVIEW_CLASS = 'jp-preview';
 
+const PREVIEW_CONTENT = 'jp-Preview-content';
 /**
  * Create and show a dialog.
  *
@@ -21,7 +21,7 @@ const PREVIEW_CLASS = 'jp-preview';
  *
  * @returns A promise that resolves with whether the dialog was accepted.
  */
-export function showMessage<T>(
+export function showPreview<T>(
   options: Partial<Preview.IOptions<T>> = {}
 ): Promise<void> {
   //Insert check method to see if the preview is already open
@@ -36,26 +36,28 @@ export function showMessage<T>(
  * A widget used to show confirmation message.
  */
 export class Preview<T> extends Widget {
-  displayName:string
-  ready:boolean
+  ready: boolean;
+  _title: string;
   constructor(options: Partial<Preview.IOptions<T>> = {}) {
     super();
     this.ready = true; ///
-    this.displayName = options.displayName; ///
+    this._title = options.title;
     this.addClass(PREVIEW_CLASS);
     const renderer = Preview.defaultRenderer;
     //this._host = options.host || document.body;
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
-    content.addClass('jp-Preview-content');
+    content.addClass(PREVIEW_CONTENT);
     layout.addWidget(content);
 
+    const header = renderer.createHeader(options.title);
+    content.addWidget(header);
     const body = renderer.createBody(options.body || '');
     content.addWidget(body);
-    
+
     if (Preview.tracker.size > 0) {
       let previous = Preview.tracker.currentWidget;
-      if (previous.displayName === this.displayName) {
+      if (previous._title === this._title) {
         this.ready = false;
       }
       console.log(previous);
@@ -119,9 +121,11 @@ export class Preview<T> extends Widget {
    * @param event - The DOM event sent to the widget
    */
   protected _evtClick(event: MouseEvent): void {
-    console.log("If this function hasn't been hit for the same snippet then don't launchhhh for that snippet");
+    console.log(
+      "If this function hasn't been hit for the same snippet then don't launchhhh for that snippet"
+    );
     const content = this.node.getElementsByClassName(
-      'jp-Preview-content'
+      PREVIEW_CONTENT
     )[0] as HTMLElement;
     console.log(content);
     if (!content.contains(event.target as HTMLElement)) {
@@ -145,11 +149,11 @@ export class Preview<T> extends Widget {
         event.preventDefault();
         this.reject();
         break;
-      case 13: // Enter.
-        event.stopPropagation();
-        event.preventDefault();
-        this.resolve();
-        break;
+      // case 13: // Enter.
+      //   event.stopPropagation();
+      //   event.preventDefault();
+      //   this.resolve();
+      //   break;
       default:
         break;
     }
@@ -228,7 +232,7 @@ export class Preview<T> extends Widget {
    *  A message handler invoked on an `'after-attach'` message.
    */
   protected onAfterAttach(msg: Message): void {
-    console.log("I have reached this stageeee");
+    console.log('I have reached this stageeee');
     const node = this.node;
     node.addEventListener('keydown', this, true);
     node.addEventListener('contextmenu', this, true);
@@ -241,7 +245,7 @@ export class Preview<T> extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     const node = this.node;
-    console.log("Itgjhgjhj");
+    console.log('Itgjhgjhj');
     node.removeEventListener('keydown', this, true);
     node.removeEventListener('contextmenu', this, true);
     node.removeEventListener('click', this, true);
@@ -273,6 +277,7 @@ export namespace Preview {
   }
 
   export interface IOptions<T> {
+    title: string;
     /**
      * The main body element for the dialog or a message to display.
      * Defaults to an empty string.
@@ -286,28 +291,11 @@ export namespace Preview {
      * All `input` and `select` nodes will be wrapped and styled.
      */
     body: Body<T>;
-
-    /**
-     * The host element for the dialog. Defaults to `document.body`.
-     */
-    host: HTMLElement;
-
-    /**
-     * When "true", renders a close button for the dialog
-     */
-    hasClose: boolean;
-
-    /**
-     * An optional renderer for dialog items.  Defaults to a shared
-     * default renderer.
-     */
-    renderer: IRenderer; //add something here to pass in?
-
-    //ADD DESCRIPTION
-    displayName: string;
   }
 
   export interface IRenderer {
+    createHeader(title: string): Widget;
+
     /**
      * Create the body of the dialog.
      *
@@ -316,10 +304,19 @@ export namespace Preview {
      * @returns A widget for the body.
      */
     createBody(body: Body<any>): Widget;
-    createIcon(): Widget;
   }
 
   export class Renderer {
+    /**
+     * Create the header of the dialog.
+     */
+    createHeader(title: string): Widget {
+      const header = ReactWidget.create(<>{title}</>);
+
+      header.addClass('jp-Preview-header');
+      // Styling.styleNode(header.node);
+      return header;
+    }
     /**
      * Create the body of the dialog.
      *
