@@ -1,12 +1,12 @@
-# code_snippets
+# JupyterLab Code Snippet
+
+## Save, reuse, and share code snippets using JupyterLab Code Snippets
 
 ![Github Actions Status](https://github.com/jupytercalpoly/project2.git/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/project2.git/master?urlpath=lab)
 
-Save, reuse, and share code snippets using JupyterLab Code Snippets
+Read [Press Release](./PRESSRELEASE.md) for more information.
 
-Read [press release](./PRESSRELEASE.md) for more information.
-
-Check [progress log](./PROGRESS.md) to keep up with our feature updates!
+Check out [the current progress](./PROGRESS.md) to keep up with our feature updates!
 
 This extension is composed of a Python package named `code_snippets`
 for the server extension and a NPM package named `code-snippets`
