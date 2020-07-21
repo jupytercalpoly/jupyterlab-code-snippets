@@ -267,29 +267,26 @@ class CodeSnippetDisplay extends React.Component<
   //   }
   //   return color;
   // };
-  //Render snippet bookmark based on state of bookmarked field
-  // private bookmarkSnippetRender = (codeSnippet: ICodeSnippet): string => {
-  //     if(codeSnippet.bookmarked===false) {
-  //         return "transparent #E5E5E5 transparent transparent";
-  //     }
-  //     return "transparent blue transparent transparent";
-  // }
 
-  //Change bookmark field and color onclick
-  private bookmarkSnippetClick = (
-    codeSnippet: ICodeSnippet,
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ): void => {
-    const target = event.target as HTMLElement;
-    if (codeSnippet.bookmarked === false) {
-      codeSnippet.bookmarked = true;
-      target.style.borderColor = 'transparent blue transparent transparent';
-    } else if (codeSnippet.bookmarked === true) {
-      codeSnippet.bookmarked = false;
-      console.log('TARGET: ', target.className);
-      target.style.borderColor = 'transparent #E5E5E5 transparent transparent';
-      target.style.transition = 'border-color 0.2s linear';
-    }
+    //Render snippet bookmark based on state of bookmarked field
+    // private bookmarkSnippetRender = (codeSnippet: ICodeSnippet): string => {
+    //     if(codeSnippet.bookmarked===false) {
+    //         return "transparent #E5E5E5 transparent transparent";
+    //     }
+    //     return "transparent blue transparent transparent";
+    // }
+    
+    //Change bookmark field and color onclick
+    private bookmarkSnippetClick = (codeSnippet: ICodeSnippet, event:React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+        const target = event.target as HTMLElement;
+        if(codeSnippet.bookmarked===false) {
+            codeSnippet.bookmarked = true;
+            target.classList.add("selected");
+        }
+        else if(codeSnippet.bookmarked===true) {
+            codeSnippet.bookmarked = false;
+            target.classList.remove("selected");
+        }
   };
 
   // Render display of code snippet list

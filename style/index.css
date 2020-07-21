@@ -254,16 +254,21 @@
   height: 0;
   border-style: solid;
   border-width: 0 17px 17px 0;
-  border-color: transparent #e5e5e5 transparent transparent;
+  border-color: transparent #E0E0E0 transparent transparent;
   right: 0;
   position: absolute;
   transition: border-color 0.2s linear;
-}
-
-.triangle:hover {
-  border-color: transparent blue transparent transparent;
+  cursor: pointer;
 }
 
 .jp-codesnippet-searchbar {
   margin: 5px;
+}
+
+.triangle:hover { 
+  border-color: transparent #1976D2 transparent transparent; 
+}
+
+.selected {
+  border-color: transparent #1976D2 transparent transparent; 
 }
