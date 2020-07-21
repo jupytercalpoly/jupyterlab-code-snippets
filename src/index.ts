@@ -50,7 +50,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       return app.shell.currentWidget;
     };
 
-    const codeSnippetWrapper = new CodeSnippetWrapper(getCurrentWidget) as Widget;
+    const codeSnippetWrapper = new CodeSnippetWrapper(
+      getCurrentWidget
+    ) as Widget;
     codeSnippetWrapper.id = CODE_SNIPPET_EXTENSION_ID;
     codeSnippetWrapper.title.icon = codeSnippetIcon;
     codeSnippetWrapper.title.caption = 'Jupyter Code Snippet';
@@ -92,9 +94,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         const layout = codeSnippetWrapper.layout as PanelLayout;
 
         inputDialog(
-          layout.widgets[0] as unknown as CodeSnippetWidget,
+          (layout.widgets[0] as unknown) as CodeSnippetWidget,
           url,
-          highlightedCode,
+          [highlightedCode],
           -1
         );
         console.log(`Highlight trial: ${highlightedCode}`);

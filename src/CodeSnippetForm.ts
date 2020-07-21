@@ -54,7 +54,7 @@ export interface IFileContainer extends JSONObject {
 export function inputDialog(
   codeSnippet: CodeSnippetWidget,
   url: string,
-  inputCode: string,
+  inputCode: string[],
   idx: number
 ): Promise<Contents.IModel | null> {
   return showDialog({
@@ -74,7 +74,7 @@ export function inputDialog(
         displayName: result.value[0],
         description: result.value[1],
         language: result.value[2],
-        code: [inputCode]
+        code: inputCode
       };
       /**
        * TODO: NEED in memory data store instead of making request every time.
@@ -87,7 +87,7 @@ export function inputDialog(
         JSON.stringify({
           display_name: newSnippet.displayName,
           metadata: {
-            code: [inputCode],
+            code: inputCode,
             description: newSnippet.description,
             language: newSnippet.language
           },
