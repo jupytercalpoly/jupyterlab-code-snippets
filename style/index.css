@@ -91,7 +91,15 @@
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding: 0;
+  padding: 0; 
+  background-image: none;
+  transition: background-image ease;
+}
+
+.elyra-codeSnippet-item:hover {
+  background-image: url(./icon/dragtab_jupyter.svg);
+  background-position:8px center;
+  background-repeat:no-repeat;
 }
 
 /* .elyra-codeSnippet-item textarea {
