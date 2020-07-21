@@ -13,6 +13,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.elyra-expandableContainer-button,
+.elyra-expandableContainer-button.jp-mod-styled {
+  background-color: transparent;
+  vertical-align: middle;
+  padding: 0;
+  width: 20px;
+}
+
+.elyra-expandableContainer-button:hover {
+  cursor: pointer;
+}
+
+.elyra-expandableContainer-actionButton:hover {
+  background-color: var(--jp-layout-color1);
+}
+
+.elyra-expandableContainer-actionButton:active {
+  background-color: var(--jp-layout-color2);
+}
+
+.elyra-expandableContainer-title {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  padding: 0px 4px;
+  height: 36px;
+}
+
+.elyra-expandableContainer-title:hover {
+  background: var(--jp-layout-color2);
+}
+
+.elyra-expandableContainer-title:hover .elyra-expandableContainer-button {
+  background-color: var(--jp-layout-color2);
+}
+
+.elyra-expandableContainer-name {
+  flex-grow: 1;
+  font-size: var(--jp-ui-font-size1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 4px 0 4px 2px;
+  line-height: 28px;
+}
+
+.elyra-expandableContainer-name:hover {
+  cursor: pointer;
+}
+
+.elyra-button {
+  background-repeat: no-repeat;
+  background-position: center;
+  border: none;
+  height: 100%;
+}
 
 .elyra-CodeSnippets {
   height: 100%;
@@ -20,9 +76,14 @@
 }
 
 .elyra-codeSnippetsHeader {
-  font-weight: bold;
-  padding: 8px 10px;
+  font-size: var(--jp-ui-font-size0);
+  font-weight: 600;
+  /* font-size: 13px; */
+  /* font-family: helvetica; */
+  text-transform: uppercase;
+  padding: 8px 0 8px 12px;
   border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+  /* border-top: var(--jp-border-width) solid var(--jp-toolbar-border-color); */
 }
 
 .elyra-codeSnippet-item {
@@ -33,7 +94,7 @@
   padding: 0;
 }
 
-.elyra-codeSnippet-item textarea {
+/* .elyra-codeSnippet-item textarea {
   background-color: inherit;
   border: none;
   font-family: var(--jp-code-font-family);
@@ -46,7 +107,7 @@
   white-space: pre;
   word-wrap: normal;
   overflow-x: scroll;
-}
+} */
 
 .jp-confirm {
   position: absolute;
@@ -96,30 +157,31 @@
 }
 
 .elyra-codeSnippet-item.jp-snippet-dropTarget {
-  border-top: 2px solid #42A5F5;
+  border-top: 2px solid #42a5f5;
   /* border: var(--jp-border-width) solid var(--jp-input-active-border-color);
-  box-shadow: var(--jp-input-box-shadow); */}
+  box-shadow: var(--jp-input-box-shadow); */
+}
 
 .jp-preview {
   position: absolute;
+  min-width: 2px;
+  min-height: 30px;
+  top: 31px;
+  left: 5px;
+  width: 1076px;
+  height: 710px;
   display: flex;
-  flex-direction: row;
-  top: 0px;
-  left: 0px;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+  justify-content: center;
+  flex-direction: column;
   background: var(--jp-dialog-background);
 }
 
 .jp-Preview-content {
-  display: flex;
-  flex-direction: row;
   background: var(--jp-layout-color1);
   padding: 10px;
-  min-width: 960px; /*This can be standard*/
+  min-width: 960px;
   max-width: 1000px;
-  height: auto; /*I want this to depend on the size of code*/
+  max-height: 92%;
   box-sizing: border-box;
   box-shadow: var(--jp-elevation-z20);
   word-wrap: break-word;
@@ -129,38 +191,62 @@
   margin: auto auto auto 10px;
 }
 
-.jp-Preview-body {
-  display: flex;
-  align-items: center;
+.jp-Preview-header {
+  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+  padding-bottom: 5px;
 }
 
-.jp-preview-text {
-  width: 960px; 
+.jp-Preview-body {
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+}
+
+.jp-preview-cell-prompt {
+  flex: 0 0 var(--jp-cell-prompt-width);
+  color: var(--jp-cell-inprompt-font-color);
+  font-family: var(--jp-cell-prompt-font-family);
+  padding: var(--jp-code-padding);
+  letter-spacing: var(--jp-cell-prompt-letter-spacing);
+  opacity: var(--jp-cell-prompt-opacity);
+  line-height: var(--jp-code-line-height);
+  font-size: var(--jp-code-font-size);
+  border: var(--jp-border-width) solid transparent;
+  opacity: var(--jp-cell-prompt-opacity);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.jp-preview-text,
+.jp-preview-cell {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
   font-family: helvetica;
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
-  text-align: left;
-  white-space: pre;
-  padding-left: 10px;
+  padding: var(--jp-cell-padding);
 }
 
-.jp-preview-textarea {
-  background-color: #EEEEEE;
-  border: 1px solid #BDBDBD;
+.jp-preview-textarea,
+.jp-preview-cellarea {
+  border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
+  border-radius: 0px;
+  background: var(--jp-cell-editor-background);
   font-family: var(--jp-code-font-family);
   font-size: var(--jp-code-font-size);
   line-height: var(--jp-code-line-height);
-  display: block;
-  min-height: auto;
-  max-height: 600px;
-  height: 100%; /*I want this to depend on the size of code*/
-  width: 100%;
-  resize: vertical;
+  text-align: left;
+  flex-grow: 1;
+  resize: none;
   white-space: pre;
-  word-wrap: normal;
-  overflow-y: scroll;
-  padding-left: 5px;
+  padding: var(--jp-code-padding);
 }
 
 .triangle {
@@ -168,12 +254,12 @@
   height: 0;
   border-style: solid;
   border-width: 0 17px 17px 0;
-  border-color: transparent #E5E5E5 transparent transparent;
+  border-color: transparent #e5e5e5 transparent transparent;
   right: 0;
   position: absolute;
   transition: border-color 0.2s linear;
 }
 
-.triangle:hover { 
-  border-color: transparent blue transparent transparent; 
+.triangle:hover {
+  border-color: transparent blue transparent transparent;
 }
