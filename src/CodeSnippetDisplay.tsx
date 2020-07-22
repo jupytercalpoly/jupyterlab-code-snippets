@@ -255,7 +255,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div
           className="triangle"
           title="Bookmark"
-          onClick={event => {
+          onClick={(event): void => {
             this.bookmarkSnippetClick(codeSnippet, event);
           }}
         ></div>
