@@ -51,7 +51,7 @@ export class SnippetList {
     return snippetList;
   }
 
-  sort() {
+  sort(): void {
     this.snippetList.sort((a, b) => a.id - b.id);
   }
 
@@ -60,7 +60,7 @@ export class SnippetList {
    * @param newSnippet new snippet to insert
    * @param index index to insert. If it's not given, the snippet is added at the end of the list.
    */
-  insertSnippet(newSnippet: ICodeSnippetModel, index: number = -1) {
+  insertSnippet(newSnippet: ICodeSnippetModel, index = -1): void {
     const numSnippets = this.snippetList.length;
 
     // add it at the end of the list
@@ -86,7 +86,7 @@ export class SnippetList {
    * Delete a snippet from the list
    * @param index index to delete. If it's not given, the last one gets deleted.
    */
-  deleteSnippet(index: number = -1) {
+  deleteSnippet(index = -1): void {
     const numSnippets = this.snippetList.length;
     if (index < 0 || index > numSnippets) {
       this.snippetList.pop();

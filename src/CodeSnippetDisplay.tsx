@@ -192,33 +192,6 @@ export class CodeSnippetDisplay extends React.Component<
     });
   };
 
-  // Pick color for side of snippet box based on number of code lines
-  // private codeLinesToColor = (codeSnippet: ICodeSnippet): string => {
-  //   let color: string;
-  //   let i,
-  //     counter = 0;
-  //   for (i = 0; i < codeSnippet.code[0].length; i++) {
-  //     if (codeSnippet.code[0][i] === '\n') {
-  //       counter++;
-  //     }
-  //   }
-  //   if (counter < 25) {
-  //     color = '8px solid #BBDEFB';
-  //   } else if (counter >= 25 && counter <= 50) {
-  //     color = '8px solid #64B5F6';
-  //   } else {
-  //     color = '8px solid #1976D2';
-  //   }
-  //   return color;
-  // };
-  //Render snippet bookmark based on state of bookmarked field
-  // private bookmarkSnippetRender = (codeSnippet: ICodeSnippet): string => {
-  //     if(codeSnippet.bookmarked===false) {
-  //         return "transparent #E5E5E5 transparent transparent";
-  //     }
-  //     return "transparent blue transparent transparent";
-  // }
-
   //Change bookmark field and color onclick
   private bookmarkSnippetClick = (
     codeSnippet: ICodeSnippet,
@@ -282,7 +255,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div
           className="triangle"
           title="Bookmark"
-          onClick={event => {
+          onClick={(event): void => {
             this.bookmarkSnippetClick(codeSnippet, event);
           }}
         ></div>
@@ -379,53 +352,47 @@ class PreviewHandler extends Widget {
   }
 }
 
-/**
- * A namespace for private data.
- */
-namespace Private {
-  /**
-   * Create structure for preview of snippet data.
-   */
-  export function createPreviewNode(
+class Private {
+  static createPreviewContent(
     codeSnippet: ICodeSnippet,
     type: string
   ): HTMLElement {
-    //let code:string = codeSnippet.code[0];
+    const body = document.createElement('div');
+    console.log(codeSnippet.code);
+    for (let i = 0; i < codeSnippet.code.length; i++) {
+      const previewContainer = document.createElement('div');
+      const preview = document.createElement('text');
+      preview.contentEditable = 'true';
 
-    return createPreviewContent(codeSnippet, type);
-  }
-}
+      if (type === 'code') {
+        previewContainer.className = 'jp-preview-text';
+        preview.className = 'jp-preview-textarea';
+        preview.textContent = codeSnippet.code.join('\n').replace('\n', '\r\n');
+      } else if (type === 'cell') {
+        previewContainer.className = 'jp-preview-cell';
+        const previewPrompt = document.createElement('div');
+        previewPrompt.className = 'jp-preview-cell-prompt';
+        previewPrompt.innerText = '[ ]:';
+        previewContainer.appendChild(previewPrompt);
+        preview.className = 'jp-preview-cellarea';
+        preview.textContent = codeSnippet.code[i];
+      } else {
+        alert('Invalid type to preview');
+      }
 
-function createPreviewContent(
-  codeSnippet: ICodeSnippet,
-  type: string
-): HTMLElement {
-  const body = document.createElement('div');
-  console.log(codeSnippet.code);
-  for (let i = 0; i < codeSnippet.code.length; i++) {
-    const previewContainer = document.createElement('div');
-    const preview = document.createElement('text');
-    preview.contentEditable = 'true';
-
-    if (type === 'code') {
-      previewContainer.className = 'jp-preview-text';
-      preview.className = 'jp-preview-textarea';
-      preview.textContent = codeSnippet.code.join('\n').replace('\n', '\r\n');
-    } else if (type === 'cell') {
-      previewContainer.className = 'jp-preview-cell';
-      const previewPrompt = document.createElement('div');
-      previewPrompt.className = 'jp-preview-cell-prompt';
-      previewPrompt.innerText = '[ ]:';
-      previewContainer.appendChild(previewPrompt);
-      preview.className = 'jp-preview-cellarea';
-      preview.textContent = codeSnippet.code[i];
-    } else {
-      alert('Invalid type to preview');
+      //console.log("this is the text: "+ message.textContent);
+      previewContainer.appendChild(preview);
+      body.append(previewContainer);
     }
-
-    //console.log("this is the text: "+ message.textContent);
-    previewContainer.appendChild(preview);
-    body.append(previewContainer);
+    return body;
   }
-  return body;
+  /**
+   * Create structure for preview of snippet data.
+   */
+  static createPreviewNode(
+    codeSnippet: ICodeSnippet,
+    type: string
+  ): HTMLElement {
+    return this.createPreviewContent(codeSnippet, type);
+  }
 }

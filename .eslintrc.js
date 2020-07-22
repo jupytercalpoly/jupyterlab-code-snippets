@@ -3,7 +3,8 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
+    'plugin:react/recommended'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -16,6 +17,7 @@ module.exports = {
       'error',
       { prefixWithI: 'always' }
     ],
+    '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-namespace': 'off',

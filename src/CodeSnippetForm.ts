@@ -176,7 +176,7 @@ export function shouldOverwrite(path: string): Promise<boolean> {
  * Disallows "/", "\", and ":" in file names, as well as names with zero length.
  */
 export function isValidFileName(name: string): boolean {
-  const validNameExp = /[\/\\:]/;
+  const validNameExp = /[/\\:]/;
   return name.length > 0 && !validNameExp.test(name);
 }
 
@@ -185,10 +185,10 @@ export function isValidFileName(name: string): boolean {
  */
 export function validateForm(input: Dialog.IResult<string[]>): boolean {
   let status = true;
-  let message: string = '';
-  let name = input.value[0];
-  let description = input.value[1];
-  let language = input.value[2];
+  let message = '';
+  const name = input.value[0];
+  const description = input.value[1];
+  const language = input.value[2];
   if (name === '') {
     message += 'Name must be filled out\n';
     //alert("Description must be filled out");
@@ -204,7 +204,7 @@ export function validateForm(input: Dialog.IResult<string[]>): boolean {
     //alert("Description ");
     status = false;
   }
-  if (status == false) {
+  if (status === false) {
     alert(message);
   }
   return status;
@@ -223,7 +223,7 @@ class InputHandler extends Widget {
   }
 
   getValue(): string[] {
-    let inputs = [];
+    const inputs = [];
     inputs.push(
       (this.node.getElementsByTagName('input')[0] as HTMLInputElement).value,
       (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
@@ -242,11 +242,11 @@ class MessageHandler extends Widget {
 /**
  * A namespace for private data.
  */
-namespace Private {
+class Private {
   /**
    * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
    */
-  export function createInputNode(): HTMLElement {
+  static createInputNode(): HTMLElement {
     const body = document.createElement('form');
 
     const nameTitle = document.createElement('label');
@@ -274,7 +274,7 @@ namespace Private {
     return body;
   }
 
-  export function createConfirmMessageNode(): HTMLElement {
+  static createConfirmMessageNode(): HTMLElement {
     const body = document.createElement('div');
     body.innerHTML = checkSVGstr;
 
