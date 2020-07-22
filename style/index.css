@@ -95,6 +95,10 @@
   padding: 0; 
 }
 
+.elyra-codeSnippet-item-clicked {
+  background-color: var(--jp-layout-color2);
+}
+
 /* .elyra-codeSnippet-item textarea {
   background-color: inherit;
   border: none;
@@ -169,7 +173,7 @@
   min-height: 30px;
   top: 31px;
   left: 5px;
-  width: 1076px;
+  width: 100%;
   height: 710px;
   display: flex;
   justify-content: center;
@@ -286,11 +290,12 @@
   transition: background-image ease;*/
 }
 
-/*.drag-hover:hover {
-  background-image: url(./icon/dragtab_jupyter.svg);
-  background-position:center;
+.drag-hover-clicked {
+  background-image: url(./icon/drag_active_jupyter.svg);
+  background-color: var(--jp-layout-color2);
+  background-position: center;
   background-repeat:no-repeat;
-}*/
+}
 
 .drag-hover-selected {
   background-image: url(./icon/dragtab_jupyter.svg);

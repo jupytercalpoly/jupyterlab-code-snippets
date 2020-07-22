@@ -219,10 +219,21 @@ export class CodeSnippetDisplay extends React.Component<
     document.getElementsByClassName("drag-hover")[_id].classList.remove("drag-hover-selected");
   }
 
-  // private dragHoverClicked = (id:string):void => {
-  //   let _id:number = parseInt(id,10);
-  //   document.getElementsByClassName("drag-hover")[_id].classList.add("drag-hover-clicked");
-  // }
+  private snippetClicked = (id:string):void => {
+    let _id:number = parseInt(id,10); 
+    if (document.getElementsByClassName("drag-hover")[_id].classList.contains("drag-hover-clicked")){
+      document.getElementsByClassName("drag-hover")[_id].classList.remove("drag-hover-clicked");
+    }
+    else {
+      document.getElementsByClassName("drag-hover")[_id].classList.add("drag-hover-clicked");
+    }
+    if (document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.contains("elyra-codeSnippet-item-clicked")){
+      document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.remove("elyra-codeSnippet-item-clicked");
+    }
+    else {
+      document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.add("elyra-codeSnippet-item-clicked");
+    }
+  }
 
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
@@ -279,13 +290,16 @@ export class CodeSnippetDisplay extends React.Component<
         <div>
           <div key={displayName} className={TITLE_CLASS}>
             <span
+              id = {id}
               title={codeSnippet.displayName}
               className={DISPLAY_NAME_CLASS}
               onClick={(): void => {
                 showPreview({
+                  id: parseInt(id,10),
                   title: displayName,
                   body: new PreviewHandler(codeSnippet, type)
                 });
+                this.snippetClicked(id);
               }}
             >
               {displayName}

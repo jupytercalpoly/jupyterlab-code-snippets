@@ -182,7 +182,7 @@ export class CodeSnippetWidget extends ReactWidget {
     return undefined;
   }
 
-  private _evtMouseDown(event: MouseEvent): void {
+  private _evtMouseDown(event: MouseEvent): void { //get rid of preview by clicking anything
     const target = event.target as HTMLElement;
     console.log(target);
 
@@ -196,6 +196,16 @@ export class CodeSnippetWidget extends ReactWidget {
         !target.classList.contains('elyra-expandableContainer-name')
       ) {
         preview.classList.add('inactive');
+        for (let elem of document.getElementsByClassName("drag-hover")) {
+          if (elem.classList.contains("drag-hover-clicked")) {
+            elem.classList.remove("drag-hover-clicked");
+          }
+        }
+        for (let item of document.getElementsByClassName("elyra-codeSnippet-item")) {
+          if (item.classList.contains("elyra-codeSnippet-item-clicked")) {
+            item.classList.remove("elyra-codeSnippet-item-clicked");
+          }
+        }
       }
     }
     // If target is on the widget, do not display preview
