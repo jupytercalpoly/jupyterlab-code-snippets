@@ -281,6 +281,9 @@ export class CodeSnippetDisplay extends React.Component<
                     title={btn.title}
                     className={buttonClasses + ' ' + ACTION_BUTTON_CLASS}
                     onClick={(): void => {
+                      if (btn.title === 'Copy') {
+                        alert('saved to clipboard');
+                      }
                       btn.onClick();
                     }}
                   >

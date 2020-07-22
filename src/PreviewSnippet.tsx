@@ -58,7 +58,13 @@ export class Preview<T> extends Widget {
     if (Preview.tracker.size > 0) {
       const previous = Preview.tracker.currentWidget;
       if (previous._title === this._title) {
-        this.ready = false;
+        if (previous.node.classList.contains('inactive')) {
+          previous.node.classList.remove('inactive');
+          this.ready = false;
+          return this;
+        } else {
+          this.ready = false;
+        }
       }
       console.log(previous);
       previous.reject();

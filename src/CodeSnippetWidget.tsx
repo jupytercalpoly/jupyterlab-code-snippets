@@ -183,6 +183,26 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   private _evtMouseDown(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    console.log(target);
+
+    const preview = document.querySelector('.jp-preview');
+    if (preview) {
+      console.log('here');
+      // if target is not the code snippet name area, then add inactive
+      // if target area is the code snippet name area, previewSnippet widget will handle preview.
+      if (
+        !preview.classList.contains('inactive') &&
+        !target.classList.contains('elyra-expandableContainer-name')
+      ) {
+        preview.classList.add('inactive');
+      }
+    }
+    // If target is on the widget, do not display preview
+    // if (target.classList.contains('elyra-CodeSnippets')) {
+
+    // }
+
     console.log(event.clientX);
     console.log(event.clientY);
   }
