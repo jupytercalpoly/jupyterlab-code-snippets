@@ -209,6 +209,21 @@ export class CodeSnippetDisplay extends React.Component<
     }
   };
 
+  private dragHoverStyle = (id:string):void => {
+    let _id:number = parseInt(id,10);
+    document.getElementsByClassName("drag-hover")[_id].classList.add("drag-hover-selected");
+  }
+
+  private dragHoverStyleRemove = (id:string):void => {
+    let _id:number = parseInt(id,10);
+    document.getElementsByClassName("drag-hover")[_id].classList.remove("drag-hover-selected");
+  }
+
+  // private dragHoverClicked = (id:string):void => {
+  //   let _id:number = parseInt(id,10);
+  //   document.getElementsByClassName("drag-hover")[_id].classList.add("drag-hover-clicked");
+  // }
+
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
   private renderCodeSnippet = (
@@ -247,11 +262,13 @@ export class CodeSnippetDisplay extends React.Component<
           this.deleteCodeSnippet(codeSnippet);
         }
       }
-    ]; // Replace the borderleft color with options! Save on repetitive code this way!
+    ];
     /** TODO: if the type is a cell then display cell */
     // type of code snippet: plain code or cell
     return (
-      <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM} id={id}>
+      <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM} id={id} onMouseOver={() => {
+        this.dragHoverStyle(id);}} onMouseOut={()=> {this.dragHoverStyleRemove(id);}}>
+        <div className="drag-hover" id={id}></div>
         <div
           className="triangle"
           title="Bookmark"

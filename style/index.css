@@ -38,6 +38,7 @@
   display: flex;
   flex-direction: row;
   padding: 0px 4px;
+  margin-left: 15px;
   height: 36px;
 }
 
@@ -92,14 +93,6 @@
   flex-direction: column;
   margin: 0;
   padding: 0; 
-  background-image: none;
-  transition: background-image ease;
-}
-
-.elyra-codeSnippet-item:hover {
-  background-image: url(./icon/dragtab_jupyter.svg);
-  background-position:8px center;
-  background-repeat:no-repeat;
 }
 
 /* .elyra-codeSnippet-item textarea {
@@ -282,4 +275,27 @@
 
 .selected {
   border-color: transparent #1976d2 transparent transparent;
+}
+
+.drag-hover {
+  width: 15px;
+  height: 36px;
+  position: absolute;
+  display: block;
+  /*background-image: url(./icon/dragtab_jupyter.svg);;
+  transition: background-image ease;*/
+}
+
+/*.drag-hover:hover {
+  background-image: url(./icon/dragtab_jupyter.svg);
+  background-position:center;
+  background-repeat:no-repeat;
+}*/
+
+.drag-hover-selected {
+  background-image: url(./icon/dragtab_jupyter.svg);
+  margin-right: -2px;
+  background-color: var(--jp-layout-color2);
+  background-position:center;
+  background-repeat:no-repeat;
 }
