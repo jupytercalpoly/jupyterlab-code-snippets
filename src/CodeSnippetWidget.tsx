@@ -460,11 +460,11 @@ export namespace CodeSnippetWidget {
   }
 }
 
-namespace Private {
+class Private {
   /**
    * Given a MimeData instance, extract the data, if any.
    */
-  export function findCellData(mime: MimeData): string[] {
+  static findCellData(mime: MimeData): string[] {
     // const types = mime.types();
     // console.log(types);
     // application/vnd.jupyter.cells

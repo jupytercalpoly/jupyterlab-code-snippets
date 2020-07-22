@@ -74,7 +74,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'some-css-icon-class',
       execute: () => {
         console.log(`Executed ${commandID}`);
-        let highlightedCode = getSelectedText();
+        const highlightedCode = getSelectedText();
         // RequestHandler.makePostRequest(
         //   url,
         //   JSON.stringify({

@@ -31,19 +31,19 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
     return this._snippets.snippets;
   }
 
-  addSnippet(snippetOpt: CodeSnippetModel.IOptions, index: number) {
-    if (snippetOpt.id == -1) {
+  addSnippet(snippetOpt: CodeSnippetModel.IOptions, index: number): void {
+    if (snippetOpt.id === -1) {
       snippetOpt.id = this.snippets.length;
     }
     const newSnippet = this.contentFactory.createSnippet(snippetOpt);
     this._snippets.insertSnippet(newSnippet, index);
   }
 
-  sortSnippets() {
+  sortSnippets(): void {
     this._snippets.sort();
   }
 
-  deleteSnippet(index: number) {
+  deleteSnippet(index: number): void {
     this._snippets.deleteSnippet(index);
   }
 }
@@ -71,7 +71,7 @@ export namespace CodeSnippetWidgetModel {
   }
 
   export class ContentFactory implements IContentFactory {
-    createSnippet(options: CodeSnippetModel.IOptions) {
+    createSnippet(options: CodeSnippetModel.IOptions): CodeSnippetModel {
       return new CodeSnippetModel(options);
     }
   }

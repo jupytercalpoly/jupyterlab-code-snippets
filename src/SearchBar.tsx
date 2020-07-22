@@ -10,15 +10,15 @@ export class SearchBar extends React.Component<ISearchProp> {
     value: ''
   };
 
-  updateValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+  updateValue = (event: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({ value: event.target.value }, this.filterSnippets);
   };
 
-  filterSnippets = () => {
+  filterSnippets = (): void => {
     this.props.onFilter(this.state.value);
   };
 
-  render() {
+  render(): JSX.Element {
     return (
       <div className="jp-codesnippet-searchbar">
         <InputGroup

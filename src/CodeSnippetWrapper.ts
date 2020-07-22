@@ -34,7 +34,7 @@ export class CodeSnippetWrapper extends Widget {
   /**
    * Create a code snippet widget
    */
-  createCodeSnippetWidget(codeSnippets: ICodeSnippet[]) {
+  createCodeSnippetWidget(codeSnippets: ICodeSnippet[]): void {
     const layout = this.layout as PanelLayout;
     const codeSnippetWidget = CodeSnippetWidget.getInstance(
       codeSnippets,

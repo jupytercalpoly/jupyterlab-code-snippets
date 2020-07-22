@@ -347,7 +347,7 @@ export namespace ConfirmMessage {
    * The dialog widget tracker.
    */
   export const tracker = new WidgetTracker<ConfirmMessage<any>>({
-    namespace: '@jupyterlab/code_snippet:ConfirmWidget',
+    namespace: '@jupyterlab/code_snippet:ConfirmWidget'
   });
 }
 
