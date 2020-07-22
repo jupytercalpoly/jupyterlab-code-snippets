@@ -176,6 +176,10 @@
   background: var(--jp-dialog-background);
 }
 
+.jp-preview.inactive {
+  display: none;
+}
+
 .jp-Preview-content {
   background: var(--jp-layout-color1);
   padding: 10px;
@@ -204,15 +208,14 @@
 
 .jp-preview-cell-prompt {
   flex: 0 0 var(--jp-cell-prompt-width);
-  color: var(--jp-cell-inprompt-font-color);
   font-family: var(--jp-cell-prompt-font-family);
   padding: var(--jp-code-padding);
   letter-spacing: var(--jp-cell-prompt-letter-spacing);
-  opacity: var(--jp-cell-prompt-opacity);
   line-height: var(--jp-code-line-height);
   font-size: var(--jp-code-font-size);
   border: var(--jp-border-width) solid transparent;
-  opacity: var(--jp-cell-prompt-opacity);
+  opacity: var(--jp-cell-prompt-not-active-opacity);
+  color: var(--jp-cell-prompt-not-active-font-color);
   text-align: right;
   white-space: nowrap;
   overflow: hidden;
@@ -254,7 +257,7 @@
   height: 0;
   border-style: solid;
   border-width: 0 17px 17px 0;
-  border-color: transparent #E0E0E0 transparent transparent;
+  border-color: transparent #e0e0e0 transparent transparent;
   right: 0;
   position: absolute;
   transition: border-color 0.2s linear;
@@ -265,10 +268,10 @@
   margin: 5px;
 }
 
-.triangle:hover { 
-  border-color: transparent #1976D2 transparent transparent; 
+.triangle:hover {
+  border-color: transparent #1976d2 transparent transparent;
 }
 
 .selected {
-  border-color: transparent #1976D2 transparent transparent; 
+  border-color: transparent #1976d2 transparent transparent;
 }
