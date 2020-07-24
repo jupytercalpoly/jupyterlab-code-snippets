@@ -62,7 +62,7 @@ export class CodeSnippetWrapper extends Widget {
 
     fileModels.forEach(fileModel => paths.push(fileModel.path));
 
-    for (let path of paths) {
+    for (const path of paths) {
       await this.codeSnippetManager.getData(path, 'file').then(model => {
         data.push(JSON.parse(model.content));
       });
