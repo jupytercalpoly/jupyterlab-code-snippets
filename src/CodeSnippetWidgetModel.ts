@@ -1,6 +1,6 @@
 import { CodeSnippetModel, ICodeSnippetModel } from './CodeSnippetModel';
 import { SnippetList } from './SnippetList';
-import { ICodeSnippet } from './CodeSnippetService';
+import { ICodeSnippet } from './CodeSnippetContentsService';
 
 export interface ICodeSnippetWidgetModel {
   /**

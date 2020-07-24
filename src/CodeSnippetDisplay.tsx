@@ -1,14 +1,17 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
 import { SearchBar } from './SearchBar';
 import { showPreview } from './PreviewSnippet';
-import { ICodeSnippet } from './CodeSnippetService';
-import { CodeSnippetWidget } from './CodeSnippetWidget';
+import {
+  ICodeSnippet,
+  CodeSnippetContentsService
+} from './CodeSnippetContentsService';
+// import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
 import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
-import { PathExt, URLExt } from '@jupyterlab/coreutils';
-import { ServerConnection } from '@jupyterlab/services';
+import { PathExt } from '@jupyterlab/coreutils';
+// import { ServerConnection } from '@jupyterlab/services';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
@@ -66,7 +69,7 @@ interface ICodeSnippetDisplayState {
 export class CodeSnippetDisplay extends React.Component<
   ICodeSnippetDisplayProps,
   ICodeSnippetDisplayState
-  > {
+> {
   state = { codeSnippets: this.props.codeSnippets, filterValue: '' };
 
   // Handle code snippet insert into an editor
@@ -125,19 +128,23 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Handle deleting code snippet
   private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
-    console.log("WIDGET: ", this.props.getCurrentWidget instanceof CodeSnippetWidget);
-    console.log(snippet);
+    // console.log(this.props.getCurrentWidget instanceof CodeSnippetWidget);
+    // console.log(snippet);
     const name = snippet.name;
-    const url = 'elyra/metadata/code-snippets/' + name;
+    // const url = 'elyra/metadata/code-snippets/' + name;
 
-    const settings = ServerConnection.makeSettings();
-    const requestUrl = URLExt.join(settings.baseUrl, url);
-
-    await ServerConnection.makeRequest(
-      requestUrl,
-      { method: 'DELETE' },
-      settings
+    CodeSnippetContentsService.getInstance().delete(
+      'snippets/' + name + '.json'
     );
+
+    // const settings = ServerConnection.makeSettings();
+    // const requestUrl = URLExt.join(settings.baseUrl, url);
+
+    // await ServerConnection.makeRequest(
+    //   requestUrl,
+    //   { method: 'DELETE' },
+    //   settings
+    // );
 
     this.props.onDelete(snippet);
   };
@@ -195,15 +202,15 @@ export class CodeSnippetDisplay extends React.Component<
   // Pick color for side of snippet box based on number of code lines
   private codeLines = (codeSnippet: ICodeSnippet): string => {
     let i;
-    let counter:number = 0;
+    let counter: number = 0;
     for (i = 0; i < codeSnippet.code[0].length; i++) {
       if (codeSnippet.code[0][i] === '\n') {
         counter++;
       }
     }
-    counter+=1;
+    counter += 1;
     console.log(counter);
-    return ("LOC\t\t" + counter)
+    return 'LOC\t\t' + counter;
   };
 
   //Change bookmark field and color onclick
@@ -226,31 +233,49 @@ export class CodeSnippetDisplay extends React.Component<
   // Insert 6 dots on hover
   private dragHoverStyle = (id: string): void => {
     let _id: number = parseInt(id, 10);
-    document.getElementsByClassName("drag-hover")[_id].classList.add("drag-hover-selected");
-  }
+    document
+      .getElementsByClassName('drag-hover')
+      [_id].classList.add('drag-hover-selected');
+  };
 
   // Remove 6 dots off hover
   private dragHoverStyleRemove = (id: string): void => {
     let _id: number = parseInt(id, 10);
-    document.getElementsByClassName("drag-hover")[_id].classList.remove("drag-hover-selected");
-  }
+    document
+      .getElementsByClassName('drag-hover')
+      [_id].classList.remove('drag-hover-selected');
+  };
 
   // Grey out snippet and include blue six dots when snippet is previewing (clicked)
   private snippetClicked = (id: string): void => {
     let _id: number = parseInt(id, 10);
-    if (document.getElementsByClassName("drag-hover")[_id].classList.contains("drag-hover-clicked")) {
-      document.getElementsByClassName("drag-hover")[_id].classList.remove("drag-hover-clicked");
+    if (
+      document
+        .getElementsByClassName('drag-hover')
+        [_id].classList.contains('drag-hover-clicked')
+    ) {
+      document
+        .getElementsByClassName('drag-hover')
+        [_id].classList.remove('drag-hover-clicked');
+    } else {
+      document
+        .getElementsByClassName('drag-hover')
+        [_id].classList.add('drag-hover-clicked');
     }
-    else {
-      document.getElementsByClassName("drag-hover")[_id].classList.add("drag-hover-clicked");
+    if (
+      document
+        .getElementsByClassName(CODE_SNIPPET_ITEM)
+        [_id].classList.contains('elyra-codeSnippet-item-clicked')
+    ) {
+      document
+        .getElementsByClassName(CODE_SNIPPET_ITEM)
+        [_id].classList.remove('elyra-codeSnippet-item-clicked');
+    } else {
+      document
+        .getElementsByClassName(CODE_SNIPPET_ITEM)
+        [_id].classList.add('elyra-codeSnippet-item-clicked');
     }
-    if (document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.contains("elyra-codeSnippet-item-clicked")) {
-      document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.remove("elyra-codeSnippet-item-clicked");
-    }
-    else {
-      document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.add("elyra-codeSnippet-item-clicked");
-    }
-  }
+  };
 
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
@@ -260,7 +285,6 @@ export class CodeSnippetDisplay extends React.Component<
     type: string
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
-    console.log(CodeSnippetWidget.tracker);
     const displayName =
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
@@ -294,9 +318,15 @@ export class CodeSnippetDisplay extends React.Component<
     /** TODO: if the type is a cell then display cell */
     // type of code snippet: plain code or cell
     return (
-      <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM} id={id} /*onMouseOver={() => {
+      <div
+        key={codeSnippet.name}
+        className={CODE_SNIPPET_ITEM}
+        id={
+          id
+        } /*onMouseOver={() => {
         this.dragHoverStyle(id);
-      }} onMouseOut={() => { this.dragHoverStyleRemove(id); }}*/>
+      }} onMouseOut={() => { this.dragHoverStyleRemove(id); }}*/
+      >
         <div className="drag-hover" id={id}></div>
         <div
           className="triangle"
@@ -306,9 +336,16 @@ export class CodeSnippetDisplay extends React.Component<
           }}
         ></div>
         <div>
-          <div key={displayName} className={TITLE_CLASS} onMouseOver={() => {
-        this.dragHoverStyle(id);
-      }} onMouseOut={() => { this.dragHoverStyleRemove(id); }}>
+          <div
+            key={displayName}
+            className={TITLE_CLASS}
+            onMouseOver={() => {
+              this.dragHoverStyle(id);
+            }}
+            onMouseOut={() => {
+              this.dragHoverStyleRemove(id);
+            }}
+          >
             <span
               id={id}
               title={codeSnippet.displayName}
@@ -323,7 +360,10 @@ export class CodeSnippetDisplay extends React.Component<
               }}
             >
               {displayName}
-              <br /><div className="lines-of-code" id={id}>{this.codeLines(codeSnippet)}</div>
+              <br />
+              <div className="lines-of-code" id={id}>
+                {this.codeLines(codeSnippet)}
+              </div>
             </span>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS}>
               {actionButtons.map((btn: IExpandableActionButton) => {
@@ -358,8 +398,6 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    console.log(props);
-    console.log(state);
     if (
       props.codeSnippets.length !== state.codeSnippets.length &&
       state.filterValue === ''
@@ -392,7 +430,11 @@ export class CodeSnippetDisplay extends React.Component<
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
-              this.renderCodeSnippet(codeSnippet, id.toString(), 'cell')
+              this.renderCodeSnippet(
+                codeSnippet,
+                id.toString(),
+                codeSnippet.type
+              )
             )}
           </div>
         </div>
@@ -413,7 +455,6 @@ class Private {
     type: string
   ): HTMLElement {
     const body = document.createElement('div');
-    console.log(codeSnippet.code);
     for (let i = 0; i < codeSnippet.code.length; i++) {
       const previewContainer = document.createElement('div');
       const preview = document.createElement('text');

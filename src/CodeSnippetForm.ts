@@ -1,5 +1,5 @@
 import { Widget } from '@lumino/widgets';
-import { RequestHandler } from '@elyra/application';
+// import { RequestHandler } from '@elyra/application';
 
 import checkSVGstr from '../style/icon/check.svg';
 import { showMessage } from './ConfirmMessage';
@@ -10,7 +10,10 @@ import { Contents } from '@jupyterlab/services';
 
 import { JSONObject } from '@lumino/coreutils';
 
-import { ICodeSnippet } from './CodeSnippetService';
+import {
+  ICodeSnippet,
+  CodeSnippetContentsService
+} from './CodeSnippetContentsService';
 
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
@@ -31,7 +34,7 @@ const INPUT_NEWNAME_TITLE_CLASS = 'jp-new-name-title';
 /**
  * Metadata schema name
  */
-const SCHEMA_NAME = 'code-snippet';
+// const SCHEMA_NAME = 'code-snippet';
 
 /**
  * A stripped-down interface for a file container.
@@ -55,7 +58,8 @@ export function inputDialog(
   codeSnippet: CodeSnippetWidget,
   url: string,
   inputCode: string[],
-  idx: number
+  idx: number,
+  type: string
 ): Promise<Contents.IModel | null> {
   return showDialog({
     title: 'Save Code Snippet',
@@ -64,7 +68,7 @@ export function inputDialog(
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
   }).then((result: Dialog.IResult<string[]>) => {
     if (validateForm(result) === false) {
-      return inputDialog(codeSnippet, url, inputCode, idx); // This works but it wipes out all the data they entered previously...
+      return inputDialog(codeSnippet, url, inputCode, idx, type); // This works but it wipes out all the data they entered previously...
     }
     if (!result.value) {
       return null;
@@ -74,27 +78,38 @@ export function inputDialog(
         displayName: result.value[0],
         description: result.value[1],
         language: result.value[2],
-        code: inputCode
+        code: inputCode,
+        id: idx,
+        type: type,
+        bookmarked: false
       };
       /**
        * TODO: NEED in memory data store instead of making request every time.
        */
       /* TODO: if name is already there call shouldOverwrite and change to a put request*/
       // Workaround: make a get request with result.value[0] to check... but could be slow
-      const request = RequestHandler.makePostRequest(
-        //If i use their handler then I can't interrupt any error messages without editing their stuff.
-        url,
-        JSON.stringify({
-          display_name: newSnippet.displayName,
-          metadata: {
-            code: inputCode,
-            description: newSnippet.description,
-            language: newSnippet.language
-          },
-          name: newSnippet.name,
-          schema_name: SCHEMA_NAME
-        }),
-        false
+      // const request = RequestHandler.makePostRequest(
+      //   //If i use their handler then I can't interrupt any error messages without editing their stuff.
+      //   url,
+      //   JSON.stringify({
+      //     display_name: newSnippet.displayName,
+      //     metadata: {
+      //       code: inputCode,
+      //       description: newSnippet.description,
+      //       language: newSnippet.language
+      //     },
+      //     name: newSnippet.name,
+      //     schema_name: SCHEMA_NAME
+      //   }),
+      //   false
+      // );
+      const request = CodeSnippetContentsService.getInstance().save(
+        'snippets/' + newSnippet.name + '.json',
+        {
+          type: 'file',
+          format: 'text',
+          content: JSON.stringify(newSnippet)
+        }
       );
 
       // console.log(request);
