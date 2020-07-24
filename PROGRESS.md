@@ -18,6 +18,16 @@
 - [ ] Templated fields
 - [ ] Right click and save highlighted cell
 
+## Demo 2 (Aug 5)
+- [ ] Search ability
+  - [ ] search by name/language
+  - [ ] search bolding
+- [ ] Snippet preview
+  - [ ] editing mode
+  - [ ] snippet description
+- [ ] drag and drop
+  - [ ] drag snippet into notebook - create new cell
+  
 ## Log of Changes/Progress
 
 ### 7/20/2020 - 7/24/2020:
