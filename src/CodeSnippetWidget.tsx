@@ -28,7 +28,7 @@ import { Signal } from '@lumino/signaling';
 
 import React from 'react';
 
-import { ICodeSnippet } from './CodeSnippetService';
+import { ICodeSnippet } from './CodeSnippetContentsService';
 
 import { IDragEvent } from '@lumino/dragdrop';
 
@@ -73,8 +73,6 @@ export class CodeSnippetWidget extends ReactWidget {
     super();
     this.getCurrentWidget = getCurrentWidget;
     this._codeSnippetWidgetModel = new CodeSnippetWidgetModel(codeSnippets, {});
-    console.log(this);
-    console.log(this._codeSnippetWidgetModel);
     this._codeSnippets = this._codeSnippetWidgetModel.snippets;
     this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
   }
@@ -141,7 +139,6 @@ export class CodeSnippetWidget extends ReactWidget {
     this.renderCodeSnippetsSignal.emit(this._codeSnippets);
 
     const node = this.node;
-    console.log(node);
     node.addEventListener('lm-dragenter', this);
     node.addEventListener('lm-dragleave', this);
     node.addEventListener('lm-dragover', this);
@@ -184,11 +181,10 @@ export class CodeSnippetWidget extends ReactWidget {
 
   private _evtMouseDown(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    console.log(target);
+    // console.log(target);
 
     const preview = document.querySelector('.jp-preview');
     if (preview) {
-      console.log('here');
       // if target is not the code snippet name area, then add inactive
       // if target area is the code snippet name area, previewSnippet widget will handle preview.
       if (
@@ -211,24 +207,19 @@ export class CodeSnippetWidget extends ReactWidget {
    * Handle the `'lm-dragenter'` event for the widget.
    */
   private _evtDragEnter(event: IDragEvent): void {
-    console.log(event.mimeData.getData(JUPYTER_CELL_MIME));
     if (!event.mimeData.hasData(JUPYTER_CELL_MIME)) {
       return;
     }
     event.preventDefault();
     event.stopPropagation();
     const target = event.target as HTMLElement;
-    console.log(target);
     const snippet = this._findSnippet(target);
     if (snippet === undefined) {
       return;
     }
     const snippetNode = snippet[0] as HTMLElement;
-    console.log(snippetNode);
 
     snippetNode.classList.add(DROP_TARGET_CLASS);
-    console.log('adding class');
-    console.log(snippetNode);
   }
 
   /**
@@ -241,12 +232,9 @@ export class CodeSnippetWidget extends ReactWidget {
     event.preventDefault();
     event.stopPropagation();
     const elements = this.node.getElementsByClassName(DROP_TARGET_CLASS);
-    console.log('left');
-    console.log(elements);
     if (elements.length) {
       (elements[0] as HTMLElement).classList.remove(DROP_TARGET_CLASS);
     }
-    console.log(elements);
   }
 
   /**
@@ -272,8 +260,6 @@ export class CodeSnippetWidget extends ReactWidget {
     const snippetNode = snippet[0] as HTMLElement;
 
     snippetNode.classList.add(DROP_TARGET_CLASS);
-    console.log('adding class drag over');
-    console.log(snippetNode);
   }
 
   /**
@@ -285,7 +271,7 @@ export class CodeSnippetWidget extends ReactWidget {
       return;
     }
 
-    console.log(data);
+    // console.log(data);
 
     // const cell_mime = event.mimeData.getData(JUPYTER_CELL_MIME);
     // // const cells = event.mimeData.getData('internal:cells');
@@ -318,9 +304,9 @@ export class CodeSnippetWidget extends ReactWidget {
     }
 
     // get the index of the target
-    console.log(this.node);
-    console.log('target');
-    console.log(target);
+    // console.log(this.node);
+    // console.log('target');
+    // console.log(target);
 
     // const cell_mime = event.mimeData.getData(JUPYTER_CELL_MIME);
 
@@ -348,7 +334,7 @@ export class CodeSnippetWidget extends ReactWidget {
     //   "code": [data]
     // }
 
-    console.log(idx);
+    // console.log(idx);
     // this.update({ codeSnippets: this.codeSnippets });
     // this.setState({ codeSnippets: this.codeSnippets });
     //   console.log(this._model.snippets);
@@ -414,7 +400,7 @@ export class CodeSnippetWidget extends ReactWidget {
 
     const url = 'elyra/metadata/code-snippets';
 
-    inputDialog(this, url, data, idx);
+    inputDialog(this, url, data, idx, 'cell');
     // console.log(data.split('\n'));
   }
 

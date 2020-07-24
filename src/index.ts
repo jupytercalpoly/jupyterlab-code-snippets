@@ -18,6 +18,7 @@ import { inputDialog } from './CodeSnippetForm';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
+import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 // import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 
@@ -56,6 +57,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     codeSnippetWrapper.id = CODE_SNIPPET_EXTENSION_ID;
     codeSnippetWrapper.title.icon = codeSnippetIcon;
     codeSnippetWrapper.title.caption = 'Jupyter Code Snippet';
+
+    const service = CodeSnippetContentsService.getInstance();
+    service.save('snippets', { type: 'directory' });
 
     restorer.add(codeSnippetWrapper, CODE_SNIPPET_EXTENSION_ID);
 
@@ -97,7 +101,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
           (layout.widgets[0] as unknown) as CodeSnippetWidget,
           url,
           [highlightedCode],
-          -1
+          -1,
+          'code'
         );
         console.log(`Highlight trial: ${highlightedCode}`);
       }

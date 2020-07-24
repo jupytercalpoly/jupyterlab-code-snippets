@@ -1,14 +1,17 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
 import { SearchBar } from './SearchBar';
 import { showPreview } from './PreviewSnippet';
-import { ICodeSnippet } from './CodeSnippetService';
-import { CodeSnippetWidget } from './CodeSnippetWidget';
+import {
+  ICodeSnippet,
+  CodeSnippetContentsService
+} from './CodeSnippetContentsService';
+// import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
 import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
-import { PathExt, URLExt } from '@jupyterlab/coreutils';
-import { ServerConnection } from '@jupyterlab/services';
+import { PathExt } from '@jupyterlab/coreutils';
+// import { ServerConnection } from '@jupyterlab/services';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
@@ -125,19 +128,23 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Handle deleting code snippet
   private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
-    console.log(this.props.getCurrentWidget instanceof CodeSnippetWidget);
-    console.log(snippet);
+    // console.log(this.props.getCurrentWidget instanceof CodeSnippetWidget);
+    // console.log(snippet);
     const name = snippet.name;
-    const url = 'elyra/metadata/code-snippets/' + name;
+    // const url = 'elyra/metadata/code-snippets/' + name;
 
-    const settings = ServerConnection.makeSettings();
-    const requestUrl = URLExt.join(settings.baseUrl, url);
-
-    await ServerConnection.makeRequest(
-      requestUrl,
-      { method: 'DELETE' },
-      settings
+    CodeSnippetContentsService.getInstance().delete(
+      'snippets/' + name + '.json'
     );
+
+    // const settings = ServerConnection.makeSettings();
+    // const requestUrl = URLExt.join(settings.baseUrl, url);
+
+    // await ServerConnection.makeRequest(
+    //   requestUrl,
+    //   { method: 'DELETE' },
+    //   settings
+    // );
 
     this.props.onDelete(snippet);
   };
@@ -306,8 +313,6 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    console.log(props);
-    console.log(state);
     if (
       props.codeSnippets.length !== state.codeSnippets.length &&
       state.filterValue === ''
@@ -340,7 +345,11 @@ export class CodeSnippetDisplay extends React.Component<
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
-              this.renderCodeSnippet(codeSnippet, id.toString(), 'cell')
+              this.renderCodeSnippet(
+                codeSnippet,
+                id.toString(),
+                codeSnippet.type
+              )
             )}
           </div>
         </div>
@@ -361,7 +370,6 @@ class Private {
     type: string
   ): HTMLElement {
     const body = document.createElement('div');
-    console.log(codeSnippet.code);
     for (let i = 0; i < codeSnippet.code.length; i++) {
       const previewContainer = document.createElement('div');
       const preview = document.createElement('text');

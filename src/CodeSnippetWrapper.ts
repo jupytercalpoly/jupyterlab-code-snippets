@@ -4,7 +4,11 @@ import { Message } from '@lumino/messaging';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
-import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
+import {
+  CodeSnippetContentsService,
+  ICodeSnippet
+} from './CodeSnippetContentsService';
+import { Contents } from '@jupyterlab/services';
 
 /**
  * The CSS class added to code snippet widget.
@@ -20,7 +24,7 @@ export class CodeSnippetWrapper extends Widget {
    * Construct a new code snippet widget
    */
   getCurrentWidget: () => Widget;
-  codeSnippetManager: CodeSnippetService;
+  codeSnippetManager: CodeSnippetContentsService;
   //  codeSnippetWidget: CodeSnippetWidget;
 
   constructor(getCurrentWidget: () => Widget) {
@@ -28,7 +32,8 @@ export class CodeSnippetWrapper extends Widget {
     this.addClass(CODE_SNIPPETS_WRAPPER);
     this.getCurrentWidget = getCurrentWidget;
     this.layout = new Private.SnippetPanelLayout();
-    this.codeSnippetManager = new CodeSnippetService();
+    // this.codeSnippetManager = new CodeSnippetService();
+    this.codeSnippetManager = CodeSnippetContentsService.getInstance();
   }
 
   /**
@@ -46,7 +51,24 @@ export class CodeSnippetWrapper extends Widget {
 
   // Request code snippets from server
   async fetchData(): Promise<ICodeSnippet[]> {
-    return await this.codeSnippetManager.findAll();
+    const fileModels: Contents.IModel[] = [];
+    const paths: string[] = [];
+    const data: ICodeSnippet[] = [];
+    await this.codeSnippetManager
+      .getData('snippets', 'directory')
+      .then(model => {
+        fileModels.push(...model.content);
+      });
+
+    fileModels.forEach(fileModel => paths.push(fileModel.path));
+
+    for (let path of paths) {
+      await this.codeSnippetManager.getData(path, 'file').then(model => {
+        data.push(JSON.parse(model.content));
+      });
+    }
+
+    return data;
   }
 
   // Triggered when the widget button on side palette is clicked
