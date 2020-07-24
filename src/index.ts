@@ -17,8 +17,8 @@ import { inputDialog } from './CodeSnippetForm';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 // import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 

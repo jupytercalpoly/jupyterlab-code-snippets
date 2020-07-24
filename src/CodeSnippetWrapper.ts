@@ -62,7 +62,11 @@ export class CodeSnippetWrapper extends Widget {
 
     fileModels.forEach(fileModel => paths.push(fileModel.path));
 
+<<<<<<< HEAD
     for (const path of paths) {
+=======
+    for (let path of paths) {
+>>>>>>> Integrate contents service into frontend
       await this.codeSnippetManager.getData(path, 'file').then(model => {
         data.push(JSON.parse(model.content));
       });
