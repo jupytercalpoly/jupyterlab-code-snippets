@@ -60,8 +60,12 @@ export class Preview<T> extends Widget {
     if (Preview.tracker.size > 0) {
       const previous = Preview.tracker.currentWidget;
       if (previous._title != this._title) {
-        document.getElementsByClassName("drag-hover")[previous._id].classList.remove("drag-hover-clicked");
-        document.getElementsByClassName("elyra-codeSnippet-item")[previous._id].classList.remove("elyra-codeSnippet-item-clicked");
+        document
+          .getElementsByClassName('drag-hover')
+          [previous._id].classList.remove('drag-hover-clicked');
+        document
+          .getElementsByClassName('elyra-codeSnippet-item')
+          [previous._id].classList.remove('elyra-codeSnippet-item-clicked');
       }
       if (previous._title === this._title) {
         if (previous.node.classList.contains('inactive')) {
@@ -69,7 +73,7 @@ export class Preview<T> extends Widget {
           this.ready = false;
           return this;
         } else {
-          this.ready = false;          
+          this.ready = false;
         }
       }
       console.log(previous);
@@ -127,13 +131,13 @@ export class Preview<T> extends Widget {
     }
   }
 
-
   /**
    * Handle the `'click'` event for a dialog button.
    *
    * @param event - The DOM event sent to the widget
    */
-  protected _evtClick(event: MouseEvent): void { //gray area
+  protected _evtClick(event: MouseEvent): void {
+    //gray area
     console.log(
       "If this function hasn't been hit for the same snippet then don't launchhhh for that snippet"
     );
@@ -142,8 +146,12 @@ export class Preview<T> extends Widget {
     )[0] as HTMLElement;
     console.log(content);
     if (!content.contains(event.target as HTMLElement)) {
-      document.getElementsByClassName("drag-hover")[this._id].classList.remove("drag-hover-clicked");
-      document.getElementsByClassName("elyra-codeSnippet-item")[this._id].classList.remove("elyra-codeSnippet-item-clicked");
+      document
+        .getElementsByClassName('drag-hover')
+        [this._id].classList.remove('drag-hover-clicked');
+      document
+        .getElementsByClassName('elyra-codeSnippet-item')
+        [this._id].classList.remove('elyra-codeSnippet-item-clicked');
       event.stopPropagation();
       event.preventDefault();
       this.reject();
@@ -160,8 +168,12 @@ export class Preview<T> extends Widget {
     // Check for escape key
     switch (event.keyCode) {
       case 27: // Escape.
-        document.getElementsByClassName("drag-hover")[this._id].classList.remove("drag-hover-clicked");
-        document.getElementsByClassName("elyra-codeSnippet-item")[this._id].classList.remove("elyra-codeSnippet-item-clicked");
+        document
+          .getElementsByClassName('drag-hover')
+          [this._id].classList.remove('drag-hover-clicked');
+        document
+          .getElementsByClassName('elyra-codeSnippet-item')
+          [this._id].classList.remove('elyra-codeSnippet-item-clicked');
         event.stopPropagation();
         event.preventDefault();
         this.reject();

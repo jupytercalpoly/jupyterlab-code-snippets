@@ -10,18 +10,13 @@ import {
 
 import { Widget, PanelLayout } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
-//import { ServerConnection } from '@jupyterlab/services';
-//import { URLExt } from '@jupyterlab/coreutils';
+import { ServerConnection } from '@jupyterlab/services';
+import { URLExt } from '@jupyterlab/coreutils';
 
 import { inputDialog } from './CodeSnippetForm';
-import { INotebookTracker, NotebookTracker, NotebookPanel} from '@jupyterlab/notebook';
+import { INotebookTracker, NotebookTracker } from '@jupyterlab/notebook';
 import { CodeSnippetWrapper } from './CodeSnippetWrapper';
-import { CodeSnippetWidget} from './CodeSnippetWidget';
-
-import {
-  ReadonlyPartialJSONObject
-} from '@lumino/coreutils';
-
+import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 export interface ICodeSnippet {
   name: string;
@@ -32,6 +27,7 @@ export interface ICodeSnippet {
 }
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
+var clicked: EventTarget;
 
 /**
  * Initialization data for the code_snippets extension.
@@ -44,7 +40,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     restorer: ILayoutRestorer,
-    tracker: NotebookTracker,
+    tracker: NotebookTracker
   ) => {
     console.log('JupyterLab extension code-snippets is activated!');
     const url = 'elyra/metadata/code-snippets';
@@ -90,16 +86,26 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    function getCurrent(args: ReadonlyPartialJSONObject): NotebookPanel | null {
-      const widget = tracker.currentWidget;
-      const activate = args['activate'] !== false;
-  
-      if (activate && widget) {
-        app.shell.activateById(widget.id);
-      }
-  
-      return widget;
-    }
+    // function getCurrent(args: ReadonlyPartialJSONObject): NotebookPanel | null {
+    //   const widget = tracker.currentWidget;
+    //   const activate = args['activate'] !== false;
+
+    //   if (activate && widget) {
+    //     app.shell.activateById(widget.id);
+    //   }
+
+    //   return widget;
+    // }
+
+    // eventListener to get access to element that is right clicked.
+    document.addEventListener(
+      'contextmenu',
+      function temp(event) {
+        var clickedEl = event.target;
+        clicked = clickedEl;
+      },
+      true
+    );
 
     app.commands.addCommand(delCommand, {
       label: 'Delete Code Snippet',
@@ -107,15 +113,29 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       isVisible: () => true,
       isToggled: () => toggled,
       iconClass: 'some-css-icon-class',
-      execute: (args) => {
-        document.getElementsByClassName("elyra-codeSnippet-item");
-        // const name = snippet.name;
-        // const url = 'elyra/metadata/code-snippets/' + name;
+      execute: async () => {
+        let target = clicked as HTMLElement;
+        let _id = parseInt(target.id, 10);
+        const layout = codeSnippetWrapper.layout as PanelLayout;
+        let codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
+        let snippetToDeleteName =
+          codeSnip.codeSnippetWidgetModel.snippets[_id].name;
+        const url = 'elyra/metadata/code-snippets/' + snippetToDeleteName;
 
-        // const settings = ServerConnection.makeSettings();
-        // const requestUrl = URLExt.join(settings.baseUrl, url, name);
-        // ServerConnection.makeRequest(requestUrl, { method: 'DELETE' }, settings)
-        getCurrent(args)
+        const settings = ServerConnection.makeSettings();
+        const requestUrl = URLExt.join(settings.baseUrl, url);
+
+        await ServerConnection.makeRequest(
+          requestUrl,
+          { method: 'DELETE' },
+          settings
+        );
+        codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
+        let newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
+        codeSnip.codeSnippets = newSnippets;
+        codeSnip.renderCodeSnippetsSignal.emit(newSnippets);
+        console.log(codeSnip.codeSnippets);
+        console.log(codeSnip.codeSnippetWidgetModel.snippets);
       }
     });
 
@@ -124,12 +144,11 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       command: commandID,
       selector: '.jp-CodeCell'
     });
-    
+
     app.contextMenu.addItem({
       command: delCommand,
-      selector: '.elyra-codeSnippet-item'
-    })
-    //app.contextMenu.open
+      selector: '.elyra-expandableContainer-title'
+    });
   }
 };
 
@@ -146,7 +165,5 @@ function getSelectedText(): string {
   }
   return selectedText.toString();
 }
-
-
 
 export default code_snippet_extension;

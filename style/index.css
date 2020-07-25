@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 .elyra-expandableContainer-button,
 .elyra-expandableContainer-button.jp-mod-styled {
   background-color: transparent;
@@ -58,6 +59,7 @@
   text-overflow: ellipsis;
   padding: 4px 0 4px 2px;
   line-height: 28px;
+  margin-top: -10px;
 }
 
 .elyra-expandableContainer-name:hover {
@@ -92,7 +94,7 @@
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding: 0; 
+  padding: 0;
 }
 
 .elyra-codeSnippet-item-clicked {
@@ -282,10 +284,11 @@
 }
 
 .drag-hover {
-  width: 15px;
+  width: 20px;
   height: 36px;
   position: absolute;
   display: block;
+  margin-right: -3px;
   /*background-image: url(./icon/dragtab_jupyter.svg);;
   transition: background-image ease;*/
 }
@@ -294,13 +297,23 @@
   background-image: url(./icon/drag_active_jupyter.svg);
   background-color: var(--jp-layout-color2);
   background-position: center;
-  background-repeat:no-repeat;
+  background-repeat: no-repeat;
 }
 
 .drag-hover-selected {
   background-image: url(./icon/dragtab_jupyter.svg);
   margin-right: -2px;
   background-color: var(--jp-layout-color2);
-  background-position:center;
-  background-repeat:no-repeat;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.lines-of-code {
+  font-size: 11px;
+  color: #828282;
+  position: absolute;
+  margin-top: -15px;
+  /*font-family: menlo;*/
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
