@@ -281,8 +281,7 @@ export class CodeSnippetDisplay extends React.Component<
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
   private renderCodeSnippet = (
     codeSnippet: ICodeSnippet,
-    id: string,
-    type: string
+    id: string
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
     const displayName =
@@ -292,6 +291,7 @@ export class CodeSnippetDisplay extends React.Component<
       name: 'ui-compnents:insert',
       svgstr: insertSVGstr
     });
+
     const actionButtons = [
       {
         title: 'Copy',
@@ -354,7 +354,7 @@ export class CodeSnippetDisplay extends React.Component<
                 showPreview({
                   id: parseInt(id, 10),
                   title: displayName,
-                  body: new PreviewHandler(codeSnippet, type)
+                  body: new PreviewHandler(codeSnippet)
                 });
                 this.snippetClicked(id);
               }}
@@ -430,11 +430,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
-              this.renderCodeSnippet(
-                codeSnippet,
-                id.toString(),
-                codeSnippet.type
-              )
+              this.renderCodeSnippet(codeSnippet, id.toString())
             )}
           </div>
         </div>
@@ -444,51 +440,31 @@ export class CodeSnippetDisplay extends React.Component<
 }
 
 class PreviewHandler extends Widget {
-  constructor(codeSnippet: ICodeSnippet, type: string) {
-    super({ node: Private.createPreviewNode(codeSnippet, type) });
+  constructor(codeSnippet: ICodeSnippet) {
+    super({ node: Private.createPreviewNode(codeSnippet) });
   }
 }
 
 class Private {
-  static createPreviewContent(
-    codeSnippet: ICodeSnippet,
-    type: string
-  ): HTMLElement {
+  static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
-    for (let i = 0; i < codeSnippet.code.length; i++) {
-      const previewContainer = document.createElement('div');
-      const preview = document.createElement('text');
-      preview.contentEditable = 'true';
+    const previewContainer = document.createElement('div');
+    const preview = document.createElement('text');
 
-      if (type === 'code') {
-        previewContainer.className = 'jp-preview-text';
-        preview.className = 'jp-preview-textarea';
-        preview.textContent = codeSnippet.code.join('\n').replace('\n', '\r\n');
-      } else if (type === 'cell') {
-        previewContainer.className = 'jp-preview-cell';
-        const previewPrompt = document.createElement('div');
-        previewPrompt.className = 'jp-preview-cell-prompt';
-        previewPrompt.innerText = '[ ]:';
-        previewContainer.appendChild(previewPrompt);
-        preview.className = 'jp-preview-cellarea';
-        preview.textContent = codeSnippet.code[i];
-      } else {
-        alert('Invalid type to preview');
-      }
+    previewContainer.className = 'jp-preview-text';
+    preview.className = 'jp-preview-textarea';
+    preview.textContent = codeSnippet.code.join('\n');
 
-      //console.log("this is the text: "+ message.textContent);
-      previewContainer.appendChild(preview);
-      body.append(previewContainer);
-    }
+    //console.log("this is the text: "+ message.textContent);
+    previewContainer.appendChild(preview);
+    body.append(previewContainer);
+
     return body;
   }
   /**
    * Create structure for preview of snippet data.
    */
-  static createPreviewNode(
-    codeSnippet: ICodeSnippet,
-    type: string
-  ): HTMLElement {
-    return this.createPreviewContent(codeSnippet, type);
+  static createPreviewNode(codeSnippet: ICodeSnippet): HTMLElement {
+    return this.createPreviewContent(codeSnippet);
   }
 }
