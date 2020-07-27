@@ -66,7 +66,7 @@ interface ICodeSnippetDisplayState {
 export class CodeSnippetDisplay extends React.Component<
   ICodeSnippetDisplayProps,
   ICodeSnippetDisplayState
-> {
+  > {
   state = { codeSnippets: this.props.codeSnippets, filterValue: '' };
 
   // Handle code snippet insert into an editor
@@ -125,7 +125,7 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Handle deleting code snippet
   private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
-    console.log(this.props.getCurrentWidget instanceof CodeSnippetWidget);
+    console.log("WIDGET: ", this.props.getCurrentWidget instanceof CodeSnippetWidget);
     console.log(snippet);
     const name = snippet.name;
     const url = 'elyra/metadata/code-snippets/' + name;
@@ -192,6 +192,20 @@ export class CodeSnippetDisplay extends React.Component<
     });
   };
 
+  // Pick color for side of snippet box based on number of code lines
+  private codeLines = (codeSnippet: ICodeSnippet): string => {
+    let i;
+    let counter:number = 0;
+    for (i = 0; i < codeSnippet.code[0].length; i++) {
+      if (codeSnippet.code[0][i] === '\n') {
+        counter++;
+      }
+    }
+    counter+=1;
+    console.log(counter);
+    return ("LOC\t\t" + counter)
+  };
+
   //Change bookmark field and color onclick
   private bookmarkSnippetClick = (
     codeSnippet: ICodeSnippet,
@@ -200,7 +214,7 @@ export class CodeSnippetDisplay extends React.Component<
     const target = event.target as HTMLElement;
     if (codeSnippet.bookmarked === false) {
       codeSnippet.bookmarked = true;
-      target.style.borderColor = 'transparent blue transparent transparent';
+      target.style.borderColor = 'transparent #1976d2 transparent transparent';
     } else if (codeSnippet.bookmarked === true) {
       codeSnippet.bookmarked = false;
       console.log('TARGET: ', target.className);
@@ -208,6 +222,35 @@ export class CodeSnippetDisplay extends React.Component<
       target.style.transition = 'border-color 0.2s linear';
     }
   };
+
+  // Insert 6 dots on hover
+  private dragHoverStyle = (id: string): void => {
+    let _id: number = parseInt(id, 10);
+    document.getElementsByClassName("drag-hover")[_id].classList.add("drag-hover-selected");
+  }
+
+  // Remove 6 dots off hover
+  private dragHoverStyleRemove = (id: string): void => {
+    let _id: number = parseInt(id, 10);
+    document.getElementsByClassName("drag-hover")[_id].classList.remove("drag-hover-selected");
+  }
+
+  // Grey out snippet and include blue six dots when snippet is previewing (clicked)
+  private snippetClicked = (id: string): void => {
+    let _id: number = parseInt(id, 10);
+    if (document.getElementsByClassName("drag-hover")[_id].classList.contains("drag-hover-clicked")) {
+      document.getElementsByClassName("drag-hover")[_id].classList.remove("drag-hover-clicked");
+    }
+    else {
+      document.getElementsByClassName("drag-hover")[_id].classList.add("drag-hover-clicked");
+    }
+    if (document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.contains("elyra-codeSnippet-item-clicked")) {
+      document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.remove("elyra-codeSnippet-item-clicked");
+    }
+    else {
+      document.getElementsByClassName(CODE_SNIPPET_ITEM)[_id].classList.add("elyra-codeSnippet-item-clicked");
+    }
+  }
 
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
@@ -217,7 +260,7 @@ export class CodeSnippetDisplay extends React.Component<
     type: string
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
-
+    console.log(CodeSnippetWidget.tracker);
     const displayName =
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
@@ -247,11 +290,14 @@ export class CodeSnippetDisplay extends React.Component<
           this.deleteCodeSnippet(codeSnippet);
         }
       }
-    ]; // Replace the borderleft color with options! Save on repetitive code this way!
+    ];
     /** TODO: if the type is a cell then display cell */
     // type of code snippet: plain code or cell
     return (
-      <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM} id={id}>
+      <div key={codeSnippet.name} className={CODE_SNIPPET_ITEM} id={id} /*onMouseOver={() => {
+        this.dragHoverStyle(id);
+      }} onMouseOut={() => { this.dragHoverStyleRemove(id); }}*/>
+        <div className="drag-hover" id={id}></div>
         <div
           className="triangle"
           title="Bookmark"
@@ -260,18 +306,24 @@ export class CodeSnippetDisplay extends React.Component<
           }}
         ></div>
         <div>
-          <div key={displayName} className={TITLE_CLASS}>
+          <div key={displayName} className={TITLE_CLASS} onMouseOver={() => {
+        this.dragHoverStyle(id);
+      }} onMouseOut={() => { this.dragHoverStyleRemove(id); }}>
             <span
+              id={id}
               title={codeSnippet.displayName}
               className={DISPLAY_NAME_CLASS}
               onClick={(): void => {
                 showPreview({
+                  id: parseInt(id, 10),
                   title: displayName,
                   body: new PreviewHandler(codeSnippet, type)
                 });
+                this.snippetClicked(id);
               }}
             >
               {displayName}
+              <br /><div className="lines-of-code" id={id}>{this.codeLines(codeSnippet)}</div>
             </span>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS}>
               {actionButtons.map((btn: IExpandableActionButton) => {
