@@ -516,6 +516,7 @@ export class CodeSnippetDisplay extends React.Component<
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
 <<<<<<< HEAD
+<<<<<<< HEAD
               this.renderCodeSnippet(codeSnippet, id.toString())
 =======
               this.renderCodeSnippet(
@@ -524,6 +525,9 @@ export class CodeSnippetDisplay extends React.Component<
                 codeSnippet.type
               )
 >>>>>>> Integrate contents service into frontend
+=======
+              this.renderCodeSnippet(codeSnippet, id.toString())
+>>>>>>> Decide to save a group of cells as a single snippet of the codes combined
             )}
           </div>
         </div>
@@ -541,6 +545,7 @@ class PreviewHandler extends Widget {
 class Private {
   static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     for (let i = 0; i < codeSnippet.code.length; i++) {
@@ -584,6 +589,16 @@ class Private {
     descriptionContainer.appendChild(descriptionTitle);
     descriptionContainer.appendChild(description);
     previewContainer.appendChild(descriptionContainer);
+=======
+    const previewContainer = document.createElement('div');
+    const preview = document.createElement('text');
+
+    previewContainer.className = 'jp-preview-text';
+    preview.className = 'jp-preview-textarea';
+    preview.textContent = codeSnippet.code.join('\n');
+
+    //console.log("this is the text: "+ message.textContent);
+>>>>>>> Decide to save a group of cells as a single snippet of the codes combined
     previewContainer.appendChild(preview);
     body.append(previewContainer);
 
