@@ -30,7 +30,7 @@ import React from 'react';
 
 import { ICodeSnippet } from './CodeSnippetContentsService';
 
-import { IDragEvent } from '@lumino/dragdrop';
+import { IDragEvent /** Drag */ } from '@lumino/dragdrop';
 
 // import { inputDialog } from './CodeSnippetForm';
 
@@ -111,7 +111,7 @@ export class CodeSnippetWidget extends ReactWidget {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'mousedown':
-        this._evtMouseDown(event as MouseEvent);
+        this._evtMouseDown(event as IDragEvent);
         break;
       case 'lm-dragenter':
         this._evtDragEnter(event as IDragEvent);
@@ -181,7 +181,6 @@ export class CodeSnippetWidget extends ReactWidget {
 
   private _evtMouseDown(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    // console.log(target);
 
     const preview = document.querySelector('.jp-preview');
     if (preview) {
@@ -194,14 +193,42 @@ export class CodeSnippetWidget extends ReactWidget {
         preview.classList.add('inactive');
       }
     }
+
+    if (target.classList.contains('elyra-expandableContainer-name')) {
+      console.log(target);
+      console.log(target.parentNode);
+      console.log(event.clientX);
+      console.log(event.clientY);
+    }
     // If target is on the widget, do not display preview
     // if (target.classList.contains('elyra-CodeSnippets')) {
 
     // }
-
-    console.log(event.clientX);
-    console.log(event.clientY);
   }
+
+  // private _startDrag(
+  //   target: HTMLElement,
+  //   clientX: number,
+  //   clientY: number
+  // ): void {
+  //   const dragImage = target.parentNode as HTMLElement;
+
+  //   const drag = new Drag({
+  //     mimeData: new MimeData(),
+  //     dragImage: dragImage,
+  //     supportedActions: 'copy-move',
+  //     proposedAction: 'copy',
+  //     source: this
+  //   });
+
+  //   drag.mimeData.setData(JUPYTER_CELL_MIME, toMove);
+  //   const textContent = toMove.map(cell => cell.model.value.text).join('\n');
+  //   drag.mimeData.setData('text/plain', textContent);
+  // }
+
+  // private createDragImage(snippetContent: string): HTMLElement {
+
+  // }
 
   /**
    * Handle the `'lm-dragenter'` event for the widget.
@@ -267,6 +294,7 @@ export class CodeSnippetWidget extends ReactWidget {
    */
   private _evtDrop(event: IDragEvent): Promise<void> {
     const data = Private.findCellData(event.mimeData);
+    console.log(data);
     if (data === undefined) {
       return;
     }
@@ -400,7 +428,7 @@ export class CodeSnippetWidget extends ReactWidget {
 
     const url = 'elyra/metadata/code-snippets';
 
-    inputDialog(this, url, data, idx, 'cell');
+    inputDialog(this, url, data, idx);
     // console.log(data.split('\n'));
   }
 
@@ -474,10 +502,8 @@ class Private {
     // const types = mime.types();
     // console.log(types);
     // application/vnd.jupyter.cells
-    const cells = mime.getData(JUPYTER_CELL_MIME);
-    const data: string[] = [];
-    cells.forEach((cell: any) => data.push(cell.source));
+    const code = mime.getData('text/plain');
 
-    return data;
+    return code.split('\n');
   }
 }

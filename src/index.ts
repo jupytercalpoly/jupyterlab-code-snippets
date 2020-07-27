@@ -100,9 +100,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         inputDialog(
           (layout.widgets[0] as unknown) as CodeSnippetWidget,
           url,
-          [highlightedCode],
-          -1,
-          'code'
+          highlightedCode.split('\n'),
+          -1
         );
         console.log(`Highlight trial: ${highlightedCode}`);
       }

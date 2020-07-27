@@ -57,9 +57,8 @@ export interface IFileContainer extends JSONObject {
 export function inputDialog(
   codeSnippet: CodeSnippetWidget,
   url: string,
-  inputCode: string[],
-  idx: number,
-  type: string
+  code: string[],
+  idx: number
 ): Promise<Contents.IModel | null> {
   return showDialog({
     title: 'Save Code Snippet',
@@ -68,7 +67,7 @@ export function inputDialog(
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
   }).then((result: Dialog.IResult<string[]>) => {
     if (validateForm(result) === false) {
-      return inputDialog(codeSnippet, url, inputCode, idx, type); // This works but it wipes out all the data they entered previously...
+      return inputDialog(codeSnippet, url, code, idx); // This works but it wipes out all the data they entered previously...
     }
     if (!result.value) {
       return null;
@@ -78,9 +77,8 @@ export function inputDialog(
         displayName: result.value[0],
         description: result.value[1],
         language: result.value[2],
-        code: inputCode,
+        code: code,
         id: idx,
-        type: type,
         bookmarked: false
       };
       /**
@@ -113,30 +111,25 @@ export function inputDialog(
       );
 
       // console.log(request);
-      request.then(_ => {
-        // add the new snippet to the snippet model
-        //   console.log(idx);
-        codeSnippet.codeSnippetWidgetModel.addSnippet(
-          { codeSnippet: newSnippet, id: idx },
-          idx
-        );
+      request
+        .then(_ => {
+          // add the new snippet to the snippet model
+          //   console.log(idx);
+          codeSnippet.codeSnippetWidgetModel.addSnippet(
+            { codeSnippet: newSnippet, id: idx },
+            idx
+          );
 
-        const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-        codeSnippet.codeSnippets = newSnippets;
-        codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
-
-        //   codeSnippetWrapper.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-        //     let newCodeSnippets = codeSnippets;
-        //     console.log(codeSnippets);
-        //     console.log(newSnippet);
-        //     console.log(codeSnippets.findIndex(snippet => compareSnippets(snippet, newSnippet)));
-        //     console.log('HELLLO');
-        //     codeSnippet.renderCodeSnippetsSignal.emit(newCodeSnippets);
-        //   });
-        showMessage({
-          body: /*"Saved as Snippet"*/ new MessageHandler()
+          const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+          codeSnippet.codeSnippets = newSnippets;
+          codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+          showMessage({
+            body: /*"Saved as Snippet"*/ new MessageHandler()
+          });
+        })
+        .catch(e => {
+          alert('duplicate name');
         });
-      });
     }
   });
 }
