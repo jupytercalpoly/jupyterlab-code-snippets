@@ -10,17 +10,18 @@ import {
 
 import { Widget, PanelLayout } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
-
-// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
-// import { CodeSnippetWidget } from './CodeSnippetWidget';
+import { ServerConnection } from '@jupyterlab/services';
+import { URLExt } from '@jupyterlab/coreutils';
 
 import { inputDialog } from './CodeSnippetForm';
-import { INotebookTracker } from '@jupyterlab/notebook';
+import { INotebookTracker, NotebookTracker } from '@jupyterlab/notebook';
 import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
+
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 // import { CodeSnippetWrapper } from './CodeSnippetWrapper';
+
 
 export interface ICodeSnippet {
   name: string;
@@ -31,6 +32,7 @@ export interface ICodeSnippet {
 }
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
+var clicked: EventTarget;
 
 /**
  * Initialization data for the code_snippets extension.
@@ -42,7 +44,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   activate: (
     app: JupyterFrontEnd,
     palette: ICommandPalette,
-    restorer: ILayoutRestorer
+    restorer: ILayoutRestorer,
+    tracker: NotebookTracker
   ) => {
     console.log('JupyterLab extension code-snippets is activated!');
     const url = 'elyra/metadata/code-snippets';
@@ -69,6 +72,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
 
     //Add an application command
     const commandID = 'save as code snippet';
+    const delCommand = 'delete code snippet';
     const toggled = false;
     app.commands.addCommand(commandID, {
       label: 'Save As Code Snippet',
@@ -78,23 +82,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'some-css-icon-class',
       execute: () => {
         console.log(`Executed ${commandID}`);
-        const highlightedCode = getSelectedText();
-        // RequestHandler.makePostRequest(
-        //   url,
-        //   JSON.stringify({
-        //     display_name: "highlighted3",
-        //     metadata: {
-        //         code: [
-        //             temp
-        //         ],
-        //         description: "Print highlighted code 3",
-        //         language: "python",
-        //     },
-        //     name: "highlighted3",
-        //     schema_name: "code-snippet",
-        //   }),
-        //   false
-        // );
+        let highlightedCode = getSelectedText();
         const layout = codeSnippetWrapper.layout as PanelLayout;
 
         inputDialog(
@@ -104,7 +92,59 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
           -1,
           'code'
         );
-        console.log(`Highlight trial: ${highlightedCode}`);
+      }
+    });
+
+    // function getCurrent(args: ReadonlyPartialJSONObject): NotebookPanel | null {
+    //   const widget = tracker.currentWidget;
+    //   const activate = args['activate'] !== false;
+
+    //   if (activate && widget) {
+    //     app.shell.activateById(widget.id);
+    //   }
+
+    //   return widget;
+    // }
+
+    // eventListener to get access to element that is right clicked.
+    document.addEventListener(
+      'contextmenu',
+      function temp(event) {
+        var clickedEl = event.target;
+        clicked = clickedEl;
+      },
+      true
+    );
+
+    app.commands.addCommand(delCommand, {
+      label: 'Delete Code Snippet',
+      isEnabled: () => true,
+      isVisible: () => true,
+      isToggled: () => toggled,
+      iconClass: 'some-css-icon-class',
+      execute: async () => {
+        let target = clicked as HTMLElement;
+        let _id = parseInt(target.id, 10);
+        const layout = codeSnippetWrapper.layout as PanelLayout;
+        let codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
+        let snippetToDeleteName =
+          codeSnip.codeSnippetWidgetModel.snippets[_id].name;
+        const url = 'elyra/metadata/code-snippets/' + snippetToDeleteName;
+
+        const settings = ServerConnection.makeSettings();
+        const requestUrl = URLExt.join(settings.baseUrl, url);
+
+        await ServerConnection.makeRequest(
+          requestUrl,
+          { method: 'DELETE' },
+          settings
+        );
+        codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
+        let newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
+        codeSnip.codeSnippets = newSnippets;
+        codeSnip.renderCodeSnippetsSignal.emit(newSnippets);
+        console.log(codeSnip.codeSnippets);
+        console.log(codeSnip.codeSnippetWidgetModel.snippets);
       }
     });
 
@@ -114,10 +154,10 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       selector: '.jp-CodeCell'
     });
 
-    // Example Get Request
-    // RequestHandler.makeGetRequest(
-    //  URLExt.join(url, '/example2'),
-    //   false);
+    app.contextMenu.addItem({
+      command: delCommand,
+      selector: '.elyra-expandableContainer-title'
+    });
   }
 };
 

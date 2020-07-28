@@ -38,10 +38,12 @@ export function showPreview<T>(
 export class Preview<T> extends Widget {
   ready: boolean;
   _title: string;
+  _id: number;
   constructor(options: Partial<Preview.IOptions<T>> = {}) {
     super();
-    this.ready = true; ///
+    this.ready = true;
     this._title = options.title;
+    this._id = options.id;
     this.addClass(PREVIEW_CLASS);
     const renderer = Preview.defaultRenderer;
     //this._host = options.host || document.body;
@@ -57,6 +59,14 @@ export class Preview<T> extends Widget {
 
     if (Preview.tracker.size > 0) {
       const previous = Preview.tracker.currentWidget;
+      if (previous._title != this._title) {
+        document
+          .getElementsByClassName('drag-hover')
+          [previous._id].classList.remove('drag-hover-clicked');
+        document
+          .getElementsByClassName('elyra-codeSnippet-item')
+          [previous._id].classList.remove('elyra-codeSnippet-item-clicked');
+      }
       if (previous._title === this._title) {
         if (previous.node.classList.contains('inactive')) {
           previous.node.classList.remove('inactive');
@@ -125,6 +135,7 @@ export class Preview<T> extends Widget {
    * @param event - The DOM event sent to the widget
    */
   protected _evtClick(event: MouseEvent): void {
+    //gray area
     console.log(
       "If this function hasn't been hit for the same snippet then don't launchhhh for that snippet"
     );
@@ -132,6 +143,12 @@ export class Preview<T> extends Widget {
       PREVIEW_CONTENT
     )[0] as HTMLElement;
     if (!content.contains(event.target as HTMLElement)) {
+      document
+        .getElementsByClassName('drag-hover')
+        [this._id].classList.remove('drag-hover-clicked');
+      document
+        .getElementsByClassName('elyra-codeSnippet-item')
+        [this._id].classList.remove('elyra-codeSnippet-item-clicked');
       event.stopPropagation();
       event.preventDefault();
       this.reject();
@@ -148,6 +165,12 @@ export class Preview<T> extends Widget {
     // Check for escape key
     switch (event.keyCode) {
       case 27: // Escape.
+        document
+          .getElementsByClassName('drag-hover')
+          [this._id].classList.remove('drag-hover-clicked');
+        document
+          .getElementsByClassName('elyra-codeSnippet-item')
+          [this._id].classList.remove('elyra-codeSnippet-item-clicked');
         event.stopPropagation();
         event.preventDefault();
         this.reject();
@@ -280,6 +303,7 @@ export namespace Preview {
 
   export interface IOptions<T> {
     title: string;
+    id: number;
     /**
      * The main body element for the dialog or a message to display.
      * Defaults to an empty string.

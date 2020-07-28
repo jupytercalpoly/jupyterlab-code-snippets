@@ -18,7 +18,7 @@ import '../style/index.css';
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
 import { inputDialog } from './CodeSnippetForm';
 
-import { ReactWidget, UseSignal } from '@jupyterlab/apputils';
+import { ReactWidget, UseSignal, WidgetTracker } from '@jupyterlab/apputils';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { Widget, PanelLayout } from '@lumino/widgets';
@@ -75,6 +75,7 @@ export class CodeSnippetWidget extends ReactWidget {
     this._codeSnippetWidgetModel = new CodeSnippetWidgetModel(codeSnippets, {});
     this._codeSnippets = this._codeSnippetWidgetModel.snippets;
     this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
+    CodeSnippetWidget.tracker.add(this);
   }
 
   static getInstance(
@@ -180,6 +181,7 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   private _evtMouseDown(event: MouseEvent): void {
+    //get rid of preview by clicking anything
     const target = event.target as HTMLElement;
     // console.log(target);
 
@@ -192,6 +194,18 @@ export class CodeSnippetWidget extends ReactWidget {
         !target.classList.contains('elyra-expandableContainer-name')
       ) {
         preview.classList.add('inactive');
+        for (let elem of document.getElementsByClassName('drag-hover')) {
+          if (elem.classList.contains('drag-hover-clicked')) {
+            elem.classList.remove('drag-hover-clicked');
+          }
+        }
+        for (let item of document.getElementsByClassName(
+          'elyra-codeSnippet-item'
+        )) {
+          if (item.classList.contains('elyra-codeSnippet-item-clicked')) {
+            item.classList.remove('elyra-codeSnippet-item-clicked');
+          }
+        }
       }
     }
     // If target is on the widget, do not display preview
@@ -464,6 +478,13 @@ export namespace CodeSnippetWidget {
      */
     rendermime: IRenderMimeRegistry;
   }
+
+  /**
+   * The dialog widget tracker.
+   */
+  export const tracker = new WidgetTracker<CodeSnippetWidget>({
+    namespace: '@jupyterlab/code_snippet:CodeSnippetWidget'
+  });
 }
 
 class Private {
