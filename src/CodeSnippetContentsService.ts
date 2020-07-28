@@ -5,9 +5,9 @@ export interface ICodeSnippet {
   displayName: string;
   description: string;
   language: string;
+  // code separated by new line
   code: string[];
   bookmarked: boolean;
-  type: string;
   id: number;
   tags?: string[];
 }
@@ -61,9 +61,23 @@ export class CodeSnippetContentsService {
     path: string,
     options?: Partial<Contents.IModel>
   ): Promise<Contents.IModel> {
+    // TODO: throw an error if file exists
+    if (options.type !== 'directory') {
+      await fetch('api/contents/' + path).then(s => {
+        if (s.status === 200) {
+          throw new Error('duplicate name');
+        }
+      });
+    }
     const changedModel = await this.contentsManager.save(path, options);
     return changedModel;
   }
+
+  /**
+   * Change the order of snippets
+   * @param oldPath
+   * @param newPath
+   */
 
   /**
    * Rename the file or directory
