@@ -5,6 +5,7 @@ node_modules/
 .ipynb_checkpoints
 *.tsbuildinfo
 *.ipynb
+.eslintcache
 
 */labextension/*.tgz
 # Created by https://www.gitignore.io/api/python
