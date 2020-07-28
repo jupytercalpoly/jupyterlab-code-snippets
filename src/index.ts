@@ -18,6 +18,11 @@ import { INotebookTracker, NotebookTracker } from '@jupyterlab/notebook';
 import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
+import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+// import { CodeSnippetWidget } from './CodeSnippetWidget';
+// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
+
+
 export interface ICodeSnippet {
   name: string;
   displayName: string;
@@ -56,6 +61,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     codeSnippetWrapper.title.icon = codeSnippetIcon;
     codeSnippetWrapper.title.caption = 'Jupyter Code Snippet';
 
+    const service = CodeSnippetContentsService.getInstance();
+    service.save('snippets', { type: 'directory' });
+
     restorer.add(codeSnippetWrapper, CODE_SNIPPET_EXTENSION_ID);
 
     // Rank has been chosen somewhat arbitrarily to give priority to the running
@@ -81,7 +89,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
           (layout.widgets[0] as unknown) as CodeSnippetWidget,
           url,
           [highlightedCode],
-          -1
+          -1,
+          'code'
         );
       }
     });

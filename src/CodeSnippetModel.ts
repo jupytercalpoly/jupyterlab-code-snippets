@@ -1,4 +1,4 @@
-import { ICodeSnippet } from './CodeSnippetService';
+import { ICodeSnippet } from './CodeSnippetContentsService';
 
 /**
  * The definition of a model object for a code snippet widget.

@@ -76,7 +76,6 @@ export class Preview<T> extends Widget {
           this.ready = false;
         }
       }
-      console.log(previous);
       previous.reject();
       Preview.tracker.dispose();
     }
@@ -96,7 +95,6 @@ export class Preview<T> extends Widget {
     }
     const promise = (this._promise = new PromiseDelegate<void>());
     const promises = Promise.all(Private.launchQueue);
-    console.log(promises);
     Private.launchQueue.push(this._promise.promise);
     return promises.then(() => {
       Widget.attach(this, document.getElementById('jp-main-dock-panel'));
@@ -144,7 +142,6 @@ export class Preview<T> extends Widget {
     const content = this.node.getElementsByClassName(
       PREVIEW_CONTENT
     )[0] as HTMLElement;
-    console.log(content);
     if (!content.contains(event.target as HTMLElement)) {
       document
         .getElementsByClassName('drag-hover')
@@ -274,7 +271,6 @@ export class Preview<T> extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     const node = this.node;
-    console.log('Itgjhgjhj');
     node.removeEventListener('keydown', this, true);
     node.removeEventListener('contextmenu', this, true);
     node.removeEventListener('click', this, true);

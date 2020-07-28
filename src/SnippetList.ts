@@ -1,4 +1,4 @@
-import { ICodeSnippet } from './CodeSnippetService';
+import { ICodeSnippet } from './CodeSnippetContentsService';
 
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 
@@ -31,10 +31,10 @@ export class SnippetList {
   ) {
     this.snippetList = [];
     this.snippetMap = new Map();
-    codeSnippets.forEach((codeSnippet, i) => {
+    codeSnippets.forEach(codeSnippet => {
       const newSnippetModel = factory.createSnippet({
         codeSnippet: codeSnippet,
-        id: i
+        id: codeSnippet.id
       });
       this.snippetList.push(newSnippetModel);
       this.snippetMap.set(newSnippetModel.id, newSnippetModel);
