@@ -338,10 +338,10 @@ export class CodeSnippetDisplay extends React.Component<
           <div
             key={displayName}
             className={TITLE_CLASS}
-            onMouseOver={() => {
+            onMouseOver={(): void => {
               this.dragHoverStyle(id);
             }}
-            onMouseOut={() => {
+            onMouseOut={(): void => {
               this.dragHoverStyleRemove(id);
             }}
           >
