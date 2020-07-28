@@ -10,8 +10,8 @@ import {
 
 import { Widget, PanelLayout } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
-import { ServerConnection } from '@jupyterlab/services';
-import { URLExt } from '@jupyterlab/coreutils';
+//import { ServerConnection } from '@jupyterlab/services';
+//import { URLExt } from '@jupyterlab/coreutils';
 
 import { inputDialog } from './CodeSnippetForm';
 import { INotebookTracker } from '@jupyterlab/notebook';
@@ -121,15 +121,19 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         const snippetToDeleteName =
           codeSnip.codeSnippetWidgetModel.snippets[_id].name;
 
-        const url = 'elyra/metadata/code-snippets/' + snippetToDeleteName;
+        // const url = 'elyra/metadata/code-snippets/' + snippetToDeleteName;
 
-        const settings = ServerConnection.makeSettings();
-        const requestUrl = URLExt.join(settings.baseUrl, url);
-        await ServerConnection.makeRequest(
-          requestUrl,
-          { method: 'DELETE' },
-          settings
+        // const settings = ServerConnection.makeSettings();
+        // const requestUrl = URLExt.join(settings.baseUrl, url);
+        // await ServerConnection.makeRequest(
+        //   requestUrl,
+        //   { method: 'DELETE' },
+        //   settings
+        // );
+        CodeSnippetContentsService.getInstance().delete(
+          'snippets/' + snippetToDeleteName + '.json'
         );
+
         codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
         const newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
         codeSnip.codeSnippets = newSnippets;
