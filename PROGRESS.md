@@ -25,8 +25,9 @@
 - [ ] Snippet preview
   - [ ] editing mode
   - [ ] snippet description
-- [ ] drag and drop
+- [ ] Drag and drop
   - [ ] drag snippet into notebook - create new cell
+- [ ] Undo/redo functionality
   
 ## Log of Changes/Progress
 
