@@ -11,17 +11,16 @@
 - [x] Search bar for snippets
 - [x] Snippet preview (on the side)
 - [ ] Drag snippet into notebook
-- [ ] Organize snippets by folders
-- [x] Bookmark snippets
-- [ ] Most used snippets
-- [ ] Save snippets maintaining cell structure
-- [ ] Templated fields
+- [ ] Filters on snippet panel
+- [ ] Code snippet editor
+- [ ] Recently used snippets
 - [ ] Right click and save highlighted cell
+- [ ] Plus button to create new snippet
 
 ## Demo 2 (Aug 5)
-- [ ] Search ability
-  - [ ] search by name/language
-  - [ ] search bolding
+- [x] Search ability
+  - [x] search by name/language
+  - [x] search bolding
 - [ ] Snippet preview
   - [ ] editing mode
   - [ ] snippet description
