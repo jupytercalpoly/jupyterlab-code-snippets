@@ -16,6 +16,7 @@
 - [ ] Recently used snippets
 - [ ] Right click and save highlighted cell
 - [ ] Plus button to create new snippet
+- [ ] Undo/Redo actions
 
 ## Demo 2 (Aug 5)
 - [x] Search ability
