@@ -354,7 +354,7 @@ export namespace UndoDelete {
    * The dialog widget tracker.
    */
   export const tracker = new WidgetTracker<UndoDelete<any>>({
-    namespace: '@jupyterlab/code_snippet:ConfirmWidget'
+    namespace: '@jupyterlab/code_snippet:UndoDeleteWidget'
   });
 }
 

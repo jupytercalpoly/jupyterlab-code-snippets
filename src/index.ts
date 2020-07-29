@@ -118,31 +118,32 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         const _id = parseInt(target.id, 10);
         const layout = codeSnippetWrapper.layout as PanelLayout;
         const codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
-        const snippetToDeleteName =
-          codeSnip.codeSnippetWidgetModel.snippets[_id].name;
-
-        // const url = 'elyra/metadata/code-snippets/' + snippetToDeleteName;
-
-        // const settings = ServerConnection.makeSettings();
-        // const requestUrl = URLExt.join(settings.baseUrl, url);
-        // await ServerConnection.makeRequest(
-        //   requestUrl,
-        //   { method: 'DELETE' },
-        //   settings
-        // );
-        CodeSnippetContentsService.getInstance().delete(
-          'snippets/' + snippetToDeleteName + '.json'
-        );
-
-        codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
-        const newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
-        codeSnip.codeSnippets = newSnippets;
-        codeSnip.renderCodeSnippetsSignal.emit(newSnippets);
+        const frontEndSnippets = codeSnip.codeSnippetWidgetModel.snippets;
+        frontEndSnippets.splice(_id, 1);
+        codeSnip.codeSnippets = frontEndSnippets;
+        codeSnip.renderCodeSnippetsSignal.emit(frontEndSnippets);
         showMessage({
-          body: /*"Saved as Snippet"*/ new MessageHandler()
+          body: /*"Undo delete"*/ new MessageHandler(codeSnip, _id)
         });
-        window.setTimeout(onDelete, 5000);
-        console.log('here3');
+        // const snippetToDeleteName =
+        //   codeSnip.codeSnippetWidgetModel.snippets[_id].name;
+        // CodeSnippetContentsService.getInstance().delete(
+        //   'snippets/' + snippetToDeleteName + '.json'
+        // );
+        //const savedSnip = codeSnip.codeSnippetWidgetModel.snippets[_id];
+
+        //codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
+        //const newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
+
+        // codeSnip.codeSnippetWidgetModel.addSnippet(
+        //   { codeSnippet: savedSnip, id: _id },
+        //   _id
+        // );
+        // codeSnip.codeSnippetWidgetModel.snippets.sort((a, b) => a.id - b.id);
+        // codeSnip.codeSnippets = codeSnip.codeSnippetWidgetModel.snippets;
+        // codeSnip.renderCodeSnippetsSignal.emit(
+        //   codeSnip.codeSnippetWidgetModel.snippets
+        // );
       }
     });
 
@@ -174,21 +175,38 @@ function getSelectedText(): string {
 }
 
 class MessageHandler extends Widget {
-  constructor() {
-    super({ node: createUndoDeleteNode() });
+  constructor(codeSnippet: CodeSnippetWidget, id: number) {
+    super({ node: createUndoDeleteNode(codeSnippet, id) });
   }
 }
 
-function onDelete(): void {
+function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
   const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
-  try {
-    temp.parentElement.parentElement.removeChild(temp.parentElement);
-  } catch (err) {
-    console.log('caught');
-  }
+  temp.parentElement.parentElement.removeChild(temp.parentElement);
+  const snippetToDeleteName =
+    codeSnippet.codeSnippetWidgetModel.snippets[id].name;
+  CodeSnippetContentsService.getInstance().delete(
+    'snippets/' + snippetToDeleteName + '.json'
+  );
+  codeSnippet.codeSnippetWidgetModel.deleteSnippet(id);
+  const savedSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+  codeSnippet.codeSnippets = savedSnippets;
+  codeSnippet.renderCodeSnippetsSignal.emit(savedSnippets);
 }
 
-function createUndoDeleteNode(): HTMLElement {
+function onUndo(codeSnippet: CodeSnippetWidget): void {
+  codeSnippet.codeSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+  codeSnippet.renderCodeSnippetsSignal.emit(
+    codeSnippet.codeSnippetWidgetModel.snippets
+  );
+  const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
+  temp.parentElement.parentElement.removeChild(temp.parentElement);
+}
+
+function createUndoDeleteNode(
+  codeSnippet: CodeSnippetWidget,
+  snippetID: number
+): HTMLElement {
   const body = document.createElement('div');
   body.innerHTML = undoDeleteSVG;
   body.id = 'jp-undo-delete-id';
@@ -196,13 +214,25 @@ function createUndoDeleteNode(): HTMLElement {
   const messageContainer = document.createElement('div');
   messageContainer.className = 'jp-confirm-text';
   const message = document.createElement('text');
-  message.textContent = 'Click to undo delete';
+  message.textContent = 'Click to ';
+  const undo = document.createElement('span');
+  undo.textContent = 'undo';
+  undo.className = 'jp-click-undo';
+  undo.onclick = function(): void {
+    onUndo(codeSnippet);
+  };
+  const messageEnd = document.createElement('text');
+  messageEnd.textContent = ' delete';
   messageContainer.appendChild(message);
+  messageContainer.appendChild(undo);
+  messageContainer.appendChild(messageEnd);
   body.append(messageContainer);
 
   const deleteMessage = document.createElement('div');
   deleteMessage.className = 'jp-undo-delete-close';
-  deleteMessage.onclick = onDelete;
+  deleteMessage.onclick = function(): void {
+    onDelete(codeSnippet, snippetID);
+  };
   body.append(deleteMessage);
   return body;
 }

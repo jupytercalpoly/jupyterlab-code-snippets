@@ -275,6 +275,26 @@ export class CodeSnippetDisplay extends React.Component<
     }
   };
 
+  // Bold text in snippet DisplayName based on search
+  private boldNameOnSearch = (filter: string, displayed: string) => {
+    const name: string = displayed;
+    if (filter !== '') {
+      const startIndex: number = name.indexOf(filter);
+      const endIndex: number = startIndex + filter.length;
+      const start = name.substring(0, startIndex);
+      const bolded = name.substring(startIndex, endIndex);
+      const end = name.substring(endIndex);
+      return (
+        <span>
+          {start}
+          <mark className="jp-search-bolding">{bolded}</mark>
+          {end}
+        </span>
+      );
+    }
+    return name;
+  };
+
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
   private renderCodeSnippet = (
@@ -285,6 +305,7 @@ export class CodeSnippetDisplay extends React.Component<
 
     const displayName =
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
+    //this.boldNameOnSearch(this.state.filterValue,displayName,parseInt(id,10));
 
     const insertIcon = new LabIcon({
       name: 'ui-compnents:insert',
@@ -358,7 +379,7 @@ export class CodeSnippetDisplay extends React.Component<
                 this.snippetClicked(id);
               }}
             >
-              {displayName}
+              {this.boldNameOnSearch(this.state.filterValue, displayName)}
               <br />
               <div className="lines-of-code" id={id}>
                 {this.codeLines(codeSnippet)}
@@ -410,8 +431,10 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   filterSnippets = (filterValue: string): void => {
-    const newSnippets = this.props.codeSnippets.filter(codeSnippet =>
-      codeSnippet.displayName.includes(filterValue)
+    const newSnippets = this.props.codeSnippets.filter(
+      codeSnippet =>
+        codeSnippet.displayName.includes(filterValue) ||
+        codeSnippet.language.includes(filterValue)
     );
     this.setState(
       { codeSnippets: newSnippets, filterValue: filterValue },
@@ -447,14 +470,26 @@ class PreviewHandler extends Widget {
 class Private {
   static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
+
     const previewContainer = document.createElement('div');
+    const descriptionContainer = document.createElement('div');
+    const descriptionTitle = document.createElement('h6');
+    const description = document.createElement('text');
     const preview = document.createElement('text');
 
     previewContainer.className = 'jp-preview-text';
+    descriptionContainer.className = 'jp-preview-description-container';
+    descriptionTitle.className = 'jp-preview-description-title';
+    description.className = 'jp-preview-description';
     preview.className = 'jp-preview-textarea';
+
+    descriptionTitle.textContent = 'DESCRIPTION';
+    description.textContent = codeSnippet.description;
     preview.textContent = codeSnippet.code.join('\n');
 
-    //console.log("this is the text: "+ message.textContent);
+    descriptionContainer.appendChild(descriptionTitle);
+    descriptionContainer.appendChild(description);
+    previewContainer.appendChild(descriptionContainer);
     previewContainer.appendChild(preview);
     body.append(previewContainer);
 

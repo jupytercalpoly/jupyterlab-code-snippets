@@ -215,7 +215,7 @@
 
 .jp-preview-text {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
   font-family: helvetica;
   font-style: normal;
@@ -236,6 +236,35 @@
   resize: none;
   white-space: pre;
   padding: var(--jp-code-padding);
+}
+
+.jp-preview-description-container {
+  font-family: var(--jp-code-font-family);
+  font-size: var(--jp-code-font-size);
+  line-height: var(--jp-code-line-height);
+  text-align: left;
+  flex-grow: 1;
+  resize: none;
+  white-space: pre;
+  padding: var(--jp-code-padding);
+  margin-bottom: 10px;
+}
+
+.jp-preview-description-title {
+  font-family: sans-serif;
+  margin-bottom: 3px;
+}
+
+.jp-preview-description {
+  font-family: var(--jp-code-font-family);
+  font-size: var(--jp-code-font-size);
+  line-height: var(--jp-code-line-height);
+  text-align: left;
+  flex-grow: 1;
+  resize: none;
+  white-space: pre;
+  padding: var(--jp-code-padding);
+  word-wrap: break-word;
 }
 
 .triangle {
@@ -337,4 +366,14 @@
   width: 14px;
   height: 14px;
   background-image: url(./icon/close_jupyter.svg);
+}
+
+.jp-click-undo {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+mark.jp-search-bolding {
+  background-color: transparent;
+  font-weight: bold;
 }
