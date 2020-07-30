@@ -9,6 +9,8 @@ import {
   ICodeSnippet
 } from './CodeSnippetContentsService';
 import { Contents } from '@jupyterlab/services';
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import { IEditorServices } from '@jupyterlab/codeeditor';
 
 /**
  * The CSS class added to code snippet widget.
@@ -25,13 +27,21 @@ export class CodeSnippetWrapper extends Widget {
    */
   getCurrentWidget: () => Widget;
   codeSnippetManager: CodeSnippetContentsService;
+  app: JupyterFrontEnd;
+  editorServices: IEditorServices;
   //  codeSnippetWidget: CodeSnippetWidget;
 
-  constructor(getCurrentWidget: () => Widget) {
+  constructor(
+    getCurrentWidget: () => Widget,
+    app: JupyterFrontEnd,
+    editorServices: IEditorServices
+  ) {
     super();
     this.addClass(CODE_SNIPPETS_WRAPPER);
     this.getCurrentWidget = getCurrentWidget;
     this.layout = new Private.SnippetPanelLayout();
+    this.app = app;
+    this.editorServices = editorServices;
     // this.codeSnippetManager = new CodeSnippetService();
     this.codeSnippetManager = CodeSnippetContentsService.getInstance();
   }
@@ -41,11 +51,15 @@ export class CodeSnippetWrapper extends Widget {
    */
   createCodeSnippetWidget(codeSnippets: ICodeSnippet[]): void {
     const layout = this.layout as PanelLayout;
+    // console.log(this.app);
     const codeSnippetWidget = CodeSnippetWidget.getInstance(
       codeSnippets,
-      this.getCurrentWidget
+      this.getCurrentWidget,
+      this.app,
+      this.editorServices
     );
     codeSnippetWidget.addClass(CODE_SNIPPETS_CLASS);
+    // console.log(codeSnippetWidget);
     layout.insertWidget(0, codeSnippetWidget as Widget);
   }
 
@@ -62,7 +76,7 @@ export class CodeSnippetWrapper extends Widget {
 
     fileModels.forEach(fileModel => paths.push(fileModel.path));
 
-    for (let path of paths) {
+    for (const path of paths) {
       await this.codeSnippetManager.getData(path, 'file').then(model => {
         data.push(JSON.parse(model.content));
       });

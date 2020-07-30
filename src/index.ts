@@ -12,12 +12,14 @@ import { Widget, PanelLayout } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
 import { ServerConnection } from '@jupyterlab/services';
 import { URLExt } from '@jupyterlab/coreutils';
+import { IEditorServices } from '@jupyterlab/codeeditor';
 
 import { inputDialog } from './CodeSnippetForm';
 import { INotebookTracker, NotebookTracker } from '@jupyterlab/notebook';
 import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+import { CodeSnippetEditor } from './CodeSnippetEditor';
 
 export interface ICodeSnippet {
   name: string;
@@ -28,7 +30,7 @@ export interface ICodeSnippet {
 }
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
-var clicked: EventTarget;
+let clicked: EventTarget;
 
 /**
  * Initialization data for the code_snippets extension.
@@ -41,7 +43,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     restorer: ILayoutRestorer,
-    tracker: NotebookTracker
+    tracker: NotebookTracker,
+    editorServices: IEditorServices
   ) => {
     console.log('JupyterLab extension code-snippets is activated!');
     const url = 'elyra/metadata/code-snippets';
@@ -51,7 +54,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     };
 
     const codeSnippetWrapper = new CodeSnippetWrapper(
-      getCurrentWidget
+      getCurrentWidget,
+      app,
+      editorServices
     ) as Widget;
     codeSnippetWrapper.id = CODE_SNIPPET_EXTENSION_ID;
     codeSnippetWrapper.title.icon = codeSnippetIcon;
@@ -66,6 +71,16 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     // sessions widget in the sidebar.
     app.shell.add(codeSnippetWrapper, 'left', { rank: 900 });
 
+    app.commands.addCommand('elyra-metadata-editor:open', {
+      label: 'Code Snippet Editor',
+      isEnabled: () => true,
+      isVisible: () => true,
+      execute: () => {
+        const codeSnippetEditor = new CodeSnippetEditor();
+        app.shell.add(codeSnippetEditor, 'main');
+      }
+    });
+
     //Add an application command
     const commandID = 'save as code snippet';
     const delCommand = 'delete code snippet';
@@ -78,7 +93,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'some-css-icon-class',
       execute: () => {
         console.log(`Executed ${commandID}`);
-        let highlightedCode = getSelectedText();
+        const highlightedCode = getSelectedText();
         const layout = codeSnippetWrapper.layout as PanelLayout;
 
         inputDialog(
@@ -104,8 +119,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     // eventListener to get access to element that is right clicked.
     document.addEventListener(
       'contextmenu',
-      function temp(event) {
-        var clickedEl = event.target;
+      event => {
+        const clickedEl = event.target;
         clicked = clickedEl;
       },
       true
@@ -118,11 +133,11 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       isToggled: () => toggled,
       iconClass: 'some-css-icon-class',
       execute: async () => {
-        let target = clicked as HTMLElement;
-        let _id = parseInt(target.id, 10);
+        const target = clicked as HTMLElement;
+        const _id = parseInt(target.id, 10);
         const layout = codeSnippetWrapper.layout as PanelLayout;
-        let codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
-        let snippetToDeleteName =
+        const codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
+        const snippetToDeleteName =
           codeSnip.codeSnippetWidgetModel.snippets[_id].name;
         const url = 'elyra/metadata/code-snippets/' + snippetToDeleteName;
 
@@ -135,7 +150,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
           settings
         );
         codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
-        let newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
+        const newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
         codeSnip.codeSnippets = newSnippets;
         codeSnip.renderCodeSnippetsSignal.emit(newSnippets);
         console.log(codeSnip.codeSnippets);

@@ -2,8 +2,8 @@ import insertSVGstr from '../style/icon/insertsnippet.svg';
 import { SearchBar } from './SearchBar';
 import { showPreview } from './PreviewSnippet';
 import {
-  ICodeSnippet,
-  CodeSnippetContentsService
+  ICodeSnippet
+  // CodeSnippetContentsService
 } from './CodeSnippetContentsService';
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 
@@ -69,6 +69,7 @@ interface ICodeSnippetDisplayProps {
   codeSnippets: ICodeSnippet[];
   onDelete: (codeSnippet: ICodeSnippet) => void;
   getCurrentWidget: () => Widget;
+  openCodeSnippetEditor: (args: any) => void;
 }
 
 /**
@@ -158,9 +159,10 @@ export class CodeSnippetDisplay extends React.Component<
     const name = snippet.name;
     // const url = 'elyra/metadata/code-snippets/' + name;
 
-    CodeSnippetContentsService.getInstance().delete(
-      'snippets/' + name + '.json'
-    );
+    this.props.openCodeSnippetEditor({ namespace: name });
+    // CodeSnippetContentsService.getInstance().delete(
+    //   'snippets/' + name + '.json'
+    // );
 
     // const settings = ServerConnection.makeSettings();
     // const requestUrl = URLExt.join(settings.baseUrl, url);
@@ -171,7 +173,7 @@ export class CodeSnippetDisplay extends React.Component<
     //   settings
     // );
 
-    this.props.onDelete(snippet);
+    // this.props.onDelete(snippet);
   };
 
   // Handle language compatibility between code snippet and editor
@@ -482,7 +484,7 @@ export class CodeSnippetDisplay extends React.Component<
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
 
     const insertIcon = new LabIcon({
-      name: 'ui-compnents:insert',
+      name: 'custom-ui-compnents:insert',
       svgstr: insertSVGstr
     });
 
