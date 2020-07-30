@@ -276,7 +276,7 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   // Bold text in snippet DisplayName based on search
-  private boldNameOnSearch = (filter: string, displayed: string) => {
+  private boldNameOnSearch = (filter: string, displayed: string): any => {
     const name: string = displayed;
     if (filter !== '') {
       const startIndex: number = name.indexOf(filter);

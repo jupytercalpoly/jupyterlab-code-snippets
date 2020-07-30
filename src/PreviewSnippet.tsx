@@ -59,7 +59,7 @@ export class Preview<T> extends Widget {
 
     if (Preview.tracker.size > 0) {
       const previous = Preview.tracker.currentWidget;
-      if (previous._title != this._title) {
+      if (previous._title !== this._title) {
         document
           .getElementsByClassName('drag-hover')
           [previous._id].classList.remove('drag-hover-clicked');
