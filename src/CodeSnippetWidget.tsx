@@ -24,7 +24,6 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { Widget, PanelLayout } from '@lumino/widgets';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
-// import { Cell } from '@jupyterlab/cells';
 
 import React from 'react';
 
@@ -39,6 +38,7 @@ import { IDragEvent /** Drag */ } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
 
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
+// import { JupyterFrontEnd } from '@jupyterlab/application';
 
 /**
  * A class used to indicate a snippet item.
@@ -75,6 +75,7 @@ export class CodeSnippetWidget extends ReactWidget {
     this._codeSnippetWidgetModel = new CodeSnippetWidgetModel(codeSnippets, {});
     this._codeSnippets = this._codeSnippetWidgetModel.snippets;
     this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
+    this.moveCodeSnippet.bind(this);
     CodeSnippetWidget.tracker.add(this);
   }
 
@@ -165,15 +166,14 @@ export class CodeSnippetWidget extends ReactWidget {
    * #### Notes
    * Returns -1 if the cell is not found.
    */
-  private _findSnippet(node: HTMLElement): (HTMLElement | number)[] {
+  private _findSnippet(node: HTMLElement): HTMLElement {
     // Trace up the DOM hierarchy to find the root cell node.
     // Then find the corresponding child and select it.
     let n: HTMLElement | null = node;
 
     while (n && n !== this.node) {
       if (n.classList.contains(CODE_SNIPPET_ITEM)) {
-        const i = n.id;
-        return [n, parseInt(i)];
+        return n;
       }
       n = n.parentElement;
     }
@@ -193,12 +193,12 @@ export class CodeSnippetWidget extends ReactWidget {
         !target.classList.contains('elyra-expandableContainer-name')
       ) {
         preview.classList.add('inactive');
-        for (let elem of document.getElementsByClassName('drag-hover')) {
+        for (const elem of document.getElementsByClassName('drag-hover')) {
           if (elem.classList.contains('drag-hover-clicked')) {
             elem.classList.remove('drag-hover-clicked');
           }
         }
-        for (let item of document.getElementsByClassName(
+        for (const item of document.getElementsByClassName(
           'elyra-codeSnippet-item'
         )) {
           if (item.classList.contains('elyra-codeSnippet-item-clicked')) {
@@ -208,12 +208,12 @@ export class CodeSnippetWidget extends ReactWidget {
       }
     }
 
-    if (target.classList.contains('elyra-expandableContainer-name')) {
-      console.log(target);
-      console.log(target.parentNode);
-      console.log(event.clientX);
-      console.log(event.clientY);
-    }
+    // if (target.classList.contains('elyra-expandableContainer-name')) {
+    //   console.log(target);
+    //   console.log(target.parentNode);
+    //   console.log(event.clientX);
+    //   console.log(event.clientY);
+    // }
     // If target is on the widget, do not display preview
     // if (target.classList.contains('elyra-CodeSnippets')) {
 
@@ -235,9 +235,9 @@ export class CodeSnippetWidget extends ReactWidget {
   //     source: this
   //   });
 
-  //   drag.mimeData.setData(JUPYTER_CELL_MIME, toMove);
-  //   const textContent = toMove.map(cell => cell.model.value.text).join('\n');
-  //   drag.mimeData.setData('text/plain', textContent);
+  // drag.mimeData.setData(JUPYTER_CELL_MIME, toMove);
+  // const textContent = toMove.map(cell => cell.model.value.text).join('\n');
+  // drag.mimeData.setData('text/plain', textContent);
   // }
 
   // private createDragImage(snippetContent: string): HTMLElement {
@@ -254,11 +254,26 @@ export class CodeSnippetWidget extends ReactWidget {
     event.preventDefault();
     event.stopPropagation();
     const target = event.target as HTMLElement;
+
+    console.log('entering');
+    // (event as Event).datatra
+
+    if (!event.mimeData.hasData('snippet/id')) {
+      event.mimeData.setData('snippet/id', parseInt(target.id));
+    }
+
+    // (event as DragEvent)
+    // if (!this.dataTransfer) {
+    //   this.dataTransfer = new DataTransfer();
+    //   console.log(this.dataTransfer);
+    //   this.dataTransfer.setData('text/plain', target.id);
+    // }
+
     const snippet = this._findSnippet(target);
     if (snippet === undefined) {
       return;
     }
-    const snippetNode = snippet[0] as HTMLElement;
+    const snippetNode = snippet as HTMLElement;
 
     snippetNode.classList.add(DROP_TARGET_CLASS);
   }
@@ -272,7 +287,10 @@ export class CodeSnippetWidget extends ReactWidget {
     }
     event.preventDefault();
     event.stopPropagation();
+    console.log('leaving');
     const elements = this.node.getElementsByClassName(DROP_TARGET_CLASS);
+    console.log(elements);
+
     if (elements.length) {
       (elements[0] as HTMLElement).classList.remove(DROP_TARGET_CLASS);
     }
@@ -298,7 +316,7 @@ export class CodeSnippetWidget extends ReactWidget {
     if (snippet === undefined) {
       return;
     }
-    const snippetNode = snippet[0] as HTMLElement;
+    const snippetNode = snippet as HTMLElement;
 
     snippetNode.classList.add(DROP_TARGET_CLASS);
   }
@@ -308,19 +326,15 @@ export class CodeSnippetWidget extends ReactWidget {
    */
   private _evtDrop(event: IDragEvent): Promise<void> {
     const data = Private.findCellData(event.mimeData);
+    console.log(event);
+    // console.log(event.mimeData.getData('internal:cells'));
     console.log(data);
     if (data === undefined) {
       return;
     }
 
-    // console.log(data);
-
-    // const cell_mime = event.mimeData.getData(JUPYTER_CELL_MIME);
-    // // const cells = event.mimeData.getData('internal:cells');
-
-    // console.log(cell_mime);
-
-    // console.log(cells);
+    const elements = this.node.getElementsByClassName(DROP_TARGET_CLASS);
+    console.log(elements);
 
     event.preventDefault();
     event.stopPropagation();
@@ -331,6 +345,8 @@ export class CodeSnippetWidget extends ReactWidget {
     }
 
     let target = event.target as HTMLElement;
+    console.log(target);
+
     while (target && target.parentElement) {
       if (target.classList.contains(DROP_TARGET_CLASS)) {
         target.classList.remove(DROP_TARGET_CLASS);
@@ -339,111 +355,49 @@ export class CodeSnippetWidget extends ReactWidget {
       target = target.parentElement;
     }
 
+    console.log(target);
+
     const snippet = this._findSnippet(target);
+    console.log(snippet);
+
+    // if target is CodeSnippetWidget, then snippet is undefined
     let idx = -1;
     if (snippet !== undefined) {
-      idx = this._findSnippet(target)[1] as number;
+      idx = parseInt(snippet.id);
     }
 
-    // get the index of the target
-    // console.log(this.node);
-    // console.log('target');
-    // console.log(target);
-
-    // const cell_mime = event.mimeData.getData(JUPYTER_CELL_MIME);
-
     /**
-     * Dragged and dropped cells onto the snippet panel
+     * moving snippets inside the snippet panel
      */
-    // const cells: Cell[] = event.mimeData.getData('internal:cells');
-    // const cellList: string[] = [];
-    // const data = cells.forEach(cell => cellList.push(cell.node.innerHTML));
-    // console.log(cellList.join(''));
-    // console.log(data);
+    const source = event.source;
+    if (source instanceof CodeSnippetDisplay) {
+      event.dropAction = 'move';
+      if (event.mimeData.hasData('snippet/id')) {
+        const srcIdx = event.mimeData.getData('snippet/id') as number;
+        // console.log(srcIdx);
+        // move snippet from src index to target index
+        // this._codeSnippetWidgetModel.moveSnippet(srcIdx, idx);
+        // this._codeSnippets = this._codeSnippetWidgetModel.snippets;
+        // // const newSnippets = this._codeSnippets;
+        // console.log(this._codeSnippets);
+        // this.updateSnippet(this._codeSnippets);
+        this.moveCodeSnippet(srcIdx, idx);
+      }
 
-    // // console.log(cell_mime);
-    // console.log(cells);
+      // this._codeSnippetWidgetModel.
+      // console.log(source);
+    } else {
+      // Handle the case where we are copying cells
+      event.dropAction = 'copy';
 
-    // path to the list of snippets from the current widget
-    // const path = this.node.childNodes[0].childNodes[1].childNodes[0].childNodes[1].childNodes[0].childNodes;
-    // const index = Array.prototype.indexOf.call(path, target);
+      const url = 'elyra/metadata/code-snippets';
 
-    // const newSnippet: ICodeSnippet = {
-    //   "name": "test40",
-    //   "displayName": "test3",
-    //   "description": "testing",
-    //   "language": "python",
-    //   "code": [data]
-    // }
+      inputDialog(this, url, data, idx);
+    }
+  }
 
-    // console.log(idx);
-    // this.update({ codeSnippets: this.codeSnippets });
-    // this.setState({ codeSnippets: this.codeSnippets });
-    //   console.log(this._model.snippets);
-    // add it to the original snippet
-    //   this._model.snippets = this._model.snippets.then((snippets) => snippets.splice(index, 0, newSnippet));
-
-    //   const source = event;
-    //   console.log(source);
-    // console.log(event.mimeData.types());
-
-    //     const cells: Cell[] = event.mimeData.getData('internal:cells');
-    //     const layout = this.layout as PanelLayout;
-    //     console.log("layout");
-    //     console.log(layout);
-    //     layout.insertWidget(0, cells[0]);
-    //     console.log(cells[0]);
-    //     console.log(cells[0].parent);
-
-    //     const element = cells[0].node.outerHTML;
-
-    //   //   console.log(cells[0].node.outerHTML);
-
-    //     let domparser = new DOMParser();
-    //     let doc = domparser.parseFromString(element, 'text/html');
-
-    //     // change the cell prompt
-    //     console.log(doc.getElementsByClassName('jp-InputArea-prompt'));
-    //     doc.getElementsByClassName('jp-InputArea-prompt')[0].innerHTML = "[]:";
-
-    //     // remove output area
-    //     let outputArea = doc.getElementsByClassName('jp-Cell-outputWrapper')[0];
-    //     outputArea.parentNode.removeChild(outputArea);
-    //     snippetNode.insertAdjacentHTML('afterend', doc.documentElement.innerHTML);
-
-    /**
-     * TODO: WE CAN ADD FUNCTIONALITY TO DRAG AND DROP WITHIN THE SNIPPET PANEL
-     * dropAction = 'move';
-     */
-
-    // Handle the case where we are copying cells
-    event.dropAction = 'copy';
-
-    /**
-     * Use this for testing
-     */
-    // const newSnippet: ICodeSnippet = {
-    //   name: 'testingCodeCell',
-    //   displayName: 'testingCodeCell',
-    //   description: 'testingCodeCell',
-    //   language: 'Python',
-    //   code: data
-    // };
-
-    // this.codeSnippetWidgetModel.addSnippet(
-    //   { codeSnippet: newSnippet, id: idx },
-    //   idx
-    // );
-
-    // const newSnippets = this.codeSnippetWidgetModel.snippets;
-    // this._codeSnippets = newSnippets;
-    // console.log(this._codeSnippets);
-    // this.renderCodeSnippetsSignal.emit(this._codeSnippets);
-
-    const url = 'elyra/metadata/code-snippets';
-
-    inputDialog(this, url, data, idx);
-    // console.log(data.split('\n'));
+  logger(sender: CodeSnippetWidget, snippets: ICodeSnippet[]): void {
+    console.log(sender, snippets);
   }
 
   deleteCodeSnippet(snippet: ICodeSnippet): void {
@@ -453,21 +407,29 @@ export class CodeSnippetWidget extends ReactWidget {
     this.renderCodeSnippetsSignal.emit(this._codeSnippets);
   }
 
+  moveCodeSnippet(srcIdx: number, targetIdx: number): void {
+    this._codeSnippetWidgetModel.moveSnippet(srcIdx, targetIdx);
+    this._codeSnippets = this._codeSnippetWidgetModel.snippets;
+    console.log(this._codeSnippets);
+    this.renderCodeSnippetsSignal.connect(this.logger);
+    this.renderCodeSnippetsSignal.emit(this._codeSnippets);
+  }
+
   render(): React.ReactElement {
     return (
-      <div>
-        <UseSignal signal={this.renderCodeSnippetsSignal} initialArgs={[]}>
-          {(_, codeSnippets): React.ReactElement => (
-            <div>
-              <CodeSnippetDisplay
-                codeSnippets={codeSnippets}
-                onDelete={this.deleteCodeSnippet.bind(this)}
-                getCurrentWidget={this.getCurrentWidget}
-              />
-            </div>
-          )}
-        </UseSignal>
-      </div>
+      // <div>
+      <UseSignal signal={this.renderCodeSnippetsSignal} initialArgs={[]}>
+        {(_, codeSnippets): React.ReactElement => (
+          <div>
+            <CodeSnippetDisplay
+              codeSnippets={codeSnippets}
+              onDelete={this.deleteCodeSnippet.bind(this)}
+              getCurrentWidget={this.getCurrentWidget}
+            />
+          </div>
+        )}
+      </UseSignal>
+      // </div>
     );
   }
 }

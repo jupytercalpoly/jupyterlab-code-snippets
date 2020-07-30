@@ -1,6 +1,9 @@
 import { CodeSnippetModel, ICodeSnippetModel } from './CodeSnippetModel';
 import { SnippetList } from './SnippetList';
-import { ICodeSnippet } from './CodeSnippetContentsService';
+import {
+  ICodeSnippet,
+  CodeSnippetContentsService
+} from './CodeSnippetContentsService';
 
 export interface ICodeSnippetWidgetModel {
   /**
@@ -37,14 +40,41 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
     }
     const newSnippet = this.contentFactory.createSnippet(snippetOpt);
     this._snippets.insertSnippet(newSnippet, index);
+    console.log(this._snippets.snippets);
+    this.updateSnippetContents();
   }
 
   sortSnippets(): void {
     this._snippets.sort();
   }
 
+  moveSnippet(fromIdx: number, toIdx: number): void {
+    // console.log(fromIdx);
+    // console.log(toIdx);
+    const snippetToInsert = this._snippets.snippetModelList[fromIdx];
+    // console.log(snippetToInsert);
+    snippetToInsert.id = toIdx;
+    this._snippets.insertSnippet(snippetToInsert, toIdx);
+    this._snippets.deleteSnippet(fromIdx);
+    // console.log(this._snippets);
+    console.log(this._snippets.snippets);
+    // this.updateSnippetContents();
+    // { codeSnippet: newSnippet, id: idx },
+  }
+
   deleteSnippet(index: number): void {
     this._snippets.deleteSnippet(index);
+    this.updateSnippetContents();
+  }
+
+  updateSnippetContents(): void {
+    this._snippets.snippets.forEach(snippet => {
+      console.log(snippet);
+      CodeSnippetContentsService.getInstance().save(
+        'snippets/' + snippet.name + '.json',
+        { type: 'file', format: 'text', content: JSON.stringify(snippet) }
+      );
+    });
   }
 }
 

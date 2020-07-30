@@ -62,13 +62,26 @@ export class CodeSnippetContentsService {
     options?: Partial<Contents.IModel>
   ): Promise<Contents.IModel> {
     // TODO: throw an error if file exists
-    if (options.type !== 'directory') {
-      await fetch('api/contents/' + path).then(s => {
-        if (s.status === 200) {
-          throw new Error('duplicate name');
-        }
-      });
-    }
+    // if (options.type !== 'directory') {
+    //   try {
+    //     const myLog = new File()
+    //     const http = new XMLHttpRequest();
+    //     http.open('HEAD', 'api/contents/' + path, false);
+    //     http.send();
+    //   } catch {
+    //     throw new Error('duplicate name');
+    //   }
+    // console.log(path);
+    // if (http.status === 200) {
+    //   throw new Error('duplicate name');
+    // }
+    // await fetch('api/contents/' + path).then(s => {
+    //   console.log(s.status);
+    //   if (s.status === 200) {
+    //     throw new Error('duplicate name');
+    //   }
+    // });
+    // }
     const changedModel = await this.contentsManager.save(path, options);
     return changedModel;
   }

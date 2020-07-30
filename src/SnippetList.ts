@@ -4,23 +4,16 @@ import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 
 import { ICodeSnippetModel } from './CodeSnippetModel';
 
-import { Signal } from '@lumino/signaling';
-
 export class SnippetList {
   /**
    * A list of snippets
    */
-  snippetList: ICodeSnippetModel[];
+  snippetModelList: ICodeSnippetModel[];
 
   /**
    * A snippet map - entry (id, snippet)
    */
   snippetMap: Map<number, ICodeSnippetModel>;
-
-  /**
-   * A signal for change in snippet list
-   */
-  changeSignal: Signal<this, ICodeSnippetModel[]>;
 
   /**
    * Construct the snippet list.
@@ -29,30 +22,34 @@ export class SnippetList {
     codeSnippets: ICodeSnippet[],
     factory: CodeSnippetWidgetModel.IContentFactory
   ) {
-    this.snippetList = [];
+    this.snippetModelList = [];
     this.snippetMap = new Map();
     codeSnippets.forEach(codeSnippet => {
       const newSnippetModel = factory.createSnippet({
         codeSnippet: codeSnippet,
         id: codeSnippet.id
       });
-      this.snippetList.push(newSnippetModel);
+      this.snippetModelList.push(newSnippetModel);
       this.snippetMap.set(newSnippetModel.id, newSnippetModel);
     });
-    this.changeSignal = new Signal<this, ICodeSnippetModel[]>(this);
   }
 
   get snippets(): ICodeSnippet[] {
     const snippetList: ICodeSnippet[] = [];
     this.sort();
-    this.snippetList.forEach(codeSnippetModel =>
-      snippetList.push(codeSnippetModel.codeSnippet)
-    );
+    this.snippetModelList.forEach(codeSnippetModel => {
+      codeSnippetModel.codeSnippet.id = codeSnippetModel.id;
+      snippetList.push(codeSnippetModel.codeSnippet);
+    });
     return snippetList;
   }
 
+  get modelSnippets(): ICodeSnippetModel[] {
+    return this.snippetModelList;
+  }
+
   sort(): void {
-    this.snippetList.sort((a, b) => a.id - b.id);
+    this.snippetModelList.sort((a, b) => a.id - b.id);
   }
 
   /**
@@ -61,17 +58,17 @@ export class SnippetList {
    * @param index index to insert. If it's not given, the snippet is added at the end of the list.
    */
   insertSnippet(newSnippet: ICodeSnippetModel, index = -1): void {
-    const numSnippets = this.snippetList.length;
+    const numSnippets = this.snippetModelList.length;
 
     // add it at the end of the list
     if (index < 0 || index > numSnippets) {
-      this.snippetList.push(newSnippet);
+      this.snippetModelList.push(newSnippet);
     } else {
       // Update list
       for (let i = index; i < numSnippets; i++) {
-        this.snippetList[i].id = this.snippetList[i].id + 1;
+        this.snippetModelList[i].id = this.snippetModelList[i].id + 1;
       }
-      this.snippetList.splice(index, 0, newSnippet);
+      this.snippetModelList.splice(index, 0, newSnippet);
 
       // Update map
       for (let i = numSnippets - 2; i >= index; i--) {
@@ -87,15 +84,17 @@ export class SnippetList {
    * @param index index to delete. If it's not given, the last one gets deleted.
    */
   deleteSnippet(index = -1): void {
-    const numSnippets = this.snippetList.length;
+    const numSnippets = this.snippetModelList.length;
     if (index < 0 || index > numSnippets) {
-      this.snippetList.pop();
+      this.snippetModelList.pop();
     } else {
       // Update list
       for (let i = index + 1; i < numSnippets; i++) {
-        this.snippetList[i].id = this.snippetList[i].id - 1;
+        this.snippetModelList[i].id = this.snippetModelList[i].id - 1;
       }
-      this.snippetList.splice(index, 1);
+      console.log(this.snippetModelList);
+      this.snippetModelList.splice(index, 1);
+      console.log(this.snippetModelList);
 
       // Update map
       for (let i = index + 1; i < numSnippets; i++) {

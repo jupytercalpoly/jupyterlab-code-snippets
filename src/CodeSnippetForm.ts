@@ -72,6 +72,9 @@ export function inputDialog(
     if (!result.value) {
       return null;
     } else {
+      if (idx === -1) {
+        idx = codeSnippet.codeSnippetWidgetModel.snippets.length;
+      }
       const newSnippet: ICodeSnippet = {
         name: result.value[0].replace(' ', '').toLowerCase(),
         displayName: result.value[0],
@@ -101,6 +104,14 @@ export function inputDialog(
       //   }),
       //   false
       // );
+      const currSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+      for (const snippet of currSnippets) {
+        if (snippet.name === newSnippet.name) {
+          alert('duplicate name');
+          return;
+        }
+      }
+
       const request = CodeSnippetContentsService.getInstance().save(
         'snippets/' + newSnippet.name + '.json',
         {
@@ -111,25 +122,21 @@ export function inputDialog(
       );
 
       // console.log(request);
-      request
-        .then(_ => {
-          // add the new snippet to the snippet model
-          //   console.log(idx);
-          codeSnippet.codeSnippetWidgetModel.addSnippet(
-            { codeSnippet: newSnippet, id: idx },
-            idx
-          );
+      request.then(_ => {
+        // add the new snippet to the snippet model
+        //   console.log(idx);
+        codeSnippet.codeSnippetWidgetModel.addSnippet(
+          { codeSnippet: newSnippet, id: idx },
+          idx
+        );
 
-          const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-          codeSnippet.codeSnippets = newSnippets;
-          codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
-          showMessage({
-            body: /*"Saved as Snippet"*/ new MessageHandler()
-          });
-        })
-        .catch(e => {
-          alert('duplicate name');
+        const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+        codeSnippet.codeSnippets = newSnippets;
+        codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+        showMessage({
+          body: /*"Saved as Snippet"*/ new MessageHandler()
         });
+      });
     }
   });
 }
