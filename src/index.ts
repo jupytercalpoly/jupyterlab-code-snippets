@@ -24,7 +24,7 @@ import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 
 import undoDeleteSVG from '../style/icon/undoDelete.svg';
 //import undoDeleteCloseIcon from '../style/icon/close_jupyter.svg';
-import { showMessage } from './UndoDelete';
+import { showUndoMessage } from './UndoDelete';
 
 export interface ICodeSnippet {
   name: string;
@@ -122,28 +122,9 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         frontEndSnippets.splice(_id, 1);
         codeSnip.codeSnippets = frontEndSnippets;
         codeSnip.renderCodeSnippetsSignal.emit(frontEndSnippets);
-        showMessage({
+        showUndoMessage({
           body: /*"Undo delete"*/ new MessageHandler(codeSnip, _id)
         });
-        // const snippetToDeleteName =
-        //   codeSnip.codeSnippetWidgetModel.snippets[_id].name;
-        // CodeSnippetContentsService.getInstance().delete(
-        //   'snippets/' + snippetToDeleteName + '.json'
-        // );
-        //const savedSnip = codeSnip.codeSnippetWidgetModel.snippets[_id];
-
-        //codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
-        //const newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
-
-        // codeSnip.codeSnippetWidgetModel.addSnippet(
-        //   { codeSnippet: savedSnip, id: _id },
-        //   _id
-        // );
-        // codeSnip.codeSnippetWidgetModel.snippets.sort((a, b) => a.id - b.id);
-        // codeSnip.codeSnippets = codeSnip.codeSnippetWidgetModel.snippets;
-        // codeSnip.renderCodeSnippetsSignal.emit(
-        //   codeSnip.codeSnippetWidgetModel.snippets
-        // );
       }
     });
 

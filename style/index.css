@@ -192,7 +192,7 @@
   padding: 10px;
   min-width: 960px;
   max-width: 1000px;
-  max-height: 92%;
+  max-height: 90%;
   box-sizing: border-box;
   box-shadow: var(--jp-elevation-z20);
   word-wrap: break-word;
@@ -225,10 +225,7 @@
 }
 
 .jp-preview-textarea {
-  border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
-  border-radius: 0px;
-  background: var(--jp-cell-editor-background);
-  font-family: var(--jp-code-font-family);
+  font-family: var(--jp-code-font-family-default);
   font-size: var(--jp-code-font-size);
   line-height: var(--jp-code-line-height);
   text-align: left;
@@ -236,6 +233,7 @@
   resize: none;
   white-space: pre;
   padding: var(--jp-code-padding);
+  padding-left: 20px;
 }
 
 .jp-preview-description-container {
@@ -245,26 +243,28 @@
   text-align: left;
   flex-grow: 1;
   resize: none;
-  white-space: pre;
   padding: var(--jp-code-padding);
   margin-bottom: 10px;
+  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
 }
 
 .jp-preview-description-title {
-  font-family: sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   margin-bottom: 3px;
+  padding-left: 5px;
 }
 
 .jp-preview-description {
-  font-family: var(--jp-code-font-family);
-  font-size: var(--jp-code-font-size);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
   line-height: var(--jp-code-line-height);
   text-align: left;
   flex-grow: 1;
   resize: none;
-  white-space: pre;
   padding: var(--jp-code-padding);
   word-wrap: break-word;
+  width: 960px;
+  display: block;
 }
 
 .triangle {

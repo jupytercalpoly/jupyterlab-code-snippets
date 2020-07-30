@@ -17,7 +17,7 @@ const CONFIRM_CLASS = 'jp-undo-delete';
  *
  * @returns A promise that resolves with whether the dialog was accepted.
  */
-export function showMessage<T>(
+export function showUndoMessage<T>(
   options: Partial<UndoDelete.IOptions<T>> = {}
 ): Promise<void> {
   console.log(options);
