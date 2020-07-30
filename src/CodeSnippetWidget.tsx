@@ -38,7 +38,8 @@ import { IDragEvent /** Drag */ } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
 
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
-// import { JupyterFrontEnd } from '@jupyterlab/application';
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import { IEditorServices } from '@jupyterlab/codeeditor';
 
 /**
  * A class used to indicate a snippet item.
@@ -55,6 +56,15 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  */
 const DROP_TARGET_CLASS = 'jp-snippet-dropTarget';
 
+const METADATA_EDITOR_ID = 'elyra-metadata-editor';
+
+const commands = {
+  OPEN_METADATA_EDITOR: `${METADATA_EDITOR_ID}:open`
+};
+
+// const CODE_SNIPPET_NAMESPACE = 'code-snippets';
+// const CODE_SNIPPET_SCHEMA = 'code-snippet';
+
 /**
  * A widget for Code Snippets.
  */
@@ -65,28 +75,40 @@ export class CodeSnippetWidget extends ReactWidget {
   private _codeSnippetWidgetModel: CodeSnippetWidgetModel;
   renderCodeSnippetsSignal: Signal<this, ICodeSnippet[]>;
   private static instance: CodeSnippetWidget;
+  app: JupyterFrontEnd;
+  // private editorServices: IEditorServices;
 
   private constructor(
     codeSnippets: ICodeSnippet[],
-    getCurrentWidget: () => Widget
+    getCurrentWidget: () => Widget,
+    app: JupyterFrontEnd,
+    editorServices: IEditorServices
   ) {
     super();
+    this.app = app;
+    // this.editorServices = editorServices;
     this.getCurrentWidget = getCurrentWidget;
     this._codeSnippetWidgetModel = new CodeSnippetWidgetModel(codeSnippets, {});
     this._codeSnippets = this._codeSnippetWidgetModel.snippets;
     this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
     this.moveCodeSnippet.bind(this);
+    this.openCodeSnippetEditor.bind(this);
+    this.updateCodeSnippets.bind(this);
     CodeSnippetWidget.tracker.add(this);
   }
 
   static getInstance(
     codeSnippets: ICodeSnippet[],
-    getCurrentWidget: () => Widget
+    getCurrentWidget: () => Widget,
+    app: JupyterFrontEnd,
+    editorServices: IEditorServices
   ): CodeSnippetWidget {
     if (!CodeSnippetWidget.instance) {
       CodeSnippetWidget.instance = new CodeSnippetWidget(
         codeSnippets,
-        getCurrentWidget
+        getCurrentWidget,
+        app,
+        editorServices
       );
     }
     return CodeSnippetWidget.instance;
@@ -98,6 +120,13 @@ export class CodeSnippetWidget extends ReactWidget {
 
   set codeSnippets(codeSnippets: ICodeSnippet[]) {
     this._codeSnippets = codeSnippets;
+  }
+
+  openCodeSnippetEditor(args: any): void {
+    console.log(this);
+    console.log(this.app);
+    console.log(this.app.commands);
+    this.app.commands.execute(commands.OPEN_METADATA_EDITOR, args);
   }
 
   /**
@@ -416,6 +445,11 @@ export class CodeSnippetWidget extends ReactWidget {
     this.renderCodeSnippetsSignal.emit(this._codeSnippets);
   }
 
+  updateCodeSnippets() {
+    this._codeSnippets = this._codeSnippetWidgetModel.snippets;
+    this.renderCodeSnippetsSignal.emit(this._codeSnippets);
+  }
+
   render(): React.ReactElement {
     return (
       // <div>
@@ -426,6 +460,7 @@ export class CodeSnippetWidget extends ReactWidget {
               codeSnippets={codeSnippets}
               onDelete={this.deleteCodeSnippet.bind(this)}
               getCurrentWidget={this.getCurrentWidget}
+              openCodeSnippetEditor={this.openCodeSnippetEditor.bind(this)}
             />
           </div>
         )}
