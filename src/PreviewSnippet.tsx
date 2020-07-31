@@ -22,10 +22,11 @@ const PREVIEW_CONTENT = 'jp-Preview-content';
  * @returns A promise that resolves with whether the dialog was accepted.
  */
 export function showPreview<T>(
-  options: Partial<Preview.IOptions<T>> = {}
+  options: Partial<Preview.IOptions<T>> = {},
+  openCodeSnippetEditor: (args: any) => void
 ): Promise<void> {
   //Insert check method to see if the preview is already open
-  const preview = new Preview(options);
+  const preview = new Preview(options, openCodeSnippetEditor);
   if (preview.ready === false) {
     return;
   }
@@ -39,7 +40,10 @@ export class Preview<T> extends Widget {
   ready: boolean;
   _title: string;
   _id: number;
-  constructor(options: Partial<Preview.IOptions<T>> = {}) {
+  constructor(
+    options: Partial<Preview.IOptions<T>> = {},
+    openCodeSnippetEditor: (args: any) => void
+  ) {
     super();
     this.ready = true;
     this._title = options.title;
@@ -56,7 +60,7 @@ export class Preview<T> extends Widget {
     content.addWidget(header);
     const body = renderer.createBody(options.body || '');
     content.addWidget(body);
-    const editButton = renderer.createEditButton(this);
+    const editButton = renderer.createEditButton(this, openCodeSnippetEditor);
     content.addWidget(editButton);
 
     if (Preview.tracker.size > 0) {
@@ -399,7 +403,10 @@ export namespace Preview {
      *
      * @returns A widget for the edit button.
      */
-    createEditButton(prev: any): Widget {
+    createEditButton(
+      prev: any,
+      openCodeSnippetEditor: (args: any) => void
+    ): Widget {
       const editButton: Widget = new Widget({
         node: document.createElement('span')
       });
@@ -411,6 +418,7 @@ export namespace Preview {
         editButton.removeClass('jp-Preview-button-hover');
       };
       editButton.node.onclick = (): void => {
+        openCodeSnippetEditor({});
         document
           .getElementsByClassName('drag-hover')
           [prev._id].classList.remove('drag-hover-clicked');
