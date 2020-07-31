@@ -77,73 +77,6 @@ export class UndoDelete<T> extends Widget {
   }
 
   /**
-   * Handle the DOM events for the directory listing.
-   *
-   * @param event - The DOM event sent to the widget.
-   *
-   * #### Notes
-   * This method implements the DOM `EventListener` interface and is
-   * called in response to events on the panel's DOM node. It should
-   * not be called directly by user code.
-   */
-  handleEvent(event: Event): void {
-    switch (event.type) {
-      case 'keydown':
-        this._evtKeydown(event as KeyboardEvent);
-        break;
-      //   case 'click':
-      //     this._evtClick(event as MouseEvent);
-      //     break;
-      case 'contextmenu':
-        event.preventDefault();
-        event.stopPropagation();
-        break;
-      default:
-        break;
-    }
-  }
-
-  /**
-   * Handle the `'click'` event for a dialog button.
-   *
-   * @param event - The DOM event sent to the widget
-   */
-  protected _evtClick(event: MouseEvent): void {
-    const content = this.node.getElementsByClassName(
-      'jp-undo-delete-content'
-    )[0] as HTMLElement;
-    if (!content.contains(event.target as HTMLElement)) {
-      event.stopPropagation();
-      event.preventDefault();
-      this.reject();
-      return;
-    }
-  }
-
-  /**
-   * Handle the `'keydown'` event for the widget.
-   *
-   * @param event - The DOM event sent to the widget
-   */
-  protected _evtKeydown(event: KeyboardEvent): void {
-    // Check for escape key
-    switch (event.keyCode) {
-      case 27: // Escape.
-        event.stopPropagation();
-        event.preventDefault();
-        this.reject();
-        break;
-      case 13: // Enter.
-        event.stopPropagation();
-        event.preventDefault();
-        this.resolve();
-        break;
-      default:
-        break;
-    }
-  }
-
-  /**
    * Resolve the current dialog.
    *
    * @param index - An optional index to the button to resolve.
@@ -212,32 +145,8 @@ export class UndoDelete<T> extends Widget {
     super.onCloseRequest(msg);
   }
 
-  /**
-   *  A message handler invoked on an `'after-attach'` message.
-   */
-  protected onAfterAttach(msg: Message): void {
-    const node = this.node;
-    node.addEventListener('keydown', this, true);
-    node.addEventListener('contextmenu', this, true);
-    node.addEventListener('click', this, true);
-    this._original = document.activeElement as HTMLElement;
-  }
-
-  /**
-   *  A message handler invoked on an `'after-detach'` message.
-   */
-  protected onAfterDetach(msg: Message): void {
-    const node = this.node;
-    node.removeEventListener('keydown', this, true);
-    node.removeEventListener('contextmenu', this, true);
-    node.removeEventListener('click', this, true);
-    document.removeEventListener('focus', this, true);
-    this._original.focus();
-  }
-
   private _promise: PromiseDelegate<void> | null;
   private _host: HTMLElement;
-  private _original: HTMLElement;
 }
 
 export namespace UndoDelete {
