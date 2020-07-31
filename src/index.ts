@@ -8,7 +8,7 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 
-import { Widget, PanelLayout } from '@lumino/widgets';
+import { Widget } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
 <<<<<<< HEAD
 //import { ServerConnection } from '@jupyterlab/services';
@@ -20,8 +20,13 @@ import { IEditorServices } from '@jupyterlab/codeeditor';
 >>>>>>> Create a new tab for code snippet editor
 
 import { inputDialog } from './CodeSnippetForm';
+<<<<<<< HEAD
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { CodeSnippetWrapper } from './CodeSnippetWrapper';
+=======
+import { INotebookTracker, NotebookTracker } from '@jupyterlab/notebook';
+// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
+>>>>>>> Clean code base and implement drag and drop within snippet panel
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import { CodeSnippetEditor } from './CodeSnippetEditor';
@@ -69,23 +74,24 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       return app.shell.currentWidget;
     };
 
-    const codeSnippetWrapper = new CodeSnippetWrapper(
+    const codeSnippetWidget = new CodeSnippetWidget(
       getCurrentWidget,
       app,
       editorServices
-    ) as Widget;
-    codeSnippetWrapper.id = CODE_SNIPPET_EXTENSION_ID;
-    codeSnippetWrapper.title.icon = codeSnippetIcon;
-    codeSnippetWrapper.title.caption = 'Jupyter Code Snippet';
+    );
+    codeSnippetWidget.id = CODE_SNIPPET_EXTENSION_ID;
+    codeSnippetWidget.title.icon = codeSnippetIcon;
+    codeSnippetWidget.title.caption = 'Jupyter Code Snippet';
 
+    console.log('creating snippets folder!');
     const service = CodeSnippetContentsService.getInstance();
     service.save('snippets', { type: 'directory' });
 
-    restorer.add(codeSnippetWrapper, CODE_SNIPPET_EXTENSION_ID);
+    restorer.add(codeSnippetWidget, CODE_SNIPPET_EXTENSION_ID);
 
     // Rank has been chosen somewhat arbitrarily to give priority to the running
     // sessions widget in the sidebar.
-    app.shell.add(codeSnippetWrapper, 'left', { rank: 900 });
+    app.shell.add(codeSnippetWidget, 'left', { rank: 900 });
 
 <<<<<<< HEAD
     //Application command to save snippet
@@ -114,14 +120,10 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       execute: () => {
         console.log(`Executed ${commandID}`);
         const highlightedCode = getSelectedText();
-        const layout = codeSnippetWrapper.layout as PanelLayout;
+        console.log(highlightedCode);
+        // const layout = codeSnippetWidget.layout as PanelLayout;
 
-        inputDialog(
-          (layout.widgets[0] as unknown) as CodeSnippetWidget,
-          url,
-          highlightedCode.split('\n'),
-          -1
-        );
+        inputDialog(codeSnippetWidget, url, highlightedCode.split('\n'), -1);
       }
     });
 
@@ -145,6 +147,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       execute: async () => {
         const target = clicked as HTMLElement;
         const _id = parseInt(target.id, 10);
+<<<<<<< HEAD
         const layout = codeSnippetWrapper.layout as PanelLayout;
         const codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
 <<<<<<< HEAD
@@ -156,8 +159,12 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
           body: /*"Undo delete"*/ new MessageHandler(codeSnip, _id)
         });
 =======
+=======
+        // const layout = codeSnippetWidget.layout as PanelLayout;
+        // const codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
+>>>>>>> Clean code base and implement drag and drop within snippet panel
         const snippetToDeleteName =
-          codeSnip.codeSnippetWidgetModel.snippets[_id].name;
+          codeSnippetWidget.codeSnippetWidgetModel.snippets[_id].name;
         const url = 'elyra/metadata/code-snippets/' + snippetToDeleteName;
 
         const settings = ServerConnection.makeSettings();
@@ -168,6 +175,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
           { method: 'DELETE' },
           settings
         );
+<<<<<<< HEAD
         codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
         const newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
         codeSnip.codeSnippets = newSnippets;
@@ -175,6 +183,14 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         console.log(codeSnip.codeSnippets);
         console.log(codeSnip.codeSnippetWidgetModel.snippets);
 >>>>>>> Create a new tab for code snippet editor
+=======
+        codeSnippetWidget.codeSnippetWidgetModel.deleteSnippet(_id);
+        const newSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
+        codeSnippetWidget.codeSnippets = newSnippets;
+        codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
+        console.log(codeSnippetWidget.codeSnippets);
+        console.log(codeSnippetWidget.codeSnippetWidgetModel.snippets);
+>>>>>>> Clean code base and implement drag and drop within snippet panel
       }
     });
 
@@ -197,6 +213,7 @@ function getSelectedText(): string {
   // window.getSelection
   if (window.getSelection) {
     selectedText = window.getSelection();
+    console.log(selectedText.toString);
   }
   // document.getSelection
   else if (document.getSelection) {

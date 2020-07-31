@@ -67,7 +67,6 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  */
 interface ICodeSnippetDisplayProps {
   codeSnippets: ICodeSnippet[];
-  onDelete: (codeSnippet: ICodeSnippet) => void;
   getCurrentWidget: () => Widget;
   openCodeSnippetEditor: (args: any) => void;
 }
@@ -163,20 +162,6 @@ export class CodeSnippetDisplay extends React.Component<
     // const url = 'elyra/metadata/code-snippets/' + name;
 
     this.props.openCodeSnippetEditor({ namespace: name });
-    // CodeSnippetContentsService.getInstance().delete(
-    //   'snippets/' + name + '.json'
-    // );
-
-    // const settings = ServerConnection.makeSettings();
-    // const requestUrl = URLExt.join(settings.baseUrl, url);
-
-    // await ServerConnection.makeRequest(
-    //   requestUrl,
-    //   { method: 'DELETE' },
-    //   settings
-    // );
-
-    // this.props.onDelete(snippet);
   };
 
   // Handle language compatibility between code snippet and editor
@@ -253,7 +238,7 @@ export class CodeSnippetDisplay extends React.Component<
       }
     }
     counter += 1;
-    console.log(counter);
+    // console.log(counter);
     return 'LOC\t\t' + counter;
   };
 >>>>>>> Integrate contents service into frontend
