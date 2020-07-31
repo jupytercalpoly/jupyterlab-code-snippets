@@ -559,11 +559,14 @@ export class CodeSnippetDisplay extends React.Component<
               title={codeSnippet.displayName}
               className={DISPLAY_NAME_CLASS}
               onClick={(): void => {
-                showPreview({
-                  id: parseInt(id, 10),
-                  title: displayName,
-                  body: new PreviewHandler(codeSnippet)
-                });
+                showPreview(
+                  {
+                    id: parseInt(id, 10),
+                    title: displayName,
+                    body: new PreviewHandler(codeSnippet)
+                  },
+                  this.props.openCodeSnippetEditor
+                );
                 this.snippetClicked(id);
               }}
             >
