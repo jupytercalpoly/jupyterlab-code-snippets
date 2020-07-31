@@ -245,7 +245,6 @@ export class CodeSnippetWidget extends ReactWidget {
         !target.classList.contains('elyra-expandableContainer-name')
       ) {
         preview.classList.add('inactive');
-        //Control appearance of six dot drag icon
         for (const elem of document.getElementsByClassName('drag-hover')) {
           if (elem.classList.contains('drag-hover-clicked')) {
             elem.classList.remove('drag-hover-clicked');

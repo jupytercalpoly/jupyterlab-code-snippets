@@ -153,11 +153,6 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Handle deleting code snippet
   private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
-<<<<<<< HEAD
-=======
-    // console.log(this.props.getCurrentWidget instanceof CodeSnippetWidget);
-    // console.log(snippet);
->>>>>>> Integrate contents service into frontend
     const name = snippet.name;
     // const url = 'elyra/metadata/code-snippets/' + name;
 
@@ -215,7 +210,6 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   // Pick color for side of snippet box based on number of code lines
-<<<<<<< HEAD
   // private codeLines = (codeSnippet: ICodeSnippet): string => {
   //   let i;
   //   let counter = 0;
@@ -228,20 +222,6 @@ export class CodeSnippetDisplay extends React.Component<
   //   console.log(counter);
   //   return 'LOC\t\t' + counter;
   // };
-=======
-  private codeLines = (codeSnippet: ICodeSnippet): string => {
-    let i;
-    let counter = 0;
-    for (i = 0; i < codeSnippet.code[0].length; i++) {
-      if (codeSnippet.code[0][i] === '\n') {
-        counter++;
-      }
-    }
-    counter += 1;
-    // console.log(counter);
-    return 'LOC\t\t' + counter;
-  };
->>>>>>> Integrate contents service into frontend
 
   //Change bookmark field and color onclick
   private bookmarkSnippetClick = (
@@ -262,15 +242,8 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Insert 6 dots on hover
   private dragHoverStyle = (id: string): void => {
-<<<<<<< HEAD
-<<<<<<< HEAD
     const _id: number = parseInt(id, 10);
-=======
-    let _id: number = parseInt(id, 10);
->>>>>>> Integrate contents service into frontend
-=======
-    const _id: number = parseInt(id, 10);
->>>>>>> Drag and drop snippets to the notebook or move then inside the panel
+
     document
       .getElementsByClassName('drag-hover')
       [_id].classList.add('drag-hover-selected');
@@ -278,15 +251,7 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Remove 6 dots off hover
   private dragHoverStyleRemove = (id: string): void => {
-<<<<<<< HEAD
-<<<<<<< HEAD
     const _id: number = parseInt(id, 10);
-=======
-    let _id: number = parseInt(id, 10);
->>>>>>> Integrate contents service into frontend
-=======
-    const _id: number = parseInt(id, 10);
->>>>>>> Drag and drop snippets to the notebook or move then inside the panel
     document
       .getElementsByClassName('drag-hover')
       [_id].classList.remove('drag-hover-selected');
@@ -294,15 +259,8 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Grey out snippet and include blue six dots when snippet is previewing (clicked)
   private snippetClicked = (id: string): void => {
-<<<<<<< HEAD
-<<<<<<< HEAD
     const _id: number = parseInt(id, 10);
-=======
-    let _id: number = parseInt(id, 10);
->>>>>>> Integrate contents service into frontend
-=======
-    const _id: number = parseInt(id, 10);
->>>>>>> Drag and drop snippets to the notebook or move then inside the panel
+
     if (
       document
         .getElementsByClassName('drag-hover')
@@ -315,7 +273,6 @@ export class CodeSnippetDisplay extends React.Component<
       document
         .getElementsByClassName('drag-hover')
         [_id].classList.add('drag-hover-clicked');
-<<<<<<< HEAD
     }
     if (
       document
@@ -332,7 +289,6 @@ export class CodeSnippetDisplay extends React.Component<
     }
   };
 
-<<<<<<< HEAD
   // Bold text in snippet DisplayName based on search
   private boldNameOnSearch = (filter: string, displayed: string): any => {
     const name: string = displayed;
@@ -351,24 +307,8 @@ export class CodeSnippetDisplay extends React.Component<
       );
     }
     return name;
-=======
-    }
-    if (
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.contains('elyra-codeSnippet-item-clicked')
-    ) {
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.remove('elyra-codeSnippet-item-clicked');
-    } else {
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.add('elyra-codeSnippet-item-clicked');
-    }
->>>>>>> Integrate contents service into frontend
   };
-=======
+
   private handleDragSnippet(
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ): void {
@@ -537,7 +477,6 @@ export class CodeSnippetDisplay extends React.Component<
       }
     });
   }
->>>>>>> Drag and drop snippets to the notebook or move then inside the panel
 
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
@@ -546,10 +485,6 @@ export class CodeSnippetDisplay extends React.Component<
     id: string
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
-<<<<<<< HEAD
-
-=======
->>>>>>> Integrate contents service into frontend
     const displayName =
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
     //this.boldNameOnSearch(this.state.filterValue,displayName,parseInt(id,10));
@@ -614,28 +549,12 @@ export class CodeSnippetDisplay extends React.Component<
           <div
             key={displayName}
             className={TITLE_CLASS}
-<<<<<<< HEAD
-<<<<<<< HEAD
-            onMouseOver={(): void => {
-              this.dragHoverStyle(id);
-            }}
-            onMouseOut={(): void => {
-=======
-            onMouseOver={() => {
-              this.dragHoverStyle(id);
-            }}
-            onMouseOut={() => {
->>>>>>> Integrate contents service into frontend
-              this.dragHoverStyleRemove(id);
-            }}
-=======
             // onMouseOver={() => {
             //   this.dragHoverStyle(id);
             // }}
             // onMouseOut={() => {
             //   this.dragHoverStyleRemove(id);
             // }}
->>>>>>> Drag and drop snippets to the notebook or move then inside the panel
           >
             <span
               id={id}
@@ -650,15 +569,7 @@ export class CodeSnippetDisplay extends React.Component<
                 this.snippetClicked(id);
               }}
             >
-<<<<<<< HEAD
               {this.boldNameOnSearch(this.state.filterValue, displayName)}
-=======
-              {displayName}
-              <br />
-              <div className="lines-of-code" id={id}>
-                {this.codeLines(codeSnippet)}
-              </div>
->>>>>>> Integrate contents service into frontend
             </span>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS}>
               {actionButtons.map((btn: IExpandableActionButton) => {
@@ -727,19 +638,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
-<<<<<<< HEAD
-<<<<<<< HEAD
               this.renderCodeSnippet(codeSnippet, id.toString())
-=======
-              this.renderCodeSnippet(
-                codeSnippet,
-                id.toString(),
-                codeSnippet.type
-              )
->>>>>>> Integrate contents service into frontend
-=======
-              this.renderCodeSnippet(codeSnippet, id.toString())
->>>>>>> Decide to save a group of cells as a single snippet of the codes combined
             )}
           </div>
         </div>
@@ -757,64 +656,32 @@ class PreviewHandler extends Widget {
 class Private {
   static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     for (let i = 0; i < codeSnippet.code.length; i++) {
       const previewContainer = document.createElement('div');
+      const descriptionContainer = document.createElement('div');
+      const descriptionTitle = document.createElement('h6');
+      const description = document.createElement('text');
       const preview = document.createElement('text');
-      preview.contentEditable = 'true';
 
-      if (type === 'code') {
-        previewContainer.className = 'jp-preview-text';
-        preview.className = 'jp-preview-textarea';
-        preview.textContent = codeSnippet.code.join('\n').replace('\n', '\r\n');
-      } else if (type === 'cell') {
-        previewContainer.className = 'jp-preview-cell';
-        const previewPrompt = document.createElement('div');
-        previewPrompt.className = 'jp-preview-cell-prompt';
-        previewPrompt.innerText = '[ ]:';
-        previewContainer.appendChild(previewPrompt);
-        preview.className = 'jp-preview-cellarea';
-        preview.textContent = codeSnippet.code[i];
-      } else {
-        alert('Invalid type to preview');
-      }
->>>>>>> Integrate contents service into frontend
+      previewContainer.className = 'jp-preview-text';
+      descriptionContainer.className = 'jp-preview-description-container';
+      descriptionTitle.className = 'jp-preview-description-title';
+      description.className = 'jp-preview-description';
+      preview.className = 'jp-preview-textarea';
 
-    const previewContainer = document.createElement('div');
-    const descriptionContainer = document.createElement('div');
-    const descriptionTitle = document.createElement('h6');
-    const description = document.createElement('text');
-    const preview = document.createElement('text');
+      descriptionTitle.textContent = 'DESCRIPTION';
+      description.textContent = codeSnippet.description;
+      preview.textContent = codeSnippet.code.join('\n');
 
-    previewContainer.className = 'jp-preview-text';
-    descriptionContainer.className = 'jp-preview-description-container';
-    descriptionTitle.className = 'jp-preview-description-title';
-    description.className = 'jp-preview-description';
-    preview.className = 'jp-preview-textarea';
+      descriptionContainer.appendChild(descriptionTitle);
+      descriptionContainer.appendChild(description);
+      previewContainer.appendChild(descriptionContainer);
 
-    descriptionTitle.textContent = 'DESCRIPTION';
-    description.textContent = codeSnippet.description;
-    preview.textContent = codeSnippet.code.join('\n');
+      previewContainer.appendChild(preview);
+      body.append(previewContainer);
 
-    descriptionContainer.appendChild(descriptionTitle);
-    descriptionContainer.appendChild(description);
-    previewContainer.appendChild(descriptionContainer);
-=======
-    const previewContainer = document.createElement('div');
-    const preview = document.createElement('text');
-
-    previewContainer.className = 'jp-preview-text';
-    preview.className = 'jp-preview-textarea';
-    preview.textContent = codeSnippet.code.join('\n');
-
-    //console.log("this is the text: "+ message.textContent);
->>>>>>> Decide to save a group of cells as a single snippet of the codes combined
-    previewContainer.appendChild(preview);
-    body.append(previewContainer);
-
-    return body;
+      return body;
+    }
   }
   /**
    * Create structure for preview of snippet data.
