@@ -2,8 +2,8 @@ import insertSVGstr from '../style/icon/insertsnippet.svg';
 import { SearchBar } from './SearchBar';
 import { showPreview } from './PreviewSnippet';
 import {
-  ICodeSnippet,
-  CodeSnippetContentsService
+  ICodeSnippet
+  // CodeSnippetContentsService
 } from './CodeSnippetContentsService';
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 
@@ -22,7 +22,13 @@ import { IExpandableActionButton } from '@elyra/ui-components';
 
 import { Widget } from '@lumino/widgets';
 
+// import { MouseEvent } from 'react';
 import React from 'react';
+import { Drag } from '@lumino/dragdrop';
+import { Cell, CodeCellModel, ICodeCellModel } from '@jupyterlab/cells';
+import { MimeData } from '@lumino/coreutils';
+
+import * as nbformat from '@jupyterlab/nbformat';
 
 /**
  * The class added to snippet cells
@@ -42,17 +48,27 @@ const ACTION_BUTTONS_WRAPPER_CLASS = 'elyra-expandableContainer-action-buttons';
 const ACTION_BUTTON_CLASS = 'elyra-expandableContainer-actionButton';
 
 /**
+ * The threshold in pixels to start a drag event.
+ */
+const DRAG_THRESHOLD = 5;
+
+/**
  * A class used to indicate a snippet item.
  */
 const CODE_SNIPPET_ITEM = 'elyra-codeSnippet-item';
+
+/**
+ * The mimetype used for Jupyter cell data.
+ */
+const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
 
 /**
  * CodeSnippetDisplay props.
  */
 interface ICodeSnippetDisplayProps {
   codeSnippets: ICodeSnippet[];
-  onDelete: (codeSnippet: ICodeSnippet) => void;
   getCurrentWidget: () => Widget;
+  openCodeSnippetEditor: (args: any) => void;
 }
 
 /**
@@ -70,7 +86,16 @@ export class CodeSnippetDisplay extends React.Component<
   ICodeSnippetDisplayProps,
   ICodeSnippetDisplayState
 > {
-  state = { codeSnippets: this.props.codeSnippets, filterValue: '' };
+  _drag: Drag;
+  _dragData: { pressX: number; pressY: number; dragImage: HTMLElement };
+  constructor(props: ICodeSnippetDisplayProps) {
+    super(props);
+    this.state = { codeSnippets: this.props.codeSnippets, filterValue: '' };
+    this._drag = null;
+    this._dragData = null;
+    this.handleDragMove = this.handleDragMove.bind(this);
+    this._evtMouseUp = this._evtMouseUp.bind(this);
+  }
 
   // Handle code snippet insert into an editor
   private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
@@ -131,20 +156,7 @@ export class CodeSnippetDisplay extends React.Component<
     const name = snippet.name;
     // const url = 'elyra/metadata/code-snippets/' + name;
 
-    CodeSnippetContentsService.getInstance().delete(
-      'snippets/' + name + '.json'
-    );
-
-    // const settings = ServerConnection.makeSettings();
-    // const requestUrl = URLExt.join(settings.baseUrl, url);
-
-    // await ServerConnection.makeRequest(
-    //   requestUrl,
-    //   { method: 'DELETE' },
-    //   settings
-    // );
-
-    this.props.onDelete(snippet);
+    this.props.openCodeSnippetEditor({ namespace: name });
   };
 
   // Handle language compatibility between code snippet and editor
@@ -231,6 +243,7 @@ export class CodeSnippetDisplay extends React.Component<
   // Insert 6 dots on hover
   private dragHoverStyle = (id: string): void => {
     const _id: number = parseInt(id, 10);
+
     document
       .getElementsByClassName('drag-hover')
       [_id].classList.add('drag-hover-selected');
@@ -247,6 +260,7 @@ export class CodeSnippetDisplay extends React.Component<
   // Grey out snippet and include blue six dots when snippet is previewing (clicked)
   private snippetClicked = (id: string): void => {
     const _id: number = parseInt(id, 10);
+
     if (
       document
         .getElementsByClassName('drag-hover')
@@ -295,6 +309,173 @@ export class CodeSnippetDisplay extends React.Component<
     return name;
   };
 
+  private handleDragSnippet(
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ): void {
+    const { button } = event;
+
+    // if button is not the left click
+    if (!(button === 0)) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+
+    this._dragData = {
+      pressX: event.clientX,
+      pressY: event.clientY,
+      dragImage: target.parentNode.cloneNode(true) as HTMLElement
+    };
+
+    // add CSS style
+    this._dragData.dragImage.classList.add('jp-codesnippet-drag-image');
+
+    console.log('draggin');
+    console.log(event);
+    target.addEventListener('mouseup', this._evtMouseUp, true);
+    target.addEventListener('mousemove', this.handleDragMove, true);
+
+    event.preventDefault();
+    // event.stopPropagation();
+  }
+
+  private _evtMouseUp(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    console.log('cancelled');
+
+    const target = event.target as HTMLElement;
+
+    target.removeEventListener('mousemove', this.handleDragMove, true);
+
+    target.removeEventListener('mouseup', this._evtMouseUp, true);
+  }
+
+  private handleDragMove(event: MouseEvent): void {
+    // event.preventDefault();
+    // event.stopPropagation();
+    const data = this._dragData;
+
+    // console.log(data);
+    // console.log(event);
+    // console.log(this);
+    // console.log(
+    //   this.shouldStartDrag(
+    //     data.pressX,
+    //     data.pressY,
+    //     event.clientX,
+    //     event.clientY
+    //   )
+    // );
+
+    if (
+      data &&
+      this.shouldStartDrag(
+        data.pressX,
+        data.pressY,
+        event.clientX,
+        event.clientY
+      )
+    ) {
+      console.log('moving start');
+
+      const idx = (event.target as HTMLElement).id;
+      const codeSnippet = this.state.codeSnippets[parseInt(idx)];
+
+      this.startDrag(data.dragImage, codeSnippet, event.clientX, event.clientY);
+    }
+  }
+
+  /**
+   * Detect if a drag event should be started. This is down if the
+   * mouse is moved beyond a certain distance (DRAG_THRESHOLD).
+   *
+   * @param prevX - X Coordinate of the mouse pointer during the mousedown event
+   * @param prevY - Y Coordinate of the mouse pointer during the mousedown event
+   * @param nextX - Current X Coordinate of the mouse pointer
+   * @param nextY - Current Y Coordinate of the mouse pointer
+   */
+  private shouldStartDrag(
+    prevX: number,
+    prevY: number,
+    nextX: number,
+    nextY: number
+  ): boolean {
+    const dx = Math.abs(nextX - prevX);
+    const dy = Math.abs(nextY - prevY);
+    return dx >= DRAG_THRESHOLD || dy >= DRAG_THRESHOLD;
+  }
+
+  private async startDrag(
+    dragImage: HTMLElement,
+    codeSnippet: ICodeSnippet,
+    clientX: number,
+    clientY: number
+  ): Promise<void> {
+    /**
+     * TODO: check what the current widget is
+     */
+    // const widget = this.props.getCurrentWidget();
+    const target = event.target as HTMLElement;
+
+    // if (widget instanceof NotebookPanel) {
+    //   const notebookWidget = widget as NotebookPanel;
+
+    //   const kernelInfo = await notebookWidget.sessionContext.session?.kernel
+    //     ?.info;
+    //   const kernelLanguage: string = kernelInfo?.language_info.name || '';
+
+    //   if (
+    //     kernelLanguage &&
+    //     codeSnippet.language.toLowerCase() !== kernelLanguage.toLowerCase()
+    //   ) {
+    //     const result = await this.showWarnDialog(
+    //       kernelLanguage,
+    //       codeSnippet.displayName
+    //     );
+    //     if (!result.button.accept) {
+    //       target.removeEventListener('mousemove', this.handleDragMove, true);
+    //       target.removeEventListener('mouseup', this._evtMouseUp, true);
+    //       this._dragData = null;
+    //       return;
+    //     }
+    //   }
+    // }
+
+    const modelFactory = new ModelFactory();
+    const model = modelFactory.createCodeCell({});
+    model.value.text = codeSnippet.code.join('\n');
+    model.metadata;
+
+    const selected: nbformat.ICell[] = [model.toJSON()];
+
+    this._drag = new Drag({
+      mimeData: new MimeData(),
+      dragImage: dragImage,
+      supportedActions: 'copy-move',
+      proposedAction: 'copy',
+      source: this
+    });
+
+    this._drag.mimeData.setData(JUPYTER_CELL_MIME, selected);
+    const textContent = codeSnippet.code.join('\n');
+    this._drag.mimeData.setData('text/plain', textContent);
+
+    console.log('removing events');
+
+    // Remove mousemove and mouseup listeners and start the drag.
+    target.removeEventListener('mousemove', this.handleDragMove, true);
+    target.removeEventListener('mouseup', this._evtMouseUp, true);
+
+    return this._drag.start(clientX, clientY).then(() => {
+      console.log('drag done');
+      this.dragHoverStyleRemove(codeSnippet.id.toString());
+      this._drag = null;
+      this._dragData = null;
+    });
+  }
+
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
   private renderCodeSnippet = (
@@ -302,13 +483,12 @@ export class CodeSnippetDisplay extends React.Component<
     id: string
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
-
     const displayName =
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
     //this.boldNameOnSearch(this.state.filterValue,displayName,parseInt(id,10));
 
     const insertIcon = new LabIcon({
-      name: 'ui-compnents:insert',
+      name: 'custom-ui-compnents:insert',
       svgstr: insertSVGstr
     });
 
@@ -341,13 +521,21 @@ export class CodeSnippetDisplay extends React.Component<
       <div
         key={codeSnippet.name}
         className={CODE_SNIPPET_ITEM}
-        id={
-          id
-        } /*onMouseOver={() => {
-        this.dragHoverStyle(id);
-      }} onMouseOut={() => { this.dragHoverStyleRemove(id); }}*/
+        id={id}
+        onMouseOver={(): void => {
+          this.dragHoverStyle(id);
+        }}
+        onMouseOut={(): void => {
+          this.dragHoverStyleRemove(id);
+        }}
       >
-        <div className="drag-hover" id={id}></div>
+        <div
+          className="drag-hover"
+          id={id}
+          onMouseDown={(event): void => {
+            this.handleDragSnippet(event);
+          }}
+        ></div>
         <div
           className="triangle"
           title="Bookmark"
@@ -359,12 +547,12 @@ export class CodeSnippetDisplay extends React.Component<
           <div
             key={displayName}
             className={TITLE_CLASS}
-            onMouseOver={(): void => {
-              this.dragHoverStyle(id);
-            }}
-            onMouseOut={(): void => {
-              this.dragHoverStyleRemove(id);
-            }}
+            // onMouseOver={() => {
+            //   this.dragHoverStyle(id);
+            // }}
+            // onMouseOut={() => {
+            //   this.dragHoverStyleRemove(id);
+            // }}
           >
             <span
               id={id}
@@ -466,7 +654,6 @@ class PreviewHandler extends Widget {
 class Private {
   static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
-
     const previewContainer = document.createElement('div');
     const descriptionContainer = document.createElement('div');
     const descriptionTitle = document.createElement('h6');
@@ -486,6 +673,7 @@ class Private {
     descriptionContainer.appendChild(descriptionTitle);
     descriptionContainer.appendChild(description);
     previewContainer.appendChild(descriptionContainer);
+
     previewContainer.appendChild(preview);
     body.append(previewContainer);
 
@@ -496,5 +684,42 @@ class Private {
    */
   static createPreviewNode(codeSnippet: ICodeSnippet): HTMLElement {
     return this.createPreviewContent(codeSnippet);
+  }
+}
+
+/**
+ * A content factory for console children.
+ */
+export interface IContentFactory extends Cell.IContentFactory {
+  /**
+   * Create a new code cell widget.
+   */
+  createCodeCell(options: CodeCell.IOptions): CodeCell;
+}
+
+/**
+ * The default implementation of an `IModelFactory`.
+ */
+export class ModelFactory {
+  /**
+   * The factory for output area models.
+   */
+  readonly codeCellContentFactory: CodeCellModel.IContentFactory;
+
+  /**
+   * Create a new code cell.
+   *
+   * @param source - The data to use for the original source data.
+   *
+   * @returns A new code cell. If a source cell is provided, the
+   *   new cell will be initialized with the data from the source.
+   *   If the contentFactory is not provided, the instance
+   *   `codeCellContentFactory` will be used.
+   */
+  createCodeCell(options: CodeCellModel.IOptions): ICodeCellModel {
+    if (!options.contentFactory) {
+      options.contentFactory = this.codeCellContentFactory;
+    }
+    return new CodeCellModel(options);
   }
 }

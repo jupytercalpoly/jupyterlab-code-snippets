@@ -8,17 +8,21 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 
-import { Widget, PanelLayout } from '@lumino/widgets';
+import { Widget } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
 //import { ServerConnection } from '@jupyterlab/services';
 //import { URLExt } from '@jupyterlab/coreutils';
 
+import { IEditorServices } from '@jupyterlab/codeeditor';
+
 import { inputDialog } from './CodeSnippetForm';
-import { INotebookTracker } from '@jupyterlab/notebook';
-import { CodeSnippetWrapper } from './CodeSnippetWrapper';
+// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
+// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+import { CodeSnippetEditor } from './CodeSnippetEditor';
+
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 // import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 
@@ -43,11 +47,12 @@ let clicked: EventTarget;
 const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   id: CODE_SNIPPET_EXTENSION_ID,
   autoStart: true,
-  requires: [ICommandPalette, ILayoutRestorer, INotebookTracker],
+  requires: [ICommandPalette, ILayoutRestorer],
   activate: (
     app: JupyterFrontEnd,
     palette: ICommandPalette,
-    restorer: ILayoutRestorer
+    restorer: ILayoutRestorer,
+    editorServices: IEditorServices
   ) => {
     console.log('JupyterLab extension code-snippets is activated!');
     const url = 'elyra/metadata/code-snippets';
@@ -56,23 +61,36 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       return app.shell.currentWidget;
     };
 
-    const codeSnippetWrapper = new CodeSnippetWrapper(
-      getCurrentWidget
-    ) as Widget;
-    codeSnippetWrapper.id = CODE_SNIPPET_EXTENSION_ID;
-    codeSnippetWrapper.title.icon = codeSnippetIcon;
-    codeSnippetWrapper.title.caption = 'Jupyter Code Snippet';
+    const codeSnippetWidget = new CodeSnippetWidget(
+      getCurrentWidget,
+      app,
+      editorServices
+    );
+    codeSnippetWidget.id = CODE_SNIPPET_EXTENSION_ID;
+    codeSnippetWidget.title.icon = codeSnippetIcon;
+    codeSnippetWidget.title.caption = 'Jupyter Code Snippet';
 
+    console.log('creating snippets folder!');
     const service = CodeSnippetContentsService.getInstance();
     service.save('snippets', { type: 'directory' });
 
-    restorer.add(codeSnippetWrapper, CODE_SNIPPET_EXTENSION_ID);
+    restorer.add(codeSnippetWidget, CODE_SNIPPET_EXTENSION_ID);
 
     // Rank has been chosen somewhat arbitrarily to give priority to the running
     // sessions widget in the sidebar.
-    app.shell.add(codeSnippetWrapper, 'left', { rank: 900 });
+    app.shell.add(codeSnippetWidget, 'left', { rank: 900 });
 
-    //Application command to save snippet
+    app.commands.addCommand('elyra-metadata-editor:open', {
+      label: 'Code Snippet Editor',
+      isEnabled: () => true,
+      isVisible: () => true,
+      execute: () => {
+        const codeSnippetEditor = new CodeSnippetEditor();
+        app.shell.add(codeSnippetEditor, 'main');
+      }
+    });
+
+    //Add an application command
     const commandID = 'save as code snippet';
     const delCommand = 'delete code snippet';
     const toggled = false;
@@ -85,14 +103,10 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       execute: () => {
         console.log(`Executed ${commandID}`);
         const highlightedCode = getSelectedText();
-        const layout = codeSnippetWrapper.layout as PanelLayout;
+        console.log(highlightedCode);
+        // const layout = codeSnippetWidget.layout as PanelLayout;
 
-        inputDialog(
-          (layout.widgets[0] as unknown) as CodeSnippetWidget,
-          url,
-          highlightedCode.split('\n'),
-          -1
-        );
+        inputDialog(codeSnippetWidget, url, highlightedCode.split('\n'), -1);
       }
     });
 
@@ -116,14 +130,13 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       execute: async () => {
         const target = clicked as HTMLElement;
         const _id = parseInt(target.id, 10);
-        const layout = codeSnippetWrapper.layout as PanelLayout;
-        const codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
-        const frontEndSnippets = codeSnip.codeSnippetWidgetModel.snippets;
+
+        const frontEndSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets.slice();
         frontEndSnippets.splice(_id, 1);
-        codeSnip.codeSnippets = frontEndSnippets;
-        codeSnip.renderCodeSnippetsSignal.emit(frontEndSnippets);
+        codeSnippetWidget.codeSnippets = frontEndSnippets;
+        codeSnippetWidget.renderCodeSnippetsSignal.emit(frontEndSnippets);
         showUndoMessage({
-          body: /*"Undo delete"*/ new MessageHandler(codeSnip, _id)
+          body: /*"Undo delete"*/ new MessageHandler(codeSnippetWidget, _id)
         });
       }
     });
@@ -147,6 +160,7 @@ function getSelectedText(): string {
   // window.getSelection
   if (window.getSelection) {
     selectedText = window.getSelection();
+    console.log(selectedText.toString);
   }
   // document.getSelection
   else if (document.getSelection) {
