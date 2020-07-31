@@ -357,17 +357,17 @@ export class CodeSnippetDisplay extends React.Component<
     // event.stopPropagation();
     const data = this._dragData;
 
-    console.log(data);
-    console.log(event);
-    console.log(this);
-    console.log(
-      this.shouldStartDrag(
-        data.pressX,
-        data.pressY,
-        event.clientX,
-        event.clientY
-      )
-    );
+    // console.log(data);
+    // console.log(event);
+    // console.log(this);
+    // console.log(
+    //   this.shouldStartDrag(
+    //     data.pressX,
+    //     data.pressY,
+    //     event.clientX,
+    //     event.clientY
+    //   )
+    // );
 
     if (
       data &&
@@ -416,32 +416,32 @@ export class CodeSnippetDisplay extends React.Component<
     /**
      * TODO: check what the current widget is
      */
-    const widget = this.props.getCurrentWidget();
+    // const widget = this.props.getCurrentWidget();
     const target = event.target as HTMLElement;
 
-    if (widget instanceof NotebookPanel) {
-      const notebookWidget = widget as NotebookPanel;
+    // if (widget instanceof NotebookPanel) {
+    //   const notebookWidget = widget as NotebookPanel;
 
-      const kernelInfo = await notebookWidget.sessionContext.session?.kernel
-        ?.info;
-      const kernelLanguage: string = kernelInfo?.language_info.name || '';
+    //   const kernelInfo = await notebookWidget.sessionContext.session?.kernel
+    //     ?.info;
+    //   const kernelLanguage: string = kernelInfo?.language_info.name || '';
 
-      if (
-        kernelLanguage &&
-        codeSnippet.language.toLowerCase() !== kernelLanguage.toLowerCase()
-      ) {
-        const result = await this.showWarnDialog(
-          kernelLanguage,
-          codeSnippet.displayName
-        );
-        if (!result.button.accept) {
-          target.removeEventListener('mousemove', this.handleDragMove, true);
-          target.removeEventListener('mouseup', this._evtMouseUp, true);
-          this._dragData = null;
-          return;
-        }
-      }
-    }
+    //   if (
+    //     kernelLanguage &&
+    //     codeSnippet.language.toLowerCase() !== kernelLanguage.toLowerCase()
+    //   ) {
+    //     const result = await this.showWarnDialog(
+    //       kernelLanguage,
+    //       codeSnippet.displayName
+    //     );
+    //     if (!result.button.accept) {
+    //       target.removeEventListener('mousemove', this.handleDragMove, true);
+    //       target.removeEventListener('mouseup', this._evtMouseUp, true);
+    //       this._dragData = null;
+    //       return;
+    //     }
+    //   }
+    // }
 
     const modelFactory = new ModelFactory();
     const model = modelFactory.createCodeCell({});
@@ -469,12 +469,10 @@ export class CodeSnippetDisplay extends React.Component<
     target.removeEventListener('mouseup', this._evtMouseUp, true);
 
     return this._drag.start(clientX, clientY).then(() => {
-      if (this._drag.isDisposed) {
-        console.log('drag done');
-        this.dragHoverStyleRemove(codeSnippet.id.toString());
-        this._drag = null;
-        this._dragData = null;
-      }
+      console.log('drag done');
+      this.dragHoverStyleRemove(codeSnippet.id.toString());
+      this._drag = null;
+      this._dragData = null;
     });
   }
 
@@ -656,32 +654,30 @@ class PreviewHandler extends Widget {
 class Private {
   static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
-    for (let i = 0; i < codeSnippet.code.length; i++) {
-      const previewContainer = document.createElement('div');
-      const descriptionContainer = document.createElement('div');
-      const descriptionTitle = document.createElement('h6');
-      const description = document.createElement('text');
-      const preview = document.createElement('text');
+    const previewContainer = document.createElement('div');
+    const descriptionContainer = document.createElement('div');
+    const descriptionTitle = document.createElement('h6');
+    const description = document.createElement('text');
+    const preview = document.createElement('text');
 
-      previewContainer.className = 'jp-preview-text';
-      descriptionContainer.className = 'jp-preview-description-container';
-      descriptionTitle.className = 'jp-preview-description-title';
-      description.className = 'jp-preview-description';
-      preview.className = 'jp-preview-textarea';
+    previewContainer.className = 'jp-preview-text';
+    descriptionContainer.className = 'jp-preview-description-container';
+    descriptionTitle.className = 'jp-preview-description-title';
+    description.className = 'jp-preview-description';
+    preview.className = 'jp-preview-textarea';
 
-      descriptionTitle.textContent = 'DESCRIPTION';
-      description.textContent = codeSnippet.description;
-      preview.textContent = codeSnippet.code.join('\n');
+    descriptionTitle.textContent = 'DESCRIPTION';
+    description.textContent = codeSnippet.description;
+    preview.textContent = codeSnippet.code.join('\n');
 
-      descriptionContainer.appendChild(descriptionTitle);
-      descriptionContainer.appendChild(description);
-      previewContainer.appendChild(descriptionContainer);
+    descriptionContainer.appendChild(descriptionTitle);
+    descriptionContainer.appendChild(description);
+    previewContainer.appendChild(descriptionContainer);
 
-      previewContainer.appendChild(preview);
-      body.append(previewContainer);
+    previewContainer.appendChild(preview);
+    body.append(previewContainer);
 
-      return body;
-    }
+    return body;
   }
   /**
    * Create structure for preview of snippet data.

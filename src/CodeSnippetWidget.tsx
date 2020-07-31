@@ -329,7 +329,7 @@ export class CodeSnippetWidget extends ReactWidget {
   /**
    * Hanlde the `'lm-drop'` event for the widget.
    */
-  private _evtDrop(event: IDragEvent): Promise<void> {
+  private async _evtDrop(event: IDragEvent): Promise<void> {
     const data = Private.findCellData(event.mimeData);
     console.log(event);
     // console.log(event.mimeData.getData('internal:cells'));

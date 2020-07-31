@@ -131,8 +131,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
         const target = clicked as HTMLElement;
         const _id = parseInt(target.id, 10);
 
-        const frontEndSnippets =
-          codeSnippetWidget.codeSnippetWidgetModel.snippets;
+        const frontEndSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets.slice();
         frontEndSnippets.splice(_id, 1);
         codeSnippetWidget.codeSnippets = frontEndSnippets;
         codeSnippetWidget.renderCodeSnippetsSignal.emit(frontEndSnippets);
