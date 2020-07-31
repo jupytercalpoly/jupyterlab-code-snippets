@@ -176,7 +176,7 @@
   top: 31px;
   left: 5px;
   width: 100%;
-  height: 710px;
+  height: 100%;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -192,7 +192,7 @@
   padding: 10px;
   min-width: 960px;
   max-width: 1000px;
-  max-height: 92%;
+  max-height: 90%;
   box-sizing: border-box;
   box-shadow: var(--jp-elevation-z20);
   word-wrap: break-word;
@@ -215,7 +215,7 @@
 
 .jp-preview-text {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
   font-family: helvetica;
   font-style: normal;
@@ -225,10 +225,7 @@
 }
 
 .jp-preview-textarea {
-  border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
-  border-radius: 0px;
-  background: var(--jp-cell-editor-background);
-  font-family: var(--jp-code-font-family);
+  font-family: var(--jp-code-font-family-default);
   font-size: var(--jp-code-font-size);
   line-height: var(--jp-code-line-height);
   text-align: left;
@@ -236,6 +233,53 @@
   resize: none;
   white-space: pre;
   padding: var(--jp-code-padding);
+  padding-left: 20px;
+}
+
+.jp-preview-description-container {
+  font-family: var(--jp-code-font-family);
+  font-size: var(--jp-code-font-size);
+  line-height: var(--jp-code-line-height);
+  text-align: left;
+  flex-grow: 1;
+  resize: none;
+  padding: var(--jp-code-padding);
+  margin-bottom: 10px;
+  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+}
+
+.jp-preview-description-title {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-bottom: 3px;
+  padding-left: 5px;
+}
+
+.jp-preview-description {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: var(--jp-code-line-height);
+  text-align: left;
+  flex-grow: 1;
+  resize: none;
+  padding: var(--jp-code-padding);
+  word-wrap: break-word;
+  width: 960px;
+  display: block;
+}
+
+.jp-Preview-button {
+  width: 51px;
+  height: 51px;
+  background-image: url(./icon/Jupyter_pencileditbutton_inactive.svg);
+  float: right;
+  margin-top: -80px;
+  margin-right: 9px;
+  cursor: pointer;
+}
+
+.jp-Preview-button-hover {
+  background-image: url(./icon/jupyter_pencileditbutton_hover.svg);
+  cursor: pointer;
 }
 
 .triangle {
@@ -295,4 +339,56 @@
   /*font-family: menlo;*/
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.jp-undo-delete-content {
+  display: flex;
+  flex-direction: column;
+  background: var(--jp-layout-color1);
+  padding: 10px;
+  border-top: 3px solid #f57c00;
+  height: auto;
+  width: 250px;
+  box-sizing: border-box;
+  box-shadow: var(--jp-elevation-z4);
+  word-wrap: break-word;
+  border-radius: var(--jp-border-radius);
+  font-size: var(--jp-ui-font-size1);
+  color: var(--jp-ui-font-color1);
+  margin: 0px 6px 30px auto;
+}
+
+.jp-undo-delete {
+  position: absolute;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  bottom: 0px;
+  right: 0px;
+  margin: 0;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+
+.jp-undo-delete-body {
+  display: flex;
+  align-items: center;
+}
+
+.jp-undo-delete-close {
+  width: 14px;
+  height: 14px;
+  background-image: url(./icon/close_jupyter.svg);
+}
+
+.jp-click-undo {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+mark.jp-search-bolding {
+  background-color: transparent;
+  font-weight: bold;
 }

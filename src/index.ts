@@ -10,11 +10,11 @@ import {
 
 import { Widget, PanelLayout } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
-import { ServerConnection } from '@jupyterlab/services';
-import { URLExt } from '@jupyterlab/coreutils';
+//import { ServerConnection } from '@jupyterlab/services';
+//import { URLExt } from '@jupyterlab/coreutils';
 
 import { inputDialog } from './CodeSnippetForm';
-import { INotebookTracker, NotebookTracker } from '@jupyterlab/notebook';
+import { INotebookTracker } from '@jupyterlab/notebook';
 import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
@@ -22,6 +22,9 @@ import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 // import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 
+import undoDeleteSVG from '../style/icon/undoDelete.svg';
+//import undoDeleteCloseIcon from '../style/icon/close_jupyter.svg';
+import { showUndoMessage } from './UndoDelete';
 
 export interface ICodeSnippet {
   name: string;
@@ -32,7 +35,7 @@ export interface ICodeSnippet {
 }
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
-var clicked: EventTarget;
+let clicked: EventTarget;
 
 /**
  * Initialization data for the code_snippets extension.
@@ -44,8 +47,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   activate: (
     app: JupyterFrontEnd,
     palette: ICommandPalette,
-    restorer: ILayoutRestorer,
-    tracker: NotebookTracker
+    restorer: ILayoutRestorer
   ) => {
     console.log('JupyterLab extension code-snippets is activated!');
     const url = 'elyra/metadata/code-snippets';
@@ -70,7 +72,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     // sessions widget in the sidebar.
     app.shell.add(codeSnippetWrapper, 'left', { rank: 900 });
 
-    //Add an application command
+    //Application command to save snippet
     const commandID = 'save as code snippet';
     const delCommand = 'delete code snippet';
     const toggled = false;
@@ -82,7 +84,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'some-css-icon-class',
       execute: () => {
         console.log(`Executed ${commandID}`);
-        let highlightedCode = getSelectedText();
+        const highlightedCode = getSelectedText();
         const layout = codeSnippetWrapper.layout as PanelLayout;
 
         inputDialog(
@@ -94,27 +96,17 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // function getCurrent(args: ReadonlyPartialJSONObject): NotebookPanel | null {
-    //   const widget = tracker.currentWidget;
-    //   const activate = args['activate'] !== false;
-
-    //   if (activate && widget) {
-    //     app.shell.activateById(widget.id);
-    //   }
-
-    //   return widget;
-    // }
-
     // eventListener to get access to element that is right clicked.
     document.addEventListener(
       'contextmenu',
-      function temp(event) {
-        var clickedEl = event.target;
+      event => {
+        const clickedEl = event.target;
         clicked = clickedEl;
       },
       true
     );
 
+    //Application command to delete code snippet
     app.commands.addCommand(delCommand, {
       label: 'Delete Code Snippet',
       isEnabled: () => true,
@@ -122,28 +114,17 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       isToggled: () => toggled,
       iconClass: 'some-css-icon-class',
       execute: async () => {
-        let target = clicked as HTMLElement;
-        let _id = parseInt(target.id, 10);
+        const target = clicked as HTMLElement;
+        const _id = parseInt(target.id, 10);
         const layout = codeSnippetWrapper.layout as PanelLayout;
-        let codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
-        let snippetToDeleteName =
-          codeSnip.codeSnippetWidgetModel.snippets[_id].name;
-        const url = 'elyra/metadata/code-snippets/' + snippetToDeleteName;
-
-        const settings = ServerConnection.makeSettings();
-        const requestUrl = URLExt.join(settings.baseUrl, url);
-
-        await ServerConnection.makeRequest(
-          requestUrl,
-          { method: 'DELETE' },
-          settings
-        );
-        codeSnip.codeSnippetWidgetModel.deleteSnippet(_id);
-        let newSnippets = codeSnip.codeSnippetWidgetModel.snippets;
-        codeSnip.codeSnippets = newSnippets;
-        codeSnip.renderCodeSnippetsSignal.emit(newSnippets);
-        console.log(codeSnip.codeSnippets);
-        console.log(codeSnip.codeSnippetWidgetModel.snippets);
+        const codeSnip = (layout.widgets[0] as unknown) as CodeSnippetWidget;
+        const frontEndSnippets = codeSnip.codeSnippetWidgetModel.snippets;
+        frontEndSnippets.splice(_id, 1);
+        codeSnip.codeSnippets = frontEndSnippets;
+        codeSnip.renderCodeSnippetsSignal.emit(frontEndSnippets);
+        showUndoMessage({
+          body: /*"Undo delete"*/ new MessageHandler(codeSnip, _id)
+        });
       }
     });
 
@@ -172,6 +153,69 @@ function getSelectedText(): string {
     selectedText = document.getSelection();
   }
   return selectedText.toString();
+}
+
+class MessageHandler extends Widget {
+  constructor(codeSnippet: CodeSnippetWidget, id: number) {
+    super({ node: createUndoDeleteNode(codeSnippet, id) });
+  }
+}
+
+function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
+  const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
+  temp.parentElement.parentElement.removeChild(temp.parentElement);
+  const snippetToDeleteName =
+    codeSnippet.codeSnippetWidgetModel.snippets[id].name;
+  CodeSnippetContentsService.getInstance().delete(
+    'snippets/' + snippetToDeleteName + '.json'
+  );
+  codeSnippet.codeSnippetWidgetModel.deleteSnippet(id);
+  const savedSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+  codeSnippet.codeSnippets = savedSnippets;
+  codeSnippet.renderCodeSnippetsSignal.emit(savedSnippets);
+}
+
+function onUndo(codeSnippet: CodeSnippetWidget): void {
+  codeSnippet.codeSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+  codeSnippet.renderCodeSnippetsSignal.emit(
+    codeSnippet.codeSnippetWidgetModel.snippets
+  );
+  const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
+  temp.parentElement.parentElement.removeChild(temp.parentElement);
+}
+
+function createUndoDeleteNode(
+  codeSnippet: CodeSnippetWidget,
+  snippetID: number
+): HTMLElement {
+  const body = document.createElement('div');
+  body.innerHTML = undoDeleteSVG;
+  body.id = 'jp-undo-delete-id';
+
+  const messageContainer = document.createElement('div');
+  messageContainer.className = 'jp-confirm-text';
+  const message = document.createElement('text');
+  message.textContent = 'Click to ';
+  const undo = document.createElement('span');
+  undo.textContent = 'undo';
+  undo.className = 'jp-click-undo';
+  undo.onclick = function(): void {
+    onUndo(codeSnippet);
+  };
+  const messageEnd = document.createElement('text');
+  messageEnd.textContent = ' delete';
+  messageContainer.appendChild(message);
+  messageContainer.appendChild(undo);
+  messageContainer.appendChild(messageEnd);
+  body.append(messageContainer);
+
+  const deleteMessage = document.createElement('div');
+  deleteMessage.className = 'jp-undo-delete-close';
+  deleteMessage.onclick = function(): void {
+    onDelete(codeSnippet, snippetID);
+  };
+  body.append(deleteMessage);
+  return body;
 }
 
 export default code_snippet_extension;

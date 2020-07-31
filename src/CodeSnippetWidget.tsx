@@ -193,12 +193,13 @@ export class CodeSnippetWidget extends ReactWidget {
         !target.classList.contains('elyra-expandableContainer-name')
       ) {
         preview.classList.add('inactive');
-        for (let elem of document.getElementsByClassName('drag-hover')) {
+        //Control appearance of six dot drag icon
+        for (const elem of document.getElementsByClassName('drag-hover')) {
           if (elem.classList.contains('drag-hover-clicked')) {
             elem.classList.remove('drag-hover-clicked');
           }
         }
-        for (let item of document.getElementsByClassName(
+        for (const item of document.getElementsByClassName(
           'elyra-codeSnippet-item'
         )) {
           if (item.classList.contains('elyra-codeSnippet-item-clicked')) {
