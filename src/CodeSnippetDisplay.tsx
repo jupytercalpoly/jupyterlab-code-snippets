@@ -198,18 +198,18 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   // Pick color for side of snippet box based on number of code lines
-  private codeLines = (codeSnippet: ICodeSnippet): string => {
-    let i;
-    let counter = 0;
-    for (i = 0; i < codeSnippet.code[0].length; i++) {
-      if (codeSnippet.code[0][i] === '\n') {
-        counter++;
-      }
-    }
-    counter += 1;
-    console.log(counter);
-    return 'LOC\t\t' + counter;
-  };
+  // private codeLines = (codeSnippet: ICodeSnippet): string => {
+  //   let i;
+  //   let counter = 0;
+  //   for (i = 0; i < codeSnippet.code[0].length; i++) {
+  //     if (codeSnippet.code[0][i] === '\n') {
+  //       counter++;
+  //     }
+  //   }
+  //   counter += 1;
+  //   console.log(counter);
+  //   return 'LOC\t\t' + counter;
+  // };
 
   //Change bookmark field and color onclick
   private bookmarkSnippetClick = (
@@ -380,10 +380,6 @@ export class CodeSnippetDisplay extends React.Component<
               }}
             >
               {this.boldNameOnSearch(this.state.filterValue, displayName)}
-              <br />
-              <div className="lines-of-code" id={id}>
-                {this.codeLines(codeSnippet)}
-              </div>
             </span>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS}>
               {actionButtons.map((btn: IExpandableActionButton) => {

@@ -56,6 +56,8 @@ export class Preview<T> extends Widget {
     content.addWidget(header);
     const body = renderer.createBody(options.body || '');
     content.addWidget(body);
+    const editButton = renderer.createEditButton(this);
+    content.addWidget(editButton);
 
     if (Preview.tracker.size > 0) {
       const previous = Preview.tracker.currentWidget;
@@ -330,11 +332,16 @@ export namespace Preview {
      * @returns A widget for the body.
      */
     createBody(body: Body<any>): Widget;
+    createEditButton(): Widget;
   }
 
   export class Renderer {
     /**
      * Create the header of the dialog.
+     *
+     * @param title - The title of the snippet.
+     *
+     * @returns A widget for the header of the preview.
      */
     createHeader(title: string): Widget {
       const header = ReactWidget.create(<>{title}</>);
@@ -343,6 +350,7 @@ export namespace Preview {
       // Styling.styleNode(header.node);
       return header;
     }
+
     /**
      * Create the body of the dialog.
      *
@@ -363,6 +371,7 @@ export namespace Preview {
         // order to trigger a render of the DOM nodes from the React element.
         MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
       }
+
       // const iconNode = new Widget({ node: document.createElement('div') });
       // iconNode.title.icon = checkIcon;
       // body.
@@ -384,6 +393,36 @@ export namespace Preview {
     //   iconWidget.addClass('jp-confirm-icon');
     //   return iconWidget
     // }
+
+    /**
+     * Create the edit button in the dialog.
+     *
+     * @returns A widget for the edit button.
+     */
+    createEditButton(prev: any): Widget {
+      const editButton: Widget = new Widget({
+        node: document.createElement('span')
+      });
+      editButton.addClass('jp-Preview-button');
+      editButton.node.onmouseover = (): void => {
+        editButton.addClass('jp-Preview-button-hover');
+      };
+      editButton.node.onmouseout = (): void => {
+        editButton.removeClass('jp-Preview-button-hover');
+      };
+      editButton.node.onclick = (): void => {
+        document
+          .getElementsByClassName('drag-hover')
+          [prev._id].classList.remove('drag-hover-clicked');
+        document
+          .getElementsByClassName('elyra-codeSnippet-item')
+          [prev._id].classList.remove('elyra-codeSnippet-item-clicked');
+        event.stopPropagation();
+        event.preventDefault();
+        prev.reject();
+      };
+      return editButton;
+    }
   }
   /**
    * The default renderer instance.
