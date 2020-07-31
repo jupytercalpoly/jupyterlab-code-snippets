@@ -18,9 +18,6 @@ import {
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
-// import { ServerConnection } from '@jupyterlab/services';
-// import { URLExt } from '@jupyterlab/coreutils';
-
 /**
  * The class name added to file dialogs.
  */
@@ -125,10 +122,7 @@ export function inputDialog(
       request.then(_ => {
         // add the new snippet to the snippet model
         //   console.log(idx);
-        codeSnippet.codeSnippetWidgetModel.addSnippet(
-          { codeSnippet: newSnippet, id: idx },
-          idx
-        );
+        codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, idx);
 
         const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
         codeSnippet.codeSnippets = newSnippets;
