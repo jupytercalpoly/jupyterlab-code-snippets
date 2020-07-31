@@ -18,9 +18,11 @@ import { IEditorServices } from '@jupyterlab/codeeditor';
 import { inputDialog } from './CodeSnippetForm';
 // import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-import { CodeSnippetEditor } from './CodeSnippetEditor';
+// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+import { CodeSnippetEditor } from './CodeSnippetEditor';
+
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 // import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 
@@ -88,7 +90,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    //Application command to save snippet
+    //Add an application command
     const commandID = 'save as code snippet';
     const delCommand = 'delete code snippet';
     const toggled = false;
@@ -128,8 +130,8 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       execute: async () => {
         const target = clicked as HTMLElement;
         const _id = parseInt(target.id, 10);
-        const frontEndSnippets =
-          codeSnippetWidget.codeSnippetWidgetModel.snippets;
+
+        const frontEndSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets.slice();
         frontEndSnippets.splice(_id, 1);
         codeSnippetWidget.codeSnippets = frontEndSnippets;
         codeSnippetWidget.renderCodeSnippetsSignal.emit(frontEndSnippets);

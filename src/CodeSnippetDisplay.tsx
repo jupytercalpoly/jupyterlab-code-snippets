@@ -153,8 +153,6 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Handle deleting code snippet
   private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
-    // console.log(this.props.getCurrentWidget instanceof CodeSnippetWidget);
-    // console.log(snippet);
     const name = snippet.name;
     // const url = 'elyra/metadata/code-snippets/' + name;
 
@@ -245,6 +243,7 @@ export class CodeSnippetDisplay extends React.Component<
   // Insert 6 dots on hover
   private dragHoverStyle = (id: string): void => {
     const _id: number = parseInt(id, 10);
+
     document
       .getElementsByClassName('drag-hover')
       [_id].classList.add('drag-hover-selected');
@@ -261,6 +260,7 @@ export class CodeSnippetDisplay extends React.Component<
   // Grey out snippet and include blue six dots when snippet is previewing (clicked)
   private snippetClicked = (id: string): void => {
     const _id: number = parseInt(id, 10);
+
     if (
       document
         .getElementsByClassName('drag-hover')
@@ -309,6 +309,84 @@ export class CodeSnippetDisplay extends React.Component<
     return name;
   };
 
+  private handleDragSnippet(
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ): void {
+    const { button } = event;
+
+    // if button is not the left click
+    if (!(button === 0)) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+
+    this._dragData = {
+      pressX: event.clientX,
+      pressY: event.clientY,
+      dragImage: target.parentNode.cloneNode(true) as HTMLElement
+    };
+
+    // add CSS style
+    this._dragData.dragImage.classList.add('jp-codesnippet-drag-image');
+
+    console.log('draggin');
+    console.log(event);
+    target.addEventListener('mouseup', this._evtMouseUp, true);
+    target.addEventListener('mousemove', this.handleDragMove, true);
+
+    event.preventDefault();
+    // event.stopPropagation();
+  }
+
+  private _evtMouseUp(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    console.log('cancelled');
+
+    const target = event.target as HTMLElement;
+
+    target.removeEventListener('mousemove', this.handleDragMove, true);
+
+    target.removeEventListener('mouseup', this._evtMouseUp, true);
+  }
+
+  private handleDragMove(event: MouseEvent): void {
+    // event.preventDefault();
+    // event.stopPropagation();
+    const data = this._dragData;
+
+    // console.log(data);
+    // console.log(event);
+    // console.log(this);
+    // console.log(
+    //   this.shouldStartDrag(
+    //     data.pressX,
+    //     data.pressY,
+    //     event.clientX,
+    //     event.clientY
+    //   )
+    // );
+
+    if (
+      data &&
+      this.shouldStartDrag(
+        data.pressX,
+        data.pressY,
+        event.clientX,
+        event.clientY
+      )
+    ) {
+      console.log('moving start');
+
+      const idx = (event.target as HTMLElement).id;
+      const codeSnippet = this.state.codeSnippets[parseInt(idx)];
+
+      this.startDrag(data.dragImage, codeSnippet, event.clientX, event.clientY);
+    }
+  }
+
   /**
    * Detect if a drag event should be started. This is down if the
    * mouse is moved beyond a certain distance (DRAG_THRESHOLD).
@@ -338,32 +416,32 @@ export class CodeSnippetDisplay extends React.Component<
     /**
      * TODO: check what the current widget is
      */
-    const widget = this.props.getCurrentWidget();
+    // const widget = this.props.getCurrentWidget();
     const target = event.target as HTMLElement;
 
-    if (widget instanceof NotebookPanel) {
-      const notebookWidget = widget as NotebookPanel;
+    // if (widget instanceof NotebookPanel) {
+    //   const notebookWidget = widget as NotebookPanel;
 
-      const kernelInfo = await notebookWidget.sessionContext.session?.kernel
-        ?.info;
-      const kernelLanguage: string = kernelInfo?.language_info.name || '';
+    //   const kernelInfo = await notebookWidget.sessionContext.session?.kernel
+    //     ?.info;
+    //   const kernelLanguage: string = kernelInfo?.language_info.name || '';
 
-      if (
-        kernelLanguage &&
-        codeSnippet.language.toLowerCase() !== kernelLanguage.toLowerCase()
-      ) {
-        const result = await this.showWarnDialog(
-          kernelLanguage,
-          codeSnippet.displayName
-        );
-        if (!result.button.accept) {
-          target.removeEventListener('mousemove', this.handleDragMove, true);
-          target.removeEventListener('mouseup', this._evtMouseUp, true);
-          this._dragData = null;
-          return;
-        }
-      }
-    }
+    //   if (
+    //     kernelLanguage &&
+    //     codeSnippet.language.toLowerCase() !== kernelLanguage.toLowerCase()
+    //   ) {
+    //     const result = await this.showWarnDialog(
+    //       kernelLanguage,
+    //       codeSnippet.displayName
+    //     );
+    //     if (!result.button.accept) {
+    //       target.removeEventListener('mousemove', this.handleDragMove, true);
+    //       target.removeEventListener('mouseup', this._evtMouseUp, true);
+    //       this._dragData = null;
+    //       return;
+    //     }
+    //   }
+    // }
 
     const modelFactory = new ModelFactory();
     const model = modelFactory.createCodeCell({});
@@ -391,12 +469,10 @@ export class CodeSnippetDisplay extends React.Component<
     target.removeEventListener('mouseup', this._evtMouseUp, true);
 
     return this._drag.start(clientX, clientY).then(() => {
-      if (this._drag.isDisposed) {
-        console.log('drag done');
-        this.dragHoverStyleRemove(codeSnippet.id.toString());
-        this._drag = null;
-        this._dragData = null;
-      }
+      console.log('drag done');
+      this.dragHoverStyleRemove(codeSnippet.id.toString());
+      this._drag = null;
+      this._dragData = null;
     });
   }
 
@@ -578,7 +654,6 @@ class PreviewHandler extends Widget {
 class Private {
   static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
-
     const previewContainer = document.createElement('div');
     const descriptionContainer = document.createElement('div');
     const descriptionTitle = document.createElement('h6');
@@ -598,6 +673,7 @@ class Private {
     descriptionContainer.appendChild(descriptionTitle);
     descriptionContainer.appendChild(description);
     previewContainer.appendChild(descriptionContainer);
+
     previewContainer.appendChild(preview);
     body.append(previewContainer);
 

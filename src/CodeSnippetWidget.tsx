@@ -33,7 +33,7 @@ import {
 } from './CodeSnippetContentsService';
 import { Contents } from '@jupyterlab/services';
 
-import { IDragEvent /** Drag */ } from '@lumino/dragdrop';
+import { IDragEvent } from '@lumino/dragdrop';
 
 import { MimeData } from '@lumino/coreutils';
 
@@ -261,30 +261,6 @@ export class CodeSnippetWidget extends ReactWidget {
     }
   }
 
-  // private _startDrag(
-  //   target: HTMLElement,
-  //   clientX: number,
-  //   clientY: number
-  // ): void {
-  //   const dragImage = target.parentNode as HTMLElement;
-
-  //   const drag = new Drag({
-  //     mimeData: new MimeData(),
-  //     dragImage: dragImage,
-  //     supportedActions: 'copy-move',
-  //     proposedAction: 'copy',
-  //     source: this
-  //   });
-
-  //   drag.mimeData.setData(JUPYTER_CELL_MIME, toMove);
-  //   const textContent = toMove.map(cell => cell.model.value.text).join('\n');
-  //   drag.mimeData.setData('text/plain', textContent);
-  // }
-
-  // private createDragImage(snippetContent: string): HTMLElement {
-
-  // }
-
   /**
    * Handle the `'lm-dragenter'` event for the widget.
    */
@@ -319,6 +295,7 @@ export class CodeSnippetWidget extends ReactWidget {
     event.preventDefault();
     event.stopPropagation();
     const elements = this.node.getElementsByClassName(DROP_TARGET_CLASS);
+
     if (elements.length) {
       (elements[0] as HTMLElement).classList.remove(DROP_TARGET_CLASS);
     }
@@ -352,8 +329,10 @@ export class CodeSnippetWidget extends ReactWidget {
   /**
    * Hanlde the `'lm-drop'` event for the widget.
    */
-  private _evtDrop(event: IDragEvent): Promise<void> {
+  private async _evtDrop(event: IDragEvent): Promise<void> {
     const data = Private.findCellData(event.mimeData);
+    console.log(event);
+    // console.log(event.mimeData.getData('internal:cells'));
     console.log(data);
     if (data === undefined) {
       return;
