@@ -375,7 +375,6 @@ mark.jp-search-bolding {
   color: var(--jp-content-font-color3);
 }
 
-<<<<<<< HEAD
 .jp-snippet-editor-title {
   margin-left: 2%;
   margin-top: 2%;
@@ -461,7 +460,6 @@ mark.jp-search-bolding {
   border: 1px solid var(--jp-cell-editor-active-border-color);
   caret-color: var(--jp-cell-editor-active-border-color);
 }
-=======
 .jp-codeSnippetInputArea {
   display: flex;
   flex-direction: column;
@@ -506,4 +504,3 @@ mark.jp-search-bolding {
 }
 
 @import url('~@jupyterlab/codeeditor/style/index.css');
->>>>>>> codeSnippetEditor experimental

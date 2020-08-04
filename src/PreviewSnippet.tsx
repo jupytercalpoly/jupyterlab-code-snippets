@@ -5,7 +5,7 @@ import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
-import { ICodeSnippet } from '.';
+// import { ICodeSnippet } from '.';
 
 import * as React from 'react';
 import { ICodeSnippet } from './CodeSnippetContentsService';
