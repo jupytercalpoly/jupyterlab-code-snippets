@@ -53,7 +53,6 @@ export interface IFileContainer extends JSONObject {
  */
 export function inputDialog(
   codeSnippet: CodeSnippetWidget,
-  url: string,
   code: string[],
   idx: number
 ): Promise<Contents.IModel | null> {
@@ -64,7 +63,7 @@ export function inputDialog(
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
   }).then((result: Dialog.IResult<string[]>) => {
     if (validateForm(result) === false) {
-      return inputDialog(codeSnippet, url, code, idx); // This works but it wipes out all the data they entered previously...
+      return inputDialog(codeSnippet, code, idx); // This works but it wipes out all the data they entered previously...
     }
     if (!result.value) {
       return null;
@@ -123,7 +122,7 @@ export function inputDialog(
         // add the new snippet to the snippet model
         //   console.log(idx);
         codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, idx);
-
+        codeSnippet.codeSnippetWidgetModel.updateSnippetContents();
         const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
         codeSnippet.codeSnippets = newSnippets;
         codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);

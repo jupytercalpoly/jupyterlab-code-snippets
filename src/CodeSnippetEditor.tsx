@@ -1,412 +1,43 @@
-import { ReactWidget } from '@jupyterlab/apputils';
-import React from 'react';
+import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 import { ICodeSnippet } from './CodeSnippetContentsService';
-import { IEditorServices } from '@jupyterlab/codeeditor';
-
-// import {FrontendServices,IDictionary} from "@elyra/application"
-//import {DropDown} from "@elyra/ui-components"
-
-// import { ReactWidget, showDialog, Dialog } from '@jupyterlab/apputils';
-// import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
-// import { InputGroup, Button } from '@jupyterlab/ui-components';
-
-// import { find } from '@lumino/algorithm';
-// import { Message } from '@lumino/messaging';
-
-// import * as React from 'react';
-
-// const ELYRA_METADATA_EDITOR_CLASS = 'elyra-metadataEditor';
-// const DIRTY_CLASS = 'jp-mod-dirty';
-
-// interface IMetadataEditorProps {
-//   schema: string;
-//   namespace: string;
-//   name?: string;
-//   onSave: () => void;
-//   editorServices: IEditorServices | null;
-// }
-
-// /**
-//  * Metadata editor widget
-//  */
-// export class MetadataEditor extends ReactWidget {
-//   onSave: () => void;
-//   displayName: string;
-//   editorServices: IEditorServices;
-//   editor: CodeEditor.IEditor;
-//   schemaName: string;
-//   namespace: string;
-//   name: string;
-//   dirty: boolean;
-//   requiredFields: string[];
-//   invalidForm: boolean;
-
-//   schema: IDictionary<any> = {};
-//   allMetadata: IDictionary<any>[] = [];
-//   metadata: IDictionary<any> = {};
-
-//   constructor(props: IMetadataEditorProps) {
-//     super();
-//     this.editorServices = props.editorServices;
-//     this.namespace = props.namespace;
-//     this.schemaName = props.schema;
-//     this.onSave = props.onSave;
-//     this.name = props.name;
-
-//     this.handleTextInputChange = this.handleTextInputChange.bind(this);
-//     this.handleDropdownChange = this.handleDropdownChange.bind(this);
-//     this.renderField = this.renderField.bind(this);
-
-//     this.invalidForm = false;
-
-//     this.initializeMetadata();
-//   }
-
-//   async initializeMetadata(): Promise<void> {
-//     const schemas = await FrontendServices.getSchema(this.namespace);
-//     for (const schema of schemas) {
-//       if (this.schemaName == schema.name) {
-//         this.schema = schema.properties.metadata.properties;
-//         // All metadata has a display_name field
-//         this.displayName = schema.properties.display_name;
-//         this.requiredFields = schema.properties.metadata.required;
-//         break;
-//       }
-//     }
-
-//     this.allMetadata = await FrontendServices.getMetadata(this.namespace);
-//     if (this.name) {
-//       for (const metadata of this.allMetadata) {
-//         if (this.name == metadata.name) {
-//           this.metadata = metadata['metadata'];
-//           this.displayName = metadata['display_name'];
-//           this.title.label = this.displayName;
-//           break;
-//         }
-//       }
-//     } else {
-//       this.displayName = '';
-//     }
-
-//     this.update();
-//   }
-
-//   /**
-//    * Checks that all required fields have a value before submitting the form.
-//    * Returns false if the form is valid. Sets any invalid fields' intent to danger
-//    * so that the form will highlight the input(s) causing issues in red.
-//    */
-//   hasInvalidFields(): boolean {
-//     this.invalidForm = false;
-//     if (this.displayName == null || this.displayName == '') {
-//       this.invalidForm = true;
-//     }
-//     for (const schemaField in this.schema) {
-//       if (
-//         this.requiredFields.includes(schemaField) &&
-//         (this.metadata[schemaField] == null ||
-//           this.metadata[schemaField] == '' ||
-//           this.metadata[schemaField] == [] ||
-//           this.metadata[schemaField] == '(No selection)')
-//       ) {
-//         this.invalidForm = true;
-//         this.schema[schemaField].uihints.intent = Intent.DANGER;
-//       } else {
-//         this.schema[schemaField].uihints.intent = Intent.NONE;
-//       }
-//     }
-//     return this.invalidForm;
-//   }
-
-//   onCloseRequest(msg: Message): void {
-//     if (this.dirty) {
-//       showDialog({
-//         title: 'Close without saving?',
-//         body: (
-//           <p>
-//             {' '}
-//             {`"${this.displayName}" has unsaved changes, close without saving?`}{' '}
-//           </p>
-//         ),
-//         buttons: [Dialog.cancelButton(), Dialog.okButton()]
-//       }).then((response: any): void => {
-//         if (response.button.accept) {
-//           this.dispose();
-//           super.onCloseRequest(msg);
-//         }
-//       });
-//     } else {
-//       this.dispose();
-//       super.onCloseRequest(msg);
-//     }
-//   }
-
-//   saveMetadata(): void {
-//     const newMetadata: any = {
-//       schema_name: this.schemaName,
-//       display_name: this.displayName,
-//       metadata: this.metadata
-//     };
-
-//     if (this.hasInvalidFields()) {
-//       this.update();
-//       return;
-//     }
-
-//     if (!this.name) {
-//       FrontendServices.postMetadata(
-//         this.namespace,
-//         JSON.stringify(newMetadata)
-//       ).then((response: any): void => {
-//         this.handleDirtyState(false);
-//         this.onSave();
-//         this.close();
-//       });
-//     } else {
-//       FrontendServices.putMetadata(
-//         this.namespace,
-//         this.name,
-//         JSON.stringify(newMetadata)
-//       ).then((response: any): void => {
-//         this.handleDirtyState(false);
-//         this.onSave();
-//         this.close();
-//       });
-//     }
-//   }
-
-//   handleTextInputChange(event: any, schemaField: string): void {
-//     this.handleDirtyState(true);
-//     // Special case because all metadata has a display name
-//     if (schemaField == 'display_name') {
-//       this.displayName = event.nativeEvent.srcElement.value;
-//     } else {
-//       this.metadata[schemaField] = event.nativeEvent.srcElement.value;
-//     }
-//   }
-
-//   handleDropdownChange = (schemaField: string, value: string): void => {
-//     this.handleDirtyState(true);
-//     this.metadata[schemaField] = value;
-//     if (schemaField == 'language') {
-//       const getMimeTypeByLanguage = this.editorServices.mimeTypeService
-//         .getMimeTypeByLanguage;
-//       this.editor.model.mimeType = getMimeTypeByLanguage({
-//         name: value,
-//         codemirror_mode: value
-//       });
-//     }
-//     this.update();
-//   };
-
-//   handleDirtyState(dirty: boolean): void {
-//     this.dirty = dirty;
-//     if (this.dirty && !this.title.className.includes(DIRTY_CLASS)) {
-//       this.title.className += DIRTY_CLASS;
-//     } else if (!this.dirty) {
-//       this.title.className = this.title.className.replace(DIRTY_CLASS, '');
-//     }
-//   }
-
-//   onUpdateRequest(msg: Message): void {
-//     super.onUpdateRequest(msg);
-//     // If the update request triggered rendering a 'code' input, and the editor hasn't
-//     // been initialized yet, create the editor and attach it to the 'code' node
-//     if (!this.editor && document.getElementById('code:' + this.id) != null) {
-//       let initialCodeValue;
-//       const getMimeTypeByLanguage = this.editorServices.mimeTypeService
-//         .getMimeTypeByLanguage;
-//       // If the file already exists, initialize the code editor with the existing code
-//       if (this.name) {
-//         initialCodeValue = this.metadata['code'].join('\n');
-//       } else {
-//         initialCodeValue = '';
-//       }
-//       this.editor = this.editorServices.factoryService.newInlineEditor({
-//         host: document.getElementById('code:' + this.id),
-//         model: new CodeEditor.Model({
-//           value: initialCodeValue,
-//           mimeType: getMimeTypeByLanguage({
-//             name: this.metadata['language'],
-//             codemirror_mode: this.metadata['language']
-//           })
-//         })
-//       });
-//       this.editor.model.value.changed.connect((args: any) => {
-//         this.metadata['code'] = args.text.split('\n');
-//         this.handleDirtyState(true);
-//       });
-//     }
-//   }
-
-//   getDefaultChoices(fieldName: string): any[] {
-//     let defaultChoices = this.schema[fieldName].uihints.default_choices;
-//     if (defaultChoices == undefined) {
-//       defaultChoices = [];
-//     }
-//     for (const otherMetadata of this.allMetadata) {
-//       if (
-//         !find(defaultChoices, (choice: string) => {
-//           return (
-//             choice.toLowerCase() ==
-//             otherMetadata.metadata[fieldName].toLowerCase()
-//           );
-//         })
-//       ) {
-//         defaultChoices.push(otherMetadata.metadata[fieldName]);
-//       }
-//     }
-//     return defaultChoices;
-//   }
-
-//   renderTextInput(
-//     label: string,
-//     description: string,
-//     fieldName: string,
-//     defaultValue: string,
-//     required: string,
-//     intent?: Intent
-//   ): React.ReactElement {
-//     let helperText = description;
-//     if (intent == Intent.DANGER) {
-//       helperText += 'This field is required.';
-//     }
-//     return (
-//       <FormGroup
-//         key={fieldName}
-//         label={label}
-//         labelInfo={required}
-//         helperText={helperText}
-//         intent={intent}
-//       >
-//         <InputGroup
-//           onChange={(event: any): void => {
-//             this.handleTextInputChange(event, fieldName);
-//           }}
-//           defaultValue={defaultValue}
-//           type="text-input"
-//         />
-//       </FormGroup>
-//     );
-//   }
-
-//   renderField(fieldName: string): React.ReactElement {
-//     const uihints = this.schema[fieldName].uihints;
-//     let required = '(optional)';
-//     if (this.requiredFields && this.requiredFields.includes(fieldName)) {
-//       required = '(required)';
-//     }
-//     if (uihints == undefined) {
-//       return;
-//     } else if (
-//       uihints.field_type == 'textinput' ||
-//       uihints.field_type == undefined
-//     ) {
-//       return this.renderTextInput(
-//         uihints.label,
-//         uihints.description,
-//         fieldName,
-//         this.metadata[fieldName],
-//         required,
-//         this.schema[fieldName].uihints.intent
-//       );
-//     } else if (uihints.field_type == 'dropdown') {
-//       return (
-//         <DropDown
-//           label={uihints.label}
-//           schemaField={fieldName}
-//           description={uihints.description}
-//           required={required}
-//           intent={this.schema[fieldName].uihints.intent}
-//           choice={this.metadata[fieldName]}
-//           defaultChoices={this.getDefaultChoices(fieldName)}
-//           handleDropdownChange={this.handleDropdownChange}
-//         ></DropDown>
-//       );
-//     } else if (uihints.field_type == 'code') {
-//       let helperText: string;
-//       if (this.schema[fieldName].uihints.intent == Intent.DANGER) {
-//         helperText = 'This field is required.';
-//       }
-//       return (
-//         <FormGroup
-//           className={'elyra-metadataEditor-code'}
-//           labelInfo={required}
-//           label={'Code'}
-//           intent={this.schema[fieldName].uihints.intent}
-//           helperText={helperText}
-//         >
-//           <ResizeSensor
-//             onResize={(): void => {
-//               this.editor.refresh();
-//             }}
-//           >
-//             <div id={'code:' + this.id} className="elyra-form-code va-va"></div>
-//           </ResizeSensor>
-//         </FormGroup>
-//       );
-//     } else {
-//       return;
-//     }
-//   }
-
-//   render(): React.ReactElement {
-//     const inputElements = [];
-//     for (const schemaProperty in this.schema) {
-//       inputElements.push(this.renderField(schemaProperty));
-//     }
-//     let headerText = `Edit "${this.displayName}"`;
-//     if (!this.name) {
-//       headerText = `Add new ${this.schemaName}`;
-//     }
-//     let intent: Intent = Intent.NONE;
-//     if (this.displayName == '' && this.invalidForm) {
-//       intent = Intent.DANGER;
-//     }
-//     return (
-//       <div className={ELYRA_METADATA_EDITOR_CLASS}>
-//         <h3> {headerText} </h3>
-//         {this.renderTextInput(
-//           'Name',
-//           '',
-//           'display_name',
-//           this.displayName,
-//           '(required)',
-//           intent
-//         )}
-//         {inputElements}
-//         <FormGroup>
-//           <Button
-//             onClick={(): void => {
-//               this.saveMetadata();
-//             }}
-//           >
-//             Save & Close
-//           </Button>
-//         </FormGroup>
-//       </div>
-//     );
-//   }
-// }
+import { ReactWidget, showDialog, Dialog } from '@jupyterlab/apputils';
+import React from 'react';
+import { Message } from '@lumino/messaging';
+import { Button } from '@jupyterlab/ui-components';
+// import { Widget } from '@lumino/widgets';
 
 interface ICodeSnippetEditor {
   namespace: string;
   codeSnippet: ICodeSnippet;
+  // onSave: () => void;
 }
 
 export class CodeSnippetEditor extends ReactWidget {
   editorServices: IEditorServices;
-  args: ICodeSnippetEditor;
-  /*editor: CodeEditor.IEditor;*/
+  /*function(e) {
+      console.log(e.target);
+      const clickedElement = e.target as HTMLElement;
+      if(clickedElement.className !== target.className) {
+        target.classList.remove('jp-snippet-editor-active');
+        label.classList.remove('jp-snippet-editor-label-active');
+      }*/
+  /*window.removeEventListener('click', e =>
+      this._deactivateField(e, target, label)*/
+  editor: CodeEditor.IEditor;
+  saved: boolean;
+  namespace: string;
+  codeSnippet: ICodeSnippet;
+
   constructor(editorServices: IEditorServices, args: ICodeSnippetEditor) {
     super();
-    this.addClass('jp-codeSnippet-editor');
-    this.id = 'Code-Snippet-Edit';
-    this.title.label = 'Edit Code Snippet';
-    this.title.closable = true;
+    // this.id = 'Code-Snippet-Edit';
+
     this.editorServices = editorServices;
-    this.args = args;
-    /*this.renderCodeInput = this.renderCodeInput.bind(this);*/
+    this.namespace = args.namespace;
+    this.codeSnippet = args.codeSnippet;
+    this.saved = false;
+
+    this.renderCodeInput = this.renderCodeInput.bind(this);
   }
 
   private _deactivateField(
@@ -447,15 +78,98 @@ export class CodeSnippetEditor extends ReactWidget {
       e => this._deactivateField(e, target, label),
       true
     );
-    /*function(e) {
-      console.log(e.target);
-      const clickedElement = e.target as HTMLElement;
-      if(clickedElement.className !== target.className) {
-        target.classList.remove('jp-snippet-editor-active');
-        label.classList.remove('jp-snippet-editor-label-active');
-      }*/
-    /*window.removeEventListener('click', e =>
-      this._deactivateField(e, target, label)*/
+  }
+
+  /**
+   * Gets called by update() call or when first rendered
+   * @param msg
+   */
+  onActivateRequest(msg: Message): void {
+    super.onActivateRequest(msg);
+    console.log('updating');
+    const editorFactory = this.editorServices.factoryService.newInlineEditor;
+
+    const getMimeTypeByLanguage = this.editorServices.mimeTypeService
+      .getMimeTypeByLanguage;
+
+    console.log(this);
+    // console.log(this.args);
+    const editor = editorFactory({
+      // config: { readOnly: false, rulers: [1, 2, 3, 4] },
+      host: document.querySelector(
+        `#code-${this.codeSnippet.id}`
+      ) as HTMLElement,
+      model: new CodeEditor.Model({
+        value: this.codeSnippet.code.join('\n'),
+        mimeType: getMimeTypeByLanguage({
+          name: this.codeSnippet.language,
+          codemirror_mode: this.codeSnippet.language
+        })
+      })
+    });
+    this.editor = editor;
+  }
+
+  onCloseRequest(msg: Message): void {
+    if (this.saved) {
+      showDialog({
+        title: 'Close without saving?',
+        body: (
+          <p>
+            {' '}
+            {`"${this.codeSnippet.displayName}" has unsaved changes, close without saving?`}{' '}
+          </p>
+        ),
+        buttons: [Dialog.cancelButton(), Dialog.okButton()]
+      }).then((response: any): void => {
+        if (response.button.accept) {
+          this.dispose();
+          super.onCloseRequest(msg);
+        }
+      });
+    } else {
+      this.dispose();
+      super.onCloseRequest(msg);
+    }
+  }
+
+  /**
+   * Visualize the editor more look like an editor
+   * @param event
+   */
+  handleEditorActivity(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    let target = event.target as HTMLElement;
+    while (target && target.parentElement) {
+      if (target.classList.contains('jp-codeSnippetInput-editor')) {
+        // console.log('hello');
+        break;
+      }
+      target = target.parentElement;
+    }
+
+    // console.log(target);
+    const editor = document.querySelector(`#code-${this.codeSnippet.id}`);
+
+    if (target.classList.contains('jp-codeSnippetInput-editor')) {
+      if (!editor.classList.contains('active')) {
+        editor.classList.add('active');
+      }
+    } else {
+      if (editor.classList.contains('active')) {
+        editor.classList.remove('active');
+      }
+    }
+  }
+
+  renderCodeInput(): React.ReactElement {
+    return (
+      <section className="jp-codeSnippetInputArea-editor">
+        <div
+          className={'jp-codeSnippetInput-editor'}
+          id={'code-' + this.codeSnippet.id.toString()}
+        ></div>
+      </section>
+    );
   }
 
   render(): React.ReactElement {
@@ -466,7 +180,7 @@ export class CodeSnippetEditor extends ReactWidget {
           <label className="jp-snippet-editor-name-label">Name</label>
           <input
             className="jp-snippet-editor-name"
-            defaultValue={this.args.codeSnippet.displayName}
+            defaultValue={this.codeSnippet.displayName}
             onClick={event => this.activeFieldState(event)}
           ></input>
           <label className="jp-snippet-editor-description-label">
@@ -474,7 +188,7 @@ export class CodeSnippetEditor extends ReactWidget {
           </label>
           <input
             className="jp-snippet-editor-description"
-            defaultValue={this.args.codeSnippet.description}
+            defaultValue={this.codeSnippet.description}
             onClick={event => this.activeFieldState(event)}
           ></input>
           {/* <input
@@ -492,7 +206,7 @@ export class CodeSnippetEditor extends ReactWidget {
           </datalist> */}
           <select
             className="jp-snippet-editor-language"
-            defaultValue={this.args.codeSnippet.language}
+            defaultValue={this.codeSnippet.language}
             name="languages"
           >
             <option className="jp-snippet-editor-options" value="python">
@@ -508,6 +222,16 @@ export class CodeSnippetEditor extends ReactWidget {
               Other
             </option>
           </select>
+        </div>
+        <div
+          className="jp-codeSnippetInputArea"
+          onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+            this.handleEditorActivity(event)
+          }
+        >
+          <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
+          {this.renderCodeInput()}
+          <Button className="saveBtn">Save</Button>
         </div>
       </div>
     );

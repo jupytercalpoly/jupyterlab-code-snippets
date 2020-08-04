@@ -27,7 +27,7 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
       newSnippet.id = this.snippets.length;
     }
     this.insertSnippet(newSnippet, index);
-    this.updateSnippetContents();
+    // this.updateSnippetContents();
   }
 
   sortSnippets(): void {
@@ -67,6 +67,7 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
   }
 
   updateSnippetContents(): void {
+    console.log('updating snippets!');
     this._snippets.forEach(snippet => {
       CodeSnippetContentsService.getInstance().save(
         'snippets/' + snippet.name + '.json',

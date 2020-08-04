@@ -8,6 +8,7 @@ import { ArrayExt } from '@lumino/algorithm';
 import { ICodeSnippet } from '.';
 
 import * as React from 'react';
+import { ICodeSnippet } from './CodeSnippetContentsService';
 
 /**
  * The class name for confirmation box
@@ -269,7 +270,6 @@ export class Preview<T> extends Widget {
    *  A message handler invoked on an `'after-attach'` message.
    */
   protected onAfterAttach(msg: Message): void {
-    console.log('I have reached this stageeee');
     const node = this.node;
     node.addEventListener('keydown', this, true);
     node.addEventListener('contextmenu', this, true);
