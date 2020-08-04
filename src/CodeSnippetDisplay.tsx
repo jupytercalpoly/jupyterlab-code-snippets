@@ -1,4 +1,5 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
+import carrotSVGstr from '../style/icon/jupyter_snippetarrow.svg';
 import { SearchBar } from './SearchBar';
 import { showPreview } from './PreviewSnippet';
 import {
@@ -15,7 +16,7 @@ import { PathExt } from '@jupyterlab/coreutils';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
-import { copyIcon, closeIcon } from '@jupyterlab/ui-components';
+import { copyIcon } from '@jupyterlab/ui-components';
 import { LabIcon } from '@jupyterlab/ui-components';
 
 import { IExpandableActionButton } from '@elyra/ui-components';
@@ -151,13 +152,13 @@ export class CodeSnippetDisplay extends React.Component<
     }
   };
 
-  // Handle deleting code snippet
-  private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
-    const name = snippet.name;
-    // const url = 'elyra/metadata/code-snippets/' + name;
+  // // Handle deleting code snippet
+  // private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
+  //   const name = snippet.name;
+  //   // const url = 'elyra/metadata/code-snippets/' + name;
 
-    this.props.openCodeSnippetEditor({ namespace: name, codeSnippet: snippet });
-  };
+  //   this.props.openCodeSnippetEditor({ namespace: name, codeSnippet: snippet });
+  // };
 
   // Handle language compatibility between code snippet and editor
   private verifyLanguageAndInsert = async (
@@ -222,23 +223,6 @@ export class CodeSnippetDisplay extends React.Component<
   //   console.log(counter);
   //   return 'LOC\t\t' + counter;
   // };
-
-  //Change bookmark field and color onclick
-  private bookmarkSnippetClick = (
-    codeSnippet: ICodeSnippet,
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ): void => {
-    const target = event.target as HTMLElement;
-    if (codeSnippet.bookmarked === false) {
-      codeSnippet.bookmarked = true;
-      target.style.borderColor = 'transparent #1976d2 transparent transparent';
-    } else if (codeSnippet.bookmarked === true) {
-      codeSnippet.bookmarked = false;
-      console.log('TARGET: ', target.className);
-      target.style.borderColor = 'transparent #E5E5E5 transparent transparent';
-      target.style.transition = 'border-color 0.2s linear';
-    }
-  };
 
   // Insert 6 dots on hover
   private dragHoverStyle = (id: string): void => {
@@ -492,6 +476,11 @@ export class CodeSnippetDisplay extends React.Component<
       svgstr: insertSVGstr
     });
 
+    const previewIcon = new LabIcon({
+      name: 'custom-ui-compnents:preview',
+      svgstr: carrotSVGstr
+    });
+
     const actionButtons = [
       {
         title: 'Copy',
@@ -508,10 +497,19 @@ export class CodeSnippetDisplay extends React.Component<
         }
       },
       {
-        title: 'Delete',
-        icon: closeIcon,
+        title: 'Preview',
+        icon: previewIcon,
         onClick: (): void => {
-          this.deleteCodeSnippet(codeSnippet);
+          showPreview(
+            {
+              id: parseInt(id, 10),
+              title: displayName,
+              body: new PreviewHandler(codeSnippet),
+              codeSnippet: codeSnippet
+            },
+            this.props.openCodeSnippetEditor
+          );
+          this.snippetClicked(id);
         }
       }
     ];
@@ -535,13 +533,6 @@ export class CodeSnippetDisplay extends React.Component<
           id={id}
           onMouseDown={(event): void => {
             this.handleDragSnippet(event);
-          }}
-        ></div>
-        <div
-          className="triangle"
-          title="Bookmark"
-          onClick={(event): void => {
-            this.bookmarkSnippetClick(codeSnippet, event);
           }}
         ></div>
         <div>

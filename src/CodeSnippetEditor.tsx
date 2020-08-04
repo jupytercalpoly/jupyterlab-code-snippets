@@ -174,7 +174,61 @@ export class CodeSnippetEditor extends ReactWidget {
 
   render(): React.ReactElement {
     return (
-      <div className="jp-snippet-editor">
+      // <div className="jp-snippet-editor">
+      //   <h2 className="jp-snippet-editor-title">Edit Code Snippet</h2>
+      //   <div className="jp-snippet-editor-metadata">
+      //     <label className="jp-snippet-editor-name-label">Name</label>
+      //     <input
+      //       className="jp-snippet-editor-name"
+      //       defaultValue={this.codeSnippet.displayName}
+      //       onClick={event => this.activeFieldState(event)}
+      //     ></input>
+      //     <label className="jp-snippet-editor-description-label">
+      //       Description
+      //     </label>
+      //     <input
+      //       className="jp-snippet-editor-description"
+      //       defaultValue={this.codeSnippet.description}
+      //       onClick={event => this.activeFieldState(event)}
+      //     ></input>
+      //     {/* <input
+      //       className="jp-snippet-editor-language"
+      //       type="text"
+      //       name="language"
+      //       list="languages"
+      //       defaultValue={this.args.codeSnippet.language}
+      //     ></input>
+      //     <datalist id="languages">
+      //       <option value="Python"></option>
+      //       <option value="R"></option>
+      //       <option value="Scala"></option>
+      //       <option value="Other"></option>
+      //     </datalist> */}
+      //     <select
+      //       className="jp-snippet-editor-language"
+      //       defaultValue={this.codeSnippet.language}
+      //       name="languages"
+      //     >
+      //       <option className="jp-snippet-editor-options" value="python">
+      //         python
+      //       </option>
+      //       <option className="jp-snippet-editor-options" value="R">
+      //         R
+      //       </option>
+      //       <option className="jp-snippet-editor-options" value="Scala">
+      //         Scala
+      //       </option>
+      //       <option className="jp-snippet-editor-options" value="Other">
+      //         Other
+      //       </option>
+      //     </select>
+      //   </div>
+      <div
+        className="jp-codeSnippetInputArea"
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+          this.handleEditorActivity(event)
+        }
+      >
         <h2 className="jp-snippet-editor-title">Edit Code Snippet</h2>
         <div className="jp-snippet-editor-metadata">
           <label className="jp-snippet-editor-name-label">Name</label>
@@ -223,16 +277,9 @@ export class CodeSnippetEditor extends ReactWidget {
             </option>
           </select>
         </div>
-        <div
-          className="jp-codeSnippetInputArea"
-          onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-            this.handleEditorActivity(event)
-          }
-        >
-          <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
-          {this.renderCodeInput()}
-          <Button className="saveBtn">Save</Button>
-        </div>
+        <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
+        {this.renderCodeInput()}
+        <Button className="saveBtn">Save</Button>
       </div>
     );
   }

@@ -10,13 +10,13 @@ import {
 
 import { Widget } from '@lumino/widgets';
 // import { find } from '@lumino/algorithm';
-import { ICommandPalette } from '@jupyterlab/apputils';
+import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
 //import { ServerConnection } from '@jupyterlab/services';
 //import { URLExt } from '@jupyterlab/coreutils';
 
 import { IEditorServices } from '@jupyterlab/codeeditor';
-// import { LabIcon } from '@jupyterlab/ui-components';
-// import editorIconSVGstr from '../style/icon/jupyter_snippeteditoricon.svg';
+import { LabIcon } from '@jupyterlab/ui-components';
+import editorIconSVGstr from '../style/icon/jupyter_snippeteditoricon.svg';
 
 import { inputDialog } from './CodeSnippetForm';
 // import { CodeSnippetWrapper } from './CodeSnippetWrapper';
@@ -32,7 +32,7 @@ import { CodeSnippetEditor } from './CodeSnippetEditor';
 import undoDeleteSVG from '../style/icon/undoDelete.svg';
 //import undoDeleteCloseIcon from '../style/icon/close_jupyter.svg';
 import { showUndoMessage } from './UndoDelete';
-// import { ICodeSnippet } from './CodeSnippetContentsService';
+import { ICodeSnippet } from './CodeSnippetContentsService';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 let clicked: EventTarget;
@@ -75,70 +75,70 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     // sessions widget in the sidebar.
     app.shell.add(codeSnippetWidget, 'left', { rank: 900 });
 
-    app.commands.addCommand('elyra-metadata-editor:open', {
-      label: 'Code Snippet Editor',
-      isEnabled: () => true,
-      isVisible: () => true,
-      execute: (args: any) => {
-        const codeSnippetEditor = new CodeSnippetEditor(editorServices, args);
-        codeSnippetEditor.id = 'jp-codeSnippet-editor';
-        app.shell.add(codeSnippetEditor, 'main');
-        restorer.add(codeSnippetEditor, 'jp-codeSnippet-editor');
-      }
-    });
-    // open code Snippet Editor
-    // const openCodeSnippetEditor = (args: {
-    //   namespace: string;
-    //   codeSnippet: ICodeSnippet;
-    //   // onSave: () => void;
-    // }): void => {
-    //   // codeSnippetEditors are in the main area
-    //   const widgetId = `jp-codeSnippet-editor-${args.codeSnippet.id}`;
-
-    //   const codeSnippetEditor = new CodeSnippetEditor(editorServices, args);
-
-    //   codeSnippetEditor.id = widgetId;
-    //   codeSnippetEditor.addClass('jp-codeSnippet-editor');
-    //   codeSnippetEditor.title.label =
-    //     '[' + args.codeSnippet.language + '] ' + args.codeSnippet.displayName;
-    //   codeSnippetEditor.title.closable = true;
-    //   const editorIcon = new LabIcon({
-    //     name: 'custom-ui-compnents:codeSnippetEditorIcon',
-    //     svgstr: editorIconSVGstr
-    //   });
-    //   codeSnippetEditor.title.icon = editorIcon;
-
-    //   // console.log(tracker.has(codeSnippetEditor));
-
-    //   // if (!tracker.has(codeSnippetEditor)) {
-    //   //   // console.log('added');
-    //   //   tracker.add(codeSnippetEditor);
-    //   //   // console.log(tracker.size);
-    //   //   // console.log(tracker.currentChanged);
-    //   //   // console.log(tracker.currentWidget);
-    //   // }
-    //   // restorer.add(codeSnippetEditor, codeSnippetEditor.id);
-    //   // console.log(restorer);
-    //   app.shell.add(codeSnippetEditor, 'main');
-
-    //   // codeSnippetEditor.update();
-
-    //   // Activate the code Snippet Editor
-    //   app.shell.activateById(codeSnippetEditor.id);
-    //   // console.log(restorer.restored);
-    // };
-
-    // const command: string = 'elyra-metadata-editor:open';
-    // app.commands.addCommand(command, {
+    // app.commands.addCommand('elyra-metadata-editor:open', {
     //   label: 'Code Snippet Editor',
     //   isEnabled: () => true,
     //   isVisible: () => true,
-    //   // include code snippet in args
     //   execute: (args: any) => {
-    //     // console.log(editorServices);
-    //     openCodeSnippetEditor(args);
+    //     const codeSnippetEditor = new CodeSnippetEditor(editorServices, args);
+    //     codeSnippetEditor.id = 'jp-codeSnippet-editor';
+    //     app.shell.add(codeSnippetEditor, 'main');
+    //     restorer.add(codeSnippetEditor, 'jp-codeSnippet-editor');
     //   }
     // });
+    // open code Snippet Editor
+    const openCodeSnippetEditor = (args: {
+      namespace: string;
+      codeSnippet: ICodeSnippet;
+      // onSave: () => void;
+    }): void => {
+      // codeSnippetEditors are in the main area
+      const widgetId = `jp-codeSnippet-editor-${args.codeSnippet.id}`;
+
+      const codeSnippetEditor = new CodeSnippetEditor(editorServices, args);
+
+      codeSnippetEditor.id = widgetId;
+      codeSnippetEditor.addClass(widgetId);
+      codeSnippetEditor.title.label =
+        '[' + args.codeSnippet.language + '] ' + args.codeSnippet.displayName;
+      codeSnippetEditor.title.closable = true;
+      const editorIcon = new LabIcon({
+        name: 'custom-ui-compnents:codeSnippetEditorIcon',
+        svgstr: editorIconSVGstr
+      });
+      codeSnippetEditor.title.icon = editorIcon;
+
+      // console.log(tracker.has(codeSnippetEditor));
+
+      if (!tracker.has(codeSnippetEditor)) {
+        // console.log('added');
+        tracker.add(codeSnippetEditor);
+        // console.log(tracker.size);
+        // console.log(tracker.currentChanged);
+        // console.log(tracker.currentWidget);
+      }
+      // restorer.add(codeSnippetEditor, codeSnippetEditor.id);
+      // console.log(restorer);
+      app.shell.add(codeSnippetEditor, 'main', { rank: -900 });
+
+      // codeSnippetEditor.update();
+
+      // Activate the code Snippet Editor
+      app.shell.activateById(codeSnippetEditor.id);
+      // console.log(restorer.restored);
+    };
+
+    const editorCommand = 'elyra-metadata-editor:open';
+    app.commands.addCommand(editorCommand, {
+      label: 'Code Snippet Editor',
+      isEnabled: () => true,
+      isVisible: () => true,
+      // include code snippet in args
+      execute: (args: any) => {
+        // console.log(editorServices);
+        openCodeSnippetEditor(args);
+      }
+    });
 
     // restorer.restore(tracker, {
     //   command: command
@@ -205,17 +205,17 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
     });
 
     // Track and restore the widget state
-    // const tracker = new WidgetTracker<CodeSnippetEditor>({
-    //   namespace: 'codeSnippetEditor'
-    // });
+    const tracker = new WidgetTracker<CodeSnippetEditor>({
+      namespace: 'codeSnippetEditor'
+    });
 
-    // restorer.restore(tracker, {
-    //   command,
-    //   name: () => {
-    //     console.log('restoring');
-    //     return 'codeSnippetEditor';
-    //   }
-    // });
+    restorer.restore(tracker, {
+      command: editorCommand,
+      name: () => {
+        console.log('restoring');
+        return 'codeSnippetEditor';
+      }
+    });
 
     // console.log(tracker.size);
   }
