@@ -107,7 +107,8 @@ export class CodeSnippetWidget extends ReactWidget {
     // this._codeSnippetWidgetModel.clearSnippets();
 
     // const data: ICodeSnippet[] = [];
-    if (this._codeSnippetWidgetModel.snippets.length === 0) {
+    if (this._codeSnippets.length === 0) {
+      console.log('fetching snippets!');
       await this.codeSnippetManager
         .getData('snippets', 'directory')
         .then(model => {
@@ -122,20 +123,24 @@ export class CodeSnippetWidget extends ReactWidget {
           this._codeSnippetWidgetModel.addSnippet(JSON.parse(model.content), i);
         });
       }
+      return this._codeSnippetWidgetModel.snippets;
     }
     // console.log(data);
 
-    return this._codeSnippetWidgetModel.snippets;
+    return null;
   }
 
   updateCodeSnippets(): void {
     this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-      this.renderCodeSnippetsSignal.emit(codeSnippets);
+      if (codeSnippets != null) {
+        this.renderCodeSnippetsSignal.emit(codeSnippets);
+      }
     });
   }
 
   onAfterShow(msg: Message): void {
     console.log('On after show!');
+    console.log(this._codeSnippets);
     this.updateCodeSnippets();
   }
 
@@ -392,9 +397,7 @@ export class CodeSnippetWidget extends ReactWidget {
       // Handle the case where we are copying cells
       event.dropAction = 'copy';
 
-      const url = 'elyra/metadata/code-snippets';
-
-      inputDialog(this, url, data, idx);
+      inputDialog(this, data, idx);
     }
   }
   // deleteCodeSnippet(snippet: ICodeSnippet): void {

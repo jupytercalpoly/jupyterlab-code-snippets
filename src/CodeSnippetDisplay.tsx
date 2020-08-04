@@ -156,7 +156,7 @@ export class CodeSnippetDisplay extends React.Component<
     const name = snippet.name;
     // const url = 'elyra/metadata/code-snippets/' + name;
 
-    this.props.openCodeSnippetEditor({ namespace: name });
+    this.props.openCodeSnippetEditor({ namespace: name, codeSnippet: snippet });
   };
 
   // Handle language compatibility between code snippet and editor
@@ -531,6 +531,7 @@ export class CodeSnippetDisplay extends React.Component<
       >
         <div
           className="drag-hover"
+          title="Drag to move"
           id={id}
           onMouseDown={(event): void => {
             this.handleDragSnippet(event);

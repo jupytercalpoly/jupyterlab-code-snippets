@@ -460,3 +460,47 @@ mark.jp-search-bolding {
   border: 1px solid var(--jp-cell-editor-active-border-color);
   caret-color: var(--jp-cell-editor-active-border-color);
 }
+.jp-codeSnippetInputArea {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 12px;
+}
+
+.jp-codeSnippetInputArea-editor {
+  overflow: scroll;
+}
+
+.jp-codeSnippetInputArea-editorTitle {
+  margin-bottom: 12px;
+  font-family: helvetica;
+  line-height: 18px;
+  font-size: var(--jp-ui-font-size2);
+}
+
+.jp-codeSnippetInput-editor {
+  border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
+  border-radius: 0px;
+  background: var(--jp-cell-editor-background);
+}
+
+.jp-codeSnippetInput-editor.active {
+  border: var(--jp-border-width) solid var(--jp-cell-editor-active-border-color);
+  box-shadow: var(--jp-input-box-shadow);
+  background-color: var(--jp-cell-editor-active-background);
+}
+
+.jp-codeSnippetInput-editor .CodeMirror.cm-s-jupyter {
+  background: transparent;
+}
+
+.jp-codeSnippetInputArea .saveBtn {
+  width: 8%;
+  background: var(--jp-brand-color1);
+  color: var(--jp-ui-inverse-font-color0);
+  align-self: flex-end;
+  margin-top: 12px;
+}
+
+@import url('~@jupyterlab/codeeditor/style/index.css');
