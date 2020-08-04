@@ -84,9 +84,11 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       label: 'Code Snippet Editor',
       isEnabled: () => true,
       isVisible: () => true,
-      execute: () => {
-        const codeSnippetEditor = new CodeSnippetEditor();
+      execute: (args: any) => {
+        const codeSnippetEditor = new CodeSnippetEditor(editorServices, args);
+        codeSnippetEditor.id = 'jp-codeSnippet-editor';
         app.shell.add(codeSnippetEditor, 'main');
+        restorer.add(codeSnippetEditor, 'jp-codeSnippet-editor');
       }
     });
 

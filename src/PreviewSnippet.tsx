@@ -5,6 +5,7 @@ import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
+import { ICodeSnippet } from '.';
 
 import * as React from 'react';
 
@@ -60,7 +61,11 @@ export class Preview<T> extends Widget {
     content.addWidget(header);
     const body = renderer.createBody(options.body || '');
     content.addWidget(body);
-    const editButton = renderer.createEditButton(this, openCodeSnippetEditor);
+    const editButton = renderer.createEditButton(
+      this,
+      openCodeSnippetEditor,
+      options.codeSnippet
+    );
     content.addWidget(editButton);
 
     if (Preview.tracker.size > 0) {
@@ -323,6 +328,7 @@ export namespace Preview {
      * All `input` and `select` nodes will be wrapped and styled.
      */
     body: Body<T>;
+    codeSnippet: ICodeSnippet;
   }
 
   export interface IRenderer {
@@ -405,7 +411,8 @@ export namespace Preview {
      */
     createEditButton(
       prev: any,
-      openCodeSnippetEditor: (args: any) => void
+      openCodeSnippetEditor: (args: any) => void,
+      codeSnippet: ICodeSnippet
     ): Widget {
       const editButton: Widget = new Widget({
         node: document.createElement('span')
@@ -418,7 +425,10 @@ export namespace Preview {
         editButton.removeClass('jp-Preview-button-hover');
       };
       editButton.node.onclick = (): void => {
-        openCodeSnippetEditor({});
+        openCodeSnippetEditor({
+          namespace: codeSnippet.name,
+          codeSnippet: codeSnippet
+        });
         document
           .getElementsByClassName('drag-hover')
           [prev._id].classList.remove('drag-hover-clicked');
