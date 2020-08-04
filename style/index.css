@@ -374,3 +374,89 @@ mark.jp-search-bolding {
   height: var(--jp-private-notebook-dragImage-height);
   color: var(--jp-content-font-color3);
 }
+
+.jp-snippet-editor-title {
+  margin-left: 2%;
+  margin-top: 2%;
+  margin-bottom: 20px;
+}
+
+.jp-snippet-editor-name-label {
+  position: absolute;
+  margin-left: 4%;
+  margin-top: -7px;
+  background-color: white;
+  font-size: 12px;
+  color: var(--jp-ui-font-color2);
+}
+
+.jp-snippet-editor-description-label {
+  position: absolute;
+  margin-left: 4%;
+  margin-top: -7px;
+  background-color: white;
+  font-size: 12px;
+  color: var(--jp-ui-font-color2);
+}
+
+.jp-snippet-editor-label-active {
+  color: var(--jp-cell-editor-active-border-color);
+}
+
+.jp-snippet-editor-name {
+  display: block;
+  margin-bottom: 30px;
+  margin-left: 3%;
+  border-top: transparent;
+  border-left: transparent;
+  border-right: transparent;
+  width: 94%;
+  height: 40px;
+  padding-left: 10px;
+  border-bottom: 1px solid #c4c4c4;
+  font-size: 16px;
+  border-radius: 2px;
+}
+
+.jp-snippet-editor-description {
+  display: block;
+  margin-bottom: 30px;
+  margin-left: 3%;
+  border-top: transparent;
+  border-left: transparent;
+  border-right: transparent;
+  width: 94%;
+  height: 40px;
+  padding-left: 10px;
+  border-bottom: 1px solid #c4c4c4;
+  font-size: 16px;
+  border-radius: 2px;
+}
+
+.jp-snippet-editor-language {
+  display: block;
+  margin-bottom: 30px;
+  margin-left: 3%;
+  border: 1px solid var(--jp-border-color0);
+  width: 176px;
+  height: 40px;
+  padding-left: 10px;
+  font-size: 13px;
+  border-radius: 2px;
+  appearance: none;
+  -webkit-appearance: none; /* chrome and safari */
+  -moz-appearance: none; /* Mozilla */
+  -ms-appearance: none; /* Internet explorer */
+  background-image: url(./icon/jupyter_searcharrowdown.svg);
+  background-repeat: no-repeat;
+  background-position: 95% center;
+}
+
+/* input::-webkit-calendar-picker-indicator {
+  opacity: 100;
+} */
+
+.jp-snippet-editor-active {
+  border: 1px solid var(--jp-cell-editor-active-border-color);
+  caret-color: var(--jp-cell-editor-active-border-color);
+}

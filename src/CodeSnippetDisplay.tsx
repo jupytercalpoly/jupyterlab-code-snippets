@@ -563,7 +563,8 @@ export class CodeSnippetDisplay extends React.Component<
                   {
                     id: parseInt(id, 10),
                     title: displayName,
-                    body: new PreviewHandler(codeSnippet)
+                    body: new PreviewHandler(codeSnippet),
+                    codeSnippet: codeSnippet
                   },
                   this.props.openCodeSnippetEditor
                 );
