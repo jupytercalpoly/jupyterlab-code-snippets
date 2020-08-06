@@ -10,13 +10,13 @@
 - [x] Drag cell into panel to save (lines of code)
 - [x] Search bar for snippets
 - [x] Snippet preview (on the side)
-- [ ] Drag snippet into notebook
+- [x] Drag snippet into notebook
 - [ ] Filters on snippet panel
 - [ ] Code snippet editor
 - [ ] Recently used snippets
 - [ ] Right click and save highlighted cell
 - [ ] Plus button to create new snippet
-- [ ] Undo delete snippet
+- [x] Undo delete snippet
 
 ## Demo 2 (Aug 5)
 - [x] Search ability
@@ -25,9 +25,9 @@
 - [ ] Snippet preview
   - [ ] editing mode
   - [ ] snippet description
-- [ ] Drag and drop
-  - [ ] drag snippet into notebook - create new cell
-- [ ] Undo/redo functionality
+- [x] Drag and drop
+  - [x] drag snippet into notebook - create new cell
+- [x] Undo/redo functionality
   
 ## Log of Changes/Progress
 
