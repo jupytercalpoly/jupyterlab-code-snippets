@@ -144,7 +144,9 @@ export class CodeSnippetEditor extends ReactWidget {
    * Visualize the editor more look like an editor
    * @param event
    */
-  handleEditorActivity(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  handleEditorActivity(
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ): void {
     let target = event.target as HTMLElement;
     while (target && target.parentElement) {
       if (target.classList.contains('jp-codeSnippetInput-editor')) {
@@ -232,7 +234,7 @@ export class CodeSnippetEditor extends ReactWidget {
       //   </div>
       <div
         className="jp-codeSnippetInputArea"
-        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void =>
           this.handleEditorActivity(event)
         }
       >
@@ -242,7 +244,7 @@ export class CodeSnippetEditor extends ReactWidget {
           <input
             className="jp-snippet-editor-name"
             defaultValue={this.codeSnippet.displayName}
-            onClick={event => this.activeFieldState(event)}
+            onClick={(event): void => this.activeFieldState(event)}
           ></input>
           <label className="jp-snippet-editor-description-label">
             Description
@@ -250,7 +252,7 @@ export class CodeSnippetEditor extends ReactWidget {
           <input
             className="jp-snippet-editor-description"
             defaultValue={this.codeSnippet.description}
-            onClick={event => this.activeFieldState(event)}
+            onClick={(event): void => this.activeFieldState(event)}
           ></input>
           {/* <input
             className="jp-snippet-editor-language"
