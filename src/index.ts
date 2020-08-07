@@ -113,7 +113,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
       if (!tracker.has(codeSnippetEditor)) {
         // console.log('added');
         tracker.add(codeSnippetEditor);
-        // console.log(tracker.size);
+        console.log(tracker.size);
         // console.log(tracker.currentChanged);
         // console.log(tracker.currentWidget);
       }
@@ -211,9 +211,14 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
 
     restorer.restore(tracker, {
       command: editorCommand,
-      name: () => {
+      args: widget => ({
+        namespace: widget.namespace,
+        codeSnippet: JSON.stringify(widget.codeSnippet)
+      }),
+      name: widget => {
+        console.log(restorer);
         console.log('restoring');
-        return 'codeSnippetEditor';
+        return widget.codeSnippet.name;
       }
     });
 

@@ -87,27 +87,34 @@ export class CodeSnippetEditor extends ReactWidget {
   onActivateRequest(msg: Message): void {
     super.onActivateRequest(msg);
     console.log('updating');
-    const editorFactory = this.editorServices.factoryService.newInlineEditor;
+    if (
+      !this.editor &&
+      document.getElementById('code-' + this.codeSnippet.id)
+    ) {
+      const editorFactory = this.editorServices.factoryService.newInlineEditor;
 
-    const getMimeTypeByLanguage = this.editorServices.mimeTypeService
-      .getMimeTypeByLanguage;
-
-    console.log(this);
-    // console.log(this.args);
-    const editor = editorFactory({
-      // config: { readOnly: false, rulers: [1, 2, 3, 4] },
-      host: document.querySelector(
-        `#code-${this.codeSnippet.id}`
-      ) as HTMLElement,
-      model: new CodeEditor.Model({
-        value: this.codeSnippet.code.join('\n'),
-        mimeType: getMimeTypeByLanguage({
-          name: this.codeSnippet.language,
-          codemirror_mode: this.codeSnippet.language
+      const getMimeTypeByLanguage = this.editorServices.mimeTypeService
+        .getMimeTypeByLanguage;
+      if (typeof this.codeSnippet === 'string') {
+        this.codeSnippet = JSON.parse(this.codeSnippet);
+      }
+      console.log(this);
+      // console.log(this.args);
+      const editor = editorFactory({
+        // config: { readOnly: false, rulers: [1, 2, 3, 4] },
+        host: document.querySelector(
+          `#code-${this.codeSnippet.id}`
+        ) as HTMLElement,
+        model: new CodeEditor.Model({
+          value: this.codeSnippet.code.join('\n'),
+          mimeType: getMimeTypeByLanguage({
+            name: this.codeSnippet.language,
+            codemirror_mode: this.codeSnippet.language
+          })
         })
-      })
-    });
-    this.editor = editor;
+      });
+      this.editor = editor;
+    }
   }
 
   onCloseRequest(msg: Message): void {

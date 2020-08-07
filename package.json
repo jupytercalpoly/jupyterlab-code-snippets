@@ -76,16 +76,6 @@
     "style/*.css"
   ],
   "jupyterlab": {
-    "discovery": {
-      "server": {
-        "managers": [
-          "pip"
-        ],
-        "base": {
-          "name": "code_snippets"
-        }
-      }
-    },
     "extension": true
   },
   "husky": {
@@ -96,6 +86,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --cache --fix"
-    ]
+    ],
+    "*.js": "eslint --cache --fix"
   }
 }
