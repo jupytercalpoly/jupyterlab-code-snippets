@@ -66,6 +66,10 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
     }
   }
 
+  clearSnippets(): void {
+    this._snippets = [];
+  }
+
   updateSnippetContents(): void {
     console.log('updating snippets!');
     this._snippets.forEach(snippet => {

@@ -104,7 +104,7 @@ export class CodeSnippetWidget extends ReactWidget {
     const paths: string[] = [];
 
     // Clear the current snippets
-    // this._codeSnippetWidgetModel.clearSnippets();
+    this._codeSnippetWidgetModel.clearSnippets();
 
     // const data: ICodeSnippet[] = [];
     if (this._codeSnippets.length === 0) {
@@ -132,7 +132,8 @@ export class CodeSnippetWidget extends ReactWidget {
 
   updateCodeSnippets(): void {
     this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-      if (codeSnippets != null) {
+      console.log(codeSnippets);
+      if (codeSnippets !== null) {
         this.renderCodeSnippetsSignal.emit(codeSnippets);
       }
     });

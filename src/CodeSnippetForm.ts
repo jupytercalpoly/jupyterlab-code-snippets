@@ -77,8 +77,7 @@ export function inputDialog(
         description: result.value[1],
         language: result.value[2],
         code: code,
-        id: idx,
-        bookmarked: false
+        id: idx
       };
       /**
        * TODO: NEED in memory data store instead of making request every time.

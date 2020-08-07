@@ -64,6 +64,19 @@ const CODE_SNIPPET_ITEM = 'elyra-codeSnippet-item';
 const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
 
 /**
+ * Icons used for snippet
+ */
+const insertIcon = new LabIcon({
+  name: 'custom-ui-compnents:insert',
+  svgstr: insertSVGstr
+});
+
+const previewIcon = new LabIcon({
+  name: 'custom-ui-compnents:preview',
+  svgstr: carrotSVGstr
+});
+
+/**
  * CodeSnippetDisplay props.
  */
 interface ICodeSnippetDisplayProps {
@@ -313,9 +326,6 @@ export class CodeSnippetDisplay extends React.Component<
 
     // add CSS style
     this._dragData.dragImage.classList.add('jp-codesnippet-drag-image');
-
-    console.log('draggin');
-    console.log(event);
     target.addEventListener('mouseup', this._evtMouseUp, true);
     target.addEventListener('mousemove', this.handleDragMove, true);
 
@@ -326,8 +336,6 @@ export class CodeSnippetDisplay extends React.Component<
   private _evtMouseUp(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-
-    console.log('cancelled');
 
     const target = event.target as HTMLElement;
 
@@ -341,18 +349,6 @@ export class CodeSnippetDisplay extends React.Component<
     // event.stopPropagation();
     const data = this._dragData;
 
-    // console.log(data);
-    // console.log(event);
-    // console.log(this);
-    // console.log(
-    //   this.shouldStartDrag(
-    //     data.pressX,
-    //     data.pressY,
-    //     event.clientX,
-    //     event.clientY
-    //   )
-    // );
-
     if (
       data &&
       this.shouldStartDrag(
@@ -362,8 +358,6 @@ export class CodeSnippetDisplay extends React.Component<
         event.clientY
       )
     ) {
-      console.log('moving start');
-
       const idx = (event.target as HTMLElement).id;
       const codeSnippet = this.state.codeSnippets[parseInt(idx)];
 
@@ -397,35 +391,7 @@ export class CodeSnippetDisplay extends React.Component<
     clientX: number,
     clientY: number
   ): Promise<void> {
-    /**
-     * TODO: check what the current widget is
-     */
-    // const widget = this.props.getCurrentWidget();
     const target = event.target as HTMLElement;
-
-    // if (widget instanceof NotebookPanel) {
-    //   const notebookWidget = widget as NotebookPanel;
-
-    //   const kernelInfo = await notebookWidget.sessionContext.session?.kernel
-    //     ?.info;
-    //   const kernelLanguage: string = kernelInfo?.language_info.name || '';
-
-    //   if (
-    //     kernelLanguage &&
-    //     codeSnippet.language.toLowerCase() !== kernelLanguage.toLowerCase()
-    //   ) {
-    //     const result = await this.showWarnDialog(
-    //       kernelLanguage,
-    //       codeSnippet.displayName
-    //     );
-    //     if (!result.button.accept) {
-    //       target.removeEventListener('mousemove', this.handleDragMove, true);
-    //       target.removeEventListener('mouseup', this._evtMouseUp, true);
-    //       this._dragData = null;
-    //       return;
-    //     }
-    //   }
-    // }
 
     const modelFactory = new ModelFactory();
     const model = modelFactory.createCodeCell({});
@@ -445,8 +411,6 @@ export class CodeSnippetDisplay extends React.Component<
     this._drag.mimeData.setData(JUPYTER_CELL_MIME, selected);
     const textContent = codeSnippet.code.join('\n');
     this._drag.mimeData.setData('text/plain', textContent);
-
-    console.log('removing events');
 
     // Remove mousemove and mouseup listeners and start the drag.
     target.removeEventListener('mousemove', this.handleDragMove, true);
@@ -469,17 +433,6 @@ export class CodeSnippetDisplay extends React.Component<
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
     const displayName =
       '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
-    //this.boldNameOnSearch(this.state.filterValue,displayName,parseInt(id,10));
-
-    const insertIcon = new LabIcon({
-      name: 'custom-ui-compnents:insert',
-      svgstr: insertSVGstr
-    });
-
-    const previewIcon = new LabIcon({
-      name: 'custom-ui-compnents:preview',
-      svgstr: carrotSVGstr
-    });
 
     const actionButtons = [
       {

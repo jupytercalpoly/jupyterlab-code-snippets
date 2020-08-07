@@ -7,7 +7,6 @@ export interface ICodeSnippet {
   language: string;
   // code separated by new line
   code: string[];
-  bookmarked: boolean;
   id: number;
   tags?: string[];
 }
