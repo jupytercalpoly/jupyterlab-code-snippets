@@ -132,7 +132,7 @@ export class CodeSnippetWidget extends ReactWidget {
 
   updateCodeSnippets(): void {
     this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
-      if (codeSnippets != null) {
+      if (codeSnippets !== null) {
         this.renderCodeSnippetsSignal.emit(codeSnippets);
       }
     });
