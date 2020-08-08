@@ -7,9 +7,9 @@
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/jupytercalpoly/project2.git",
+  "homepage": "https://github.com/jupytercalpoly/jupyterlab-code-snippets.git",
   "bugs": {
-    "url": "https://github.com/jupytercalpoly/project2.git/issues"
+    "url": "https://github.com/jupytercalpoly/jupyterlab-code-snippets.git/issues"
   },
   "license": "BSD-3-Clause",
   "author": "Jay Ahn, Kiran Pinnipati",
@@ -22,7 +22,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jupytercalpoly/project2.git.git"
+    "url": "https://github.com/jupytercalpoly/jupyterlab-code-snippets.git.git"
   },
   "scripts": {
     "build": "jlpm run build:lib",
