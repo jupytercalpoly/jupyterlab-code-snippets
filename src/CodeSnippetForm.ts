@@ -227,6 +227,9 @@ class InputHandler extends Widget {
   constructor() {
     super({ node: Private.createInputNode() });
     this.addClass(FILE_DIALOG_CLASS);
+    console.log(
+      (this.node.getElementsByTagName('select')[0] as HTMLSelectElement).value
+    );
   }
 
   getValue(): string[] {
@@ -234,7 +237,7 @@ class InputHandler extends Widget {
     inputs.push(
       (this.node.getElementsByTagName('input')[0] as HTMLInputElement).value,
       (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
-      (this.node.getElementsByTagName('input')[2] as HTMLInputElement).value
+      (this.node.getElementsByTagName('select')[0] as HTMLSelectElement).value
     );
     return inputs;
   }
@@ -245,6 +248,25 @@ class MessageHandler extends Widget {
     super({ node: Private.createConfirmMessageNode() });
   }
 }
+
+// /**
+//  * A method to create an input when the user selects the Other option.
+//  */
+// function createLanguageInput(form: HTMLFormElement): void {
+//   const newInput = document.createElement('input');
+//   newInput.id = 'alternate-user-input';
+//   form.appendChild(newInput);
+// }
+
+// /**
+//  * A method to remove an input when the user selects the Other option.
+//  */
+// function removeLanguageInput(form: HTMLFormElement): void {
+//   const unusedInput = document.getElementById('alternate-user-input');
+//   if (form.contains(unusedInput)) {
+//     form.removeChild(unusedInput);
+//   }
+// }
 
 /**
  * A namespace for private data.
@@ -270,7 +292,37 @@ class Private {
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language*';
     languageTitle.className = INPUT_NEWNAME_TITLE_CLASS;
-    const language = document.createElement('input');
+    const language = document.createElement('select');
+    const optionPython = document.createElement('option');
+    optionPython.textContent = 'python';
+    const optionR = document.createElement('option');
+    optionR.textContent = 'R';
+    const optionScala = document.createElement('option');
+    optionScala.textContent = 'Scala';
+    const optionOther = document.createElement('option');
+    optionOther.textContent = 'Other';
+    // optionOther.onclick = (): void => {
+    //   createLanguageInput(body);
+    // };
+    // optionPython.onclick = (): void => {
+    //   removeLanguageInput(body);
+    // };
+    // optionScala.onclick = (): void => {
+    //   removeLanguageInput(body);
+    // };
+    // optionR.onclick = (): void => {
+    //   removeLanguageInput(body);
+    // };
+    language.appendChild(optionPython);
+    language.appendChild(optionR);
+    language.appendChild(optionScala);
+    language.appendChild(optionOther);
+
+    // if (language.value === 'Other') {
+    //   createLanguageInput(body);
+    // } else {
+    //   removeLanguageInput(body);
+    // }
 
     body.appendChild(nameTitle);
     body.appendChild(name);

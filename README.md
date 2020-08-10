@@ -2,7 +2,7 @@
 
 ## Save, reuse, and share code snippets using JupyterLab Code Snippets
 
-![Github Actions Status](https://github.com/jupytercalpoly/jupyterlab-code-snippets/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/project2.git/master?urlpath=lab)
+![Github Actions Status](https://github.com/jupytercalpoly/jupyterlab-code-snippets/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/jupyterlab-code-snippets.git/master)
 
 Read [Press Release](./PRESSRELEASE.md) for more information.
 

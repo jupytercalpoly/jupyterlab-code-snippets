@@ -355,6 +355,7 @@
   width: 14px;
   height: 14px;
   background-image: url(./icon/close_jupyter.svg);
+  cursor: pointer;
 }
 
 .jp-click-undo {
