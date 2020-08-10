@@ -55,7 +55,6 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   activate: activateCodeSnippet
 };
 
-
 function activateCodeSnippet(
   app: JupyterFrontEnd,
   palette: ICommandPalette,
@@ -157,7 +156,6 @@ function activateCodeSnippet(
     app.shell.activateById(codeSnippetEditor.id);
     // console.log(restorer.restored);
   };
-
 
   const editorCommand = 'elyra-metadata-editor:open';
   app.commands.addCommand(editorCommand, {
