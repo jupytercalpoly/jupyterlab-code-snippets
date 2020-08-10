@@ -4,13 +4,10 @@ import { ReactWidget, showDialog, Dialog } from '@jupyterlab/apputils';
 import React from 'react';
 import { Message } from '@lumino/messaging';
 import { Button } from '@jupyterlab/ui-components';
+// import { DocumentWidget } from '@jupyterlab/docregistry';
 // import { Widget } from '@lumino/widgets';
 
-interface ICodeSnippetEditor {
-  namespace: string;
-  codeSnippet: ICodeSnippet;
-  // onSave: () => void;
-}
+// const CODE_SNIPPET_EDITOR_ID = 'jp-codeSnippet-editor';
 
 export class CodeSnippetEditor extends ReactWidget {
   editorServices: IEditorServices;
@@ -25,17 +22,17 @@ export class CodeSnippetEditor extends ReactWidget {
       this._deactivateField(e, target, label)*/
   editor: CodeEditor.IEditor;
   saved: boolean;
-  namespace: string;
   codeSnippet: ICodeSnippet;
+  _hasRefreshedSinceAttach: boolean;
 
-  constructor(editorServices: IEditorServices, args: ICodeSnippetEditor) {
+  constructor(editorServices: IEditorServices, args: ICodeSnippet) {
     super();
     // this.id = 'Code-Snippet-Edit';
 
     this.editorServices = editorServices;
-    this.namespace = args.namespace;
-    this.codeSnippet = args.codeSnippet;
+    this.codeSnippet = args;
     this.saved = false;
+    this._hasRefreshedSinceAttach = false;
 
     this.renderCodeInput = this.renderCodeInput.bind(this);
   }
@@ -45,7 +42,6 @@ export class CodeSnippetEditor extends ReactWidget {
     target: HTMLElement,
     label: HTMLElement
   ): void {
-    console.log(e.target);
     const clickedElement = e.target as HTMLElement;
     if (clickedElement.className !== target.className) {
       target.classList.remove('jp-snippet-editor-active');
@@ -66,12 +62,9 @@ export class CodeSnippetEditor extends ReactWidget {
     const label = document.getElementsByClassName(
       labelClassName
     )[0] as HTMLElement;
-    console.log(target.classList);
     if (!target.classList.contains('jp-snippet-editor-active')) {
-      console.log('YES REAChed.');
       target.classList.add('jp-snippet-editor-active');
       label.classList.add('jp-snippet-editor-label-active');
-      console.log(labelClassName);
     }
     window.addEventListener(
       'click',
@@ -80,31 +73,27 @@ export class CodeSnippetEditor extends ReactWidget {
     );
   }
 
-  /**
-   * Gets called by update() call or when first rendered
-   * @param msg
-   */
-  onActivateRequest(msg: Message): void {
-    super.onActivateRequest(msg);
-    console.log('updating');
+  // updateCodeSnippetCode(): void {
+
+  // }
+
+  // /**
+  //  * Gets called by update() call or when first rendered
+  //  * @param msg
+  //  */
+  onUpdateRequest(msg: Message): void {
+    super.onUpdateRequest(msg);
+
     if (
       !this.editor &&
       document.getElementById('code-' + this.codeSnippet.id)
     ) {
       const editorFactory = this.editorServices.factoryService.newInlineEditor;
-
       const getMimeTypeByLanguage = this.editorServices.mimeTypeService
         .getMimeTypeByLanguage;
-      if (typeof this.codeSnippet === 'string') {
-        this.codeSnippet = JSON.parse(this.codeSnippet);
-      }
-      console.log(this);
-      // console.log(this.args);
-      const editor = editorFactory({
-        // config: { readOnly: false, rulers: [1, 2, 3, 4] },
-        host: document.querySelector(
-          `#code-${this.codeSnippet.id}`
-        ) as HTMLElement,
+
+      this.editor = editorFactory({
+        host: document.getElementById('code-' + this.codeSnippet.id),
         model: new CodeEditor.Model({
           value: this.codeSnippet.code.join('\n'),
           mimeType: getMimeTypeByLanguage({
@@ -113,8 +102,38 @@ export class CodeSnippetEditor extends ReactWidget {
           })
         })
       });
-      this.editor = editor;
+      // this.editor.model.value.changed.connect((args: any) => {
+      //   this.
+      // })
+      // console.log(document.querySelector(`#code-${this.codeSnippet.id}`));
     }
+    if (this.isVisible) {
+      this._hasRefreshedSinceAttach = true;
+      this.editor.refresh();
+    }
+  }
+
+  onAfterAttach(msg: Message): void {
+    super.onAfterAttach(msg);
+
+    this._hasRefreshedSinceAttach = false;
+    if (this.isVisible) {
+      this.update();
+    }
+  }
+
+  onAfterShow(msg: Message): void {
+    if (!this._hasRefreshedSinceAttach) {
+      this.update();
+    }
+  }
+
+  /**
+   * Initial focus on the editor when it gets activated!
+   * @param msg
+   */
+  onActivateRequest(msg: Message): void {
+    this.editor.focus();
   }
 
   onCloseRequest(msg: Message): void {
@@ -150,7 +169,6 @@ export class CodeSnippetEditor extends ReactWidget {
     let target = event.target as HTMLElement;
     while (target && target.parentElement) {
       if (target.classList.contains('jp-codeSnippetInput-editor')) {
-        // console.log('hello');
         break;
       }
       target = target.parentElement;
@@ -244,7 +262,9 @@ export class CodeSnippetEditor extends ReactWidget {
           <input
             className="jp-snippet-editor-name"
             defaultValue={this.codeSnippet.displayName}
-            onClick={(event): void => this.activeFieldState(event)}
+            onClick={(
+              event: React.MouseEvent<HTMLInputElement, MouseEvent>
+            ): void => this.activeFieldState(event)}
           ></input>
           <label className="jp-snippet-editor-description-label">
             Description
@@ -252,7 +272,9 @@ export class CodeSnippetEditor extends ReactWidget {
           <input
             className="jp-snippet-editor-description"
             defaultValue={this.codeSnippet.description}
-            onClick={(event): void => this.activeFieldState(event)}
+            onClick={(
+              event: React.MouseEvent<HTMLInputElement, MouseEvent>
+            ): void => this.activeFieldState(event)}
           ></input>
           {/* <input
             className="jp-snippet-editor-language"
