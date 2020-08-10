@@ -238,7 +238,7 @@ export class CodeSnippetEditor extends ReactWidget {
           this.handleEditorActivity(event)
         }
       >
-        <h2 className="jp-snippet-editor-title">Edit Code Snippet</h2>
+        <span className="jp-snippet-editor-title">Edit Code Snippet</span>
         <div className="jp-snippet-editor-metadata">
           <label className="jp-snippet-editor-name-label">Name</label>
           <input

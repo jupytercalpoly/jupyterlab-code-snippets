@@ -201,7 +201,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
 
     app.contextMenu.addItem({
       command: delCommand,
-      selector: '.elyra-expandableContainer-title'
+      selector: '.expandableContainer-title'
     });
 
     // Track and restore the widget state

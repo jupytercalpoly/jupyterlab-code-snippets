@@ -13,6 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#code-snippet-extension {
+  background-color: var(--jp-layout-color0);
+  border-right: 3px solid var(--jp-layout-color0);
+}
 
 .elyra-expandableContainer-button,
 .elyra-expandableContainer-button.jp-mod-styled {
@@ -34,22 +38,23 @@
   background-color: var(--jp-layout-color2);
 }
 
-.elyra-expandableContainer-title {
+.expandableContainer-title {
   align-items: center;
   display: flex;
   flex-direction: row;
   padding: 0px 4px;
   margin-left: 15px;
   height: 36px;
+  color: var(--jp-ui-font-color0);
 }
 
-.elyra-expandableContainer-title:hover {
-  background: var(--jp-layout-color2);
-}
-
-.elyra-expandableContainer-title:hover .elyra-expandableContainer-button {
+.expandableContainer-title:hover {
   background-color: var(--jp-layout-color2);
 }
+
+/* .expandableContainer-title:hover .elyra-expandableContainer-button {
+  background-color: var(--jp-layout-color2);
+} */
 
 .elyra-expandableContainer-name {
   flex-grow: 1;
@@ -60,6 +65,7 @@
   padding: 4px 0 4px 2px;
   line-height: 28px;
   margin-top: -10px;
+  color: var(--jp-ui-font-color0);
 }
 
 .elyra-expandableContainer-name:hover {
@@ -78,7 +84,7 @@
   overflow: scroll;
 }
 
-.elyra-codeSnippetsHeader {
+.codeSnippetsHeader {
   font-size: var(--jp-ui-font-size0);
   font-weight: 600;
   /* font-size: 13px; */
@@ -86,7 +92,7 @@
   text-transform: uppercase;
   padding: 8px 0 8px 12px;
   border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
-  /* border-top: var(--jp-border-width) solid var(--jp-toolbar-border-color); */
+  color: var(--jp-ui-font-color0);
 }
 
 .elyra-codeSnippet-item {
@@ -366,6 +372,7 @@
 mark.jp-search-bolding {
   background-color: transparent;
   font-weight: bold;
+  color: var(--jp-ui-font-color0);
 }
 
 .jp-codesnippet-drag-image {
@@ -380,13 +387,15 @@ mark.jp-search-bolding {
   margin-left: 2%;
   margin-top: 2%;
   margin-bottom: 20px;
+  color: var(--jp-ui-font-color0);
+  font-size: 25px;
 }
 
 .jp-snippet-editor-name-label {
   position: absolute;
   margin-left: 4%;
   margin-top: -7px;
-  background-color: white;
+  background-color: var(--jp-layout-color0);
   font-size: 12px;
   color: var(--jp-ui-font-color2);
 }
@@ -395,13 +404,14 @@ mark.jp-search-bolding {
   position: absolute;
   margin-left: 4%;
   margin-top: -7px;
-  background-color: white;
+  background-color: var(--jp-layout-color0);
   font-size: 12px;
   color: var(--jp-ui-font-color2);
 }
 
 .jp-snippet-editor-label-active {
   color: var(--jp-cell-editor-active-border-color);
+  background-color: var(--jp-layout-color0);
 }
 
 .jp-snippet-editor-name {
@@ -417,6 +427,8 @@ mark.jp-search-bolding {
   border-bottom: 1px solid #c4c4c4;
   font-size: 16px;
   border-radius: 2px;
+  background-color: var(--jp-layout-color0);
+  color: var(--jp-ui-font-color0);
 }
 
 .jp-snippet-editor-description {
@@ -432,6 +444,8 @@ mark.jp-search-bolding {
   border-bottom: 1px solid #c4c4c4;
   font-size: 16px;
   border-radius: 2px;
+  background-color: var(--jp-layout-color0);
+  color: var(--jp-ui-font-color0);
 }
 
 .jp-snippet-editor-language {
@@ -478,6 +492,7 @@ mark.jp-search-bolding {
   font-family: helvetica;
   line-height: 18px;
   font-size: var(--jp-ui-font-size2);
+  color: var(--jp-ui-font-color0);
 }
 
 .jp-codeSnippetInput-editor {
@@ -503,5 +518,13 @@ mark.jp-search-bolding {
   align-self: flex-end;
   margin-top: 12px;
 }
+
+.expandableContainer-title:hover .elyra-expandableContainer-button {
+  background-color: var(--jp-layout-color2);
+}
+
+/* [data-jp-theme-light='false'] .jp-TableOfContents-icon {
+  background-image: url(./icon/undoDelete.svg);
+} */
 
 @import url('~@jupyterlab/codeeditor/style/index.css');
