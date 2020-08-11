@@ -56,7 +56,7 @@
   background-color: var(--jp-layout-color2);
 } */
 
-.elyra-expandableContainer-name {
+.expandableContainer-name {
   flex-grow: 1;
   font-size: var(--jp-ui-font-size1);
   white-space: nowrap;
@@ -68,18 +68,18 @@
   color: var(--jp-ui-font-color0);
 }
 
-.elyra-expandableContainer-name:hover {
+.expandableContainer-name:hover {
   cursor: pointer;
 }
 
-.elyra-button {
+.jp-button {
   background-repeat: no-repeat;
   background-position: center;
   border: none;
   height: 100%;
 }
 
-.elyra-CodeSnippets {
+.jp-CodeSnippets {
   height: 100%;
   overflow: scroll;
 }
@@ -95,7 +95,7 @@
   color: var(--jp-ui-font-color0);
 }
 
-.elyra-codeSnippet-item {
+.codeSnippet-item {
   border-bottom: 1px solid #eeeeee;
   display: flex;
   flex-direction: column;
@@ -103,7 +103,7 @@
   padding: 0;
 }
 
-.elyra-codeSnippet-item-clicked {
+.codeSnippet-item-clicked {
   background-color: var(--jp-layout-color2);
 }
 
@@ -154,7 +154,7 @@
   text-align: left;
 }
 
-.elyra-codeSnippet-item.jp-snippet-dropTarget {
+.codeSnippet-item.jp-snippet-dropTarget {
   border-top: 2px solid var(--jp-private-notebook-selected-color);
 }
 

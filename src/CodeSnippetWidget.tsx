@@ -44,7 +44,7 @@ import { IEditorServices } from '@jupyterlab/codeeditor';
 /**
  * A class used to indicate a snippet item.
  */
-const CODE_SNIPPET_ITEM = 'elyra-codeSnippet-item';
+const CODE_SNIPPET_ITEM = 'codeSnippet-item';
 
 /**
  * The mimetype used for Jupyter cell data.
@@ -252,7 +252,7 @@ export class CodeSnippetWidget extends ReactWidget {
       // if target area is the code snippet name area, previewSnippet widget will handle preview.
       if (
         !preview.classList.contains('inactive') &&
-        !target.classList.contains('elyra-expandableContainer-name')
+        !target.classList.contains('expandableContainer-name')
       ) {
         preview.classList.add('inactive');
         for (const elem of document.getElementsByClassName('drag-hover')) {
@@ -261,10 +261,10 @@ export class CodeSnippetWidget extends ReactWidget {
           }
         }
         for (const item of document.getElementsByClassName(
-          'elyra-codeSnippet-item'
+          'codeSnippet-item'
         )) {
-          if (item.classList.contains('elyra-codeSnippet-item-clicked')) {
-            item.classList.remove('elyra-codeSnippet-item-clicked');
+          if (item.classList.contains('codeSnippet-item-clicked')) {
+            item.classList.remove('codeSnippet-item-clicked');
           }
         }
       }

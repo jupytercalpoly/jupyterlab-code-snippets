@@ -76,8 +76,8 @@ export class Preview<T> extends Widget {
           .getElementsByClassName('drag-hover')
           [previous._id].classList.remove('drag-hover-clicked');
         document
-          .getElementsByClassName('elyra-codeSnippet-item')
-          [previous._id].classList.remove('elyra-codeSnippet-item-clicked');
+          .getElementsByClassName('codeSnippet-item')
+          [previous._id].classList.remove('codeSnippet-item-clicked');
       }
       if (previous._title === this._title) {
         if (previous.node.classList.contains('inactive')) {
@@ -159,8 +159,8 @@ export class Preview<T> extends Widget {
         .getElementsByClassName('drag-hover')
         [this._id].classList.remove('drag-hover-clicked');
       document
-        .getElementsByClassName('elyra-codeSnippet-item')
-        [this._id].classList.remove('elyra-codeSnippet-item-clicked');
+        .getElementsByClassName('codeSnippet-item')
+        [this._id].classList.remove('codeSnippet-item-clicked');
       event.stopPropagation();
       event.preventDefault();
       this.reject();
@@ -181,8 +181,8 @@ export class Preview<T> extends Widget {
           .getElementsByClassName('drag-hover')
           [this._id].classList.remove('drag-hover-clicked');
         document
-          .getElementsByClassName('elyra-codeSnippet-item')
-          [this._id].classList.remove('elyra-codeSnippet-item-clicked');
+          .getElementsByClassName('codeSnippet-item')
+          [this._id].classList.remove('codeSnippet-item-clicked');
         event.stopPropagation();
         event.preventDefault();
         this.reject();
@@ -430,8 +430,8 @@ export namespace Preview {
           .getElementsByClassName('drag-hover')
           [prev._id].classList.remove('drag-hover-clicked');
         document
-          .getElementsByClassName('elyra-codeSnippet-item')
-          [prev._id].classList.remove('elyra-codeSnippet-item-clicked');
+          .getElementsByClassName('codeSnippet-item')
+          [prev._id].classList.remove('codeSnippet-item-clicked');
         event.stopPropagation();
         event.preventDefault();
         prev.reject();
