@@ -18,23 +18,23 @@
   border-right: 3px solid var(--jp-layout-color0);
 }
 
-.elyra-expandableContainer-button,
-.elyra-expandableContainer-button.jp-mod-styled {
+.expandableContainer-button,
+.expandableContainer-button.jp-mod-styled {
   background-color: transparent;
   vertical-align: middle;
   padding: 0;
   width: 20px;
 }
 
-.elyra-expandableContainer-button:hover {
+.expandableContainer-button:hover {
   cursor: pointer;
 }
 
-.elyra-expandableContainer-actionButton:hover {
+.expandableContainer-actionButton:hover {
   background-color: var(--jp-layout-color1);
 }
 
-.elyra-expandableContainer-actionButton:active {
+.expandableContainer-actionButton:active {
   background-color: var(--jp-layout-color2);
 }
 
@@ -519,7 +519,7 @@ mark.jp-search-bolding {
   margin-top: 12px;
 }
 
-.expandableContainer-title:hover .elyra-expandableContainer-button {
+.expandableContainer-title:hover .expandableContainer-button {
   background-color: var(--jp-layout-color2);
 }
 

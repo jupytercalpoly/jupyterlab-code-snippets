@@ -43,10 +43,10 @@ const CODE_SNIPPETS_CONTAINER = 'codeSnippetsContainer';
 
 const DISPLAY_NAME_CLASS = 'elyra-expandableContainer-name';
 const ELYRA_BUTTON_CLASS = 'elyra-button';
-const BUTTON_CLASS = 'elyra-expandableContainer-button';
+const BUTTON_CLASS = 'expandableContainer-button';
 const TITLE_CLASS = 'expandableContainer-title';
 const ACTION_BUTTONS_WRAPPER_CLASS = 'elyra-expandableContainer-action-buttons';
-const ACTION_BUTTON_CLASS = 'elyra-expandableContainer-actionButton';
+const ACTION_BUTTON_CLASS = 'expandableContainer-actionButton';
 
 /**
  * The threshold in pixels to start a drag event.
