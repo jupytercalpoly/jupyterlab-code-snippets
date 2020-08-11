@@ -71,7 +71,7 @@ export class CodeSnippetContentsService {
    */
 
   /**
-   * Rename the file or directory
+   * Rename the file or directory (not case sensitive)
    * @param oldPath change from
    * @param newPath change to
    */

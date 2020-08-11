@@ -1,6 +1,4 @@
 import { Widget } from '@lumino/widgets';
-// import { RequestHandler } from '@elyra/application';
-
 import checkSVGstr from '../style/icon/check.svg';
 import { showMessage } from './ConfirmMessage';
 
@@ -79,7 +77,7 @@ export function inputDialog(
       for (const snippet of currSnippets) {
         if (snippet.name === newSnippet.name) {
           // const oldPath = 'snippets/' + snippet.name + '.json';
-          const result = saveFile(
+          const result = saveOverWriteFile(
             codeSnippet.codeSnippetWidgetModel,
             snippet,
             newSnippet
@@ -131,7 +129,7 @@ function createNewSnippet(
 /**
  * Rename a file, asking for confirmation if it is overwriting another.
  */
-async function saveFile(
+async function saveOverWriteFile(
   codeSnippetWidgetModel: CodeSnippetWidgetModel,
   oldSnippet: ICodeSnippet,
   newSnippet: ICodeSnippet
@@ -156,7 +154,7 @@ async function saveFile(
  */
 async function shouldOverwrite(path: string): Promise<boolean> {
   const options = {
-    title: 'Overwrite file?',
+    title: 'Overwrite code snippet?',
     body: `"${path}" already exists, overwrite?`,
     buttons: [Dialog.cancelButton(), Dialog.warnButton({ label: 'Overwrite' })]
   };

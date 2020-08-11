@@ -325,7 +325,19 @@ export class CodeSnippetEditor extends ReactWidget {
     const newPath = 'snippets/' + this._codeSnippet.name + '.json';
 
     if (newPath !== oldPath) {
-      await this.contentsService.rename(oldPath, newPath);
+      // renaming code snippet
+      try {
+        await this.contentsService.rename(oldPath, newPath);
+      } catch (error) {
+        console.log('duplicate name!');
+
+        await showDialog({
+          title: 'Duplicate Name of Code Snippet',
+          body: <p> {`"${newPath}" already exists.`} </p>,
+          buttons: [Dialog.cancelButton()]
+        });
+        return;
+      }
 
       // set new name as an old name
       this.oldCodeSnippetName = this._codeSnippet.name;
