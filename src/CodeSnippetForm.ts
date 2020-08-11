@@ -105,7 +105,7 @@ function createNewSnippet(
   codeSnippet: CodeSnippetWidget,
   newSnippet: ICodeSnippet,
   contentsService: CodeSnippetContentsService
-) {
+): void {
   const request = contentsService.save(
     'snippets/' + newSnippet.name + '.json',
     {
