@@ -1,6 +1,0 @@
-# development install of code_snippets
-.
-
-# some additional recommended labextensions, uncomment to enable
-# @jupyter-widgets/jupyterlab-manager
-# @jupyterlab/toc
