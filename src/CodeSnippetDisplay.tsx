@@ -184,10 +184,7 @@ export class CodeSnippetDisplay extends React.Component<
       editorLanguage &&
       snippet.language.toLowerCase() !== editorLanguage.toLowerCase()
     ) {
-      const result = await this.showWarnDialog(
-        editorLanguage,
-        snippet.displayName
-      );
+      const result = await this.showWarnDialog(editorLanguage, snippet.name);
       if (result.button.accept) {
         editor.replaceSelection(snippetStr);
       }
@@ -286,7 +283,7 @@ export class CodeSnippetDisplay extends React.Component<
     }
   };
 
-  // Bold text in snippet DisplayName based on search
+  // Bold text in snippet name based on search
   private boldNameOnSearch = (filter: string, displayed: string): any => {
     const name: string = displayed;
     if (filter !== '') {
@@ -431,8 +428,7 @@ export class CodeSnippetDisplay extends React.Component<
     id: string
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
-    const displayName =
-      '[' + codeSnippet.language + '] ' + codeSnippet.displayName;
+    const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
 
     const actionButtons = [
       {
@@ -501,7 +497,7 @@ export class CodeSnippetDisplay extends React.Component<
           >
             <span
               id={id}
-              title={codeSnippet.displayName}
+              title={codeSnippet.name}
               className={DISPLAY_NAME_CLASS}
               onClick={(): void => {
                 showPreview(
@@ -566,7 +562,7 @@ export class CodeSnippetDisplay extends React.Component<
   filterSnippets = (filterValue: string): void => {
     const newSnippets = this.props.codeSnippets.filter(
       codeSnippet =>
-        codeSnippet.displayName.includes(filterValue) ||
+        codeSnippet.name.includes(filterValue) ||
         codeSnippet.language.includes(filterValue)
     );
     this.setState(
