@@ -236,7 +236,7 @@ export class CodeSnippetEditor extends ReactWidget {
         body: (
           <p>
             {' '}
-            {`"${this._codeSnippet.displayName}" has unsaved changes, close without saving?`}{' '}
+            {`"${this._codeSnippet.name}" has unsaved changes, close without saving?`}{' '}
           </p>
         ),
         buttons: [Dialog.cancelButton(), Dialog.okButton()]
@@ -315,7 +315,6 @@ export class CodeSnippetEditor extends ReactWidget {
     ) as HTMLSelectElement).value;
 
     this._codeSnippet.name = name;
-    this._codeSnippet.displayName = name;
     this._codeSnippet.description = description;
     this._codeSnippet.language = language;
 
@@ -344,7 +343,7 @@ export class CodeSnippetEditor extends ReactWidget {
 
     // change label
     this.title.label =
-      '[' + this._codeSnippet.language + '] ' + this._codeSnippet.displayName;
+      '[' + this._codeSnippet.language + '] ' + this._codeSnippet.name;
 
     // update tracker
     this.tracker.save(this);
@@ -386,7 +385,7 @@ export class CodeSnippetEditor extends ReactWidget {
           <label className="jp-snippet-editor-name-label">Name</label>
           <input
             className="jp-snippet-editor-name"
-            defaultValue={this._codeSnippet.displayName}
+            defaultValue={this._codeSnippet.name}
             type="text"
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>

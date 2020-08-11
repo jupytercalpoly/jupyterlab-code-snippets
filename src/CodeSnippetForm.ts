@@ -68,7 +68,6 @@ export function inputDialog(
       }
       const newSnippet: ICodeSnippet = {
         name: result.value[0].replace(' ', '').toLowerCase(),
-        displayName: result.value[0],
         description: result.value[1],
         language: result.value[2],
         code: code,

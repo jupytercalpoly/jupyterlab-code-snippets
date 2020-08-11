@@ -112,8 +112,7 @@ function activateCodeSnippet(
     console.log('editor created!');
     codeSnippetEditor.id = widgetId;
     codeSnippetEditor.addClass(widgetId);
-    codeSnippetEditor.title.label =
-      '[' + args.language + '] ' + args.displayName;
+    codeSnippetEditor.title.label = '[' + args.language + '] ' + args.name;
     codeSnippetEditor.title.closable = true;
     codeSnippetEditor.title.icon = editorIcon;
 
@@ -227,7 +226,6 @@ function activateCodeSnippet(
       const codeSnippet = widget.codeSnippet;
       return {
         name: codeSnippet.name,
-        displayName: codeSnippet.displayName,
         description: codeSnippet.description,
         language: codeSnippet.language,
         code: codeSnippet.code,
