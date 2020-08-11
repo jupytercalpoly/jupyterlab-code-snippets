@@ -17,23 +17,18 @@ import { LabIcon } from '@jupyterlab/ui-components';
 import editorIconSVGstr from '../style/icon/jupyter_snippeteditoricon.svg';
 
 import { inputDialog } from './CodeSnippetForm';
-// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
 
-import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+import {
+  CodeSnippetContentsService,
+  ICodeSnippet
+} from './CodeSnippetContentsService';
 import { CodeSnippetEditor } from './CodeSnippetEditor';
 
-// import { CodeSnippetWidget } from './CodeSnippetWidget';
-// import { CodeSnippetWrapper } from './CodeSnippetWrapper';
-
 import undoDeleteSVG from '../style/icon/undoDelete.svg';
-//import undoDeleteCloseIcon from '../style/icon/close_jupyter.svg';
 import { showUndoMessage } from './UndoDelete';
-import { ICodeSnippet } from './CodeSnippetContentsService';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
-const CODE_SNIPPET_EDITOR_ID = 'jp-codeSnippet-editor';
 
 /**
  * Snippet Editor Icon
@@ -77,8 +72,8 @@ function activateCodeSnippet(
   codeSnippetWidget.title.caption = 'Code Snippet Explorer';
 
   console.log('creating snippets folder!');
-  const service = CodeSnippetContentsService.getInstance();
-  service.save('snippets', { type: 'directory' });
+  const contentsService = CodeSnippetContentsService.getInstance();
+  contentsService.save('snippets', { type: 'directory' });
 
   restorer.add(codeSnippetWidget, CODE_SNIPPET_EXTENSION_ID);
 
@@ -86,20 +81,10 @@ function activateCodeSnippet(
   // sessions widget in the sidebar.
   app.shell.add(codeSnippetWidget, 'left', { rank: 900 });
 
-  // app.commands.addCommand('elyra-metadata-editor:open', {
-  //   label: 'Code Snippet Editor',
-  //   isEnabled: () => true,
-  //   isVisible: () => true,
-  //   execute: (args: any) => {
-  //     const codeSnippetEditor = new CodeSnippetEditor(editorServices, args);
-  //     codeSnippetEditor.id = 'jp-codeSnippet-editor';
-  //     app.shell.add(codeSnippetEditor, 'main');
-  //     restorer.add(codeSnippetEditor, 'jp-codeSnippet-editor');
-  //   }
-  // });
-  // let codeSnippetEditor: CodeSnippetEditor = undefined;
   // open code Snippet Editor
   const openCodeSnippetEditor = (args: ICodeSnippet): void => {
+    console.log(args);
+
     if (!args.name) {
       return;
     }
@@ -117,61 +102,59 @@ function activateCodeSnippet(
       return;
     }
 
-    const codeSnippetEditor = new CodeSnippetEditor(editorServices, args);
+    const codeSnippetEditor = new CodeSnippetEditor(
+      contentsService,
+      editorServices,
+      tracker,
+      codeSnippetWidget,
+      args
+    );
 
-    // widget = new IDocumentWidget({ content: codeSnippetEditor });
+    console.log('editor created!');
     codeSnippetEditor.id = widgetId;
-    // codeSnippetEditor.addClass('jp-codeSnippet-editor');
 
-    codeSnippetEditor.addClass(CODE_SNIPPET_EDITOR_ID);
+    codeSnippetEditor.addClass(widgetId);
     codeSnippetEditor.title.label =
       '[' + args.language + '] ' + args.displayName;
     codeSnippetEditor.title.closable = true;
-    // const editorIcon = new LabIcon({
-    //   name: 'custom-ui-compnents:codeSnippetEditorIcon',
-    //   svgstr: editorIconSVGstr
-    // });
     codeSnippetEditor.title.icon = editorIcon;
-
-    // console.log(tracker.has(codeSnippetEditor));
 
     if (!tracker.has(codeSnippetEditor)) {
       tracker.add(codeSnippetEditor);
-      // console.log(tracker);
-      // console.log(tracker.size);
-      // console.log(tracker.currentChanged);
-      // console.log(tracker.currentWidget);
     }
-    // restorer.add(codeSnippetEditor, codeSnippetEditor.id);
-    // console.log(restorer);
 
     if (!codeSnippetEditor.isAttached) {
       app.shell.add(codeSnippetEditor, 'main', {
         mode: 'tab-after'
       });
     }
-    // console.log(codeSnippetEditor);
 
     // Activate the code Snippet Editor
     app.shell.activateById(codeSnippetEditor.id);
-    // console.log(restorer.restored);
   };
 
-  const editorCommand = 'elyra-metadata-editor:open';
-  app.commands.addCommand(editorCommand, {
-    // label: 'Code Snippet Editor',
-    // isEnabled: () => true,
-    // isVisible: () => true,
-    // include code snippet in args
+  const editorSaveCommand = 'jp-codeSnippet-editor:save';
+  app.commands.addCommand(editorSaveCommand, {
     execute: (args: any) => {
-      // console.log(editorServices);
-      openCodeSnippetEditor(args);
+      const editor = tracker.currentWidget;
+      editor.updateSnippet();
     }
   });
 
-  // restorer.restore(tracker, {
-  //   command: command
-  // });
+  // Add keybinding to save
+  app.commands.addKeyBinding({
+    command: editorSaveCommand,
+    args: {},
+    keys: ['Accel S'],
+    selector: '.jp-codeSnippet-editor'
+  });
+
+  const editorCommand = 'jp-codeSnippet-editor:open';
+  app.commands.addCommand(editorCommand, {
+    execute: (args: any) => {
+      openCodeSnippetEditor(args);
+    }
+  });
 
   //Add an application command
   const commandID = 'save as code snippet';
@@ -184,7 +167,6 @@ function activateCodeSnippet(
     isToggled: () => toggled,
     iconClass: 'some-css-icon-class',
     execute: () => {
-      // console.log(`Executed ${commandID}`);
       const highlightedCode = getSelectedText();
 
       inputDialog(codeSnippetWidget, highlightedCode.split('\n'), -1);
@@ -238,29 +220,27 @@ function activateCodeSnippet(
     namespace: 'codeSnippetEditor'
   });
 
-  // return;
-
   /**
    * Check the name and go to args. Why does it get restored twice ???
    */
   restorer.restore(tracker, {
     command: editorCommand,
     args: widget => {
+      const codeSnippet = widget.codeSnippet;
       return {
-        name: widget.codeSnippet.name,
-        displayName: widget.codeSnippet.displayName,
-        description: widget.codeSnippet.description,
-        language: widget.codeSnippet.language,
-        code: widget.codeSnippet.code,
-        id: widget.codeSnippet.id,
-        tags: widget.codeSnippet.tags
+        name: codeSnippet.name,
+        displayName: codeSnippet.displayName,
+        description: codeSnippet.description,
+        language: codeSnippet.language,
+        code: codeSnippet.code,
+        id: codeSnippet.id,
+        tags: codeSnippet.tags
       };
     },
     name: widget => {
       return widget.id;
     }
   });
-  // console.log(tracker.size);
 }
 
 function getSelectedText(): string {
@@ -278,6 +258,9 @@ function getSelectedText(): string {
   return selectedText.toString();
 }
 
+/**
+ * Wouldn't it be better to factor this class out to different class with a better name?
+ */
 class MessageHandler extends Widget {
   constructor(codeSnippet: CodeSnippetWidget, id: number) {
     super({ node: createUndoDeleteNode(codeSnippet, id) });

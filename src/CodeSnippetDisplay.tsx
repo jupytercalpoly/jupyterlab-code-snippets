@@ -551,10 +551,10 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    if (
-      props.codeSnippets.length !== state.codeSnippets.length &&
-      state.filterValue === ''
-    ) {
+    console.log('udpating display!');
+    console.log(props);
+    console.log(state);
+    if (props.codeSnippets !== state.codeSnippets && state.filterValue === '') {
       return {
         codeSnippets: props.codeSnippets,
         filterValue: ''
