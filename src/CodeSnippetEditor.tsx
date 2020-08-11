@@ -391,7 +391,9 @@ export class CodeSnippetEditor extends ReactWidget {
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {this.handleInputFieldChange(event)}}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
+              this.handleInputFieldChange(event);
+            }}
           ></input>
           <label className="jp-snippet-editor-description-label">
             Description
@@ -403,7 +405,9 @@ export class CodeSnippetEditor extends ReactWidget {
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {this.handleInputFieldChange(event)}}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
+              this.handleInputFieldChange(event);
+            }}
           ></input>
           {/* <input
             className="jp-snippet-editor-language"
