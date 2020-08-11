@@ -1,0 +1,50 @@
+{
+  "data": {
+    "layout-restorer:data": {
+      "main": {
+        "dock": {
+          "type": "tab-area",
+          "currentIndex": 1,
+          "widgets": [
+            "notebook:Untitled.ipynb",
+            "codeSnippetEditor:jp-codeSnippet-editor-3"
+          ]
+        },
+        "mode": "multiple-document",
+        "current": "codeSnippetEditor:jp-codeSnippet-editor-3"
+      },
+      "left": {
+        "collapsed": false,
+        "current": "code-snippet-extension",
+        "widgets": [
+          "filebrowser",
+          "running-sessions",
+          "git-sessions",
+          "command-palette",
+          "jp-property-inspector",
+          "tab-manager",
+          "@jupyterlab/toc:plugin",
+          "elyra-code-snippet-extension",
+          "code-snippet-extension",
+          "extensionmanager.main-view"
+        ]
+      },
+      "right": { "collapsed": true, "widgets": [] }
+    },
+    "file-browser-filebrowser:cwd": { "path": "" },
+    "codeSnippetEditor:jp-codeSnippet-editor-undefined": { "data": {} },
+    "notebook:Untitled.ipynb": {
+      "data": { "path": "Untitled.ipynb", "factory": "Notebook" }
+    },
+    "codeSnippetEditor:jp-codeSnippet-editor-3": {
+      "data": {
+        "name": "newSnippet",
+        "description": "testing",
+        "language": "python",
+        "code": ["```python", "1 + 2", "```### Testing"],
+        "id": 3
+      }
+    }
+  },
+  "metadata": { "id": "/lab" }
+}
