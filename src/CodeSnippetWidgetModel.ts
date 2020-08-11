@@ -71,7 +71,6 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
   }
 
   updateSnippetContents(): void {
-    console.log('updating snippets!');
     this._snippets.forEach(snippet => {
       CodeSnippetContentsService.getInstance().save(
         'snippets/' + snippet.name + '.json',
