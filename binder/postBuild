@@ -6,7 +6,6 @@ jupyter labextension install jupyterlab-code-snippets
 # remove unnecessary directories when using the binder
 rm -rf src
 rm -rf style
-rm -rf Design
 rm -rf .github
 rm -rf binder
 rm package.json
