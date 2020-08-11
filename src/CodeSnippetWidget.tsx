@@ -56,10 +56,10 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  */
 const DROP_TARGET_CLASS = 'jp-snippet-dropTarget';
 
-const METADATA_EDITOR_ID = 'elyra-metadata-editor';
+const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
 
 const commands = {
-  OPEN_METADATA_EDITOR: `${METADATA_EDITOR_ID}:open`
+  OPEN_CODE_SNIPPET_EDITOR: `${CODE_SNIPPET_EDITOR}:open`
 };
 
 // const CODE_SNIPPET_NAMESPACE = 'code-snippets';
@@ -104,7 +104,10 @@ export class CodeSnippetWidget extends ReactWidget {
     const paths: string[] = [];
 
     // Clear the current snippets
-    // this._codeSnippetWidgetModel.clearSnippets();
+    this._codeSnippetWidgetModel.clearSnippets();
+
+    console.log(this._codeSnippetWidgetModel.snippets);
+    console.log(this._codeSnippets.length);
 
     // const data: ICodeSnippet[] = [];
     if (this._codeSnippets.length === 0) {
@@ -114,9 +117,10 @@ export class CodeSnippetWidget extends ReactWidget {
         .then(model => {
           fileModels.push(...model.content);
         });
+      console.log(fileModels);
 
       fileModels.forEach(fileModel => paths.push(fileModel.path));
-
+      console.log(paths);
       for (let i = 0; i < paths.length; i++) {
         await this.codeSnippetManager.getData(paths[i], 'file').then(model => {
           // data.push(JSON.parse(model.content));
@@ -133,6 +137,7 @@ export class CodeSnippetWidget extends ReactWidget {
   updateCodeSnippets(): void {
     this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
       if (codeSnippets !== null) {
+        console.log(codeSnippets);
         this.renderCodeSnippetsSignal.emit(codeSnippets);
       }
     });
@@ -153,7 +158,7 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   openCodeSnippetEditor(args: any): void {
-    this.app.commands.execute(commands.OPEN_METADATA_EDITOR, args);
+    this.app.commands.execute(commands.OPEN_CODE_SNIPPET_EDITOR, args);
   }
 
   /**

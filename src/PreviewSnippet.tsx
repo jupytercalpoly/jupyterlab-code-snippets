@@ -425,10 +425,7 @@ export namespace Preview {
         editButton.removeClass('jp-Preview-button-hover');
       };
       editButton.node.onclick = (): void => {
-        openCodeSnippetEditor({
-          namespace: codeSnippet.name,
-          codeSnippet: codeSnippet
-        });
+        openCodeSnippetEditor(codeSnippet);
         document
           .getElementsByClassName('drag-hover')
           [prev._id].classList.remove('drag-hover-clicked');

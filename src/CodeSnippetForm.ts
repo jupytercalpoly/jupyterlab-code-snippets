@@ -15,8 +15,8 @@ import {
   CodeSnippetContentsService
 } from './CodeSnippetContentsService';
 
-import { IDocumentManager } from '@jupyterlab/docmanager';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
+import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 
 /**
  * The class name added to file dialogs.
@@ -27,11 +27,6 @@ const FILE_DIALOG_CLASS = 'jp-FileDialog';
  * The class name added for the new name label in the rename dialog
  */
 const INPUT_NEWNAME_TITLE_CLASS = 'jp-new-name-title';
-
-/**
- * Metadata schema name
- */
-// const SCHEMA_NAME = 'code-snippet';
 
 /**
  * A stripped-down interface for a file container.
@@ -77,97 +72,89 @@ export function inputDialog(
         description: result.value[1],
         language: result.value[2],
         code: code,
-        id: idx,
-        bookmarked: false
+        id: idx
       };
-      /**
-       * TODO: NEED in memory data store instead of making request every time.
-       */
-      /* TODO: if name is already there call shouldOverwrite and change to a put request*/
-      // Workaround: make a get request with result.value[0] to check... but could be slow
-      // const request = RequestHandler.makePostRequest(
-      //   //If i use their handler then I can't interrupt any error messages without editing their stuff.
-      //   url,
-      //   JSON.stringify({
-      //     display_name: newSnippet.displayName,
-      //     metadata: {
-      //       code: inputCode,
-      //       description: newSnippet.description,
-      //       language: newSnippet.language
-      //     },
-      //     name: newSnippet.name,
-      //     schema_name: SCHEMA_NAME
-      //   }),
-      //   false
-      // );
+      const contentsService = CodeSnippetContentsService.getInstance();
       const currSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
       for (const snippet of currSnippets) {
         if (snippet.name === newSnippet.name) {
-          alert('duplicate name');
+          // const oldPath = 'snippets/' + snippet.name + '.json';
+          const result = saveFile(
+            codeSnippet.codeSnippetWidgetModel,
+            snippet,
+            newSnippet
+          );
+
+          result
+            .then(newSnippets => {
+              codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+            })
+            .catch(_ => {
+              console.log('cancelling overwrite!');
+            });
           return;
         }
       }
 
-      const request = CodeSnippetContentsService.getInstance().save(
-        'snippets/' + newSnippet.name + '.json',
-        {
-          type: 'file',
-          format: 'text',
-          content: JSON.stringify(newSnippet)
-        }
-      );
-
-      // console.log(request);
-      request.then(_ => {
-        // add the new snippet to the snippet model
-        //   console.log(idx);
-        codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, idx);
-        codeSnippet.codeSnippetWidgetModel.updateSnippetContents();
-        const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-        codeSnippet.codeSnippets = newSnippets;
-        codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
-        showMessage({
-          body: /*"Saved as Snippet"*/ new MessageHandler()
-        });
-      });
+      createNewSnippet(codeSnippet, newSnippet, contentsService);
     }
   });
 }
 
-// /**
-//  * Compare two snippets based on the unique name.
-//  * @param thisSnippet
-//  * @param otherSnippet
-//  */
-// function compareSnippets(thisSnippet: ICodeSnippet, otherSnippet: ICodeSnippet) {
-//   return thisSnippet.name === otherSnippet.name;
-// }
+function createNewSnippet(
+  codeSnippet: CodeSnippetWidget,
+  newSnippet: ICodeSnippet,
+  contentsService: CodeSnippetContentsService
+) {
+  const request = contentsService.save(
+    'snippets/' + newSnippet.name + '.json',
+    {
+      type: 'file',
+      format: 'text',
+      content: JSON.stringify(newSnippet)
+    }
+  );
+
+  request.then(_ => {
+    // add the new snippet to the snippet model
+    codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
+    codeSnippet.codeSnippetWidgetModel.updateSnippetContents();
+    const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+    codeSnippet.codeSnippets = newSnippets;
+    codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+    showMessage({
+      body: /*"Saved as Snippet"*/ new MessageHandler()
+    });
+  });
+}
 
 /**
  * Rename a file, asking for confirmation if it is overwriting another.
  */
-export function renameFile(
-  manager: IDocumentManager,
-  oldPath: string,
-  newPath: string
-): Promise<Contents.IModel | null> {
-  return manager.rename(oldPath, newPath).catch(error => {
-    if (error.message.indexOf('409') === -1) {
-      throw error;
+async function saveFile(
+  codeSnippetWidgetModel: CodeSnippetWidgetModel,
+  oldSnippet: ICodeSnippet,
+  newSnippet: ICodeSnippet
+): Promise<ICodeSnippet[] | null> {
+  const newPath = 'snippets/' + newSnippet.name + '.json';
+
+  return await shouldOverwrite(newPath).then(value => {
+    if (value) {
+      newSnippet.id = oldSnippet.id;
+
+      codeSnippetWidgetModel.deleteSnippet(oldSnippet.id);
+      codeSnippetWidgetModel.addSnippet(newSnippet, oldSnippet.id);
+      codeSnippetWidgetModel.updateSnippetContents();
+      return codeSnippetWidgetModel.snippets;
     }
-    return shouldOverwrite(newPath).then(value => {
-      if (value) {
-        return manager.overwrite(oldPath, newPath);
-      }
-      return Promise.reject('File not renamed');
-    });
+    return Promise.reject('File not renamed');
   });
 }
 
 /**
  * Ask the user whether to overwrite a file.
  */
-export function shouldOverwrite(path: string): Promise<boolean> {
+async function shouldOverwrite(path: string): Promise<boolean> {
   const options = {
     title: 'Overwrite file?',
     body: `"${path}" already exists, overwrite?`,

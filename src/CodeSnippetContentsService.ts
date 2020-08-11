@@ -7,7 +7,6 @@ export interface ICodeSnippet {
   language: string;
   // code separated by new line
   code: string[];
-  bookmarked: boolean;
   id: number;
   tags?: string[];
 }
@@ -61,27 +60,6 @@ export class CodeSnippetContentsService {
     path: string,
     options?: Partial<Contents.IModel>
   ): Promise<Contents.IModel> {
-    // TODO: throw an error if file exists
-    // if (options.type !== 'directory') {
-    //   try {
-    //     const myLog = new File()
-    //     const http = new XMLHttpRequest();
-    //     http.open('HEAD', 'api/contents/' + path, false);
-    //     http.send();
-    //   } catch {
-    //     throw new Error('duplicate name');
-    //   }
-    // console.log(path);
-    // if (http.status === 200) {
-    //   throw new Error('duplicate name');
-    // }
-    // await fetch('api/contents/' + path).then(s => {
-    //   console.log(s.status);
-    //   if (s.status === 200) {
-    //     throw new Error('duplicate name');
-    //   }
-    // });
-    // }
     const changedModel = await this.contentsManager.save(path, options);
     return changedModel;
   }
@@ -109,4 +87,12 @@ export class CodeSnippetContentsService {
   async delete(path: string): Promise<void> {
     await this.contentsManager.delete(path);
   }
+
+  // async renameAndSave(
+  //   oldPath: string,
+  //   newPath: string
+  // ): Promise<Contents.IModel> {
+  //   this.rename(oldPath, newPath);
+  //   this.save(newPath);
+  // }
 }
