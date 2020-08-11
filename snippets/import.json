@@ -1,1 +1,15 @@
-{"name":"import","displayName":"import","description":"testing","language":"python","code":["1 + 2 + 3"],"id":1}
+{
+  "name": "import",
+  "description": "sample import statement",
+  "language": "python",
+  "code": [
+    "import re, random",
+    "from pathlib import Path",
+    "import warnings",
+    "import spacy",
+    "from spacy.util import minibatch, compounding",
+    "import pandas as pd",
+    "import time"
+  ],
+  "id": 1
+}
