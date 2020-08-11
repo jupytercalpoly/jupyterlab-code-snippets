@@ -8,17 +8,17 @@ Read [Press Release](./PRESSRELEASE.md) for more information.
 
 Check out [the Current Progress](./PROGRESS.md) to keep up with our feature updates!
 
-This extension is composed of a NPM package named `code-snippets`
+This extension is composed of a NPM package named `jupyterlab-code-snippets`
 for the frontend extension.
 
 ## Requirements
 
-* JupyterLab >= 2.0
+- JupyterLab >= 2.0
 
 ## Install
 
 ```bash
-jupyter labextension install code-snippets
+jupyter labextension install jupyterlab-code-snippets
 ```
 
 ## Troubleshoot
@@ -68,5 +68,5 @@ Now every change will be built locally and bundled into JupyterLab. Be sure to r
 ### Uninstall
 
 ```bash
-jupyter labextension uninstall code-snippets
+jupyter labextension uninstall jupyterlab-code-snippets
 ```
