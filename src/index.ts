@@ -110,7 +110,6 @@ function activateCodeSnippet(
       args
     );
     console.log('editor created!');
-    
     codeSnippetEditor.id = widgetId;
     codeSnippetEditor.addClass(widgetId);
     codeSnippetEditor.title.label =
@@ -147,7 +146,7 @@ function activateCodeSnippet(
     keys: ['Accel S'],
     selector: '.jp-codeSnippet-editor'
   });
-    
+
   const editorCommand = 'jp-codeSnippet-editor:open';
   app.commands.addCommand(editorCommand, {
     execute: (args: any) => {
