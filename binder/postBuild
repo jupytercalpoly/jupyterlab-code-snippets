@@ -15,3 +15,6 @@ rm yarn.lock
 rm MANIFEST.in
 
 jupyter lab clean
+
+# Import workspace into JupyterLab
+jupyter lab workspaces import binder/workspace.json
