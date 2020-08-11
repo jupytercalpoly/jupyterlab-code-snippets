@@ -109,10 +109,8 @@ function activateCodeSnippet(
       codeSnippetWidget,
       args
     );
-
     console.log('editor created!');
     codeSnippetEditor.id = widgetId;
-
     codeSnippetEditor.addClass(widgetId);
     codeSnippetEditor.title.label =
       '[' + args.language + '] ' + args.displayName;

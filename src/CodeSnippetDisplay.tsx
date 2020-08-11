@@ -38,15 +38,15 @@ import * as nbformat from '@jupyterlab/nbformat';
 /**
  * The CSS class added to code snippet widget.
  */
-const CODE_SNIPPETS_HEADER_CLASS = 'elyra-codeSnippetsHeader';
+const CODE_SNIPPETS_HEADER_CLASS = 'codeSnippetsHeader';
 const CODE_SNIPPETS_CONTAINER = 'codeSnippetsContainer';
 
 const DISPLAY_NAME_CLASS = 'elyra-expandableContainer-name';
 const ELYRA_BUTTON_CLASS = 'elyra-button';
-const BUTTON_CLASS = 'elyra-expandableContainer-button';
-const TITLE_CLASS = 'elyra-expandableContainer-title';
+const BUTTON_CLASS = 'expandableContainer-button';
+const TITLE_CLASS = 'expandableContainer-title';
 const ACTION_BUTTONS_WRAPPER_CLASS = 'elyra-expandableContainer-action-buttons';
-const ACTION_BUTTON_CLASS = 'elyra-expandableContainer-actionButton';
+const ACTION_BUTTON_CLASS = 'expandableContainer-actionButton';
 
 /**
  * The threshold in pixels to start a drag event.
@@ -605,7 +605,7 @@ class Private {
     const body = document.createElement('div');
     const previewContainer = document.createElement('div');
     const descriptionContainer = document.createElement('div');
-    const descriptionTitle = document.createElement('h6');
+    const descriptionTitle = document.createElement('h4');
     const description = document.createElement('text');
     const preview = document.createElement('text');
 
