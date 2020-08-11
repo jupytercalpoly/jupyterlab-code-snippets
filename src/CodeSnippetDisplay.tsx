@@ -41,8 +41,8 @@ import * as nbformat from '@jupyterlab/nbformat';
 const CODE_SNIPPETS_HEADER_CLASS = 'codeSnippetsHeader';
 const CODE_SNIPPETS_CONTAINER = 'codeSnippetsContainer';
 
-const DISPLAY_NAME_CLASS = 'elyra-expandableContainer-name';
-const ELYRA_BUTTON_CLASS = 'elyra-button';
+const DISPLAY_NAME_CLASS = 'expandableContainer-name';
+const ELYRA_BUTTON_CLASS = 'jp-button';
 const BUTTON_CLASS = 'expandableContainer-button';
 const TITLE_CLASS = 'expandableContainer-title';
 const ACTION_BUTTONS_WRAPPER_CLASS = 'elyra-expandableContainer-action-buttons';
@@ -56,7 +56,7 @@ const DRAG_THRESHOLD = 5;
 /**
  * A class used to indicate a snippet item.
  */
-const CODE_SNIPPET_ITEM = 'elyra-codeSnippet-item';
+const CODE_SNIPPET_ITEM = 'codeSnippet-item';
 
 /**
  * The mimetype used for Jupyter cell data.
@@ -274,15 +274,15 @@ export class CodeSnippetDisplay extends React.Component<
     if (
       document
         .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.contains('elyra-codeSnippet-item-clicked')
+        [_id].classList.contains('codeSnippet-item-clicked')
     ) {
       document
         .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.remove('elyra-codeSnippet-item-clicked');
+        [_id].classList.remove('codeSnippet-item-clicked');
     } else {
       document
         .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.add('elyra-codeSnippet-item-clicked');
+        [_id].classList.add('codeSnippet-item-clicked');
     }
   };
 
