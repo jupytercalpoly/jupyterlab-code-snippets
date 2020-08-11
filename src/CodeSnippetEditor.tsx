@@ -118,7 +118,7 @@ export class CodeSnippetEditor extends ReactWidget {
     }
   }
 
-  private deactivateNameField(nameLabel: Element, nameInput: Element) {
+  private deactivateNameField(nameLabel: Element, nameInput: Element): void {
     if (
       nameLabel.classList.contains(CODE_SNIPPET_EDITOR_LABEL_ACTIVE) &&
       nameInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)
@@ -131,7 +131,7 @@ export class CodeSnippetEditor extends ReactWidget {
   private deactivateDescriptionField(
     descriptionLabel: Element,
     descriptionInput: Element
-  ) {
+  ): void {
     if (
       descriptionLabel.classList.contains(CODE_SNIPPET_EDITOR_LABEL_ACTIVE) &&
       descriptionInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)
@@ -285,7 +285,7 @@ export class CodeSnippetEditor extends ReactWidget {
     }
   }
 
-  handleInputFieldChange(event: React.ChangeEvent<HTMLInputElement>) {
+  handleInputFieldChange(event: React.ChangeEvent<HTMLInputElement>): void {
     if (!this.title.className.includes(EDITOR_DIRTY_CLASS)) {
       this.title.className += ` ${EDITOR_DIRTY_CLASS}`;
     }
@@ -299,7 +299,7 @@ export class CodeSnippetEditor extends ReactWidget {
     this.saved = false;
   }
 
-  saveChange(event: React.MouseEvent<HTMLElement, MouseEvent>) {
+  saveChange(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
     this.updateSnippet();
   }
 
@@ -381,7 +381,6 @@ export class CodeSnippetEditor extends ReactWidget {
           this.deactivateEditor(event);
         }}
       >
-
         <span className="jp-snippet-editor-title">Edit Code Snippet</span>
         <section className="jp-snippet-editor-metadata">
           <label className="jp-snippet-editor-name-label">Name</label>
@@ -392,7 +391,7 @@ export class CodeSnippetEditor extends ReactWidget {
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
-            onChange={event => this.handleInputFieldChange(event)}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {this.handleInputFieldChange(event)}}
           ></input>
           <label className="jp-snippet-editor-description-label">
             Description
@@ -404,7 +403,7 @@ export class CodeSnippetEditor extends ReactWidget {
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
-            onChange={event => this.handleInputFieldChange(event)}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {this.handleInputFieldChange(event)}}
           ></input>
           {/* <input
             className="jp-snippet-editor-language"
