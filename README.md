@@ -8,8 +8,7 @@ Read [Press Release](./PRESSRELEASE.md) for more information.
 
 Check out [the Current Progress](./PROGRESS.md) to keep up with our feature updates!
 
-This extension is composed of a Python package named `code_snippets`
-for the server extension and a NPM package named `code-snippets`
+This extension is composed of a NPM package named `code-snippets`
 for the frontend extension.
 
 ## Requirements
@@ -18,42 +17,11 @@ for the frontend extension.
 
 ## Install
 
-Note: You will need NodeJS to install the extension.
-
-Right now, this extension is only available from source.
-
-First clone this repo:
-```
-git clone https://github.com/jupytercalpoly/jupyterlab-code-snippets
-```
-
-Move into the root directory and install a development version of the server extension. This extension uses the Elyra metadata service as a backend and creates a `"code-snippets"` namespace for storing code snippets from this extension.
-
 ```bash
-# Move into the root directory
-cd jupyterlab-code-snippets
-# Install a development version of the server extension backend.
-pip install -e .
+jupyter labextension install code-snippets
 ```
-
-**NEED INSTRUCTIONS FOR INSTALLING JAVASCRIPT!**
-
 
 ## Troubleshoot
-
-If you are seeing the frontend extension but it is not working, check
-that the server extension is enabled:
-
-```bash
-jupyter serverextension list
-```
-
-If the server extension is installed and enabled but you are not seeing
-the frontend, check the frontend is installed:
-
-```bash
-jupyter labextension list
-```
 
 If it is installed, try:
 
@@ -72,12 +40,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Move to code_snippets directory
-
-# Install server extension
-pip install -e .
-# Register server extension
-jupyter serverextension enable --py code_snippets --sys-prefix
+# Move to jupyter-lab-code-snippets directory
 
 # Install dependencies
 jlpm
@@ -105,6 +68,5 @@ Now every change will be built locally and bundled into JupyterLab. Be sure to r
 ### Uninstall
 
 ```bash
-pip uninstall code_snippets
 jupyter labextension uninstall code-snippets
 ```
