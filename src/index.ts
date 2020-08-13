@@ -209,7 +209,7 @@ function activateCodeSnippet(
 
   app.contextMenu.addItem({
     command: delCommand,
-    selector: '.elyra-expandableContainer-title'
+    selector: '.expandableContainer-title'
   });
 
   // Track and restore the widget state
