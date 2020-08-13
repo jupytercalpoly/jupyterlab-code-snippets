@@ -16,6 +16,7 @@
 #code-snippet-extension {
   background-color: var(--jp-layout-color0);
   border-right: 3px solid var(--jp-layout-color0);
+  overflow: auto;
 }
 
 .expandableContainer-button,
@@ -23,7 +24,8 @@
   background-color: transparent;
   vertical-align: middle;
   padding: 0;
-  width: 20px;
+  /* width: 20px; */
+  padding-right: 8px;
 }
 
 .expandableContainer-button:hover {
@@ -41,10 +43,9 @@
 .expandableContainer-title {
   align-items: center;
   display: flex;
-  flex-direction: row;
-  padding: 0px 4px;
-  margin-left: 15px;
-  height: 36px;
+  justify-content: space-between;
+  margin-top: 5px;
+  height: 30px;
   color: var(--jp-ui-font-color0);
 }
 
@@ -57,15 +58,17 @@
 } */
 
 .expandableContainer-name {
-  flex-grow: 1;
-  font-size: var(--jp-ui-font-size1);
+  /* flex: 1 1 75%; */
+  /* flex-grow: 1;
+  flex-basis: 75%; */
+  font-size: var(--jp-ui-font-size2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 4px 0 4px 2px;
-  line-height: 28px;
-  margin-top: -10px;
+  /* line-height: 28px; */
   color: var(--jp-ui-font-color0);
+  font-family: Helvetica;
+  /* font-size: 16px; */
 }
 
 .expandableContainer-name:hover {
@@ -79,31 +82,30 @@
   height: 100%;
 }
 
-.jp-CodeSnippets {
-  height: 100%;
-  overflow: scroll;
-}
-
 .codeSnippetsHeader {
   font-size: var(--jp-ui-font-size0);
   font-weight: 600;
   /* font-size: 13px; */
   /* font-family: helvetica; */
   text-transform: uppercase;
-  padding: 8px 0 8px 12px;
+  padding: 8px;
   border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
   color: var(--jp-ui-font-color0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .codeSnippet-item {
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
   display: flex;
-  flex-direction: column;
   margin: 0;
   padding: 0;
+  height: fit-content;
+  /* height: 113px; */
 }
 
-.codeSnippet-item-clicked {
+.codeSnippet-item:hover {
   background-color: var(--jp-layout-color2);
 }
 
@@ -199,7 +201,7 @@
 .jp-Preview-body {
   height: 100%;
   width: 100%;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .jp-preview-text {
@@ -284,7 +286,7 @@
 }
 
 .jp-codesnippet-searchbar {
-  margin: 5px;
+  margin: 10px;
 }
 
 .triangle:hover {
@@ -293,17 +295,6 @@
 
 .selected {
   border-color: transparent #1976d2 transparent transparent;
-}
-
-.drag-hover {
-  width: 20px;
-  height: 36px;
-  position: absolute;
-  display: block;
-  margin-right: -3px;
-  cursor: move;
-  /*background-image: url(./icon/dragtab_jupyter.svg);;
-  transition: background-image ease;*/
 }
 
 .drag-hover-clicked {
@@ -479,12 +470,12 @@ mark.jp-search-bolding {
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 100%;
+  width: 98.5%;
   padding: 12px;
 }
 
 .jp-codeSnippetInputArea-editor {
-  overflow: scroll;
+  overflow: auto;
 }
 
 .jp-codeSnippetInputArea-editorTitle {
@@ -517,6 +508,7 @@ mark.jp-search-bolding {
   color: var(--jp-ui-inverse-font-color0);
   align-self: flex-end;
   margin-top: 12px;
+  margin-right: 5px;
 }
 
 .expandableContainer-title:hover .expandableContainer-button {
@@ -528,3 +520,87 @@ mark.jp-search-bolding {
 } */
 
 @import url('~@jupyterlab/codeeditor/style/index.css');
+
+/* code snippet filter */
+.jp-codeSnippet-filter {
+  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.jp-codeSnippet-filter button {
+  padding-right: 5px;
+  padding-bottom: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--jp-brand-color2);
+}
+
+/* code snippet create button */
+.jp-createSnippetBtn {
+  cursor: pointer;
+}
+
+/* code snippet layout */
+.drag-hover {
+  /* flex: 1 1 10%; */
+  flex-basis: 5%;
+  min-width: 20px;
+  /* height: 100%; */
+  padding-right: 5px;
+  margin-right: 5px;
+  cursor: move;
+  /*background-image: url(./icon/dragtab_jupyter.svg);;
+  transition: background-image ease;*/
+}
+
+.jp-codeSnippet-metadata {
+  /* flex: 1 1 90%; */
+  flex-basis: 95%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.jp-codeSnippet-description p {
+  font-family: Helvetica;
+  font-size: var(--jp-ui-font-size1);
+  line-height: 15px;
+  color: var(--jp-layout-color4);
+  margin-bottom: 5px;
+  width: 100%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Size of the icons in code snippet */
+.expandableContainer-action-buttons {
+  height: 100%;
+  /* text-overflow: ellipsis; */
+  overflow: hidden;
+  padding-top: 10px;
+  /* align-self: flex-end; */
+  /* flex-basis: 25%; */
+  /* flex: 1 1 25%; */
+}
+
+/* Cell tag styling */
+@import url('~@jupyterlab/celltags/style/base.css');
+.tag {
+  height: 12px;
+}
+
+/* .tag-holder {
+} */
+/* 
+.f15r8jkt svg {
+  display: block;
+  margin: 0 auto;
+  width: 21px;
+  height: 21px;
+} */
