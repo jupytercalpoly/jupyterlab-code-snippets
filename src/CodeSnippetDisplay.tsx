@@ -1,5 +1,5 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
-import carrotSVGstr from '../style/icon/jupyter_snippetarrow.svg';
+import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
 import { SearchBar } from './SearchBar';
 import { showPreview } from './PreviewSnippet';
 import {
@@ -8,7 +8,7 @@ import {
 } from './CodeSnippetContentsService';
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 
-import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
+import { /**Clipboard,*/ Dialog, showDialog } from '@jupyterlab/apputils';
 import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
 import { PathExt } from '@jupyterlab/coreutils';
@@ -16,8 +16,7 @@ import { PathExt } from '@jupyterlab/coreutils';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
-import { copyIcon } from '@jupyterlab/ui-components';
-import { LabIcon } from '@jupyterlab/ui-components';
+import { /**copyIcon,*/ LabIcon, addIcon } from '@jupyterlab/ui-components';
 import { IEditorServices } from '@jupyterlab/codeeditor';
 
 import { IExpandableActionButton } from '@elyra/ui-components';
@@ -46,7 +45,7 @@ const DISPLAY_NAME_CLASS = 'expandableContainer-name';
 const ELYRA_BUTTON_CLASS = 'jp-button';
 const BUTTON_CLASS = 'expandableContainer-button';
 const TITLE_CLASS = 'expandableContainer-title';
-const ACTION_BUTTONS_WRAPPER_CLASS = 'elyra-expandableContainer-action-buttons';
+const ACTION_BUTTONS_WRAPPER_CLASS = 'expandableContainer-action-buttons';
 const ACTION_BUTTON_CLASS = 'expandableContainer-actionButton';
 
 /**
@@ -72,9 +71,9 @@ const insertIcon = new LabIcon({
   svgstr: insertSVGstr
 });
 
-const previewIcon = new LabIcon({
-  name: 'custom-ui-compnents:preview',
-  svgstr: carrotSVGstr
+const launchEditorIcon = new LabIcon({
+  name: 'custom-ui-compnents:launchEditor',
+  svgstr: launchEditorSVGstr
 });
 
 /**
@@ -270,25 +269,28 @@ export class CodeSnippetDisplay extends React.Component<
         .getElementsByClassName('drag-hover')
         [_id].classList.add('drag-hover-clicked');
     }
-    if (
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.contains('codeSnippet-item-clicked')
-    ) {
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.remove('codeSnippet-item-clicked');
-    } else {
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.add('codeSnippet-item-clicked');
-    }
+    // if (
+    //   document
+    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
+    //     [_id].classList.contains('codeSnippet-item-clicked')
+    // ) {
+    //   document
+    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
+    //     [_id].classList.remove('codeSnippet-item-clicked');
+    // } else {
+    //   document
+    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
+    //     [_id].classList.add('codeSnippet-item-clicked');
+    // }
   };
 
   // Bold text in snippet name based on search
-  private boldNameOnSearch = (filter: string, displayed: string): any => {
+  private boldNameOnSearch = (
+    filter: string,
+    displayed: string
+  ): JSX.Element => {
     const name: string = displayed;
-    if (filter !== '') {
+    if (filter !== '' && displayed.includes(filter)) {
       const startIndex: number = name.indexOf(filter);
       const endIndex: number = startIndex + filter.length;
       const start = name.substring(0, startIndex);
@@ -302,7 +304,7 @@ export class CodeSnippetDisplay extends React.Component<
         </span>
       );
     }
-    return name;
+    return <span>{name}</span>;
   };
 
   private handleDragSnippet(
@@ -472,15 +474,16 @@ export class CodeSnippetDisplay extends React.Component<
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
+    const tags = codeSnippet.tags;
 
     const actionButtons = [
-      {
-        title: 'Copy',
-        icon: copyIcon,
-        onClick: (): void => {
-          Clipboard.copyToSystem(codeSnippet.code.join('\n'));
-        }
-      },
+      // {
+      //   title: 'Copy',
+      //   icon: copyIcon,
+      //   onClick: (): void => {
+      //     Clipboard.copyToSystem(codeSnippet.code.join('\n'));
+      //   }
+      // },
       {
         title: 'Insert',
         icon: insertIcon,
@@ -489,20 +492,19 @@ export class CodeSnippetDisplay extends React.Component<
         }
       },
       {
-        title: 'Preview',
-        icon: previewIcon,
+        title: 'Launch Editor',
+        icon: launchEditorIcon,
         onClick: (): void => {
-          showPreview(
-            {
-              id: parseInt(id, 10),
-              title: displayName,
-              body: new PreviewHandler(),
-              codeSnippet: codeSnippet
-            },
-            this.props.openCodeSnippetEditor,
-            this.props.editorServices
-          );
-          this.snippetClicked(id);
+          // showPreview(
+          //   {
+          //     id: parseInt(id, 10),
+          //     title: displayName,
+          //     body: new PreviewHandler(codeSnippet),
+          //     codeSnippet: codeSnippet
+          //   }
+          //   );
+          this.props.openCodeSnippetEditor(codeSnippet);
+          // this.snippetClicked(id);
         }
       }
     ];
@@ -528,9 +530,18 @@ export class CodeSnippetDisplay extends React.Component<
             this.handleDragSnippet(event);
           }}
         ></div>
-        <div>
-          <div key={displayName} className={TITLE_CLASS}>
-            <span
+        <div className={'jp-codeSnippet-metadata'}>
+          <div
+            key={displayName}
+            className={TITLE_CLASS}
+            // onMouseOver={() => {
+            //   this.dragHoverStyle(id);
+            // }}
+            // onMouseOut={() => {
+            //   this.dragHoverStyleRemove(id);
+            // }}
+          >
+            <div
               id={id}
               title={codeSnippet.name}
               className={DISPLAY_NAME_CLASS}
@@ -553,7 +564,7 @@ export class CodeSnippetDisplay extends React.Component<
               }}
             >
               {this.boldNameOnSearch(this.state.filterValue, displayName)}
-            </span>
+            </div>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS}>
               {actionButtons.map((btn: IExpandableActionButton) => {
                 return (
@@ -571,17 +582,32 @@ export class CodeSnippetDisplay extends React.Component<
                     <btn.icon.react
                       tag="span"
                       elementPosition="center"
-                      width="16px"
+                      width="21px"
+                      height="21px"
                     />
                   </button>
                 );
               })}
             </div>
           </div>
+          <div className={'jp-codeSnippet-description'}>
+            <p>{`${codeSnippet.description}`}</p>
+          </div>
+          <div className={'jp-codeSnippet-tags'}>
+            {tags ? tags.map((tag: string) => this.renderTag(tag, id)) : null}
+          </div>
         </div>
       </div>
     );
   };
+
+  private renderTag(tag: string, id: string): JSX.Element {
+    return (
+      <div className={'tag applied-tag'} key={tag + '-' + id}>
+        <label className={'tag-header'}>{tag}</label>
+      </div>
+    );
+  }
 
   static getDerivedStateFromProps(
     props: ICodeSnippetDisplayProps,
@@ -616,8 +642,19 @@ export class CodeSnippetDisplay extends React.Component<
   render(): React.ReactElement {
     return (
       <div>
+        <header className={CODE_SNIPPETS_HEADER_CLASS}>
+          <span className={'jp-codeSnippet-title'}>{'Snippets'}</span>
+          <addIcon.react
+            className={'jp-createSnippetBtn'}
+            tag="span"
+            right="7px"
+            top="5px"
+          />
+        </header>
         <SearchBar onFilter={this.filterSnippets} />
-        <header className={CODE_SNIPPETS_HEADER_CLASS}>{'Snippets'}</header>
+        <div className={'jp-codeSnippet-filter'}>
+          <button>Filter</button>
+        </div>
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>

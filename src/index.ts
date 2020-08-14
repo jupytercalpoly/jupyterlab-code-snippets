@@ -209,7 +209,7 @@ function activateCodeSnippet(
 
   app.contextMenu.addItem({
     command: delCommand,
-    selector: '.expandableContainer-title'
+    selector: '.codeSnippet-item'
   });
 
   // Track and restore the widget state
