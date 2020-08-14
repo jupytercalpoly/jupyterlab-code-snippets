@@ -76,7 +76,7 @@ export class CodeSnippetWidget extends ReactWidget {
   renderCodeSnippetsSignal: Signal<this, ICodeSnippet[]>;
   app: JupyterFrontEnd;
   codeSnippetManager: CodeSnippetContentsService;
-  // private editorServices: IEditorServices;
+  private editorServices: IEditorServices;
 
   constructor(
     // codeSnippets: ICodeSnippet[],
@@ -86,7 +86,7 @@ export class CodeSnippetWidget extends ReactWidget {
   ) {
     super();
     this.app = app;
-    // this.editorServices = editorServices;
+    this.editorServices = editorServices;
     this.getCurrentWidget = getCurrentWidget;
     this._codeSnippetWidgetModel = new CodeSnippetWidgetModel([]);
     this._codeSnippets = this._codeSnippetWidgetModel.snippets;
@@ -176,6 +176,9 @@ export class CodeSnippetWidget extends ReactWidget {
       case 'mousedown':
         this._evtMouseDown(event as IDragEvent);
         break;
+      // case 'mouseleave':
+      //   this._evtMouseLeave(event as MouseEvent);
+      //   break;
       case 'lm-dragenter':
         this._evtDragEnter(event as IDragEvent);
         break;
@@ -241,6 +244,35 @@ export class CodeSnippetWidget extends ReactWidget {
     }
     return undefined;
   }
+
+  // private _evtMouseLeave(event: MouseEvent): void {
+  //   //get rid of preview by clicking anything
+  //   const target = event.target as HTMLElement;
+
+  //   const preview = document.querySelector('.jp-preview');
+  //   if (preview) {
+  //     // if target is not the code snippet name area, then add inactive
+  //     // if target area is the code snippet name area, previewSnippet widget will handle preview.
+  //     if (
+  //       !preview.classList.contains('inactive') &&
+  //       !target.classList.contains('expandableContainer-name')
+  //     ) {
+  //       preview.classList.add('inactive');
+  //       for (const elem of document.getElementsByClassName('drag-hover')) {
+  //         if (elem.classList.contains('drag-hover-clicked')) {
+  //           elem.classList.remove('drag-hover-clicked');
+  //         }
+  //       }
+  //       for (const item of document.getElementsByClassName(
+  //         'codeSnippet-item'
+  //       )) {
+  //         if (item.classList.contains('codeSnippet-item-clicked')) {
+  //           item.classList.remove('codeSnippet-item-clicked');
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   private _evtMouseDown(event: MouseEvent): void {
     //get rid of preview by clicking anything
@@ -427,6 +459,7 @@ export class CodeSnippetWidget extends ReactWidget {
               codeSnippets={codeSnippets}
               getCurrentWidget={this.getCurrentWidget}
               openCodeSnippetEditor={this.openCodeSnippetEditor.bind(this)}
+              editorServices={this.editorServices}
             />
           </div>
         )}
