@@ -525,18 +525,66 @@ mark.jp-search-bolding {
 .jp-codeSnippet-filter {
   border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
   align-items: center;
 }
 
 .jp-codeSnippet-filter button {
+  align-self: flex-end;
   padding-right: 5px;
   padding-bottom: 10px;
   border: none;
   background: none;
   cursor: pointer;
   color: var(--jp-brand-color2);
+  /* position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; */
 }
+/* 
+.jp-codeSnippet-filter-option {
+  background: #333;
+  color: white;
+  font-weight: bold;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  /* display: none; */
+/* } */
+
+/* .jp-codeSnippet-filter-option[data-show] {
+  display: block;
+} */
+
+/* #arrow,
+#arrow::before {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  z-index: -1;
+}
+
+#arrow::before {
+  content: '';
+  transform: rotate(45deg);
+  background: #333;
+}
+
+.jp-codeSnippet-filter-option[data-popper-placement^='top'] > #arrow {
+  bottom: -4px;
+}
+
+.jp-codeSnippet-filter-option[data-popper-placement^='bottom'] > #arrow {
+  top: -4px;
+}
+
+.jp-codeSnippet-filter-option[data-popper-placement^='left'] > #arrow {
+  right: -4px;
+}
+
+.jp-codeSnippet-filter-option[data-popper-placement^='right'] > #arrow {
+  left: -4px;
+} */
 
 /* code snippet create button */
 .jp-createSnippetBtn {
@@ -571,7 +619,7 @@ mark.jp-search-bolding {
   line-height: 15px;
   color: var(--jp-layout-color4);
   margin-bottom: 5px;
-  width: 100%;
+  width: 90%;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -591,6 +639,10 @@ mark.jp-search-bolding {
 
 /* Cell tag styling */
 @import url('~@jupyterlab/celltags/style/base.css');
+.jp-codeSnippet-tags {
+  margin-top: 8px;
+}
+
 .tag {
   height: 12px;
 }
