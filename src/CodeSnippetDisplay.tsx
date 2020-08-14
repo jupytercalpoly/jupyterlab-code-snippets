@@ -1,6 +1,7 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
 import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
 import { SearchBar } from './SearchBar';
+import { FilterSnippet } from './FilterSnippet';
 import { showPreview } from './PreviewSnippet';
 import {
   ICodeSnippet
@@ -91,7 +92,7 @@ interface ICodeSnippetDisplayProps {
  */
 interface ICodeSnippetDisplayState {
   codeSnippets: ICodeSnippet[];
-  filterValue: string;
+  searchValue: string;
 }
 
 /**
@@ -105,7 +106,7 @@ export class CodeSnippetDisplay extends React.Component<
   _dragData: { pressX: number; pressY: number; dragImage: HTMLElement };
   constructor(props: ICodeSnippetDisplayProps) {
     super(props);
-    this.state = { codeSnippets: this.props.codeSnippets, filterValue: '' };
+    this.state = { codeSnippets: this.props.codeSnippets, searchValue: '' };
     this._drag = null;
     this._dragData = null;
     this.handleDragMove = this.handleDragMove.bind(this);
@@ -563,7 +564,7 @@ export class CodeSnippetDisplay extends React.Component<
                 this._evtMouseLeave();
               }}
             >
-              {this.boldNameOnSearch(this.state.filterValue, displayName)}
+              {this.boldNameOnSearch(this.state.searchValue, displayName)}
             </div>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS}>
               {actionButtons.map((btn: IExpandableActionButton) => {
@@ -603,8 +604,11 @@ export class CodeSnippetDisplay extends React.Component<
 
   private renderTag(tag: string, id: string): JSX.Element {
     return (
-      <div className={'tag applied-tag'} key={tag + '-' + id}>
-        <label className={'tag-header'}>{tag}</label>
+      <div
+        className={'jp-codeSnippet-tag tag applied-tag'}
+        key={tag + '-' + id}
+      >
+        <label>{tag}</label>
       </div>
     );
   }
@@ -616,28 +620,38 @@ export class CodeSnippetDisplay extends React.Component<
     console.log('udpating display!');
     console.log(props);
     console.log(state);
-    if (props.codeSnippets !== state.codeSnippets && state.filterValue === '') {
+    if (props.codeSnippets !== state.codeSnippets && state.searchValue === '') {
       return {
         codeSnippets: props.codeSnippets,
-        filterValue: ''
+        searchValue: ''
       };
     }
     return null;
   }
 
-  filterSnippets = (filterValue: string): void => {
+  searchSnippets = (searchValue: string): void => {
     const newSnippets = this.props.codeSnippets.filter(
       codeSnippet =>
-        codeSnippet.name.includes(filterValue) ||
-        codeSnippet.language.includes(filterValue)
+        codeSnippet.name.includes(searchValue) ||
+        codeSnippet.language.includes(searchValue)
     );
     this.setState(
-      { codeSnippets: newSnippets, filterValue: filterValue },
+      { codeSnippets: newSnippets, searchValue: searchValue },
       () => {
         console.log('CodeSnippets are successfully filtered.');
       }
     );
   };
+
+  getActiveTags(): string[] {
+    const tags: string[] = [];
+    for (const codeSnippet of this.props.codeSnippets) {
+      if (codeSnippet.tags) {
+        tags.push(...codeSnippet.tags);
+      }
+    }
+    return tags;
+  }
 
   render(): React.ReactElement {
     return (
@@ -651,9 +665,9 @@ export class CodeSnippetDisplay extends React.Component<
             top="5px"
           />
         </header>
-        <SearchBar onFilter={this.filterSnippets} />
-        <div className={'jp-codeSnippet-filter'}>
-          <button>Filter</button>
+        <div className={'jp-codeSnippet-tools'}>
+          <SearchBar onSearch={this.searchSnippets} />
+          <FilterSnippet tags={this.getActiveTags()} />
         </div>
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>

@@ -57,7 +57,10 @@
     "@lumino/messaging": "^1.4.2",
     "@lumino/properties": "^1.2.2",
     "@lumino/signaling": "^1.4.2",
-    "@lumino/widgets": "^1.13.2"
+    "@lumino/widgets": "^1.13.2",
+    "@popperjs/core": "^2.4.4",
+    "crypto": "1.0.1",
+    "react-popper": "^2.2.3"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.25.0",

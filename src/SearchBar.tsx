@@ -2,7 +2,7 @@ import { InputGroup } from '@jupyterlab/ui-components';
 import React from 'react';
 
 interface ISearchProp {
-  onFilter: (filterValue: string) => void;
+  onSearch: (searchValue: string) => void;
 }
 
 export class SearchBar extends React.Component<ISearchProp> {
@@ -11,11 +11,11 @@ export class SearchBar extends React.Component<ISearchProp> {
   };
 
   updateValue = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState({ value: event.target.value }, this.filterSnippets);
+    this.setState({ value: event.target.value }, this.searchSnippets);
   };
 
-  filterSnippets = (): void => {
-    this.props.onFilter(this.state.value);
+  searchSnippets = (): void => {
+    this.props.onSearch(this.state.value);
   };
 
   render(): JSX.Element {
