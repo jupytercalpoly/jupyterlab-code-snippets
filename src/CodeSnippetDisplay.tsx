@@ -17,6 +17,7 @@ import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
 import { /**copyIcon,*/ LabIcon, addIcon } from '@jupyterlab/ui-components';
+import { IEditorServices } from '@jupyterlab/codeeditor';
 
 import { IExpandableActionButton } from '@elyra/ui-components';
 
