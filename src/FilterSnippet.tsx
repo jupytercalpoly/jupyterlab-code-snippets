@@ -3,9 +3,7 @@ import React from 'react';
 // import { createPopper } from '@popperjs/core';
 // import { Overlay, Button } from 'react-bootstrap';
 
-interface IFilterSnippetProps {
-  empty: boolean;
-}
+interface IFilterSnippetProps {}
 
 interface IFilterSnippetState {
   show: boolean;

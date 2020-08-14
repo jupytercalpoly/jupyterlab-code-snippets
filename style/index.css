@@ -407,7 +407,6 @@ mark.jp-search-bolding {
 
 .jp-snippet-editor-name {
   display: block;
-  margin-bottom: 30px;
   margin-left: 3%;
   border-top: transparent;
   border-left: transparent;
@@ -424,7 +423,6 @@ mark.jp-search-bolding {
 
 .jp-snippet-editor-description {
   display: block;
-  margin-bottom: 30px;
   margin-left: 3%;
   border-top: transparent;
   border-left: transparent;
@@ -656,3 +654,26 @@ mark.jp-search-bolding {
   width: 21px;
   height: 21px;
 } */
+
+/* USER Input Form Style */
+.jp-newSnippet-input:invalid {
+  border: var(--jp-border-width) solid var(--jp-error-color1);
+}
+
+.jp-newSnippet-input:valid {
+  border: var(--jp-border-width) solid var(--jp-brand-color2);
+}
+
+.jp-inputName-validity,
+.jp-inputDesc-validity {
+  font-size: var(--jp-ui-font-size0);
+  color: var(--jp-ui-font-color1);
+  margin: 0px 5px 5px 5px;
+}
+
+.jp-snippet-editor-metadata .jp-inputName-validity,
+.jp-snippet-editor-metadata .jp-inputDesc-validity {
+  margin-bottom: 30px;
+  margin-top: 5px;
+  margin-left: 4%;
+}

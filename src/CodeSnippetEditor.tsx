@@ -11,6 +11,7 @@ import { Message } from '@lumino/messaging';
 import { Button } from '@jupyterlab/ui-components';
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
+import { SUPPORTED_LANGUAGES } from './index';
 
 /**
  * CSS style classes
@@ -300,7 +301,52 @@ export class CodeSnippetEditor extends ReactWidget {
   }
 
   saveChange(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
-    this.updateSnippet();
+    const name = (document.querySelector(
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
+    ) as HTMLInputElement).value;
+    const description = (document.querySelector(
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
+    ) as HTMLInputElement).value;
+    const language = (document.querySelector(
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
+    ) as HTMLSelectElement).value;
+
+    const validity = this.validateInputs(name, description, language);
+    if (validity) {
+      this.updateSnippet();
+    }
+  }
+
+  private validateInputs(
+    name: string,
+    description: string,
+    language: string
+  ): boolean {
+    let status = true;
+    let message = '';
+    if (name === '') {
+      message += 'Name must be filled out\n';
+      //alert("Description must be filled out");
+      status = false;
+    }
+    if (description === '') {
+      message += 'Description must be filled out\n';
+      //alert("");
+      status = false;
+    }
+    if (language === '') {
+      message += 'Language must be filled out';
+      //alert("Description ");
+      status = false;
+    }
+    if (!(language in SUPPORTED_LANGUAGES)) {
+      message += 'Language must be one of the options';
+      status = false;
+    }
+    if (status === false) {
+      alert(message);
+    }
+    return status;
   }
 
   async updateSnippet(): Promise<void> {
@@ -399,6 +445,8 @@ export class CodeSnippetEditor extends ReactWidget {
             className="jp-snippet-editor-name"
             defaultValue={this._codeSnippet.name}
             type="text"
+            required
+            pattern={'[a-zA-Z0-9_ ]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
@@ -406,6 +454,11 @@ export class CodeSnippetEditor extends ReactWidget {
               this.handleInputFieldChange(event);
             }}
           ></input>
+          <p className="jp-inputName-validity">
+            {
+              'Name of the code snippet MUST be alphanumeric or composed of underscore(_)'
+            }
+          </p>
           <label className="jp-snippet-editor-description-label">
             Description
           </label>
@@ -413,6 +466,8 @@ export class CodeSnippetEditor extends ReactWidget {
             className="jp-snippet-editor-description"
             defaultValue={this._codeSnippet.description}
             type="text"
+            required
+            pattern={'[a-zA-Z0-9_ ]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
@@ -420,6 +475,11 @@ export class CodeSnippetEditor extends ReactWidget {
               this.handleInputFieldChange(event);
             }}
           ></input>
+          <p className="jp-inputDesc-validity">
+            {
+              'Description of the code snippet MUST be alphanumeric or composed of underscore(_)'
+            }
+          </p>
           {/* <input
             className="jp-snippet-editor-language"
             type="text"
@@ -437,6 +497,7 @@ export class CodeSnippetEditor extends ReactWidget {
             className="jp-snippet-editor-language"
             defaultValue={this._codeSnippet.language}
             name="languages"
+            required
           >
             <option className="jp-snippet-editor-options" value="python">
               python

@@ -15,6 +15,7 @@ import {
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
+import { SUPPORTED_LANGUAGES } from './index';
 
 /**
  * The class name added to file dialogs.
@@ -24,7 +25,7 @@ const FILE_DIALOG_CLASS = 'jp-FileDialog';
 /**
  * The class name added for the new name label in the rename dialog
  */
-const INPUT_NEWNAME_TITLE_CLASS = 'jp-new-name-title';
+const INPUT_NEW_SNIPPET_CLASS = 'jp-newSnippet-input';
 
 /**
  * A stripped-down interface for a file container.
@@ -196,6 +197,10 @@ export function validateForm(input: Dialog.IResult<string[]>): boolean {
     //alert("Description ");
     status = false;
   }
+  if (!(language in SUPPORTED_LANGUAGES)) {
+    message += 'Language must be one of the options';
+    status = false;
+  }
   if (status === false) {
     alert(message);
   }
@@ -212,9 +217,6 @@ class InputHandler extends Widget {
   constructor() {
     super({ node: Private.createInputNode() });
     this.addClass(FILE_DIALOG_CLASS);
-    console.log(
-      (this.node.getElementsByTagName('select')[0] as HTMLSelectElement).value
-    );
   }
 
   getValue(): string[] {
@@ -222,7 +224,7 @@ class InputHandler extends Widget {
     inputs.push(
       (this.node.getElementsByTagName('input')[0] as HTMLInputElement).value,
       (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
-      (this.node.getElementsByTagName('select')[0] as HTMLSelectElement).value
+      (this.node.getElementsByTagName('datalist')[0] as HTMLSelectElement).value
     );
     return inputs;
   }
@@ -262,30 +264,55 @@ class Private {
    */
   static createInputNode(): HTMLElement {
     const body = document.createElement('form');
+    const nameValidity = document.createElement('p');
+    nameValidity.textContent =
+      'Name of the code snippet MUST be alphanumeric or composed of underscore(_)';
+    nameValidity.className = 'jp-inputName-validity';
+
+    const descriptionValidity = document.createElement('p');
+    descriptionValidity.textContent =
+      'Description of the code snippet MUST be alphanumeric or composed of underscore(_)';
+    descriptionValidity.className = 'jp-inputDesc-validity';
 
     const nameTitle = document.createElement('label');
     nameTitle.textContent = 'Snippet Name*';
-    nameTitle.className = INPUT_NEWNAME_TITLE_CLASS;
     const name = document.createElement('input');
+    name.className = INPUT_NEW_SNIPPET_CLASS;
+    name.required = true;
+    // prettier-ignore
+    name.pattern = '[a-zA-Z0-9_\ ]+';
 
     const descriptionTitle = document.createElement('label');
     descriptionTitle.textContent = 'Description*';
-    descriptionTitle.className = INPUT_NEWNAME_TITLE_CLASS;
     const description = document.createElement('input');
+    description.className = INPUT_NEW_SNIPPET_CLASS;
     description.required = true;
+    // prettier-ignore
+    description.pattern = '[a-zA-Z0-9_\ ]+';
 
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language*';
-    languageTitle.className = INPUT_NEWNAME_TITLE_CLASS;
-    const language = document.createElement('select');
-    const optionPython = document.createElement('option');
-    optionPython.textContent = 'python';
-    const optionR = document.createElement('option');
-    optionR.textContent = 'R';
-    const optionScala = document.createElement('option');
-    optionScala.textContent = 'Scala';
-    const optionOther = document.createElement('option');
-    optionOther.textContent = 'Other';
+    const languageInput = document.createElement('input');
+    languageInput.className = INPUT_NEW_SNIPPET_CLASS;
+    languageInput.setAttribute('list', 'languages');
+    languageInput.required = true;
+    const languageOption = document.createElement('datalist');
+    languageOption.id = 'languages';
+
+    SUPPORTED_LANGUAGES.sort();
+    for (const language of SUPPORTED_LANGUAGES) {
+      const option = document.createElement('option');
+      option.value = language;
+      languageOption.appendChild(option);
+    }
+    // const optionPython = document.createElement('option');
+    // optionPython.textContent = 'python';
+    // const optionR = document.createElement('option');
+    // optionR.textContent = 'R';
+    // const optionScala = document.createElement('option');
+    // optionScala.textContent = 'Scala';
+    // const optionOther = document.createElement('option');
+    // optionOther.textContent = 'Other';
     // optionOther.onclick = (): void => {
     //   createLanguageInput(body);
     // };
@@ -298,10 +325,10 @@ class Private {
     // optionR.onclick = (): void => {
     //   removeLanguageInput(body);
     // };
-    language.appendChild(optionPython);
-    language.appendChild(optionR);
-    language.appendChild(optionScala);
-    language.appendChild(optionOther);
+    // language.appendChild(optionPython);
+    // language.appendChild(optionR);
+    // language.appendChild(optionScala);
+    // language.appendChild(optionOther);
 
     // if (language.value === 'Other') {
     //   createLanguageInput(body);
@@ -311,10 +338,13 @@ class Private {
 
     body.appendChild(nameTitle);
     body.appendChild(name);
+    body.appendChild(nameValidity);
     body.appendChild(descriptionTitle);
     body.appendChild(description);
+    body.appendChild(descriptionValidity);
     body.appendChild(languageTitle);
-    body.appendChild(language);
+    body.appendChild(languageInput);
+    body.appendChild(languageOption);
     return body;
   }
 
