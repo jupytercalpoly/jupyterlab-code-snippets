@@ -83,13 +83,13 @@
 }
 
 .codeSnippetsHeader {
-  font-size: var(--jp-ui-font-size0);
+  font-size: var(--jp-ui-font-size1);
   font-weight: 600;
   /* font-size: 13px; */
   /* font-family: helvetica; */
   text-transform: uppercase;
   padding: 8px;
-  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
   color: var(--jp-ui-font-color0);
   display: flex;
   justify-content: space-between;
@@ -97,7 +97,7 @@
 }
 
 .codeSnippet-item {
-  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
   display: flex;
   margin: 0;
   padding: 0;
@@ -523,13 +523,14 @@ mark.jp-search-bolding {
 
 /* code snippet filter */
 .jp-codeSnippet-filter {
-  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+  /* border-bottom: var(--jp-border-width) solid var(--jp-border-color1); */
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 10px 10px 0 10px;
 }
 
-.jp-codeSnippet-filter button {
+.jp-codeSnippet-filter .jp-codeSnippet-filter-btn {
   align-self: flex-end;
   padding-right: 5px;
   padding-bottom: 10px;
@@ -540,6 +541,49 @@ mark.jp-search-bolding {
   /* position: relative;
   display: inline-block;
   border-bottom: 1px dotted black; */
+}
+
+.jp-codeSnippet-filter-arrow-up {
+  position: absolute;
+  margin-top: 22px;
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  border-width: 0 var(--jp-border-width) var(--jp-border-width) 0;
+  padding: 4px;
+  margin-right: 12px;
+  align-self: flex-end;
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+  background-color: var(--jp-layout-color0);
+  /* border: var(--jp-border-width) solid var(--jp-border-color1); */
+}
+
+.jp-codeSnippet-filter-option {
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  height: 140px;
+  width: 100%;
+  margin-bottom: 10px;
+  overflow: auto;
+}
+
+.jp-codeSnippet-filter-title {
+  text-transform: uppercase;
+  color: var(--jp-ui-font-color2);
+  font-size: var(--jp-ui-font-size1);
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color2);
+  margin: 10px 10px;
+  padding-bottom: 5px;
+}
+
+.jp-codeSnippet-filter-tag {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.jp-codeSnippet-filter-tag button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--jp-ui-font-color2);
 }
 /* 
 .jp-codeSnippet-filter-option {
@@ -643,10 +687,14 @@ mark.jp-search-bolding {
   margin-top: 8px;
 }
 
-.tag {
+.jp-codeSnippet-tag,
+.jp-codeSnippet-filter-tag {
   height: 12px;
 }
-
+/* code snippet tools: search, filter */
+.jp-codeSnippet-tools {
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
+}
 /* .tag-holder {
 } */
 /* 

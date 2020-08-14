@@ -556,8 +556,11 @@ export class CodeSnippetDisplay extends React.Component<
 
   private renderTag(tag: string, id: string): JSX.Element {
     return (
-      <div className={'tag applied-tag'} key={tag + '-' + id}>
-        <label className={'tag-header'}>{tag}</label>
+      <div
+        className={'jp-codeSnippet-tag tag applied-tag'}
+        key={tag + '-' + id}
+      >
+        <label>{tag}</label>
       </div>
     );
   }
@@ -592,6 +595,16 @@ export class CodeSnippetDisplay extends React.Component<
     );
   };
 
+  getActiveTags(): string[] {
+    const tags: string[] = [];
+    for (const codeSnippet of this.props.codeSnippets) {
+      if (codeSnippet.tags) {
+        tags.push(...codeSnippet.tags);
+      }
+    }
+    return tags;
+  }
+
   render(): React.ReactElement {
     return (
       <div>
@@ -604,8 +617,10 @@ export class CodeSnippetDisplay extends React.Component<
             top="5px"
           />
         </header>
-        <SearchBar onSearch={this.searchSnippets} />
-        <FilterSnippet />
+        <div className={'jp-codeSnippet-tools'}>
+          <SearchBar onSearch={this.searchSnippets} />
+          <FilterSnippet tags={this.getActiveTags()} />
+        </div>
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
