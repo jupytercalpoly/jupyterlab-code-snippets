@@ -522,6 +522,23 @@ export class CodeSnippetDisplay extends React.Component<
         onMouseOut={(): void => {
           this.dragHoverStyleRemove(id);
         }}
+        onMouseEnter={(event): void => {
+          showPreview(
+            {
+              id: parseInt(id, 10),
+              title: displayName,
+              body: new PreviewHandler(),
+              codeSnippet: codeSnippet
+            },
+            this.props.openCodeSnippetEditor,
+            this.props.editorServices
+          );
+          this.snippetClicked(id);
+          this._setPreviewPosition(id);
+        }}
+        onMouseLeave={(): void => {
+          this._evtMouseLeave();
+        }}
       >
         <div
           className="drag-hover"
@@ -546,23 +563,23 @@ export class CodeSnippetDisplay extends React.Component<
               id={id}
               title={codeSnippet.name}
               className={DISPLAY_NAME_CLASS}
-              onMouseEnter={(event): void => {
-                showPreview(
-                  {
-                    id: parseInt(id, 10),
-                    title: displayName,
-                    body: new PreviewHandler(),
-                    codeSnippet: codeSnippet
-                  },
-                  this.props.openCodeSnippetEditor,
-                  this.props.editorServices
-                );
-                this.snippetClicked(id);
-                this._setPreviewPosition(id);
-              }}
-              onMouseLeave={(): void => {
-                this._evtMouseLeave();
-              }}
+              // onMouseEnter={(event): void => {
+              //   showPreview(
+              //     {
+              //       id: parseInt(id, 10),
+              //       title: displayName,
+              //       body: new PreviewHandler(),
+              //       codeSnippet: codeSnippet
+              //     },
+              //     this.props.openCodeSnippetEditor,
+              //     this.props.editorServices
+              //   );
+              //   this.snippetClicked(id);
+              //   this._setPreviewPosition(id);
+              // }}
+              // onMouseLeave={(): void => {
+              //   this._evtMouseLeave();
+              // }}
             >
               {this.boldNameOnSearch(this.state.searchValue, displayName)}
             </div>
