@@ -12,7 +12,7 @@ import {
 } from './CodeSnippetContentsService';
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 
-import { /**Clipboard,*/ Dialog, showDialog } from '@jupyterlab/apputils';
+import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
 import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
 import { PathExt } from '@jupyterlab/coreutils';
@@ -722,6 +722,41 @@ export class CodeSnippetDisplay extends React.Component<
     return tags;
   }
 
+  public createOptionsNode(codeSnippet: ICodeSnippet): HTMLElement {
+    const body = document.createElement('div');
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'jp-more-options-content';
+    const insertSnip = document.createElement('div');
+    insertSnip.className = 'jp-more-options-insert';
+    insertSnip.textContent = 'Insert snippet';
+    insertSnip.onclick = (): void => {
+      this.insertCodeSnippet(codeSnippet);
+    };
+    const copySnip = document.createElement('div');
+    copySnip.className = 'jp-more-options-copy';
+    copySnip.textContent = 'Copy snippet to clipboard';
+    copySnip.onclick = (): void => {
+      Clipboard.copyToSystem(codeSnippet.code.join('\n'));
+      alert('saved to clipboard');
+    };
+    const editSnip = document.createElement('div');
+    editSnip.className = 'jp-more-options-edit';
+    editSnip.textContent = 'Edit snippet';
+    editSnip.onclick = (): void => {
+      this.props.openCodeSnippetEditor(codeSnippet);
+    };
+    const deleteSnip = document.createElement('div');
+    deleteSnip.className = 'jp-more-options-delete';
+    deleteSnip.textContent = 'Delete snippet';
+    optionsContainer.appendChild(insertSnip);
+    optionsContainer.appendChild(copySnip);
+    optionsContainer.appendChild(editSnip);
+    optionsContainer.appendChild(deleteSnip);
+    body.append(optionsContainer);
+    return body;
+  }
+
   render(): React.ReactElement {
     return (
       <div>
@@ -757,8 +792,8 @@ export class CodeSnippetDisplay extends React.Component<
 }
 
 class OptionsHandler extends Widget {
-  constructor(object: any, codeSnippet: ICodeSnippet) {
-    super({ node: Private.createOptionsNode(object, codeSnippet) });
+  constructor(object: CodeSnippetDisplay, codeSnippet: ICodeSnippet) {
+    super({ node: object.createOptionsNode(codeSnippet) });
   }
 }
 
@@ -780,36 +815,40 @@ class Private {
     return this.createPreviewContent();
   }
 
-  static createOptionsNode(
-    object: any,
-    codeSnippet: ICodeSnippet
-  ): HTMLElement {
-    const body = document.createElement('div');
+  // static createOptionsNode(
+  //   object: any,
+  //   codeSnippet: ICodeSnippet
+  // ): HTMLElement {
+  //   const body = document.createElement('div');
 
-    const optionsContainer = document.createElement('div');
-    optionsContainer.className = 'jp-more-options-content';
-    const insertSnip = document.createElement('div');
-    insertSnip.className = 'jp-more-options-insert';
-    insertSnip.textContent = 'Insert snippet';
-    insertSnip.onclick = (): void => {
-      object.insertCodeSnippet(codeSnippet);
-    };
-    const copySnip = document.createElement('div');
-    copySnip.className = 'jp-more-options-copy';
-    copySnip.textContent = 'Copy snippet to clipboard';
-    const editSnip = document.createElement('div');
-    editSnip.className = 'jp-more-options-edit';
-    editSnip.textContent = 'Edit snippet';
-    const deleteSnip = document.createElement('div');
-    deleteSnip.className = 'jp-more-options-delete';
-    deleteSnip.textContent = 'Delete snippet';
-    optionsContainer.appendChild(insertSnip);
-    optionsContainer.appendChild(copySnip);
-    optionsContainer.appendChild(editSnip);
-    optionsContainer.appendChild(deleteSnip);
-    body.append(optionsContainer);
-    return body;
-  }
+  //   const optionsContainer = document.createElement('div');
+  //   optionsContainer.className = 'jp-more-options-content';
+  //   const insertSnip = document.createElement('div');
+  //   insertSnip.className = 'jp-more-options-insert';
+  //   insertSnip.textContent = 'Insert snippet';
+  //   insertSnip.onclick = (): void => {
+  //     object.insertCodeSnippet(codeSnippet);
+  //   };
+  //   const copySnip = document.createElement('div');
+  //   copySnip.className = 'jp-more-options-copy';
+  //   copySnip.textContent = 'Copy snippet to clipboard';
+  //   copySnip.onclick = (): void => {
+  //     Clipboard.copyToSystem(codeSnippet.code.join('\n'));
+  //     alert('saved to clipboard');
+  //   };
+  //   const editSnip = document.createElement('div');
+  //   editSnip.className = 'jp-more-options-edit';
+  //   editSnip.textContent = 'Edit snippet';
+  //   const deleteSnip = document.createElement('div');
+  //   deleteSnip.className = 'jp-more-options-delete';
+  //   deleteSnip.textContent = 'Delete snippet';
+  //   optionsContainer.appendChild(insertSnip);
+  //   optionsContainer.appendChild(copySnip);
+  //   optionsContainer.appendChild(editSnip);
+  //   optionsContainer.appendChild(deleteSnip);
+  //   body.append(optionsContainer);
+  //   return body;
+  // }
 }
 
 /**

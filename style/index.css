@@ -733,7 +733,6 @@ mark.jp-search-bolding {
   border-radius: var(--jp-border-radius);
   font-size: var(--jp-ui-font-size0);
   color: var(--jp-ui-font-color1);
-  margin: auto 6px 30px auto;
 }
 
 .jp-Options-body {
