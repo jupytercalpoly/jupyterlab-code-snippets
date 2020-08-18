@@ -475,7 +475,7 @@ export class CodeSnippetDisplay extends React.Component<
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
-    const tags = codeSnippet.tags;
+    // const tags = codeSnippet.tags;
 
     const actionButtons = [
       // {
@@ -594,24 +594,21 @@ export class CodeSnippetDisplay extends React.Component<
           <div className={'jp-codeSnippet-description'}>
             <p>{`${codeSnippet.description}`}</p>
           </div>
-          <div className={'jp-codeSnippet-tags'}>
+          {/* <div className={'jp-codeSnippet-tags'}>
             {tags ? tags.map((tag: string) => this.renderTag(tag, id)) : null}
-          </div>
+          </div> */}
         </div>
       </div>
     );
   };
 
-  private renderTag(tag: string, id: string): JSX.Element {
-    return (
-      <div
-        className={'jp-codeSnippet-tag tag applied-tag'}
-        key={tag + '-' + id}
-      >
-        <label>{tag}</label>
-      </div>
-    );
-  }
+  // private renderTag(tag: string, id: string): JSX.Element {
+  //   return (
+  //     <div className={'tag applied-tag'} key={tag + '-' + id}>
+  //       <label className={'tag-header'}>{tag}</label>
+  //     </div>
+  //   );
+  // }
 
   static getDerivedStateFromProps(
     props: ICodeSnippetDisplayProps,
