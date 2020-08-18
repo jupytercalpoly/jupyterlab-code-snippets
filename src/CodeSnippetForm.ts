@@ -280,7 +280,7 @@ class Private {
     name.className = INPUT_NEW_SNIPPET_CLASS;
     name.required = true;
     // prettier-ignore
-    name.pattern = '[a-zA-Z0-9_\ ]+';
+    name.pattern = '[a-zA-Z0-9_ ]+';
 
     const descriptionTitle = document.createElement('label');
     descriptionTitle.textContent = 'Description*';
@@ -288,7 +288,7 @@ class Private {
     description.className = INPUT_NEW_SNIPPET_CLASS;
     description.required = true;
     // prettier-ignore
-    description.pattern = '[a-zA-Z0-9_\ ]+';
+    description.pattern = '[a-zA-Z0-9_ ]+';
 
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language*';
