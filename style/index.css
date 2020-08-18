@@ -562,7 +562,7 @@ mark.jp-search-bolding {
   border: var(--jp-border-width) solid var(--jp-border-color1);
   border-width: 0 var(--jp-border-width) var(--jp-border-width) 0;
   padding: 4px;
-  margin-right: 12px;
+  margin-right: 38px;
   align-self: flex-end;
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
@@ -631,7 +631,7 @@ mark.jp-search-bolding {
   font-size: var(--jp-ui-font-size1);
   line-height: 15px;
   color: var(--jp-layout-color4);
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   width: 90%;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -642,12 +642,7 @@ mark.jp-search-bolding {
 /* Size of the icons in code snippet */
 .expandableContainer-action-buttons {
   height: 100%;
-  /* text-overflow: ellipsis; */
   overflow: hidden;
-  padding-top: 10px;
-  /* align-self: flex-end; */
-  /* flex-basis: 25%; */
-  /* flex: 1 1 25%; */
 }
 
 /* Cell tag styling */
