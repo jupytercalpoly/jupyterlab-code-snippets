@@ -427,6 +427,29 @@ export class CodeSnippetEditor extends ReactWidget {
     );
   }
 
+  renderLanguages(): React.ReactElement {
+    SUPPORTED_LANGUAGES.sort();
+
+    return (
+      <div>
+        <input
+          className="jp-snippet-editor-language"
+          list="languages"
+          name="language"
+          defaultValue={this._codeSnippet.language}
+          required
+        />
+        <datalist id="languages">
+          {SUPPORTED_LANGUAGES.map(lang => this.renderLanguageOptions(lang))}
+        </datalist>
+      </div>
+    );
+  }
+
+  renderLanguageOptions(option: string): JSX.Element {
+    return <option key={option} value={option} />;
+  }
+
   render(): React.ReactElement {
     return (
       <div
@@ -493,7 +516,8 @@ export class CodeSnippetEditor extends ReactWidget {
             <option value="Scala"></option>
             <option value="Other"></option>
           </datalist> */}
-          <select
+          {this.renderLanguages()}
+          {/* <select
             className="jp-snippet-editor-language"
             defaultValue={this._codeSnippet.language}
             name="languages"
@@ -511,7 +535,7 @@ export class CodeSnippetEditor extends ReactWidget {
             <option className="jp-snippet-editor-options" value="Other">
               Other
             </option>
-          </select>
+          </select> */}
         </section>
         <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
         {this.renderCodeInput()}

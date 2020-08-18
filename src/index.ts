@@ -64,7 +64,6 @@ export const SUPPORTED_LANGUAGES = [
   'Perl',
   'PHP',
   'Scilab',
-  'Matlab',
   'bash',
   'zsh',
   'Clojure',
