@@ -32,7 +32,6 @@ export function showPreview<T>(
   //Insert check method to see if the preview is already open
   const preview = new Preview(options, openCodeSnippetEditor, editorServices);
   if (preview.ready === false) {
-    console.log('This is where I am stuck.');
     return;
   }
   return preview.launch();
@@ -159,9 +158,6 @@ export class Preview<T> extends Widget {
    */
   protected _evtClick(event: MouseEvent): void {
     //gray area
-    console.log(
-      "If this function hasn't been hit for the same snippet then don't launchhhh for that snippet"
-    );
     const content = this.node.getElementsByClassName(
       PREVIEW_CONTENT
     )[0] as HTMLElement;
@@ -330,9 +326,8 @@ export class Preview<T> extends Widget {
           })
         })
       });
+      this.editor.setSize({ width: 300, height: 106 });
     }
-    this.editor.setSize({ width: 300, height: 106 });
-    console.log(document.getElementById(PREVIEW_CONTENT + this._id));
     if (this.isVisible) {
       this._hasRefreshedSinceAttach = true;
       this.editor.refresh();
