@@ -190,7 +190,7 @@ function activateCodeSnippet(
     execute: async () => {
       const target = clicked as HTMLElement;
       const _id = parseInt(target.id, 10);
-
+      console.log(target.id);
       const frontEndSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets.slice();
       frontEndSnippets.splice(_id, 1);
       codeSnippetWidget.codeSnippets = frontEndSnippets;
@@ -266,6 +266,7 @@ class MessageHandler extends Widget {
 function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
   const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
   temp.parentElement.parentElement.removeChild(temp.parentElement);
+  console.log(temp);
   const snippetToDeleteName =
     codeSnippet.codeSnippetWidgetModel.snippets[id].name;
   CodeSnippetContentsService.getInstance().delete(

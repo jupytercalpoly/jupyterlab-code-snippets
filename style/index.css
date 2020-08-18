@@ -15,6 +15,8 @@
  */
 :root {
   --preview-distance: 0px;
+  --more-options-top: 0px;
+  --more-options-left: 0px;
 }
 
 #code-snippet-extension {
@@ -705,3 +707,85 @@ mark.jp-search-bolding {
   width: 21px;
   height: 21px;
 } */
+
+.jp-options {
+  position: absolute;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  top: var(--more-options-top);
+  left: var(--more-options-left);
+}
+
+.jp-more-options-content {
+  width: 183px;
+  font-family: helvetica;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  text-align: left;
+}
+
+.jp-Options-content {
+  display: flex;
+  flex-direction: column;
+  background: var(--jp-layout-color1);
+  padding: 10px;
+  border: 1px solid var(--jp-border-color0);
+  width: 180px;
+  box-sizing: border-box;
+  box-shadow: var(--jp-elevation-z1);
+  word-wrap: break-word;
+  border-radius: var(--jp-border-radius);
+  font-size: var(--jp-ui-font-size0);
+  color: var(--jp-ui-font-color1);
+  margin: auto 6px 30px auto;
+}
+
+.jp-Options-body {
+  display: flex;
+  align-items: center;
+}
+
+.jp-more-options-copy {
+  padding-bottom: 5px;
+  cursor: pointer;
+}
+
+.jp-more-options-copy:hover {
+  background-color: rgb(235, 233, 233);
+  cursor: pointer;
+}
+
+.jp-more-options-insert {
+  padding-bottom: 5px;
+  cursor: pointer;
+}
+
+.jp-more-options-insert:hover {
+  background-color: rgb(235, 233, 233);
+  cursor: pointer;
+}
+
+.jp-more-options-edit {
+  padding-bottom: 5px;
+  cursor: pointer;
+}
+
+.jp-more-options-edit:hover {
+  background-color: rgb(235, 233, 233);
+  cursor: pointer;
+}
+
+.jp-more-options-delete {
+  color: var(--jp-error-color0);
+  cursor: pointer;
+}
+
+.jp-more-options-delete:hover {
+  background-color: rgb(235, 233, 233);
+  cursor: pointer;
+}

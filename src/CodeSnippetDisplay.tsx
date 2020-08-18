@@ -1,8 +1,10 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
+import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
 import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
 import { SearchBar } from './SearchBar';
 import { FilterSnippet } from './FilterSnippet';
 import { showPreview } from './PreviewSnippet';
+import { showMoreOptions } from './MoreOptions';
 import {
   ICodeSnippet
   // CodeSnippetContentsService
@@ -77,6 +79,11 @@ const launchEditorIcon = new LabIcon({
   svgstr: launchEditorSVGstr
 });
 
+const moreOptionsIcon = new LabIcon({
+  name: 'custom-ui-compnents:moreOptions',
+  svgstr: moreSVGstr
+});
+
 /**
  * CodeSnippetDisplay props.
  */
@@ -116,7 +123,6 @@ export class CodeSnippetDisplay extends React.Component<
   // Handle code snippet insert into an editor
   private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
     const widget: Widget = this.props.getCurrentWidget();
-    console.log('current widget: ' + widget);
     const snippetStr: string = snippet.code.join('\n');
 
     // if the widget is document widget and it's a file?? in the file editor
@@ -232,7 +238,6 @@ export class CodeSnippetDisplay extends React.Component<
   //     }
   //   }
   //   counter += 1;
-  //   console.log(counter);
   //   return 'LOC\t\t' + counter;
   // };
 
@@ -419,7 +424,6 @@ export class CodeSnippetDisplay extends React.Component<
     target.removeEventListener('mouseup', this._evtMouseUp, true);
 
     return this._drag.start(clientX, clientY).then(() => {
-      console.log('drag done');
       this.dragHoverStyleRemove(codeSnippet.id.toString());
       this._drag = null;
       this._dragData = null;
@@ -453,8 +457,6 @@ export class CodeSnippetDisplay extends React.Component<
   //Set the position of the preview to be next to the snippet title.
   private _setPreviewPosition(id: string): void {
     const intID = parseInt(id, 10);
-    const target = event.target as HTMLElement;
-    console.log(target);
     const realTarget = document.getElementsByClassName(
       'expandableContainer-title'
     )[intID];
@@ -467,6 +469,35 @@ export class CodeSnippetDisplay extends React.Component<
     document.documentElement.style.setProperty('--preview-distance', final);
   }
 
+  //Set the position of the option to be under to the three dots on snippet.
+  private _setOptionsPosition(
+    id: string,
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ): void {
+    let target = event.target as HTMLElement;
+    let topAsString: string;
+    console.log(target);
+    console.log(target.getBoundingClientRect().top + 10);
+    console.log(target.getBoundingClientRect().left);
+    if (target.tagName === 'path') {
+      topAsString =
+        (target.getBoundingClientRect().top + 10).toString(10) + 'px';
+    } else {
+      topAsString =
+        (target.getBoundingClientRect().top + 18).toString(10) + 'px';
+    }
+    const leftAsString =
+      target.getBoundingClientRect().left.toString(10) + 'px';
+    document.documentElement.style.setProperty(
+      '--more-options-top',
+      topAsString
+    );
+    document.documentElement.style.setProperty(
+      '--more-options-left',
+      leftAsString
+    );
+  }
+
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
   private renderCodeSnippet = (
@@ -476,6 +507,7 @@ export class CodeSnippetDisplay extends React.Component<
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
     const tags = codeSnippet.tags;
+    console.log('Why are you not updating!!!');
 
     const actionButtons = [
       // {
@@ -506,6 +538,16 @@ export class CodeSnippetDisplay extends React.Component<
           //   );
           this.props.openCodeSnippetEditor(codeSnippet);
           // this.snippetClicked(id);
+        }
+      },
+      {
+        title: 'More options',
+        icon: moreOptionsIcon,
+        onClick: (
+          event: React.MouseEvent<HTMLDivElement, MouseEvent>
+        ): void => {
+          showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
+          this._setOptionsPosition(id, event);
         }
       }
     ];
@@ -552,6 +594,7 @@ export class CodeSnippetDisplay extends React.Component<
           <div
             key={displayName}
             className={TITLE_CLASS}
+            id={id}
             // onMouseOver={() => {
             //   this.dragHoverStyle(id);
             // }}
@@ -563,38 +606,25 @@ export class CodeSnippetDisplay extends React.Component<
               id={id}
               title={codeSnippet.name}
               className={DISPLAY_NAME_CLASS}
-              // onMouseEnter={(event): void => {
-              //   showPreview(
-              //     {
-              //       id: parseInt(id, 10),
-              //       title: displayName,
-              //       body: new PreviewHandler(),
-              //       codeSnippet: codeSnippet
-              //     },
-              //     this.props.openCodeSnippetEditor,
-              //     this.props.editorServices
-              //   );
-              //   this.snippetClicked(id);
-              //   this._setPreviewPosition(id);
-              // }}
-              // onMouseLeave={(): void => {
-              //   this._evtMouseLeave();
-              // }}
             >
               {this.boldNameOnSearch(this.state.searchValue, displayName)}
             </div>
-            <div className={ACTION_BUTTONS_WRAPPER_CLASS}>
+            <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id}>
               {actionButtons.map((btn: IExpandableActionButton) => {
                 return (
                   <button
                     key={btn.title}
                     title={btn.title}
                     className={buttonClasses + ' ' + ACTION_BUTTON_CLASS}
-                    onClick={(): void => {
+                    onClick={(event): void => {
                       if (btn.title === 'Copy') {
                         alert('saved to clipboard');
                       }
-                      btn.onClick();
+                      if (btn.title === 'More options') {
+                        btn.onClick(event);
+                      } else {
+                        btn.onClick();
+                      }
                     }}
                   >
                     <btn.icon.react
@@ -608,10 +638,10 @@ export class CodeSnippetDisplay extends React.Component<
               })}
             </div>
           </div>
-          <div className={'jp-codeSnippet-description'}>
-            <p>{`${codeSnippet.description}`}</p>
+          <div className={'jp-codeSnippet-description'} id={id}>
+            <p id={id}>{`${codeSnippet.description}`}</p>
           </div>
-          <div className={'jp-codeSnippet-tags'}>
+          <div className={'jp-codeSnippet-tags'} id={id}>
             {tags ? tags.map((tag: string) => this.renderTag(tag, id)) : null}
           </div>
         </div>
@@ -634,9 +664,6 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    console.log('udpating display!');
-    console.log(props);
-    console.log(state);
     if (props.codeSnippets !== state.codeSnippets && state.searchValue === '') {
       return {
         codeSnippets: props.codeSnippets,
@@ -698,6 +725,12 @@ export class CodeSnippetDisplay extends React.Component<
   }
 }
 
+class OptionsHandler extends Widget {
+  constructor(object: any, codeSnippet: ICodeSnippet) {
+    super({ node: Private.createOptionsNode(object, codeSnippet) });
+  }
+}
+
 class PreviewHandler extends Widget {
   constructor() {
     super({ node: Private.createPreviewNode() });
@@ -714,6 +747,37 @@ class Private {
    */
   static createPreviewNode(): HTMLElement {
     return this.createPreviewContent();
+  }
+
+  static createOptionsNode(
+    object: any,
+    codeSnippet: ICodeSnippet
+  ): HTMLElement {
+    const body = document.createElement('div');
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'jp-more-options-content';
+    const insertSnip = document.createElement('div');
+    insertSnip.className = 'jp-more-options-insert';
+    insertSnip.textContent = 'Insert snippet';
+    insertSnip.onclick = (): void => {
+      object.insertCodeSnippet(codeSnippet);
+    };
+    const copySnip = document.createElement('div');
+    copySnip.className = 'jp-more-options-copy';
+    copySnip.textContent = 'Copy snippet to clipboard';
+    const editSnip = document.createElement('div');
+    editSnip.className = 'jp-more-options-edit';
+    editSnip.textContent = 'Edit snippet';
+    const deleteSnip = document.createElement('div');
+    deleteSnip.className = 'jp-more-options-delete';
+    deleteSnip.textContent = 'Delete snippet';
+    optionsContainer.appendChild(insertSnip);
+    optionsContainer.appendChild(copySnip);
+    optionsContainer.appendChild(editSnip);
+    optionsContainer.appendChild(deleteSnip);
+    body.append(optionsContainer);
+    return body;
   }
 }
 
