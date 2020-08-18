@@ -550,7 +550,7 @@ mark.jp-search-bolding {
   border: var(--jp-border-width) solid var(--jp-border-color1);
   border-width: 0 var(--jp-border-width) var(--jp-border-width) 0;
   padding: 4px;
-  margin-right: 12px;
+  margin-right: 38px;
   align-self: flex-end;
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);

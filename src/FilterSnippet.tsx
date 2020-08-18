@@ -75,7 +75,7 @@ export class FilterSnippet extends React.Component<
           className={'jp-codeSnippet-filter-btn'}
           onClick={this.createFilterBox}
         >
-          Filter
+          Filter By Tags
         </button>
         {this.state.show ? (
           <div className="jp-codeSnippet-filter-arrow-up"></div>
