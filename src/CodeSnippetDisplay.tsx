@@ -1,7 +1,9 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
-import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
+// import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
 import { FilterTools } from './FilterTools';
 // import { FilterSnippet } from './FilterSnippet';
+// import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
+import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
 import { showPreview } from './PreviewSnippet';
 import {
   ICodeSnippet
@@ -72,9 +74,17 @@ const insertIcon = new LabIcon({
   svgstr: insertSVGstr
 });
 
-const launchEditorIcon = new LabIcon({
-  name: 'custom-ui-compnents:launchEditor',
-  svgstr: launchEditorSVGstr
+// const launchEditorIcon = new LabIcon({
+//   name: 'custom-ui-compnents:launchEditor',
+//   svgstr: launchEditorSVGstr
+// });
+
+/**
+ * Icon for more options
+ */
+const moreIcon = new LabIcon({
+  name: 'custom-ui-components:moreOption',
+  svgstr: moreSVGstr
 });
 
 /**
@@ -449,7 +459,7 @@ export class CodeSnippetDisplay extends React.Component<
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
-    const tags = codeSnippet.tags;
+    // const tags = codeSnippet.tags;
 
     const actionButtons = [
       // {
@@ -460,19 +470,35 @@ export class CodeSnippetDisplay extends React.Component<
       //   }
       // },
       {
+        title: 'More Options',
+        icon: moreIcon,
+        onClick: (): void => {
+          console.log('More option clicked!');
+        }
+      },
+      {
         title: 'Insert',
         icon: insertIcon,
         onClick: (): void => {
           this.insertCodeSnippet(codeSnippet);
         }
-      },
-      {
-        title: 'Launch Editor',
-        icon: launchEditorIcon,
-        onClick: (): void => {
-          this.props.openCodeSnippetEditor(codeSnippet);
-        }
       }
+      // {
+      //   title: 'Launch Editor',
+      //   icon: launchEditorIcon,
+      //   onClick: (): void => {
+      //     // showPreview(
+      //     //   {
+      //     //     id: parseInt(id, 10),
+      //     //     title: displayName,
+      //     //     body: new PreviewHandler(codeSnippet),
+      //     //     codeSnippet: codeSnippet
+      //     //   }
+      //     //   );
+      //     this.props.openCodeSnippetEditor(codeSnippet);
+      //     // this.snippetClicked(id);
+      //   }
+      // }
     ];
     /** TODO: if the type is a cell then display cell */
     // type of code snippet: plain code or cell
@@ -548,8 +574,10 @@ export class CodeSnippetDisplay extends React.Component<
                     <btn.icon.react
                       tag="span"
                       elementPosition="center"
-                      width="21px"
-                      height="21px"
+                      // right="7px"
+                      // top="5px"
+                      width="16px"
+                      height="16px"
                     />
                   </button>
                 );
@@ -559,24 +587,21 @@ export class CodeSnippetDisplay extends React.Component<
           <div className={'jp-codeSnippet-description'}>
             <p>{`${codeSnippet.description}`}</p>
           </div>
-          <div className={'jp-codeSnippet-tags'}>
+          {/* <div className={'jp-codeSnippet-tags'}>
             {tags ? tags.map((tag: string) => this.renderTag(tag, id)) : null}
-          </div>
+          </div> */}
         </div>
       </div>
     );
   };
 
-  private renderTag(tag: string, id: string): JSX.Element {
-    return (
-      <div
-        className={'jp-codeSnippet-tag tag applied-tag'}
-        key={tag + '-' + id}
-      >
-        <label>{tag}</label>
-      </div>
-    );
-  }
+  // private renderTag(tag: string, id: string): JSX.Element {
+  //   return (
+  //     <div className={'tag applied-tag'} key={tag + '-' + id}>
+  //       <label className={'tag-header'}>{tag}</label>
+  //     </div>
+  //   );
+  // }
 
   static getDerivedStateFromProps(
     props: ICodeSnippetDisplayProps,
