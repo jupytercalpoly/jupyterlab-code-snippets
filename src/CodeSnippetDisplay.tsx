@@ -1,7 +1,7 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
 import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
-import { SearchBar } from './SearchBar';
-import { FilterSnippet } from './FilterSnippet';
+import { FilterTools } from './FilterTools';
+// import { FilterSnippet } from './FilterSnippet';
 import { showPreview } from './PreviewSnippet';
 import {
   ICodeSnippet
@@ -93,6 +93,7 @@ interface ICodeSnippetDisplayProps {
 interface ICodeSnippetDisplayState {
   codeSnippets: ICodeSnippet[];
   searchValue: string;
+  filterTags: string[];
 }
 
 /**
@@ -106,7 +107,11 @@ export class CodeSnippetDisplay extends React.Component<
   _dragData: { pressX: number; pressY: number; dragImage: HTMLElement };
   constructor(props: ICodeSnippetDisplayProps) {
     super(props);
-    this.state = { codeSnippets: this.props.codeSnippets, searchValue: '' };
+    this.state = {
+      codeSnippets: this.props.codeSnippets,
+      searchValue: '',
+      filterTags: []
+    };
     this._drag = null;
     this._dragData = null;
     this.handleDragMove = this.handleDragMove.bind(this);
@@ -116,7 +121,6 @@ export class CodeSnippetDisplay extends React.Component<
   // Handle code snippet insert into an editor
   private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
     const widget: Widget = this.props.getCurrentWidget();
-    console.log('current widget: ' + widget);
     const snippetStr: string = snippet.code.join('\n');
 
     // if the widget is document widget and it's a file?? in the file editor
@@ -222,20 +226,6 @@ export class CodeSnippetDisplay extends React.Component<
     });
   };
 
-  // Pick color for side of snippet box based on number of code lines
-  // private codeLines = (codeSnippet: ICodeSnippet): string => {
-  //   let i;
-  //   let counter = 0;
-  //   for (i = 0; i < codeSnippet.code[0].length; i++) {
-  //     if (codeSnippet.code[0][i] === '\n') {
-  //       counter++;
-  //     }
-  //   }
-  //   counter += 1;
-  //   console.log(counter);
-  //   return 'LOC\t\t' + counter;
-  // };
-
   // Insert 6 dots on hover
   private dragHoverStyle = (id: string): void => {
     const _id: number = parseInt(id, 10);
@@ -270,19 +260,6 @@ export class CodeSnippetDisplay extends React.Component<
         .getElementsByClassName('drag-hover')
         [_id].classList.add('drag-hover-clicked');
     }
-    // if (
-    //   document
-    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
-    //     [_id].classList.contains('codeSnippet-item-clicked')
-    // ) {
-    //   document
-    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
-    //     [_id].classList.remove('codeSnippet-item-clicked');
-    // } else {
-    //   document
-    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
-    //     [_id].classList.add('codeSnippet-item-clicked');
-    // }
   };
 
   // Bold text in snippet name based on search
@@ -419,7 +396,6 @@ export class CodeSnippetDisplay extends React.Component<
     target.removeEventListener('mouseup', this._evtMouseUp, true);
 
     return this._drag.start(clientX, clientY).then(() => {
-      console.log('drag done');
       this.dragHoverStyleRemove(codeSnippet.id.toString());
       this._drag = null;
       this._dragData = null;
@@ -453,8 +429,6 @@ export class CodeSnippetDisplay extends React.Component<
   //Set the position of the preview to be next to the snippet title.
   private _setPreviewPosition(id: string): void {
     const intID = parseInt(id, 10);
-    const target = event.target as HTMLElement;
-    console.log(target);
     const realTarget = document.getElementsByClassName(
       'expandableContainer-title'
     )[intID];
@@ -496,16 +470,7 @@ export class CodeSnippetDisplay extends React.Component<
         title: 'Launch Editor',
         icon: launchEditorIcon,
         onClick: (): void => {
-          // showPreview(
-          //   {
-          //     id: parseInt(id, 10),
-          //     title: displayName,
-          //     body: new PreviewHandler(codeSnippet),
-          //     codeSnippet: codeSnippet
-          //   }
-          //   );
           this.props.openCodeSnippetEditor(codeSnippet);
-          // this.snippetClicked(id);
         }
       }
     ];
@@ -617,28 +582,57 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    console.log('udpating display!');
-    console.log(props);
-    console.log(state);
-    if (props.codeSnippets !== state.codeSnippets && state.searchValue === '') {
+    console.log(props.codeSnippets);
+    console.log(state.codeSnippets);
+    console.log(state.searchValue);
+    console.log(state.filterTags === []);
+    if (
+      props.codeSnippets !== state.codeSnippets &&
+      state.searchValue === '' &&
+      state.filterTags.length === 0
+    ) {
       return {
         codeSnippets: props.codeSnippets,
-        searchValue: ''
+        searchValue: '',
+        filterTags: []
       };
     }
     return null;
   }
 
-  searchSnippets = (searchValue: string): void => {
-    const newSnippets = this.props.codeSnippets.filter(
+  filterSnippets = (searchValue: string, filterTags: string[]): void => {
+    console.log(searchValue);
+    console.log(filterTags);
+
+    // filter with search
+    let filteredSnippets = this.props.codeSnippets.filter(
       codeSnippet =>
         codeSnippet.name.includes(searchValue) ||
         codeSnippet.language.includes(searchValue)
     );
+
+    // filter with tags
+    if (filterTags.length !== 0) {
+      filteredSnippets = filteredSnippets.filter(codeSnippet => {
+        return filterTags.some(tag => {
+          if (codeSnippet.tags) {
+            return codeSnippet.tags.includes(tag);
+          }
+          return false;
+        });
+      });
+    }
+
     this.setState(
-      { codeSnippets: newSnippets, searchValue: searchValue },
+      {
+        codeSnippets: filteredSnippets,
+        searchValue: searchValue,
+        filterTags: filterTags
+      },
+
+      // { codeSnippets: newSnippets, searchValue: this.state.searchValue },
       () => {
-        console.log('CodeSnippets are successfully filtered.');
+        console.log('CodeSnippets are succesfully filtered.');
       }
     );
   };
@@ -665,10 +659,16 @@ export class CodeSnippetDisplay extends React.Component<
             top="5px"
           />
         </header>
-        <div className={'jp-codeSnippet-tools'}>
-          <SearchBar onSearch={this.searchSnippets} />
-          <FilterSnippet tags={this.getActiveTags()} />
-        </div>
+        {/* <div className={'jp-codeSnippet-search'}> */}
+        <FilterTools
+          tags={this.getActiveTags()}
+          onFilter={this.filterSnippets}
+        />
+        {/* <FilterSnippet
+            tags={this.getActiveTags()}
+            onFilter={this.filterSnippets}
+          /> */}
+        {/* </div> */}
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
