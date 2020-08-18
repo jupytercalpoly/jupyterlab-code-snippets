@@ -65,7 +65,7 @@
   /* flex: 1 1 75%; */
   /* flex-grow: 1;
   flex-basis: 75%; */
-  font-size: var(--jp-ui-font-size2);
+  font-size: 14px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -385,7 +385,7 @@ mark.jp-search-bolding {
 
 .jp-snippet-editor-name-label {
   position: absolute;
-  margin-left: 4%;
+  margin-left: 3%;
   margin-top: -7px;
   background-color: var(--jp-layout-color0);
   font-size: 12px;
@@ -394,7 +394,7 @@ mark.jp-search-bolding {
 
 .jp-snippet-editor-description-label {
   position: absolute;
-  margin-left: 4%;
+  margin-left: 3%;
   margin-top: -7px;
   background-color: var(--jp-layout-color0);
   font-size: 12px;
@@ -408,8 +408,7 @@ mark.jp-search-bolding {
 
 .jp-snippet-editor-name {
   display: block;
-  margin-bottom: 30px;
-  margin-left: 3%;
+  margin-left: 2%;
   border-top: transparent;
   border-left: transparent;
   border-right: transparent;
@@ -425,8 +424,7 @@ mark.jp-search-bolding {
 
 .jp-snippet-editor-description {
   display: block;
-  margin-bottom: 30px;
-  margin-left: 3%;
+  margin-left: 2%;
   border-top: transparent;
   border-left: transparent;
   border-right: transparent;
@@ -443,7 +441,7 @@ mark.jp-search-bolding {
 .jp-snippet-editor-language {
   display: block;
   margin-bottom: 30px;
-  margin-left: 3%;
+  margin-left: 2%;
   border: 1px solid var(--jp-border-color0);
   width: 176px;
   height: 40px;
@@ -457,6 +455,10 @@ mark.jp-search-bolding {
   background-image: url(./icon/jupyter_searcharrowdown.svg);
   background-repeat: no-repeat;
   background-position: 95% center;
+}
+
+.jp-snippet-editor-language:hover {
+  background-image: none;
 }
 
 /* input::-webkit-calendar-picker-indicator {
@@ -477,10 +479,13 @@ mark.jp-search-bolding {
 
 .jp-codeSnippetInputArea-editor {
   overflow: auto;
+  margin-left: 2%;
+  margin-right: 3%;
 }
 
 .jp-codeSnippetInputArea-editorTitle {
   margin-bottom: 12px;
+  margin-left: 2%;
   font-family: helvetica;
   line-height: 18px;
   font-size: var(--jp-ui-font-size2);
@@ -509,7 +514,7 @@ mark.jp-search-bolding {
   color: var(--jp-ui-inverse-font-color0);
   align-self: flex-end;
   margin-top: 12px;
-  margin-right: 5px;
+  margin-right: 3%;
 }
 
 .expandableContainer-title:hover .expandableContainer-button {
@@ -705,3 +710,31 @@ mark.jp-search-bolding {
   width: 21px;
   height: 21px;
 } */
+
+/* USER Input Form Style */
+.jp-newSnippet-input:invalid,
+.jp-snippet-editor-name:invalid,
+.jp-snippet-editor-description:invalid,
+.jp-snippet-editor-language:invalid {
+  border: var(--jp-border-width) solid var(--jp-error-color1);
+}
+
+/* .jp-newSnippet-input:valid,
+.jp-snippet-editor-name:valid,
+.jp-snippet-editor-description:valid {
+  border: var(--jp-border-width) solid var(--jp-brand-color2);
+} */
+
+.jp-inputName-validity,
+.jp-inputDesc-validity {
+  font-size: var(--jp-ui-font-size0);
+  color: var(--jp-ui-font-color1);
+  margin: 0px 5px 5px 5px;
+}
+
+.jp-snippet-editor-metadata .jp-inputName-validity,
+.jp-snippet-editor-metadata .jp-inputDesc-validity {
+  margin-bottom: 30px;
+  margin-top: 5px;
+  margin-left: 3%;
+}
