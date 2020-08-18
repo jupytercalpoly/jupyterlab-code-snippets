@@ -31,6 +31,73 @@ import { showUndoMessage } from './UndoDelete';
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
 /**
+ * List of languages supported by JupyterLab
+ */
+export const SUPPORTED_LANGUAGES = [
+  'Python',
+  'Java',
+  'R',
+  'Julia',
+  'Matlab',
+  'Octave',
+  'Scheme',
+  'Processing',
+  'Scala',
+  'Groovy',
+  'Agda',
+  'Fortran',
+  'Haskell',
+  'Ruby',
+  'TypeScript',
+  'JavaScript',
+  'CoffeeScript',
+  'LiveScript',
+  'C#',
+  'F#',
+  'Go',
+  'Galileo',
+  'Erlang',
+  'PARI/GP',
+  'Aldor',
+  'OCaml',
+  'Forth',
+  'Perl',
+  'PHP',
+  'Scilab',
+  'bash',
+  'zsh',
+  'Clojure',
+  'Hy',
+  'Lua',
+  'PureScript',
+  'Q',
+  'Cryptol',
+  'C++',
+  'Xonsh',
+  'Prolog',
+  'Common Lisp',
+  'Maxima',
+  'C',
+  'Kotlin',
+  'Pike',
+  'NodeJS',
+  'Singular',
+  'TaQL',
+  'Coconut',
+  'Babel',
+  'Clojurescript',
+  'sbt',
+  'Guile',
+  'Stata',
+  'Racekt',
+  'SQL',
+  'HiveQL',
+  'Rust',
+  'Rascal',
+  'Q#'
+];
+
+/**
  * Snippet Editor Icon
  */
 const editorIcon = new LabIcon({
