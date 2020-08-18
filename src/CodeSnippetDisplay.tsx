@@ -18,6 +18,7 @@ import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
 import { /**copyIcon,*/ LabIcon, addIcon } from '@jupyterlab/ui-components';
+import { IEditorServices } from '@jupyterlab/codeeditor';
 
 import { IExpandableActionButton } from '@elyra/ui-components';
 
@@ -83,6 +84,7 @@ interface ICodeSnippetDisplayProps {
   codeSnippets: ICodeSnippet[];
   getCurrentWidget: () => Widget;
   openCodeSnippetEditor: (args: any) => void;
+  editorServices: IEditorServices;
 }
 
 /**
@@ -424,6 +426,47 @@ export class CodeSnippetDisplay extends React.Component<
     });
   }
 
+  private _evtMouseLeave(): void {
+    //get rid of preview by clicking anything
+    const preview = document.querySelector('.jp-preview');
+    if (preview) {
+      // if target is not the code snippet name area, then add inactive
+      // if target area is the code snippet name area, previewSnippet widget will handle preview.
+      if (!preview.classList.contains('inactive')) {
+        preview.classList.add('inactive');
+        for (const elem of document.getElementsByClassName('drag-hover')) {
+          if (elem.classList.contains('drag-hover-clicked')) {
+            elem.classList.remove('drag-hover-clicked');
+          }
+        }
+        for (const item of document.getElementsByClassName(
+          'codeSnippet-item'
+        )) {
+          if (item.classList.contains('codeSnippet-item-clicked')) {
+            item.classList.remove('codeSnippet-item-clicked');
+          }
+        }
+      }
+    }
+  }
+
+  //Set the position of the preview to be next to the snippet title.
+  private _setPreviewPosition(id: string): void {
+    const intID = parseInt(id, 10);
+    const target = event.target as HTMLElement;
+    console.log(target);
+    const realTarget = document.getElementsByClassName(
+      'expandableContainer-title'
+    )[intID];
+    // distDown is the number of pixels to shift the preview down
+    let distDown: number = realTarget.getBoundingClientRect().top - 40;
+    if (realTarget.getBoundingClientRect().top > window.screen.height / 2) {
+      distDown = distDown - 66;
+    }
+    const final = distDown.toString(10) + 'px';
+    document.documentElement.style.setProperty('--preview-distance', final);
+  }
+
   // Render display of code snippet list
   // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
   private renderCodeSnippet = (
@@ -503,17 +546,22 @@ export class CodeSnippetDisplay extends React.Component<
               id={id}
               title={codeSnippet.name}
               className={DISPLAY_NAME_CLASS}
-              onClick={(): void => {
+              onMouseEnter={(event): void => {
                 showPreview(
                   {
                     id: parseInt(id, 10),
                     title: displayName,
-                    body: new PreviewHandler(codeSnippet),
+                    body: new PreviewHandler(),
                     codeSnippet: codeSnippet
                   },
-                  this.props.openCodeSnippetEditor
+                  this.props.openCodeSnippetEditor,
+                  this.props.editorServices
                 );
                 this.snippetClicked(id);
+                this._setPreviewPosition(id);
+              }}
+              onMouseLeave={(): void => {
+                this._evtMouseLeave();
               }}
             >
               {this.boldNameOnSearch(this.state.searchValue, displayName)}
@@ -556,8 +604,11 @@ export class CodeSnippetDisplay extends React.Component<
 
   private renderTag(tag: string, id: string): JSX.Element {
     return (
-      <div className={'tag applied-tag'} key={tag + '-' + id}>
-        <label className={'tag-header'}>{tag}</label>
+      <div
+        className={'jp-codeSnippet-tag tag applied-tag'}
+        key={tag + '-' + id}
+      >
+        <label>{tag}</label>
       </div>
     );
   }
@@ -592,6 +643,16 @@ export class CodeSnippetDisplay extends React.Component<
     );
   };
 
+  getActiveTags(): string[] {
+    const tags: string[] = [];
+    for (const codeSnippet of this.props.codeSnippets) {
+      if (codeSnippet.tags) {
+        tags.push(...codeSnippet.tags);
+      }
+    }
+    return tags;
+  }
+
   render(): React.ReactElement {
     return (
       <div>
@@ -604,8 +665,10 @@ export class CodeSnippetDisplay extends React.Component<
             top="5px"
           />
         </header>
-        <SearchBar onSearch={this.searchSnippets} />
-        <FilterSnippet />
+        <div className={'jp-codeSnippet-tools'}>
+          <SearchBar onSearch={this.searchSnippets} />
+          <FilterSnippet tags={this.getActiveTags()} />
+        </div>
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
@@ -619,44 +682,21 @@ export class CodeSnippetDisplay extends React.Component<
 }
 
 class PreviewHandler extends Widget {
-  constructor(codeSnippet: ICodeSnippet) {
-    super({ node: Private.createPreviewNode(codeSnippet) });
+  constructor() {
+    super({ node: Private.createPreviewNode() });
   }
 }
 
 class Private {
-  static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
+  static createPreviewContent(): HTMLElement {
     const body = document.createElement('div');
-    const previewContainer = document.createElement('div');
-    const descriptionContainer = document.createElement('div');
-    const descriptionTitle = document.createElement('h4');
-    const description = document.createElement('text');
-    const preview = document.createElement('text');
-
-    previewContainer.className = 'jp-preview-text';
-    descriptionContainer.className = 'jp-preview-description-container';
-    descriptionTitle.className = 'jp-preview-description-title';
-    description.className = 'jp-preview-description';
-    preview.className = 'jp-preview-textarea';
-
-    descriptionTitle.textContent = 'DESCRIPTION';
-    description.textContent = codeSnippet.description;
-    preview.textContent = codeSnippet.code.join('\n');
-
-    descriptionContainer.appendChild(descriptionTitle);
-    descriptionContainer.appendChild(description);
-    previewContainer.appendChild(descriptionContainer);
-
-    previewContainer.appendChild(preview);
-    body.append(previewContainer);
-
     return body;
   }
   /**
    * Create structure for preview of snippet data.
    */
-  static createPreviewNode(codeSnippet: ICodeSnippet): HTMLElement {
-    return this.createPreviewContent(codeSnippet);
+  static createPreviewNode(): HTMLElement {
+    return this.createPreviewContent();
   }
 }
 

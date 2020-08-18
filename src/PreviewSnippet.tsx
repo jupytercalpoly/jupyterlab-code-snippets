@@ -9,6 +9,7 @@ import { ArrayExt } from '@lumino/algorithm';
 
 import * as React from 'react';
 import { ICodeSnippet } from './CodeSnippetContentsService';
+import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 
 /**
  * The class name for confirmation box
@@ -25,11 +26,13 @@ const PREVIEW_CONTENT = 'jp-Preview-content';
  */
 export function showPreview<T>(
   options: Partial<Preview.IOptions<T>> = {},
-  openCodeSnippetEditor: (args: any) => void
+  openCodeSnippetEditor: (args: any) => void,
+  editorServices: IEditorServices
 ): Promise<void> {
   //Insert check method to see if the preview is already open
-  const preview = new Preview(options, openCodeSnippetEditor);
+  const preview = new Preview(options, openCodeSnippetEditor, editorServices);
   if (preview.ready === false) {
+    console.log('This is where I am stuck.');
     return;
   }
   return preview.launch();
@@ -42,32 +45,40 @@ export class Preview<T> extends Widget {
   ready: boolean;
   _title: string;
   _id: number;
+  editor: CodeEditor.IEditor;
+  codeSnippet: ICodeSnippet;
+  editorServices: IEditorServices;
+  private _hasRefreshedSinceAttach: boolean;
   constructor(
     options: Partial<Preview.IOptions<T>> = {},
-    openCodeSnippetEditor: (args: any) => void
+    openCodeSnippetEditor: (args: any) => void,
+    editorServices: IEditorServices
   ) {
     super();
     this.ready = true;
     this._title = options.title;
     this._id = options.id;
+    this.codeSnippet = options.codeSnippet;
+    this.editorServices = editorServices;
     this.addClass(PREVIEW_CLASS);
-    const renderer = Preview.defaultRenderer;
+    //const renderer = Preview.defaultRenderer;
     //this._host = options.host || document.body;
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
     content.addClass(PREVIEW_CONTENT);
+    content.id = PREVIEW_CONTENT + this._id;
     layout.addWidget(content);
 
-    const header = renderer.createHeader(options.title);
-    content.addWidget(header);
-    const body = renderer.createBody(options.body || '');
-    content.addWidget(body);
-    const editButton = renderer.createEditButton(
-      this,
-      openCodeSnippetEditor,
-      options.codeSnippet
-    );
-    content.addWidget(editButton);
+    // const header = renderer.createHeader(options.title);
+    // content.addWidget(header);
+    //const body = renderer.createBody(options.body || '');
+    //content.addWidget(body);
+    // const editButton = renderer.createEditButton(
+    //   this,
+    //   openCodeSnippetEditor,
+    //   options.codeSnippet
+    // );
+    // content.addWidget(editButton);
 
     if (Preview.tracker.size > 0) {
       const previous = Preview.tracker.currentWidget;
@@ -275,6 +286,11 @@ export class Preview<T> extends Widget {
     node.addEventListener('contextmenu', this, true);
     node.addEventListener('click', this, true);
     this._original = document.activeElement as HTMLElement;
+    super.onAfterAttach(msg);
+    this._hasRefreshedSinceAttach = false;
+    if (this.isVisible) {
+      this.update();
+    }
   }
 
   /**
@@ -287,6 +303,40 @@ export class Preview<T> extends Widget {
     node.removeEventListener('click', this, true);
     document.removeEventListener('focus', this, true);
     this._original.focus();
+  }
+
+  onAfterShow(msg: Message): void {
+    if (!this._hasRefreshedSinceAttach) {
+      this.update();
+    }
+  }
+
+  onUpdateRequest(msg: Message): void {
+    super.onUpdateRequest(msg);
+
+    if (!this.editor && document.getElementById(PREVIEW_CONTENT + this._id)) {
+      const editorFactory = this.editorServices.factoryService.newInlineEditor;
+      const getMimeTypeByLanguage = this.editorServices.mimeTypeService
+        .getMimeTypeByLanguage;
+
+      this.editor = editorFactory({
+        host: document.getElementById(PREVIEW_CONTENT + this._id),
+        config: { readOnly: true, fontSize: 5 },
+        model: new CodeEditor.Model({
+          value: this.codeSnippet.code.join('\n'),
+          mimeType: getMimeTypeByLanguage({
+            name: this.codeSnippet.language,
+            codemirror_mode: this.codeSnippet.language
+          })
+        })
+      });
+    }
+    this.editor.setSize({ width: 300, height: 106 });
+    console.log(document.getElementById(PREVIEW_CONTENT + this._id));
+    if (this.isVisible) {
+      this._hasRefreshedSinceAttach = true;
+      this.editor.refresh();
+    }
   }
 
   private _promise: PromiseDelegate<void> | null;
@@ -332,7 +382,7 @@ export namespace Preview {
   }
 
   export interface IRenderer {
-    createHeader(title: string): Widget;
+    // createHeader(title: string): Widget;
 
     /**
      * Create the body of the dialog.
@@ -342,7 +392,7 @@ export namespace Preview {
      * @returns A widget for the body.
      */
     createBody(body: Body<any>): Widget;
-    createEditButton(): Widget;
+    // createEditButton(): Widget;
   }
 
   export class Renderer {
@@ -353,13 +403,13 @@ export namespace Preview {
      *
      * @returns A widget for the header of the preview.
      */
-    createHeader(title: string): Widget {
-      const header = ReactWidget.create(<>{title}</>);
+    // createHeader(title: string): Widget {
+    //   const header = ReactWidget.create(<>{title}</>);
 
-      header.addClass('jp-Preview-header');
-      // Styling.styleNode(header.node);
-      return header;
-    }
+    //   header.addClass('jp-Preview-header');
+    //   // Styling.styleNode(header.node);
+    //   return header;
+    // }
 
     /**
      * Create the body of the dialog.
@@ -390,54 +440,40 @@ export namespace Preview {
       return body;
     }
 
-    // createIcon(): Widget {
-    //   let iconWidget: Widget;
-    //   iconWidget = new Widget({ node: document.createElement('img') });
-    //   console.log(checkSVGstr);
-    //   const checkIcon = new LabIcon( { name: "checkIcon", svgstr: checkSVGstr} );
-
-    //   <img src={`data:image/svg+xml;utf8,${image}` />
-
-    //   iconWidget.title.icon = checkIcon;
-    //   console.log(iconWidget.title.icon instanceof LabIcon);
-    //   iconWidget.addClass('jp-confirm-icon');
-    //   return iconWidget
-    // }
-
     /**
      * Create the edit button in the dialog.
      *
      * @returns A widget for the edit button.
      */
-    createEditButton(
-      prev: any,
-      openCodeSnippetEditor: (args: any) => void,
-      codeSnippet: ICodeSnippet
-    ): Widget {
-      const editButton: Widget = new Widget({
-        node: document.createElement('span')
-      });
-      editButton.addClass('jp-Preview-button');
-      editButton.node.onmouseover = (): void => {
-        editButton.addClass('jp-Preview-button-hover');
-      };
-      editButton.node.onmouseout = (): void => {
-        editButton.removeClass('jp-Preview-button-hover');
-      };
-      editButton.node.onclick = (): void => {
-        openCodeSnippetEditor(codeSnippet);
-        document
-          .getElementsByClassName('drag-hover')
-          [prev._id].classList.remove('drag-hover-clicked');
-        document
-          .getElementsByClassName('codeSnippet-item')
-          [prev._id].classList.remove('codeSnippet-item-clicked');
-        event.stopPropagation();
-        event.preventDefault();
-        prev.reject();
-      };
-      return editButton;
-    }
+    // createEditButton(
+    //   prev: any,
+    //   openCodeSnippetEditor: (args: any) => void,
+    //   codeSnippet: ICodeSnippet
+    // ): Widget {
+    //   const editButton: Widget = new Widget({
+    //     node: document.createElement('span')
+    //   });
+    //   editButton.addClass('jp-Preview-button');
+    //   editButton.node.onmouseover = (): void => {
+    //     editButton.addClass('jp-Preview-button-hover');
+    //   };
+    //   editButton.node.onmouseout = (): void => {
+    //     editButton.removeClass('jp-Preview-button-hover');
+    //   };
+    //   editButton.node.onclick = (): void => {
+    //     openCodeSnippetEditor(codeSnippet);
+    //     document
+    //       .getElementsByClassName('drag-hover')
+    //       [prev._id].classList.remove('drag-hover-clicked');
+    //     document
+    //       .getElementsByClassName('codeSnippet-item')
+    //       [prev._id].classList.remove('codeSnippet-item-clicked');
+    //     event.stopPropagation();
+    //     event.preventDefault();
+    //     prev.reject();
+    //   };
+    //   return editButton;
+    // }
   }
   /**
    * The default renderer instance.
