@@ -263,7 +263,7 @@ class MessageHandler extends Widget {
   }
 }
 
-function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
+export function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
   const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
   temp.parentElement.parentElement.removeChild(temp.parentElement);
   console.log(temp);
@@ -278,7 +278,7 @@ function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
   codeSnippet.renderCodeSnippetsSignal.emit(savedSnippets);
 }
 
-function onUndo(codeSnippet: CodeSnippetWidget): void {
+export function onUndo(codeSnippet: CodeSnippetWidget): void {
   codeSnippet.codeSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
   codeSnippet.renderCodeSnippetsSignal.emit(
     codeSnippet.codeSnippetWidgetModel.snippets
@@ -287,7 +287,7 @@ function onUndo(codeSnippet: CodeSnippetWidget): void {
   temp.parentElement.parentElement.removeChild(temp.parentElement);
 }
 
-function createUndoDeleteNode(
+export function createUndoDeleteNode(
   codeSnippet: CodeSnippetWidget,
   snippetID: number
 ): HTMLElement {
