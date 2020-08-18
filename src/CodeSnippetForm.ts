@@ -212,9 +212,6 @@ class InputHandler extends Widget {
   constructor() {
     super({ node: Private.createInputNode() });
     this.addClass(FILE_DIALOG_CLASS);
-    console.log(
-      (this.node.getElementsByTagName('select')[0] as HTMLSelectElement).value
-    );
   }
 
   getValue(): string[] {

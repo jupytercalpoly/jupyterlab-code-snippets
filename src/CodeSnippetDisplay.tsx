@@ -1,7 +1,10 @@
 import insertSVGstr from '../style/icon/insertsnippet.svg';
-import carrotSVGstr from '../style/icon/jupyter_snippetarrow.svg';
+import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
+import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
 import { SearchBar } from './SearchBar';
+import { FilterSnippet } from './FilterSnippet';
 import { showPreview } from './PreviewSnippet';
+import { showMoreOptions } from './MoreOptions';
 import {
   ICodeSnippet
   // CodeSnippetContentsService
@@ -16,8 +19,8 @@ import { PathExt } from '@jupyterlab/coreutils';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
-import { copyIcon } from '@jupyterlab/ui-components';
-import { LabIcon } from '@jupyterlab/ui-components';
+import { /**copyIcon,*/ LabIcon, addIcon } from '@jupyterlab/ui-components';
+import { IEditorServices } from '@jupyterlab/codeeditor';
 
 import { IExpandableActionButton } from '@elyra/ui-components';
 
@@ -45,7 +48,7 @@ const DISPLAY_NAME_CLASS = 'expandableContainer-name';
 const ELYRA_BUTTON_CLASS = 'jp-button';
 const BUTTON_CLASS = 'expandableContainer-button';
 const TITLE_CLASS = 'expandableContainer-title';
-const ACTION_BUTTONS_WRAPPER_CLASS = 'elyra-expandableContainer-action-buttons';
+const ACTION_BUTTONS_WRAPPER_CLASS = 'expandableContainer-action-buttons';
 const ACTION_BUTTON_CLASS = 'expandableContainer-actionButton';
 
 /**
@@ -71,9 +74,14 @@ const insertIcon = new LabIcon({
   svgstr: insertSVGstr
 });
 
-const previewIcon = new LabIcon({
-  name: 'custom-ui-compnents:preview',
-  svgstr: carrotSVGstr
+const launchEditorIcon = new LabIcon({
+  name: 'custom-ui-compnents:launchEditor',
+  svgstr: launchEditorSVGstr
+});
+
+const moreOptionsIcon = new LabIcon({
+  name: 'custom-ui-compnents:moreOptions',
+  svgstr: moreSVGstr
 });
 
 /**
@@ -83,6 +91,7 @@ interface ICodeSnippetDisplayProps {
   codeSnippets: ICodeSnippet[];
   getCurrentWidget: () => Widget;
   openCodeSnippetEditor: (args: any) => void;
+  editorServices: IEditorServices;
 }
 
 /**
@@ -90,7 +99,7 @@ interface ICodeSnippetDisplayProps {
  */
 interface ICodeSnippetDisplayState {
   codeSnippets: ICodeSnippet[];
-  filterValue: string;
+  searchValue: string;
 }
 
 /**
@@ -104,7 +113,7 @@ export class CodeSnippetDisplay extends React.Component<
   _dragData: { pressX: number; pressY: number; dragImage: HTMLElement };
   constructor(props: ICodeSnippetDisplayProps) {
     super(props);
-    this.state = { codeSnippets: this.props.codeSnippets, filterValue: '' };
+    this.state = { codeSnippets: this.props.codeSnippets, searchValue: '' };
     this._drag = null;
     this._dragData = null;
     this.handleDragMove = this.handleDragMove.bind(this);
@@ -114,7 +123,6 @@ export class CodeSnippetDisplay extends React.Component<
   // Handle code snippet insert into an editor
   private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
     const widget: Widget = this.props.getCurrentWidget();
-    console.log('current widget: ' + widget);
     const snippetStr: string = snippet.code.join('\n');
 
     // if the widget is document widget and it's a file?? in the file editor
@@ -230,7 +238,6 @@ export class CodeSnippetDisplay extends React.Component<
   //     }
   //   }
   //   counter += 1;
-  //   console.log(counter);
   //   return 'LOC\t\t' + counter;
   // };
 
@@ -268,25 +275,28 @@ export class CodeSnippetDisplay extends React.Component<
         .getElementsByClassName('drag-hover')
         [_id].classList.add('drag-hover-clicked');
     }
-    if (
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.contains('codeSnippet-item-clicked')
-    ) {
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.remove('codeSnippet-item-clicked');
-    } else {
-      document
-        .getElementsByClassName(CODE_SNIPPET_ITEM)
-        [_id].classList.add('codeSnippet-item-clicked');
-    }
+    // if (
+    //   document
+    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
+    //     [_id].classList.contains('codeSnippet-item-clicked')
+    // ) {
+    //   document
+    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
+    //     [_id].classList.remove('codeSnippet-item-clicked');
+    // } else {
+    //   document
+    //     .getElementsByClassName(CODE_SNIPPET_ITEM)
+    //     [_id].classList.add('codeSnippet-item-clicked');
+    // }
   };
 
   // Bold text in snippet name based on search
-  private boldNameOnSearch = (filter: string, displayed: string): any => {
+  private boldNameOnSearch = (
+    filter: string,
+    displayed: string
+  ): JSX.Element => {
     const name: string = displayed;
-    if (filter !== '') {
+    if (filter !== '' && displayed.includes(filter)) {
       const startIndex: number = name.indexOf(filter);
       const endIndex: number = startIndex + filter.length;
       const start = name.substring(0, startIndex);
@@ -300,7 +310,7 @@ export class CodeSnippetDisplay extends React.Component<
         </span>
       );
     }
-    return name;
+    return <span>{name}</span>;
   };
 
   private handleDragSnippet(
@@ -414,11 +424,78 @@ export class CodeSnippetDisplay extends React.Component<
     target.removeEventListener('mouseup', this._evtMouseUp, true);
 
     return this._drag.start(clientX, clientY).then(() => {
-      console.log('drag done');
       this.dragHoverStyleRemove(codeSnippet.id.toString());
       this._drag = null;
       this._dragData = null;
     });
+  }
+
+  private _evtMouseLeave(): void {
+    //get rid of preview by clicking anything
+    const preview = document.querySelector('.jp-preview');
+    if (preview) {
+      // if target is not the code snippet name area, then add inactive
+      // if target area is the code snippet name area, previewSnippet widget will handle preview.
+      if (!preview.classList.contains('inactive')) {
+        preview.classList.add('inactive');
+        for (const elem of document.getElementsByClassName('drag-hover')) {
+          if (elem.classList.contains('drag-hover-clicked')) {
+            elem.classList.remove('drag-hover-clicked');
+          }
+        }
+        for (const item of document.getElementsByClassName(
+          'codeSnippet-item'
+        )) {
+          if (item.classList.contains('codeSnippet-item-clicked')) {
+            item.classList.remove('codeSnippet-item-clicked');
+          }
+        }
+      }
+    }
+  }
+
+  //Set the position of the preview to be next to the snippet title.
+  private _setPreviewPosition(id: string): void {
+    const intID = parseInt(id, 10);
+    const realTarget = document.getElementsByClassName(
+      'expandableContainer-title'
+    )[intID];
+    // distDown is the number of pixels to shift the preview down
+    let distDown: number = realTarget.getBoundingClientRect().top - 40;
+    if (realTarget.getBoundingClientRect().top > window.screen.height / 2) {
+      distDown = distDown - 66;
+    }
+    const final = distDown.toString(10) + 'px';
+    document.documentElement.style.setProperty('--preview-distance', final);
+  }
+
+  //Set the position of the option to be under to the three dots on snippet.
+  private _setOptionsPosition(
+    id: string,
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ): void {
+    let target = event.target as HTMLElement;
+    let topAsString: string;
+    console.log(target);
+    console.log(target.getBoundingClientRect().top + 10);
+    console.log(target.getBoundingClientRect().left);
+    if (target.tagName === 'path') {
+      topAsString =
+        (target.getBoundingClientRect().top + 10).toString(10) + 'px';
+    } else {
+      topAsString =
+        (target.getBoundingClientRect().top + 18).toString(10) + 'px';
+    }
+    const leftAsString =
+      target.getBoundingClientRect().left.toString(10) + 'px';
+    document.documentElement.style.setProperty(
+      '--more-options-top',
+      topAsString
+    );
+    document.documentElement.style.setProperty(
+      '--more-options-left',
+      leftAsString
+    );
   }
 
   // Render display of code snippet list
@@ -429,15 +506,17 @@ export class CodeSnippetDisplay extends React.Component<
   ): JSX.Element => {
     const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
+    const tags = codeSnippet.tags;
+    console.log('Why are you not updating!!!');
 
     const actionButtons = [
-      {
-        title: 'Copy',
-        icon: copyIcon,
-        onClick: (): void => {
-          Clipboard.copyToSystem(codeSnippet.code.join('\n'));
-        }
-      },
+      // {
+      //   title: 'Copy',
+      //   icon: copyIcon,
+      //   onClick: (): void => {
+      //     Clipboard.copyToSystem(codeSnippet.code.join('\n'));
+      //   }
+      // },
       {
         title: 'Insert',
         icon: insertIcon,
@@ -446,19 +525,29 @@ export class CodeSnippetDisplay extends React.Component<
         }
       },
       {
-        title: 'Preview',
-        icon: previewIcon,
+        title: 'Launch Editor',
+        icon: launchEditorIcon,
         onClick: (): void => {
-          showPreview(
-            {
-              id: parseInt(id, 10),
-              title: displayName,
-              body: new PreviewHandler(codeSnippet),
-              codeSnippet: codeSnippet
-            },
-            this.props.openCodeSnippetEditor
-          );
-          this.snippetClicked(id);
+          // showPreview(
+          //   {
+          //     id: parseInt(id, 10),
+          //     title: displayName,
+          //     body: new PreviewHandler(codeSnippet),
+          //     codeSnippet: codeSnippet
+          //   }
+          //   );
+          this.props.openCodeSnippetEditor(codeSnippet);
+          // this.snippetClicked(id);
+        }
+      },
+      {
+        title: 'More options',
+        icon: moreOptionsIcon,
+        onClick: (
+          event: React.MouseEvent<HTMLDivElement, MouseEvent>
+        ): void => {
+          showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
+          this._setOptionsPosition(id, event);
         }
       }
     ];
@@ -475,6 +564,23 @@ export class CodeSnippetDisplay extends React.Component<
         onMouseOut={(): void => {
           this.dragHoverStyleRemove(id);
         }}
+        onMouseEnter={(event): void => {
+          showPreview(
+            {
+              id: parseInt(id, 10),
+              title: displayName,
+              body: new PreviewHandler(),
+              codeSnippet: codeSnippet
+            },
+            this.props.openCodeSnippetEditor,
+            this.props.editorServices
+          );
+          this.snippetClicked(id);
+          this._setPreviewPosition(id);
+        }}
+        onMouseLeave={(): void => {
+          this._evtMouseLeave();
+        }}
       >
         <div
           className="drag-hover"
@@ -484,10 +590,11 @@ export class CodeSnippetDisplay extends React.Component<
             this.handleDragSnippet(event);
           }}
         ></div>
-        <div>
+        <div className={'jp-codeSnippet-metadata'}>
           <div
             key={displayName}
             className={TITLE_CLASS}
+            id={id}
             // onMouseOver={() => {
             //   this.dragHoverStyle(id);
             // }}
@@ -495,89 +602,152 @@ export class CodeSnippetDisplay extends React.Component<
             //   this.dragHoverStyleRemove(id);
             // }}
           >
-            <span
+            <div
               id={id}
               title={codeSnippet.name}
               className={DISPLAY_NAME_CLASS}
-              onClick={(): void => {
-                showPreview(
-                  {
-                    id: parseInt(id, 10),
-                    title: displayName,
-                    body: new PreviewHandler(codeSnippet),
-                    codeSnippet: codeSnippet
-                  },
-                  this.props.openCodeSnippetEditor
-                );
-                this.snippetClicked(id);
-              }}
             >
-              {this.boldNameOnSearch(this.state.filterValue, displayName)}
-            </span>
-            <div className={ACTION_BUTTONS_WRAPPER_CLASS}>
+              {this.boldNameOnSearch(this.state.searchValue, displayName)}
+            </div>
+            <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id}>
               {actionButtons.map((btn: IExpandableActionButton) => {
                 return (
                   <button
                     key={btn.title}
                     title={btn.title}
                     className={buttonClasses + ' ' + ACTION_BUTTON_CLASS}
-                    onClick={(): void => {
+                    onClick={(event): void => {
                       if (btn.title === 'Copy') {
                         alert('saved to clipboard');
                       }
-                      btn.onClick();
+                      if (btn.title === 'More options') {
+                        btn.onClick(event);
+                      } else {
+                        btn.onClick();
+                      }
                     }}
                   >
                     <btn.icon.react
                       tag="span"
                       elementPosition="center"
-                      width="16px"
+                      width="21px"
+                      height="21px"
                     />
                   </button>
                 );
               })}
             </div>
           </div>
+          <div className={'jp-codeSnippet-description'} id={id}>
+            <p id={id}>{`${codeSnippet.description}`}</p>
+          </div>
+          <div className={'jp-codeSnippet-tags'} id={id}>
+            {tags ? tags.map((tag: string) => this.renderTag(tag, id)) : null}
+          </div>
         </div>
       </div>
     );
   };
 
+  private renderTag(tag: string, id: string): JSX.Element {
+    return (
+      <div
+        className={'jp-codeSnippet-tag tag applied-tag'}
+        key={tag + '-' + id}
+      >
+        <label>{tag}</label>
+      </div>
+    );
+  }
+
   static getDerivedStateFromProps(
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    console.log('udpating display!');
-    console.log(props);
-    console.log(state);
-    if (props.codeSnippets !== state.codeSnippets && state.filterValue === '') {
+    if (props.codeSnippets !== state.codeSnippets && state.searchValue === '') {
       return {
         codeSnippets: props.codeSnippets,
-        filterValue: ''
+        searchValue: ''
       };
     }
     return null;
   }
 
-  filterSnippets = (filterValue: string): void => {
+  searchSnippets = (searchValue: string): void => {
     const newSnippets = this.props.codeSnippets.filter(
       codeSnippet =>
-        codeSnippet.name.includes(filterValue) ||
-        codeSnippet.language.includes(filterValue)
+        codeSnippet.name.includes(searchValue) ||
+        codeSnippet.language.includes(searchValue)
     );
     this.setState(
-      { codeSnippets: newSnippets, filterValue: filterValue },
+      { codeSnippets: newSnippets, searchValue: searchValue },
       () => {
         console.log('CodeSnippets are successfully filtered.');
       }
     );
   };
 
+  getActiveTags(): string[] {
+    const tags: string[] = [];
+    for (const codeSnippet of this.props.codeSnippets) {
+      if (codeSnippet.tags) {
+        tags.push(...codeSnippet.tags);
+      }
+    }
+    return tags;
+  }
+
+  public createOptionsNode(codeSnippet: ICodeSnippet): HTMLElement {
+    const body = document.createElement('div');
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'jp-more-options-content';
+    const insertSnip = document.createElement('div');
+    insertSnip.className = 'jp-more-options-insert';
+    insertSnip.textContent = 'Insert snippet';
+    insertSnip.onclick = (): void => {
+      this.insertCodeSnippet(codeSnippet);
+    };
+    const copySnip = document.createElement('div');
+    copySnip.className = 'jp-more-options-copy';
+    copySnip.textContent = 'Copy snippet to clipboard';
+    copySnip.onclick = (): void => {
+      Clipboard.copyToSystem(codeSnippet.code.join('\n'));
+      alert('saved to clipboard');
+    };
+    const editSnip = document.createElement('div');
+    editSnip.className = 'jp-more-options-edit';
+    editSnip.textContent = 'Edit snippet';
+    editSnip.onclick = (): void => {
+      this.props.openCodeSnippetEditor(codeSnippet);
+    };
+    const deleteSnip = document.createElement('div');
+    deleteSnip.className = 'jp-more-options-delete';
+    deleteSnip.textContent = 'Delete snippet';
+    optionsContainer.appendChild(insertSnip);
+    optionsContainer.appendChild(copySnip);
+    optionsContainer.appendChild(editSnip);
+    optionsContainer.appendChild(deleteSnip);
+    body.append(optionsContainer);
+    return body;
+  }
+
   render(): React.ReactElement {
     return (
       <div>
-        <SearchBar onFilter={this.filterSnippets} />
-        <header className={CODE_SNIPPETS_HEADER_CLASS}>{'Snippets'}</header>
+        <header className={CODE_SNIPPETS_HEADER_CLASS}>
+          <span className={'jp-codeSnippet-title'}>{'Snippets'}</span>
+          <addIcon.react
+            className={'jp-createSnippetBtn'}
+            tag="span"
+            right="7px"
+            top="5px"
+          />
+        </header>
+        <div className={'jp-codeSnippet-tools'}>
+          <SearchBar onSearch={this.searchSnippets} />
+          <FilterSnippet tags={this.getActiveTags()} />
+        </div>
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
@@ -590,46 +760,64 @@ export class CodeSnippetDisplay extends React.Component<
   }
 }
 
+class OptionsHandler extends Widget {
+  constructor(object: CodeSnippetDisplay, codeSnippet: ICodeSnippet) {
+    super({ node: object.createOptionsNode(codeSnippet) });
+  }
+}
+
 class PreviewHandler extends Widget {
-  constructor(codeSnippet: ICodeSnippet) {
-    super({ node: Private.createPreviewNode(codeSnippet) });
+  constructor() {
+    super({ node: Private.createPreviewNode() });
   }
 }
 
 class Private {
-  static createPreviewContent(codeSnippet: ICodeSnippet): HTMLElement {
+  static createPreviewContent(): HTMLElement {
     const body = document.createElement('div');
-    const previewContainer = document.createElement('div');
-    const descriptionContainer = document.createElement('div');
-    const descriptionTitle = document.createElement('h4');
-    const description = document.createElement('text');
-    const preview = document.createElement('text');
-
-    previewContainer.className = 'jp-preview-text';
-    descriptionContainer.className = 'jp-preview-description-container';
-    descriptionTitle.className = 'jp-preview-description-title';
-    description.className = 'jp-preview-description';
-    preview.className = 'jp-preview-textarea';
-
-    descriptionTitle.textContent = 'DESCRIPTION';
-    description.textContent = codeSnippet.description;
-    preview.textContent = codeSnippet.code.join('\n');
-
-    descriptionContainer.appendChild(descriptionTitle);
-    descriptionContainer.appendChild(description);
-    previewContainer.appendChild(descriptionContainer);
-
-    previewContainer.appendChild(preview);
-    body.append(previewContainer);
-
     return body;
   }
   /**
    * Create structure for preview of snippet data.
    */
-  static createPreviewNode(codeSnippet: ICodeSnippet): HTMLElement {
-    return this.createPreviewContent(codeSnippet);
+  static createPreviewNode(): HTMLElement {
+    return this.createPreviewContent();
   }
+
+  // static createOptionsNode(
+  //   object: any,
+  //   codeSnippet: ICodeSnippet
+  // ): HTMLElement {
+  //   const body = document.createElement('div');
+
+  //   const optionsContainer = document.createElement('div');
+  //   optionsContainer.className = 'jp-more-options-content';
+  //   const insertSnip = document.createElement('div');
+  //   insertSnip.className = 'jp-more-options-insert';
+  //   insertSnip.textContent = 'Insert snippet';
+  //   insertSnip.onclick = (): void => {
+  //     object.insertCodeSnippet(codeSnippet);
+  //   };
+  //   const copySnip = document.createElement('div');
+  //   copySnip.className = 'jp-more-options-copy';
+  //   copySnip.textContent = 'Copy snippet to clipboard';
+  //   copySnip.onclick = (): void => {
+  //     Clipboard.copyToSystem(codeSnippet.code.join('\n'));
+  //     alert('saved to clipboard');
+  //   };
+  //   const editSnip = document.createElement('div');
+  //   editSnip.className = 'jp-more-options-edit';
+  //   editSnip.textContent = 'Edit snippet';
+  //   const deleteSnip = document.createElement('div');
+  //   deleteSnip.className = 'jp-more-options-delete';
+  //   deleteSnip.textContent = 'Delete snippet';
+  //   optionsContainer.appendChild(insertSnip);
+  //   optionsContainer.appendChild(copySnip);
+  //   optionsContainer.appendChild(editSnip);
+  //   optionsContainer.appendChild(deleteSnip);
+  //   body.append(optionsContainer);
+  //   return body;
+  // }
 }
 
 /**

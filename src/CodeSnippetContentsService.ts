@@ -44,7 +44,6 @@ export class CodeSnippetContentsService {
       //   format: 'text',
       content: true
     });
-    // console.log(data);
     return data;
   }
 

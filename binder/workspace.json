@@ -4,14 +4,11 @@
       "main": {
         "dock": {
           "type": "tab-area",
-          "currentIndex": 1,
-          "widgets": [
-            "notebook:Untitled.ipynb",
-            "codeSnippetEditor:jp-codeSnippet-editor-3"
-          ]
+          "currentIndex": 0,
+          "widgets": ["notebook:Untitled.ipynb"]
         },
         "mode": "multiple-document",
-        "current": "codeSnippetEditor:jp-codeSnippet-editor-3"
+        "current": "notebook:Untitled.ipynb"
       },
       "left": {
         "collapsed": false,
@@ -24,7 +21,6 @@
           "jp-property-inspector",
           "tab-manager",
           "@jupyterlab/toc:plugin",
-          "elyra-code-snippet-extension",
           "code-snippet-extension",
           "extensionmanager.main-view"
         ]
@@ -35,15 +31,6 @@
     "codeSnippetEditor:jp-codeSnippet-editor-undefined": { "data": {} },
     "notebook:Untitled.ipynb": {
       "data": { "path": "Untitled.ipynb", "factory": "Notebook" }
-    },
-    "codeSnippetEditor:jp-codeSnippet-editor-3": {
-      "data": {
-        "name": "newSnippet",
-        "description": "testing",
-        "language": "python",
-        "code": ["```python", "1 + 2", "```### Testing"],
-        "id": 3
-      }
     }
   },
   "metadata": { "id": "/lab" }
