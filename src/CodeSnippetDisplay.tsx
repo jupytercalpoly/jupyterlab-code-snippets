@@ -8,7 +8,7 @@ import { showPreview } from './PreviewSnippet';
 import { showMoreOptions } from './MoreOptions';
 import {
   ICodeSnippet
-  // CodeSnippetContentsService
+  //CodeSnippetContentsService
 } from './CodeSnippetContentsService';
 // import { CodeSnippetWidget } from './CodeSnippetWidget';
 
@@ -83,11 +83,6 @@ const insertIcon = new LabIcon({
 /**
  * Icon for more options
  */
-const moreIcon = new LabIcon({
-  name: 'custom-ui-components:moreOption',
-  svgstr: moreSVGstr
-});
-
 const moreOptionsIcon = new LabIcon({
   name: 'custom-ui-compnents:moreOptions',
   svgstr: moreSVGstr
@@ -505,13 +500,6 @@ export class CodeSnippetDisplay extends React.Component<
       //   }
       // },
       {
-        title: 'More Options',
-        icon: moreIcon,
-        onClick: (): void => {
-          console.log('More option clicked!');
-        }
-      },
-      {
         title: 'Insert',
         icon: insertIcon,
         onClick: (): void => {
@@ -722,6 +710,20 @@ export class CodeSnippetDisplay extends React.Component<
     return tags;
   }
 
+  private deleteCommand(
+    snippetName: string
+    /*contentsService: CodeSnippetContentsService*/
+  ): void {
+    showDialog({
+      title: 'Warning',
+      body: 'Delete "' + snippetName + '"? ',
+      buttons: [Dialog.cancelButton(), Dialog.okButton()]
+    });
+    //.then(result => {
+    //  contentsService.delete('snippets/' + snippetName + '.json');
+    //});
+  }
+
   public createOptionsNode(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
 
@@ -749,6 +751,9 @@ export class CodeSnippetDisplay extends React.Component<
     const deleteSnip = document.createElement('div');
     deleteSnip.className = 'jp-more-options-delete';
     deleteSnip.textContent = 'Delete snippet';
+    deleteSnip.onclick = (): void => {
+      this.deleteCommand(codeSnippet.name);
+    };
     optionsContainer.appendChild(insertSnip);
     optionsContainer.appendChild(copySnip);
     optionsContainer.appendChild(editSnip);
