@@ -127,6 +127,7 @@ export class CodeSnippetWidget extends ReactWidget {
           this._codeSnippetWidgetModel.addSnippet(JSON.parse(model.content), i);
         });
       }
+      this._codeSnippets = this._codeSnippetWidgetModel.snippets;
       return this._codeSnippetWidgetModel.snippets;
     }
     // console.log(data);

@@ -65,10 +65,28 @@ export class CodeSnippetEditor extends ReactWidget {
     this.activateCodeMirror = this.activateCodeMirror.bind(this);
     this.saveChange = this.saveChange.bind(this);
     this.updateSnippet = this.updateSnippet.bind(this);
+    this.getActiveTags = this.getActiveTags.bind(this);
   }
 
   get codeSnippet(): ICodeSnippet {
     return this._codeSnippet;
+  }
+
+  private getActiveTags(): string[] {
+    const tags: string[] = ['hello'];
+
+    // await this.codeSnippetWidget
+    //   .fetchData()
+    //   .then((codeSnippets: ICodeSnippet[]) => {
+    //     console.log(codeSnippets);
+    //     // for (const codeSnippet of codeSnippets) {
+    //     //   if (codeSnippet.tags) {
+    //     //     tags.push(...codeSnippet.tags);
+    //     //   }
+    //     // }
+    //     // console.log(tags);
+    //   });
+    return tags;
   }
 
   private deactivateEditor(
@@ -437,6 +455,7 @@ export class CodeSnippetEditor extends ReactWidget {
           list="languages"
           name="language"
           defaultValue={this._codeSnippet.language}
+          onChange={this.handleInputFieldChange}
           required
         />
         <datalist id="languages">
@@ -536,6 +555,8 @@ export class CodeSnippetEditor extends ReactWidget {
               Other
             </option>
           </select> */}
+          <label className="jp-snippet-editor-tags-label">Tags</label>
+          <p>{this.getActiveTags()}</p>
         </section>
         <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
         {this.renderCodeInput()}
