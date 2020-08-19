@@ -74,7 +74,6 @@ export class FilterTools extends React.Component<
     const target = event.target as HTMLElement;
     const clickedTag = target.innerText;
     const parent = target.parentElement;
-    // const filteredTags = this.state.filteredTags.slice();
 
     this.setState(
       state => ({
@@ -171,7 +170,7 @@ export class FilterTools extends React.Component<
             className={'jp-codeSnippet-filter-btn'}
             onClick={this.createFilterBox}
           >
-            Filter
+            Filter By Tags
           </button>
           {/* <div className="jp-codeSnippet-filterContainer idle"> */}
           <div className="jp-codeSnippet-filter-arrow-up idle"></div>
