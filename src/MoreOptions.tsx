@@ -1,22 +1,15 @@
 import '../style/index.css';
-
 import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
-// import { ICodeSnippet } from '.';
-
-import * as React from 'react';
-import { ICodeSnippet } from './CodeSnippetContentsService';
-import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 
 /**
- * The class name for confirmation box
+ * The class name for options box
  */
-const PREVIEW_CLASS = 'jp-preview';
+const OPTIONS_CLASS = 'jp-options';
 
-const PREVIEW_CONTENT = 'jp-Preview-content';
 /**
  * Create and show a dialog.
  *
@@ -24,86 +17,42 @@ const PREVIEW_CONTENT = 'jp-Preview-content';
  *
  * @returns A promise that resolves with whether the dialog was accepted.
  */
-export function showPreview<T>(
-  options: Partial<Preview.IOptions<T>> = {},
-  openCodeSnippetEditor: (args: any) => void,
-  editorServices: IEditorServices
+export function showMoreOptions<T>(
+  options: Partial<OptionsMessage.IOptions<T>> = {}
 ): Promise<void> {
-  //Insert check method to see if the preview is already open
-  const preview = new Preview(options, openCodeSnippetEditor, editorServices);
-  if (preview.ready === false) {
-    return;
-  }
-  return preview.launch();
+  console.log(options);
+  const optionsMessage = new OptionsMessage(options);
+  return optionsMessage.launch();
 }
 
 /**
- * A widget used to show confirmation message.
+ * A widget used to show options message.
  */
-export class Preview<T> extends Widget {
-  ready: boolean;
-  _title: string;
-  _id: number;
-  editor: CodeEditor.IEditor;
-  codeSnippet: ICodeSnippet;
-  editorServices: IEditorServices;
-  private _hasRefreshedSinceAttach: boolean;
-  constructor(
-    options: Partial<Preview.IOptions<T>> = {},
-    openCodeSnippetEditor: (args: any) => void,
-    editorServices: IEditorServices
-  ) {
+export class OptionsMessage<T> extends Widget {
+  constructor(options: Partial<OptionsMessage.IOptions<T>> = {}) {
     super();
-    this.ready = true;
-    this._title = options.title;
-    this._id = options.id;
-    this.codeSnippet = options.codeSnippet;
-    this.editorServices = editorServices;
-    this.addClass(PREVIEW_CLASS);
-    //const renderer = Preview.defaultRenderer;
-    //this._host = options.host || document.body;
+    this.addClass(OPTIONS_CLASS);
+    const renderer = OptionsMessage.defaultRenderer;
+
+    this._host = options.host || document.body;
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
-    content.addClass(PREVIEW_CONTENT);
-    content.id = PREVIEW_CONTENT + this._id;
+    content.addClass('jp-Options-content');
     layout.addWidget(content);
 
-    // const header = renderer.createHeader(options.title);
-    // content.addWidget(header);
-    //const body = renderer.createBody(options.body || '');
-    //content.addWidget(body);
-    // const editButton = renderer.createEditButton(
-    //   this,
-    //   openCodeSnippetEditor,
-    //   options.codeSnippet
-    // );
-    // content.addWidget(editButton);
+    const body = renderer.createBody(options.body || '');
+    // body.addClass('jp-Message-body');
+    // const icon = renderer.createIcon();
+    // content.addWidget(icon);
+    content.addWidget(body);
 
-    if (Preview.tracker.size > 0) {
-      const previous = Preview.tracker.currentWidget;
-      // if (previous._title !== this._title) {
-      //   document
-      //     .getElementsByClassName('drag-hover')
-      //     [previous._id].classList.remove('drag-hover-clicked');
-      //   document
-      //     .getElementsByClassName('codeSnippet-item')
-      //     [previous._id].classList.remove('codeSnippet-item-clicked');
-      // }
-      // if (previous._title === this._title) {
-      //   if (previous.node.classList.contains('inactive')) {
-      //     previous.node.classList.remove('inactive');
-      //     this.ready = false;
-      //     return this;
-      //   } else {
-      //     this.ready = false;
-      //   }
-      // }
+    if (OptionsMessage.tracker.size > 0) {
+      const previous = OptionsMessage.tracker.currentWidget;
       previous.reject();
-      Preview.tracker.dispose();
+      OptionsMessage.tracker.dispose();
     }
-    if (this.ready === true) {
-      void Preview.tracker.add(this);
-    }
+
+    void OptionsMessage.tracker.add(this);
   }
   /**
    * Launch the dialog as a modal window.
@@ -119,7 +68,7 @@ export class Preview<T> extends Widget {
     const promises = Promise.all(Private.launchQueue);
     Private.launchQueue.push(this._promise.promise);
     return promises.then(() => {
-      Widget.attach(this, document.getElementById('jp-main-dock-panel'));
+      Widget.attach(this, this._host);
       return promise.promise;
     });
   }
@@ -136,12 +85,9 @@ export class Preview<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      // case 'keydown':
-      //   this._evtKeydown(event as KeyboardEvent);
-      //   break;
-      // case 'click':
-      //   this._evtClick(event as MouseEvent);
-      //   break;
+      case 'click':
+        this._evtClick(event as MouseEvent);
+        break;
       case 'contextmenu':
         event.preventDefault();
         event.stopPropagation();
@@ -157,50 +103,14 @@ export class Preview<T> extends Widget {
    * @param event - The DOM event sent to the widget
    */
   protected _evtClick(event: MouseEvent): void {
-    //gray area
     const content = this.node.getElementsByClassName(
-      PREVIEW_CONTENT
+      'jp-Options-content'
     )[0] as HTMLElement;
     if (!content.contains(event.target as HTMLElement)) {
-      document
-        .getElementsByClassName('drag-hover')
-        [this._id].classList.remove('drag-hover-clicked');
-      document
-        .getElementsByClassName('codeSnippet-item')
-        [this._id].classList.remove('codeSnippet-item-clicked');
       event.stopPropagation();
       event.preventDefault();
       this.reject();
       return;
-    }
-  }
-
-  /**
-   * Handle the `'keydown'` event for the widget.
-   *
-   * @param event - The DOM event sent to the widget
-   */
-  protected _evtKeydown(event: KeyboardEvent): void {
-    // Check for escape key
-    switch (event.keyCode) {
-      case 27: // Escape.
-        document
-          .getElementsByClassName('drag-hover')
-          [this._id].classList.remove('drag-hover-clicked');
-        document
-          .getElementsByClassName('codeSnippet-item')
-          [this._id].classList.remove('codeSnippet-item-clicked');
-        event.stopPropagation();
-        event.preventDefault();
-        this.reject();
-        break;
-      // case 13: // Enter.
-      //   event.stopPropagation();
-      //   event.preventDefault();
-      //   this.resolve();
-      //   break;
-      default:
-        break;
     }
   }
 
@@ -282,11 +192,6 @@ export class Preview<T> extends Widget {
     node.addEventListener('contextmenu', this, true);
     node.addEventListener('click', this, true);
     this._original = document.activeElement as HTMLElement;
-    super.onAfterAttach(msg);
-    this._hasRefreshedSinceAttach = false;
-    if (this.isVisible) {
-      this.update();
-    }
   }
 
   /**
@@ -301,45 +206,12 @@ export class Preview<T> extends Widget {
     this._original.focus();
   }
 
-  onAfterShow(msg: Message): void {
-    if (!this._hasRefreshedSinceAttach) {
-      this.update();
-    }
-  }
-
-  onUpdateRequest(msg: Message): void {
-    super.onUpdateRequest(msg);
-
-    if (!this.editor && document.getElementById(PREVIEW_CONTENT + this._id)) {
-      const editorFactory = this.editorServices.factoryService.newInlineEditor;
-      const getMimeTypeByLanguage = this.editorServices.mimeTypeService
-        .getMimeTypeByLanguage;
-
-      this.editor = editorFactory({
-        host: document.getElementById(PREVIEW_CONTENT + this._id),
-        config: { readOnly: true, fontSize: 3 },
-        model: new CodeEditor.Model({
-          value: this.codeSnippet.code.join('\n'),
-          mimeType: getMimeTypeByLanguage({
-            name: this.codeSnippet.language,
-            codemirror_mode: this.codeSnippet.language
-          })
-        })
-      });
-      this.editor.setSize({ width: 300, height: 106 });
-    }
-    if (this.isVisible) {
-      this._hasRefreshedSinceAttach = true;
-      this.editor.refresh();
-    }
-  }
-
   private _promise: PromiseDelegate<void> | null;
-  //private _host: HTMLElement;
+  private _host: HTMLElement;
   private _original: HTMLElement;
 }
 
-export namespace Preview {
+export namespace OptionsMessage {
   /**
    * The body input types.
    */
@@ -358,8 +230,6 @@ export namespace Preview {
   }
 
   export interface IOptions<T> {
-    title: string;
-    id: number;
     /**
      * The main body element for the dialog or a message to display.
      * Defaults to an empty string.
@@ -373,12 +243,25 @@ export namespace Preview {
      * All `input` and `select` nodes will be wrapped and styled.
      */
     body: Body<T>;
-    codeSnippet: ICodeSnippet;
+
+    /**
+     * The host element for the dialog. Defaults to `document.body`.
+     */
+    host: HTMLElement;
+
+    /**
+     * When "true", renders a close button for the dialog
+     */
+    hasClose: boolean;
+
+    /**
+     * An optional renderer for dialog items.  Defaults to a shared
+     * default renderer.
+     */
+    renderer: IRenderer;
   }
 
   export interface IRenderer {
-    // createHeader(title: string): Widget;
-
     /**
      * Create the body of the dialog.
      *
@@ -387,25 +270,9 @@ export namespace Preview {
      * @returns A widget for the body.
      */
     createBody(body: Body<any>): Widget;
-    // createEditButton(): Widget;
   }
 
   export class Renderer {
-    /**
-     * Create the header of the dialog.
-     *
-     * @param title - The title of the snippet.
-     *
-     * @returns A widget for the header of the preview.
-     */
-    // createHeader(title: string): Widget {
-    //   const header = ReactWidget.create(<>{title}</>);
-
-    //   header.addClass('jp-Preview-header');
-    //   // Styling.styleNode(header.node);
-    //   return header;
-    // }
-
     /**
      * Create the body of the dialog.
      *
@@ -421,17 +288,12 @@ export namespace Preview {
       } else if (value instanceof Widget) {
         body = value;
       } else {
-        body = ReactWidget.create(value);
+        body = ReactWidget.create(value) as Widget;
         // Immediately update the body even though it has not yet attached in
         // order to trigger a render of the DOM nodes from the React element.
         MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
       }
-
-      // const iconNode = new Widget({ node: document.createElement('div') });
-      // iconNode.title.icon = checkIcon;
-      // body.
-      body.addClass('jp-Preview-body');
-      // Styling.styleNode(body.node);
+      body.addClass('jp-Options-body');
       return body;
     }
   }
@@ -443,8 +305,8 @@ export namespace Preview {
   /**
    * The dialog widget tracker.
    */
-  export const tracker = new WidgetTracker<Preview<any>>({
-    namespace: '@jupyterlab/code_snippet:ConfirmWidget'
+  export const tracker = new WidgetTracker<OptionsMessage<any>>({
+    namespace: '@jupyterlab/code_snippet:OptionsWidget'
   });
 }
 

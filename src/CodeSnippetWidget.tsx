@@ -460,6 +460,8 @@ export class CodeSnippetWidget extends ReactWidget {
               getCurrentWidget={this.getCurrentWidget}
               openCodeSnippetEditor={this.openCodeSnippetEditor.bind(this)}
               editorServices={this.editorServices}
+              _codeSnippetWidgetModel={this._codeSnippetWidgetModel}
+              updateCodeSnippets={this.updateCodeSnippets}
             />
           </div>
         )}
