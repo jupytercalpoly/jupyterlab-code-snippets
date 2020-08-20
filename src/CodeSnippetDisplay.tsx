@@ -458,9 +458,9 @@ export class CodeSnippetDisplay extends React.Component<
   ): void {
     const target = event.target as HTMLElement;
     let topAsString: string;
-    console.log(target);
-    console.log(target.getBoundingClientRect().top + 10);
-    console.log(target.getBoundingClientRect().left);
+    // console.log(target);
+    // console.log(target.getBoundingClientRect().top + 10);
+    // console.log(target.getBoundingClientRect().left);
     if (target.tagName === 'path') {
       topAsString =
         (target.getBoundingClientRect().top + 10).toString(10) + 'px';
@@ -518,6 +518,7 @@ export class CodeSnippetDisplay extends React.Component<
         onClick: (
           event: React.MouseEvent<HTMLDivElement, MouseEvent>
         ): void => {
+          console.log(codeSnippet);
           showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
           this._setOptionsPosition(id, event);
         }
@@ -777,6 +778,7 @@ export class CodeSnippetDisplay extends React.Component<
     editSnip.className = 'jp-more-options-edit';
     editSnip.textContent = 'Edit snippet';
     editSnip.onclick = (): void => {
+      console.log(codeSnippet);
       this.props.openCodeSnippetEditor(codeSnippet);
       this.removeOptionsNode();
     };

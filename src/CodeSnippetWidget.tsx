@@ -16,7 +16,7 @@
 
 import '../style/index.css';
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
-import { inputDialog } from './CodeSnippetForm';
+import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 
 import { ReactWidget, UseSignal, WidgetTracker } from '@jupyterlab/apputils';
 import { IDocumentManager } from '@jupyterlab/docmanager';
@@ -434,7 +434,7 @@ export class CodeSnippetWidget extends ReactWidget {
       // Handle the case where we are copying cells
       event.dropAction = 'copy';
 
-      inputDialog(this, data, idx);
+      CodeSnippetInputDialog(this, data, idx);
     }
   }
   // deleteCodeSnippet(snippet: ICodeSnippet): void {
