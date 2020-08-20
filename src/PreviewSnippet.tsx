@@ -447,23 +447,23 @@ export class Preview<T> extends Widget {
 
     if (Preview.tracker.size > 0) {
       const previous = Preview.tracker.currentWidget;
-      if (previous._title !== this._title) {
-        document
-          .getElementsByClassName('drag-hover')
-          [previous._id].classList.remove('drag-hover-clicked');
-        document
-          .getElementsByClassName('codeSnippet-item')
-          [previous._id].classList.remove('codeSnippet-item-clicked');
-      }
-      if (previous._title === this._title) {
-        if (previous.node.classList.contains('inactive')) {
-          previous.node.classList.remove('inactive');
-          this.ready = false;
-          return this;
-        } else {
-          this.ready = false;
-        }
-      }
+      // if (previous._title !== this._title) {
+      //   document
+      //     .getElementsByClassName('drag-hover')
+      //     [previous._id].classList.remove('drag-hover-clicked');
+      //   document
+      //     .getElementsByClassName('codeSnippet-item')
+      //     [previous._id].classList.remove('codeSnippet-item-clicked');
+      // }
+      // if (previous._title === this._title) {
+      //   if (previous.node.classList.contains('inactive')) {
+      //     previous.node.classList.remove('inactive');
+      //     this.ready = false;
+      //     return this;
+      //   } else {
+      //     this.ready = false;
+      //   }
+      // }
       previous.reject();
       Preview.tracker.dispose();
     }
@@ -800,41 +800,6 @@ export namespace Preview {
       // Styling.styleNode(body.node);
       return body;
     }
-
-    /**
-     * Create the edit button in the dialog.
-     *
-     * @returns A widget for the edit button.
-     */
-    // createEditButton(
-    //   prev: any,
-    //   openCodeSnippetEditor: (args: any) => void,
-    //   codeSnippet: ICodeSnippet
-    // ): Widget {
-    //   const editButton: Widget = new Widget({
-    //     node: document.createElement('span')
-    //   });
-    //   editButton.addClass('jp-Preview-button');
-    //   editButton.node.onmouseover = (): void => {
-    //     editButton.addClass('jp-Preview-button-hover');
-    //   };
-    //   editButton.node.onmouseout = (): void => {
-    //     editButton.removeClass('jp-Preview-button-hover');
-    //   };
-    //   editButton.node.onclick = (): void => {
-    //     openCodeSnippetEditor(codeSnippet);
-    //     document
-    //       .getElementsByClassName('drag-hover')
-    //       [prev._id].classList.remove('drag-hover-clicked');
-    //     document
-    //       .getElementsByClassName('codeSnippet-item')
-    //       [prev._id].classList.remove('codeSnippet-item-clicked');
-    //     event.stopPropagation();
-    //     event.preventDefault();
-    //     prev.reject();
-    //   };
-    //   return editButton;
-    // }
   }
   /**
    * The default renderer instance.

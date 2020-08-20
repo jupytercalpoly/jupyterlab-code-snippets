@@ -46,7 +46,11 @@ export class OptionsMessage<T> extends Widget {
     // content.addWidget(icon);
     content.addWidget(body);
 
-    console.log(content);
+    if (OptionsMessage.tracker.size > 0) {
+      const previous = OptionsMessage.tracker.currentWidget;
+      previous.reject();
+      OptionsMessage.tracker.dispose();
+    }
 
     void OptionsMessage.tracker.add(this);
   }
@@ -81,9 +85,6 @@ export class OptionsMessage<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case 'keydown':
-        this._evtKeydown(event as KeyboardEvent);
-        break;
       case 'click':
         this._evtClick(event as MouseEvent);
         break;
@@ -110,29 +111,6 @@ export class OptionsMessage<T> extends Widget {
       event.preventDefault();
       this.reject();
       return;
-    }
-  }
-
-  /**
-   * Handle the `'keydown'` event for the widget.
-   *
-   * @param event - The DOM event sent to the widget
-   */
-  protected _evtKeydown(event: KeyboardEvent): void {
-    // Check for escape key
-    switch (event.keyCode) {
-      case 27: // Escape.
-        event.stopPropagation();
-        event.preventDefault();
-        this.reject();
-        break;
-      case 13: // Enter.
-        event.stopPropagation();
-        event.preventDefault();
-        this.resolve();
-        break;
-      default:
-        break;
     }
   }
 
@@ -292,7 +270,6 @@ export namespace OptionsMessage {
      * @returns A widget for the body.
      */
     createBody(body: Body<any>): Widget;
-    createIcon(): Widget;
   }
 
   export class Renderer {
@@ -316,11 +293,7 @@ export namespace OptionsMessage {
         // order to trigger a render of the DOM nodes from the React element.
         MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
       }
-      // const iconNode = new Widget({ node: document.createElement('div') });
-      // iconNode.title.icon = checkIcon;
-      // body.
       body.addClass('jp-Options-body');
-      // Styling.styleNode(body.node);
       return body;
     }
   }
