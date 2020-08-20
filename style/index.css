@@ -196,98 +196,6 @@
   margin: 10px 10px 10px 10px;
 }
 
-/* .jp-Preview-header {
-  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
-  padding-bottom: 5px;
-}
-
-.jp-Preview-body {
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-}
-
-.jp-preview-text {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  font-family: helvetica;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 13px;
-  padding: var(--jp-cell-padding);
-}
-
-.jp-preview-textarea {
-  font-family: var(--jp-code-font-family-default);
-  font-size: 5px;
-  line-height: var(--jp-code-line-height);
-  text-align: left;
-  flex-grow: 1;
-  resize: none;
-  white-space: pre;
-  padding: var(--jp-code-padding);
-  padding-left: 20px;
-}
-
-.jp-preview-description-container {
-  font-family: var(--jp-code-font-family);
-  font-size: var(--jp-code-font-size);
-  line-height: var(--jp-code-line-height);
-  text-align: left;
-  flex-grow: 1;
-  resize: none;
-  padding: var(--jp-code-padding);
-  margin-bottom: 10px;
-  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
-}
-
-.jp-preview-description-title {
-  font-family: Arial, Helvetica, sans-serif;
-  margin-bottom: 3px;
-  padding-left: 5px;
-}
-
-.jp-preview-description {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  line-height: var(--jp-code-line-height);
-  text-align: left;
-  flex-grow: 1;
-  resize: none;
-  padding: var(--jp-code-padding);
-  word-wrap: break-word;
-  width: 960px;
-  display: block;
-}
-
-.jp-Preview-button {
-  width: 51px;
-  height: 51px;
-  background-image: url(./icon/Jupyter_pencileditbutton_inactive.svg);
-  float: right;
-  margin-top: -80px;
-  margin-right: 9px;
-  cursor: pointer;
-}
-
-.jp-Preview-button-hover {
-  background-image: url(./icon/jupyter_pencileditbutton_hover.svg);
-  cursor: pointer;
-}
-
-.triangle {
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 0 17px 17px 0;
-  border-color: transparent #e0e0e0 transparent transparent;
-  right: 0;
-  position: absolute;
-  transition: border-color 0.2s linear;
-  cursor: pointer;
-} */
-
 .jp-codeSnippet-searchbar {
   margin: 10px;
 }
@@ -702,13 +610,18 @@ mark.jp-search-bolding {
 .jp-options {
   position: absolute;
   z-index: 10000;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin: 0;
-  top: var(--more-options-top);
-  left: var(--more-options-left);
+  background-color: transparent;
+}
+
+.jp-options.inactive {
+  display: none;
 }
 
 .jp-more-options-content {
@@ -721,8 +634,6 @@ mark.jp-search-bolding {
 }
 
 .jp-Options-content {
-  display: flex;
-  flex-direction: column;
   background: var(--jp-layout-color1);
   padding: 10px;
   border: 1px solid var(--jp-border-color0);
@@ -733,6 +644,9 @@ mark.jp-search-bolding {
   border-radius: var(--jp-border-radius);
   font-size: var(--jp-ui-font-size0);
   color: var(--jp-ui-font-color1);
+  position: absolute;
+  top: var(--more-options-top);
+  left: var(--more-options-left);
 }
 
 .jp-Options-body {
@@ -778,4 +692,13 @@ mark.jp-search-bolding {
 .jp-more-options-delete:hover {
   background-color: rgb(235, 233, 233);
   cursor: pointer;
+}
+
+.jp-dropdown-delete-button {
+  border: none;
+}
+
+.jp-dropdown-cancel-button {
+  outline: 1px solid var(--jp-brand-color1);
+  outline-offset: 4px;
 }

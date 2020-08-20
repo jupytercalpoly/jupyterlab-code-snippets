@@ -6,6 +6,7 @@ node_modules/
 *.tsbuildinfo
 *.ipynb
 .eslintcache
+snippets/
 
 */labextension/*.tgz
 # Created by https://www.gitignore.io/api/python

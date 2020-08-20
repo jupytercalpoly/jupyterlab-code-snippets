@@ -197,7 +197,7 @@ export function validateForm(input: Dialog.IResult<string[]>): boolean {
     //alert("Description ");
     status = false;
   }
-  if (!(language in SUPPORTED_LANGUAGES)) {
+  if (!SUPPORTED_LANGUAGES.includes(language)) {
     message += 'Language must be one of the options';
     status = false;
   }
@@ -224,7 +224,7 @@ class InputHandler extends Widget {
     inputs.push(
       (this.node.getElementsByTagName('input')[0] as HTMLInputElement).value,
       (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
-      (this.node.getElementsByTagName('datalist')[0] as HTMLSelectElement).value
+      (this.node.getElementsByTagName('input')[2] as HTMLInputElement).value
     );
     return inputs;
   }
