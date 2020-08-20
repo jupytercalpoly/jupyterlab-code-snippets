@@ -507,11 +507,42 @@ mark.jp-search-bolding {
   background: none;
   border: none;
   color: var(--jp-ui-font-color2);
+  padding: 0;
+  font-size: var(--jp-ui-font-size1);
 }
 
 /* code snippet create button */
 .jp-createSnippetBtn {
   cursor: pointer;
+}
+
+/* code snippet tags in inputDialog */
+.jp-codeSnippet-inputTagList {
+  list-style: none;
+}
+
+.jp-codeSnippet-inputTag {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.jp-codeSnippet-inputTag button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--jp-ui-font-color2);
+  padding: 0;
+  font-size: var(--jp-ui-font-size1);
+}
+
+.jp-codeSnippet-inputTag input {
+  font-size: var(--jp-ui-font-size1);
+  background: none;
+  border: none;
+  color: var(--jp-ui-font-color2);
+  padding: 0;
+  font-size: var(--jp-ui-font-size1);
+  width: 50px;
 }
 
 /* code snippet layout */
@@ -562,6 +593,7 @@ mark.jp-search-bolding {
 }
 
 .jp-codeSnippet-tag,
+.jp-codeSnippet-inputTag,
 .jp-codeSnippet-filter-tag {
   height: 12px;
 }
@@ -580,6 +612,22 @@ mark.jp-search-bolding {
 } */
 
 /* USER Input Form Style */
+.jp-codeSnippet-Form {
+  position: absolute;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: 0px;
+  left: 0px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--jp-dialog-background);
+}
+
 .jp-newSnippet-input:invalid,
 .jp-snippet-editor-name:invalid,
 .jp-snippet-editor-description:invalid,
@@ -597,7 +645,7 @@ mark.jp-search-bolding {
 .jp-inputDesc-validity {
   font-size: var(--jp-ui-font-size0);
   color: var(--jp-ui-font-color1);
-  margin: 0px 5px 5px 5px;
+  margin: 5px;
 }
 
 .jp-snippet-editor-metadata .jp-inputName-validity,

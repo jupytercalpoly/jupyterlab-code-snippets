@@ -1,8 +1,4 @@
-import insertSVGstr from '../style/icon/insertsnippet.svg';
-// import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
 import { FilterTools } from './FilterTools';
-// import { FilterSnippet } from './FilterSnippet';
-// import launchEditorSVGstr from '../style/icon/jupyter_launcher.svg';
 import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
 import { showPreview } from './PreviewSnippet';
 import { showMoreOptions } from './MoreOptions';
@@ -71,10 +67,10 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
 /**
  * Icons used for snippet
  */
-const insertIcon = new LabIcon({
-  name: 'custom-ui-compnents:insert',
-  svgstr: insertSVGstr
-});
+// const insertIcon = new LabIcon({
+//   name: 'custom-ui-compnents:insert',
+//   svgstr: insertSVGstr
+// });
 
 // const launchEditorIcon = new LabIcon({
 //   name: 'custom-ui-compnents:launchEditor',
@@ -462,9 +458,9 @@ export class CodeSnippetDisplay extends React.Component<
   ): void {
     const target = event.target as HTMLElement;
     let topAsString: string;
-    console.log(target);
-    console.log(target.getBoundingClientRect().top + 10);
-    console.log(target.getBoundingClientRect().left);
+    // console.log(target);
+    // console.log(target.getBoundingClientRect().top + 10);
+    // console.log(target.getBoundingClientRect().left);
     if (target.tagName === 'path') {
       topAsString =
         (target.getBoundingClientRect().top + 10).toString(10) + 'px';
@@ -502,20 +498,27 @@ export class CodeSnippetDisplay extends React.Component<
       //     Clipboard.copyToSystem(codeSnippet.code.join('\n'));
       //   }
       // },
-      {
-        title: 'Insert',
-        icon: insertIcon,
-        onClick: (): void => {
-          this.insertCodeSnippet(codeSnippet);
-        }
-      },
+      // {
+      //   title: 'More Options',
+      //   icon: moreIcon,
+      //   onClick: (): void => {
+      //     console.log('More option clicked!');
+      //   }
+      // },
+      // {
+      //   title: 'Insert',
+      //   icon: insertIcon,
+      //   onClick: (): void => {
+      //     this.insertCodeSnippet(codeSnippet);
+      //   }
+      // },
       {
         title: 'More options',
         icon: moreOptionsIcon,
         onClick: (
           event: React.MouseEvent<HTMLDivElement, MouseEvent>
         ): void => {
-          console.log('CODE SNIPPET:', codeSnippet);
+          console.log(codeSnippet);
           showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
           this._setOptionsPosition(id, event);
         }
@@ -550,23 +553,6 @@ export class CodeSnippetDisplay extends React.Component<
         onMouseOut={(): void => {
           this.dragHoverStyleRemove(id);
         }}
-        // onMouseEnter={(event): void => {
-        //   showPreview(
-        //     {
-        //       id: parseInt(id, 10),
-        //       title: displayName,
-        //       body: new PreviewHandler(),
-        //       codeSnippet: codeSnippet
-        //     },
-        //     this.props.openCodeSnippetEditor,
-        //     this.props.editorServices
-        //   );
-        //   this.snippetClicked(id);
-        //   this._setPreviewPosition(id);
-        // }}
-        // onMouseLeave={(): void => {
-        //   this._evtMouseLeave();
-        // }}
       >
         <div
           className="drag-hover"
@@ -668,10 +654,10 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    console.log(props.codeSnippets);
-    console.log(state.codeSnippets);
-    console.log(state.searchValue);
-    console.log(state.filterTags === []);
+    // console.log(props.codeSnippets);
+    // console.log(state.codeSnippets);
+    // console.log(state.searchValue);
+    // console.log(state.filterTags === []);
     if (
       props.codeSnippets !== state.codeSnippets &&
       state.searchValue === '' &&
@@ -792,6 +778,7 @@ export class CodeSnippetDisplay extends React.Component<
     editSnip.className = 'jp-more-options-edit';
     editSnip.textContent = 'Edit snippet';
     editSnip.onclick = (): void => {
+      console.log(codeSnippet);
       this.props.openCodeSnippetEditor(codeSnippet);
       this.removeOptionsNode();
     };
@@ -867,6 +854,41 @@ class Private {
   static createPreviewNode(): HTMLElement {
     return this.createPreviewContent();
   }
+
+  // static createOptionsNode(
+  //   object: any,
+  //   codeSnippet: ICodeSnippet
+  // ): HTMLElement {
+  //   const body = document.createElement('div');
+
+  //   const optionsContainer = document.createElement('div');
+  //   optionsContainer.className = 'jp-more-options-content';
+  //   const insertSnip = document.createElement('div');
+  //   insertSnip.className = 'jp-more-options-insert';
+  //   insertSnip.textContent = 'Insert snippet';
+  //   insertSnip.onclick = (): void => {
+  //     object.insertCodeSnippet(codeSnippet);
+  //   };
+  //   const copySnip = document.createElement('div');
+  //   copySnip.className = 'jp-more-options-copy';
+  //   copySnip.textContent = 'Copy snippet to clipboard';
+  //   copySnip.onclick = (): void => {
+  //     Clipboard.copyToSystem(codeSnippet.code.join('\n'));
+  //     alert('saved to clipboard');
+  //   };
+  //   const editSnip = document.createElement('div');
+  //   editSnip.className = 'jp-more-options-edit';
+  //   editSnip.textContent = 'Edit snippet';
+  //   const deleteSnip = document.createElement('div');
+  //   deleteSnip.className = 'jp-more-options-delete';
+  //   deleteSnip.textContent = 'Delete snippet';
+  //   optionsContainer.appendChild(insertSnip);
+  //   optionsContainer.appendChild(copySnip);
+  //   optionsContainer.appendChild(editSnip);
+  //   optionsContainer.appendChild(deleteSnip);
+  //   body.append(optionsContainer);
+  //   return body;
+  // }
 }
 
 /**

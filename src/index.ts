@@ -16,7 +16,7 @@ import { IEditorServices } from '@jupyterlab/codeeditor';
 import { LabIcon } from '@jupyterlab/ui-components';
 import editorIconSVGstr from '../style/icon/jupyter_snippeteditoricon.svg';
 
-import { inputDialog } from './CodeSnippetForm';
+import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 import {
@@ -233,7 +233,11 @@ function activateCodeSnippet(
     execute: () => {
       const highlightedCode = getSelectedText();
 
-      inputDialog(codeSnippetWidget, highlightedCode.split('\n'), -1);
+      CodeSnippetInputDialog(
+        codeSnippetWidget,
+        highlightedCode.split('\n'),
+        -1
+      );
     }
   });
 
