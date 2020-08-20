@@ -2,7 +2,9 @@ import { Widget } from '@lumino/widgets';
 import checkSVGstr from '../style/icon/check.svg';
 import { showMessage } from './ConfirmMessage';
 
-import { Dialog, showDialog } from '@jupyterlab/apputils';
+import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
+import { showDialog, Dialog } from '@jupyterlab/apputils';
+import { addIcon, checkIcon } from '@jupyterlab/ui-components';
 
 import { Contents } from '@jupyterlab/services';
 
@@ -45,19 +47,31 @@ export interface IFileContainer extends JSONObject {
  * Save an input with a dialog. This is what actually displays everything.
  * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
-export function inputDialog(
+export function CodeSnippetInputDialog(
   codeSnippet: CodeSnippetWidget,
   code: string[],
   idx: number
 ): Promise<Contents.IModel | null> {
-  return showDialog({
+  const tags: string[] = [];
+  const snippets = codeSnippet.codeSnippetWidgetModel.snippets;
+
+  for (const snippet of snippets) {
+    if (snippet.tags) {
+      tags.push(...snippet.tags);
+    }
+  }
+
+  return showCodeSnippetForm({
     title: 'Save Code Snippet',
-    body: new InputHandler(),
-    focusNodeSelector: 'input',
-    buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })]
-  }).then((result: Dialog.IResult<string[]>) => {
+    body: new InputHandler(tags),
+    // focusNodeSelector: 'input',
+    buttons: [
+      CodeSnippetForm.cancelButton(),
+      CodeSnippetForm.okButton({ label: 'Save' })
+    ]
+  }).then((result: CodeSnippetForm.IResult<string[]>) => {
     if (validateForm(result) === false) {
-      return inputDialog(codeSnippet, code, idx); // This works but it wipes out all the data they entered previously...
+      return CodeSnippetInputDialog(codeSnippet, code, idx); // This works but it wipes out all the data they entered previously...
     }
     if (!result.value) {
       return null;
@@ -65,12 +79,16 @@ export function inputDialog(
       if (idx === -1) {
         idx = codeSnippet.codeSnippetWidgetModel.snippets.length;
       }
+
+      const tags = result.value.slice(3);
+      console.log(tags);
       const newSnippet: ICodeSnippet = {
         name: result.value[0].replace(' ', '').toLowerCase(),
         description: result.value[1],
         language: result.value[2],
         code: code,
-        id: idx
+        id: idx,
+        tags: tags
       };
       const contentsService = CodeSnippetContentsService.getInstance();
       const currSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
@@ -176,7 +194,9 @@ export function isValidFileName(name: string): boolean {
 /**
  * Test whether user typed in all required inputs.
  */
-export function validateForm(input: Dialog.IResult<string[]>): boolean {
+export function validateForm(
+  input: CodeSnippetForm.IResult<string[]>
+): boolean {
   let status = true;
   let message = '';
   const name = input.value[0];
@@ -197,7 +217,7 @@ export function validateForm(input: Dialog.IResult<string[]>): boolean {
     //alert("Description ");
     status = false;
   }
-  if (!(language in SUPPORTED_LANGUAGES)) {
+  if (!SUPPORTED_LANGUAGES.includes(language)) {
     message += 'Language must be one of the options';
     status = false;
   }
@@ -214,8 +234,8 @@ class InputHandler extends Widget {
    * Construct a new "rename" dialog.
    * readonly inputNode: HTMLInputElement; <--- in Widget class
    */
-  constructor() {
-    super({ node: Private.createInputNode() });
+  constructor(tags: string[]) {
+    super({ node: Private.createInputNode(tags) });
     this.addClass(FILE_DIALOG_CLASS);
   }
 
@@ -224,8 +244,11 @@ class InputHandler extends Widget {
     inputs.push(
       (this.node.getElementsByTagName('input')[0] as HTMLInputElement).value,
       (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
-      (this.node.getElementsByTagName('datalist')[0] as HTMLSelectElement).value
+      (this.node.getElementsByTagName('input')[2] as HTMLInputElement).value
     );
+
+    inputs.push(...Private.selectedTags);
+
     return inputs;
   }
 }
@@ -259,10 +282,11 @@ class MessageHandler extends Widget {
  * A namespace for private data.
  */
 class Private {
+  static selectedTags: string[] = [];
   /**
    * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
    */
-  static createInputNode(): HTMLElement {
+  static createInputNode(tags: string[]): HTMLElement {
     const body = document.createElement('form');
     const nameValidity = document.createElement('p');
     nameValidity.textContent =
@@ -280,7 +304,7 @@ class Private {
     name.className = INPUT_NEW_SNIPPET_CLASS;
     name.required = true;
     // prettier-ignore
-    name.pattern = '[a-zA-Z0-9_ ]+';
+    name.pattern = '[a-zA-Z0-9_]+';
 
     const descriptionTitle = document.createElement('label');
     descriptionTitle.textContent = 'Description*';
@@ -288,7 +312,7 @@ class Private {
     description.className = INPUT_NEW_SNIPPET_CLASS;
     description.required = true;
     // prettier-ignore
-    description.pattern = '[a-zA-Z0-9_ ]+';
+    description.pattern = '[a-zA-Z0-9_]+';
 
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language*';
@@ -305,6 +329,39 @@ class Private {
       option.value = language;
       languageOption.appendChild(option);
     }
+
+    const tagList = document.createElement('li');
+    tagList.classList.add('jp-codeSnippet-inputTagList');
+    for (const tag of tags) {
+      const tagElem = document.createElement('ul');
+      tagElem.className = 'jp-codeSnippet-inputTag tag unapplied-tag';
+      const tagBtn = document.createElement('button');
+      tagBtn.innerText = tag;
+      tagBtn.onclick = Private.handleClick;
+      tagElem.appendChild(tagBtn);
+      tagList.appendChild(tagElem);
+    }
+
+    const addTagElem = document.createElement('ul');
+    addTagElem.className = 'jp-codeSnippet-inputTag tag unapplied-tag';
+    const newTagName = document.createElement('span');
+    newTagName.innerText = 'Add Tag';
+    newTagName.style.cursor = 'pointer';
+    addTagElem.appendChild(newTagName);
+    const plusIcon = addIcon.element({
+      tag: 'span',
+      className: 'jp-codeSnippet-inputTag-plusIcon',
+      elementPosition: 'center',
+      height: '16px',
+      width: '16px',
+      marginLeft: '2px'
+    });
+
+    newTagName.onclick = Private.addTag;
+
+    addTagElem.appendChild(plusIcon);
+    tagList.append(addTagElem);
+
     // const optionPython = document.createElement('option');
     // optionPython.textContent = 'python';
     // const optionR = document.createElement('option');
@@ -345,7 +402,170 @@ class Private {
     body.appendChild(languageTitle);
     body.appendChild(languageInput);
     body.appendChild(languageOption);
+    body.appendChild(tagList);
     return body;
+  }
+
+  // replace the newTagName to input and delete plusIcon and insertbefore current tag on keydown or blur (refer to cell tags)
+  static addTag(event: MouseEvent): boolean {
+    event.preventDefault();
+    const target = event.target as HTMLElement;
+
+    const plusIcon = document.querySelector(
+      '.jp-codeSnippet-inputTag-plusIcon'
+    );
+    plusIcon.remove();
+
+    const newTagName = document.createElement('input');
+    target.parentElement.replaceChild(newTagName, target);
+
+    // document.addEventListener('keydown', this.addTagOnKeyDown, true);
+    newTagName.onkeydown = Private.addTagOnKeyDown;
+    newTagName.onblur = Private.addTagOnBlur;
+
+    // (document.querySelector('.jp-Dialog') as HTMLElement).onkeydown = null;
+
+    newTagName.focus();
+
+    // newTagName.addEventListener('ch)
+
+    // newTagName.addEventListener('blur', Private.addTagOnBlur, true);
+
+    // newTagName.addEventListener('blur', this.addTagOnBlur, false);
+
+    return false;
+  }
+
+  static addTagOnKeyDown(event: KeyboardEvent): void {
+    const inputElement = event.target as HTMLInputElement;
+
+    if (inputElement.value !== '' && event.keyCode === 13) {
+      // duplicate tag
+      if (Private.selectedTags.includes(inputElement.value)) {
+        alert('Duplicate Tag Name!');
+      }
+      event.preventDefault();
+
+      // create new tag
+      const tagList = document.querySelector('.jp-codeSnippet-inputTagList');
+      const tagElem = document.createElement('ul');
+      tagElem.className = 'jp-codeSnippet-inputTag tag applied-tag';
+      const tagBtn = document.createElement('button');
+      tagBtn.innerText = inputElement.value;
+      tagBtn.onclick = Private.handleClick;
+      tagElem.appendChild(tagBtn);
+      tagList.insertBefore(tagElem, inputElement.parentElement);
+      // this.selectedTags.push(tagBtn.innerText);
+
+      // add selected checked mark
+      const iconContainer = checkIcon.element({
+        className: 'jp-codeSnippet-inputTag-check',
+        tag: 'span',
+        elementPosition: 'center',
+        height: '18px',
+        width: '18px',
+        marginLeft: '5px',
+        marginRight: '-3px'
+      });
+      const color = getComputedStyle(document.documentElement).getPropertyValue(
+        '--jp-ui-font-color1'
+      );
+      tagBtn.style.color = color;
+      tagElem.appendChild(iconContainer);
+
+      // add it to the selected tags
+      Private.selectedTags.push(tagBtn.innerText);
+
+      // add plusIcon
+      const plusIcon = addIcon.element({
+        tag: 'span',
+        className: 'jp-codeSnippet-inputTag-plusIcon',
+        elementPosition: 'center',
+        height: '16px',
+        width: '16px',
+        marginLeft: '2px'
+      });
+
+      // change input to span
+      const newTagName = document.createElement('span');
+      newTagName.innerText = 'Add Tag';
+      newTagName.style.cursor = 'pointer';
+      inputElement.parentElement.replaceChild(newTagName, inputElement);
+
+      newTagName.parentElement.appendChild(plusIcon);
+      newTagName.onclick = Private.addTag;
+
+      event.stopPropagation();
+    }
+    // return false;
+  }
+
+  static addTagOnBlur(event: FocusEvent): void {
+    const inputElement = event.target as HTMLInputElement;
+
+    // add plusIcon
+    const plusIcon = addIcon.element({
+      tag: 'span',
+      className: 'jp-codeSnippet-inputTag-plusIcon',
+      elementPosition: 'center',
+      height: '16px',
+      width: '16px',
+      marginLeft: '2px'
+    });
+
+    // change input to span
+    const newTagName = document.createElement('span');
+    newTagName.innerText = 'Add Tag';
+    newTagName.style.cursor = 'pointer';
+    inputElement.parentElement.replaceChild(newTagName, inputElement);
+
+    newTagName.parentElement.appendChild(plusIcon);
+    newTagName.onclick = Private.addTag;
+  }
+
+  static handleClick(event: MouseEvent): boolean {
+    // event.preventDefault();
+
+    const target = event.target as HTMLElement;
+    const parent = target.parentElement;
+    // const filteredTags = this.state.filteredTags.slice();
+
+    // console.log(Private.selectedTags);
+    if (parent.classList.contains('unapplied-tag')) {
+      Private.selectedTags.push(target.innerText);
+      parent.classList.replace('unapplied-tag', 'applied-tag');
+      const iconContainer = checkIcon.element({
+        className: 'jp-codeSnippet-inputTag-check',
+        tag: 'span',
+        elementPosition: 'center',
+        height: '18px',
+        width: '18px',
+        marginLeft: '5px',
+        marginRight: '-3px'
+      });
+      const color = getComputedStyle(document.documentElement).getPropertyValue(
+        '--jp-ui-font-color1'
+      );
+      target.style.color = color;
+      if (parent.children.length === 1) {
+        parent.appendChild(iconContainer);
+      }
+    } else if (parent.classList.contains('applied-tag')) {
+      const idx = Private.selectedTags.indexOf(target.innerText);
+      Private.selectedTags.splice(idx, 1);
+
+      parent.classList.replace('applied-tag', 'unapplied-tag');
+      const color = getComputedStyle(document.documentElement).getPropertyValue(
+        '--jp-ui-font-color2'
+      );
+      target.style.color = color;
+
+      if (parent.children.length !== 1) {
+        // remove check icon
+        parent.removeChild(parent.children.item(1));
+      }
+    }
+    return false;
   }
 
   static createConfirmMessageNode(): HTMLElement {

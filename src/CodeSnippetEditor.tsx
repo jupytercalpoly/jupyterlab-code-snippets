@@ -311,6 +311,7 @@ export class CodeSnippetEditor extends ReactWidget {
       `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
     ) as HTMLSelectElement).value;
 
+    console.log(language);
     const validity = this.validateInputs(name, description, language);
     if (validity) {
       this.updateSnippet();
@@ -339,7 +340,7 @@ export class CodeSnippetEditor extends ReactWidget {
       //alert("Description ");
       status = false;
     }
-    if (!(language in SUPPORTED_LANGUAGES)) {
+    if (!SUPPORTED_LANGUAGES.includes(language)) {
       message += 'Language must be one of the options';
       status = false;
     }
@@ -364,6 +365,7 @@ export class CodeSnippetEditor extends ReactWidget {
     this._codeSnippet.description = description;
     this._codeSnippet.language = language;
 
+    console.log(language);
     this.saved = true;
 
     const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
@@ -433,7 +435,7 @@ export class CodeSnippetEditor extends ReactWidget {
     return (
       <div>
         <input
-          className="jp-snippet-editor-language"
+          className={CODE_SNIPPET_EDITOR_LANG_INPUT}
           list="languages"
           name="language"
           defaultValue={this._codeSnippet.language}
@@ -469,7 +471,8 @@ export class CodeSnippetEditor extends ReactWidget {
             defaultValue={this._codeSnippet.name}
             type="text"
             required
-            pattern={'[a-zA-Z0-9_ ]+'}
+            //prettier-ignore
+            pattern={'[a-zA-Z0-9_]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
@@ -490,7 +493,8 @@ export class CodeSnippetEditor extends ReactWidget {
             defaultValue={this._codeSnippet.description}
             type="text"
             required
-            pattern={'[a-zA-Z0-9_ ]+'}
+            //prettier-ignore
+            pattern={'[a-zA-Z0-9_]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
