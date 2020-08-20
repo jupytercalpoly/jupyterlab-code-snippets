@@ -105,6 +105,7 @@ const editorIcon = new LabIcon({
   svgstr: editorIconSVGstr
 });
 
+// get item that is right clicked (what opens the context menu)
 let clicked: EventTarget;
 
 /**
@@ -150,8 +151,6 @@ function activateCodeSnippet(
 
   // open code Snippet Editor
   const openCodeSnippetEditor = (args: ICodeSnippet): void => {
-    console.log(args);
-
     if (!args.name) {
       return;
     }
@@ -221,10 +220,10 @@ function activateCodeSnippet(
   });
 
   //Add an application command
-  const commandID = 'save as code snippet';
+  const saveCommand = 'save as code snippet';
   const delCommand = 'delete code snippet';
   const toggled = false;
-  app.commands.addCommand(commandID, {
+  app.commands.addCommand(saveCommand, {
     label: 'Save As Code Snippet',
     isEnabled: () => true,
     isVisible: () => true,
@@ -274,9 +273,23 @@ function activateCodeSnippet(
 
   //Put the command above in context menu
   app.contextMenu.addItem({
-    command: commandID,
+    command: saveCommand,
     selector: '.jp-CodeCell'
   });
+
+  // Add keybinding to save
+  app.commands.addKeyBinding({
+    command: saveCommand,
+    args: {},
+    keys: ['Shift S'],
+    selector: '.jp-CodeCell'
+  });
+
+  // //Put the command above in context menu
+  // app.contextMenu.addItem({
+  //   command: commandID,
+  //   selector: '.jp-InputArea-editor'
+  // });
 
   app.contextMenu.addItem({
     command: delCommand,
@@ -312,7 +325,7 @@ function activateCodeSnippet(
 
 function getSelectedText(): string {
   let selectedText;
-
+  console.log('This is the code: ', selectedText);
   // window.getSelection
   if (window.getSelection) {
     selectedText = window.getSelection();

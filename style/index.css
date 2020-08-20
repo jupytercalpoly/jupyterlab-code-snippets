@@ -185,7 +185,7 @@
   background: var(--jp-layout-color1);
   padding: 10px;
   /* min-width: 960px; */
-  width: 300px;
+  width: 200px;
   height: 106px;
   box-sizing: border-box;
   box-shadow: var(--jp-elevation-z2);
@@ -708,7 +708,7 @@ mark.jp-search-bolding {
 }
 
 .jp-more-options-copy:hover {
-  background-color: rgb(235, 233, 233);
+  background-color: var(--jp-layout-color2);
   cursor: pointer;
 }
 
@@ -718,7 +718,7 @@ mark.jp-search-bolding {
 }
 
 .jp-more-options-insert:hover {
-  background-color: rgb(235, 233, 233);
+  background-color: var(--jp-layout-color2);
   cursor: pointer;
 }
 
@@ -728,7 +728,7 @@ mark.jp-search-bolding {
 }
 
 .jp-more-options-edit:hover {
-  background-color: rgb(235, 233, 233);
+  background-color: var(--jp-layout-color2);
   cursor: pointer;
 }
 
@@ -738,7 +738,7 @@ mark.jp-search-bolding {
 }
 
 .jp-more-options-delete:hover {
-  background-color: rgb(235, 233, 233);
+  background-color: var(--jp-layout-color2);
   cursor: pointer;
 }
 

@@ -507,39 +507,7 @@ export class CodeSnippetEditor extends ReactWidget {
               'Description of the code snippet MUST be alphanumeric or composed of underscore(_)'
             }
           </p>
-          {/* <input
-            className="jp-snippet-editor-language"
-            type="text"
-            name="language"
-            list="languages"
-            defaultValue={this.args.codeSnippet.language}
-          ></input>
-          <datalist id="languages">
-            <option value="Python"></option>
-            <option value="R"></option>
-            <option value="Scala"></option>
-            <option value="Other"></option>
-          </datalist> */}
           {this.renderLanguages()}
-          {/* <select
-            className="jp-snippet-editor-language"
-            defaultValue={this._codeSnippet.language}
-            name="languages"
-            required
-          >
-            <option className="jp-snippet-editor-options" value="python">
-              python
-            </option>
-            <option className="jp-snippet-editor-options" value="R">
-              R
-            </option>
-            <option className="jp-snippet-editor-options" value="Scala">
-              Scala
-            </option>
-            <option className="jp-snippet-editor-options" value="Other">
-              Other
-            </option>
-          </select> */}
         </section>
         <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
         {this.renderCodeInput()}
