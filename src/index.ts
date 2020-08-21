@@ -106,7 +106,7 @@ const editorIcon = new LabIcon({
 });
 
 // get item that is right clicked (what opens the context menu)
-let clicked: EventTarget;
+//let clicked: EventTarget;
 
 /**
  * Initialization data for the code_snippets extension.
@@ -241,14 +241,14 @@ function activateCodeSnippet(
   });
 
   // eventListener to get access to element that is right clicked.
-  document.addEventListener(
-    'contextmenu',
-    event => {
-      const clickedEl = event.target;
-      clicked = clickedEl;
-    },
-    true
-  );
+  // document.addEventListener(
+  //   'contextmenu',
+  //   event => {
+  //     const clickedEl = event.target;
+  //     clicked = clickedEl;
+  //   },
+  //   true
+  // );
 
   //Application command to delete code snippet
   // app.commands.addCommand(delCommand, {
