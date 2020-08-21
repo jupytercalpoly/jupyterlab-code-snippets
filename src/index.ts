@@ -25,8 +25,8 @@ import {
 } from './CodeSnippetContentsService';
 import { CodeSnippetEditor } from './CodeSnippetEditor';
 
-import undoDeleteSVG from '../style/icon/undoDelete.svg';
-import { showUndoMessage } from './UndoDelete';
+// import undoDeleteSVG from '../style/icon/undoDelete.svg';
+// import { showUndoMessage } from './UndoDelete';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -221,7 +221,7 @@ function activateCodeSnippet(
 
   //Add an application command
   const saveCommand = 'save as code snippet';
-  const delCommand = 'delete code snippet';
+  // const delCommand = 'delete code snippet';
   const toggled = false;
   app.commands.addCommand(saveCommand, {
     label: 'Save As Code Snippet',
@@ -251,25 +251,25 @@ function activateCodeSnippet(
   );
 
   //Application command to delete code snippet
-  app.commands.addCommand(delCommand, {
-    label: 'Delete Code Snippet',
-    isEnabled: () => true,
-    isVisible: () => true,
-    isToggled: () => toggled,
-    iconClass: 'some-css-icon-class',
-    execute: async () => {
-      const target = clicked as HTMLElement;
-      const _id = parseInt(target.id, 10);
-      console.log(target.id);
-      const frontEndSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets.slice();
-      frontEndSnippets.splice(_id, 1);
-      codeSnippetWidget.codeSnippets = frontEndSnippets;
-      codeSnippetWidget.renderCodeSnippetsSignal.emit(frontEndSnippets);
-      showUndoMessage({
-        body: /*"Undo delete"*/ new MessageHandler(codeSnippetWidget, _id)
-      });
-    }
-  });
+  // app.commands.addCommand(delCommand, {
+  //   label: 'Delete Code Snippet',
+  //   isEnabled: () => true,
+  //   isVisible: () => true,
+  //   isToggled: () => toggled,
+  //   iconClass: 'some-css-icon-class',
+  //   execute: async () => {
+  //     const target = clicked as HTMLElement;
+  //     const _id = parseInt(target.id, 10);
+  //     console.log(target.id);
+  //     const frontEndSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets.slice();
+  //     frontEndSnippets.splice(_id, 1);
+  //     codeSnippetWidget.codeSnippets = frontEndSnippets;
+  //     codeSnippetWidget.renderCodeSnippetsSignal.emit(frontEndSnippets);
+  //     showUndoMessage({
+  //       body: /*"Undo delete"*/ new MessageHandler(codeSnippetWidget, _id)
+  //     });
+  //   }
+  // });
 
   //Put the command above in context menu
   app.contextMenu.addItem({
@@ -291,10 +291,10 @@ function activateCodeSnippet(
   //   selector: '.jp-InputArea-editor'
   // });
 
-  app.contextMenu.addItem({
-    command: delCommand,
-    selector: '.codeSnippet-item'
-  });
+  // app.contextMenu.addItem({
+  //   command: delCommand,
+  //   selector: '.codeSnippet-item'
+  // });
 
   // Track and restore the widget state
   const tracker = new WidgetTracker<CodeSnippetEditor>({
@@ -341,68 +341,68 @@ function getSelectedText(): string {
 /**
  * Wouldn't it be better to factor this class out to different class with a better name?
  */
-class MessageHandler extends Widget {
-  constructor(codeSnippet: CodeSnippetWidget, id: number) {
-    super({ node: createUndoDeleteNode(codeSnippet, id) });
-  }
-}
+// class MessageHandler extends Widget {
+//   constructor(codeSnippet: CodeSnippetWidget, id: number) {
+//     super({ node: createUndoDeleteNode(codeSnippet, id) });
+//   }
+// }
 
-export function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
-  const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
-  temp.parentElement.parentElement.removeChild(temp.parentElement);
-  console.log(temp);
-  const snippetToDeleteName =
-    codeSnippet.codeSnippetWidgetModel.snippets[id].name;
-  CodeSnippetContentsService.getInstance().delete(
-    'snippets/' + snippetToDeleteName + '.json'
-  );
-  codeSnippet.codeSnippetWidgetModel.deleteSnippet(id);
-  const savedSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-  codeSnippet.codeSnippets = savedSnippets;
-  codeSnippet.renderCodeSnippetsSignal.emit(savedSnippets);
-}
+// export function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
+//   const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
+//   temp.parentElement.parentElement.removeChild(temp.parentElement);
+//   console.log(temp);
+//   const snippetToDeleteName =
+//     codeSnippet.codeSnippetWidgetModel.snippets[id].name;
+//   CodeSnippetContentsService.getInstance().delete(
+//     'snippets/' + snippetToDeleteName + '.json'
+//   );
+//   codeSnippet.codeSnippetWidgetModel.deleteSnippet(id);
+//   const savedSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+//   codeSnippet.codeSnippets = savedSnippets;
+//   codeSnippet.renderCodeSnippetsSignal.emit(savedSnippets);
+// }
 
-export function onUndo(codeSnippet: CodeSnippetWidget): void {
-  codeSnippet.codeSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-  codeSnippet.renderCodeSnippetsSignal.emit(
-    codeSnippet.codeSnippetWidgetModel.snippets
-  );
-  const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
-  temp.parentElement.parentElement.removeChild(temp.parentElement);
-}
+// export function onUndo(codeSnippet: CodeSnippetWidget): void {
+//   codeSnippet.codeSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+//   codeSnippet.renderCodeSnippetsSignal.emit(
+//     codeSnippet.codeSnippetWidgetModel.snippets
+//   );
+//   const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
+//   temp.parentElement.parentElement.removeChild(temp.parentElement);
+// }
 
-export function createUndoDeleteNode(
-  codeSnippet: CodeSnippetWidget,
-  snippetID: number
-): HTMLElement {
-  const body = document.createElement('div');
-  body.innerHTML = undoDeleteSVG;
-  body.id = 'jp-undo-delete-id';
+// export function createUndoDeleteNode(
+//   codeSnippet: CodeSnippetWidget,
+//   snippetID: number
+// ): HTMLElement {
+//   const body = document.createElement('div');
+//   body.innerHTML = undoDeleteSVG;
+//   body.id = 'jp-undo-delete-id';
 
-  const messageContainer = document.createElement('div');
-  messageContainer.className = 'jp-confirm-text';
-  const message = document.createElement('text');
-  message.textContent = 'Click to ';
-  const undo = document.createElement('span');
-  undo.textContent = 'undo';
-  undo.className = 'jp-click-undo';
-  undo.onclick = function(): void {
-    onUndo(codeSnippet);
-  };
-  const messageEnd = document.createElement('text');
-  messageEnd.textContent = ' delete';
-  messageContainer.appendChild(message);
-  messageContainer.appendChild(undo);
-  messageContainer.appendChild(messageEnd);
-  body.append(messageContainer);
+//   const messageContainer = document.createElement('div');
+//   messageContainer.className = 'jp-confirm-text';
+//   const message = document.createElement('text');
+//   message.textContent = 'Click to ';
+//   const undo = document.createElement('span');
+//   undo.textContent = 'undo';
+//   undo.className = 'jp-click-undo';
+//   undo.onclick = function(): void {
+//     onUndo(codeSnippet);
+//   };
+//   const messageEnd = document.createElement('text');
+//   messageEnd.textContent = ' delete';
+//   messageContainer.appendChild(message);
+//   messageContainer.appendChild(undo);
+//   messageContainer.appendChild(messageEnd);
+//   body.append(messageContainer);
 
-  const deleteMessage = document.createElement('div');
-  deleteMessage.className = 'jp-undo-delete-close';
-  deleteMessage.onclick = function(): void {
-    onDelete(codeSnippet, snippetID);
-  };
-  body.append(deleteMessage);
-  return body;
-}
+//   const deleteMessage = document.createElement('div');
+//   deleteMessage.className = 'jp-undo-delete-close';
+//   deleteMessage.onclick = function(): void {
+//     onDelete(codeSnippet, snippetID);
+//   };
+//   body.append(deleteMessage);
+//   return body;
+// }
 
 export default code_snippet_extension;

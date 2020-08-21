@@ -245,9 +245,11 @@ export class CodeSnippetDisplay extends React.Component<
   // Remove 6 dots off hover
   private dragHoverStyleRemove = (id: string): void => {
     const _id: number = parseInt(id, 10);
-    document
-      .getElementsByClassName('drag-hover')
-      [_id].classList.remove('drag-hover-selected');
+    if (document.getElementsByClassName('drag-hover')) {
+      document
+        .getElementsByClassName('drag-hover')
+        [_id].classList.remove('drag-hover-selected');
+    }
   };
 
   // Grey out snippet and include blue six dots when snippet is previewing (clicked)
@@ -550,7 +552,7 @@ export class CodeSnippetDisplay extends React.Component<
         ></div>
         <div
           className={'jp-codeSnippet-metadata'}
-          onMouseEnter={(event): void => {
+          onMouseEnter={(): void => {
             showPreview(
               {
                 id: parseInt(id, 10),
@@ -707,6 +709,7 @@ export class CodeSnippetDisplay extends React.Component<
       if (response.button.accept) {
         contentsService.delete('snippets/' + codeSnippet.name + '.json');
         this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
+        this.props._codeSnippetWidgetModel.updateSnippetContents();
         this.setState({
           codeSnippets: this.props._codeSnippetWidgetModel.snippets
         });
