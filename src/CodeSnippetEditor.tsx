@@ -77,28 +77,10 @@ export class CodeSnippetEditor extends ReactWidget {
     this.saveChange = this.saveChange.bind(this);
     this.updateSnippet = this.updateSnippet.bind(this);
     this.handleChangeOnTag = this.handleChangeOnTag.bind(this);
-    // this.getActiveTags = this.getActiveTags.bind(this);
   }
 
   get codeSnippetEditorMetadata(): ICodeSnippetEditorMetadata {
     return this._codeSnippetEditorMetaData;
-  }
-
-  private getActiveTags(): string[] {
-    const tags: string[] = ['hello'];
-
-    // await this.codeSnippetWidget
-    //   .fetchData()
-    //   .then((codeSnippets: ICodeSnippet[]) => {
-    //     console.log(codeSnippets);
-    //     // for (const codeSnippet of codeSnippets) {
-    //     //   if (codeSnippet.tags) {
-    //     //     tags.push(...codeSnippet.tags);
-    //     //   }
-    //     // }
-    //     // console.log(tags);
-    //   });
-    return tags;
   }
 
   private deactivateEditor(
