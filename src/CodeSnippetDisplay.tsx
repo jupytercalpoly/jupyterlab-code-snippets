@@ -277,8 +277,13 @@ export class CodeSnippetDisplay extends React.Component<
     displayed: string
   ): JSX.Element => {
     const name: string = displayed;
-    if (filter !== '' && displayed.includes(filter)) {
-      const startIndex: number = name.indexOf(filter);
+    if (
+      filter !== '' &&
+      displayed.toLowerCase().includes(filter.toLowerCase())
+    ) {
+      const startIndex: number = name
+        .toLowerCase()
+        .indexOf(filter.toLowerCase());
       const endIndex: number = startIndex + filter.length;
       const start = name.substring(0, startIndex);
       const bolded = name.substring(startIndex, endIndex);
@@ -653,8 +658,8 @@ export class CodeSnippetDisplay extends React.Component<
     // filter with search
     let filteredSnippets = this.props.codeSnippets.filter(
       codeSnippet =>
-        codeSnippet.name.includes(searchValue) ||
-        codeSnippet.language.includes(searchValue)
+        codeSnippet.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        codeSnippet.language.toLowerCase().includes(searchValue.toLowerCase())
     );
 
     // filter with tags
