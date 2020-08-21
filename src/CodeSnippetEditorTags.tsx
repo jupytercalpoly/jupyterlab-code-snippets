@@ -1,0 +1,219 @@
+import React from 'react';
+import { checkIcon, addIcon } from '@jupyterlab/ui-components';
+
+interface ICodeSnippetEditorTagProps {
+  selectedTags: string[];
+  tags: string[];
+  handleChange: (selectedTags: string[], allTags: string[]) => void;
+}
+
+interface ICodeSnippetEditorTagState {
+  selectedTags: string[];
+  tags: string[];
+  plusIconShouldHide: boolean;
+  addingNewTag: boolean;
+}
+
+export class CodeSnippetEditorTags extends React.Component<
+  ICodeSnippetEditorTagProps,
+  ICodeSnippetEditorTagState
+> {
+  constructor(props: ICodeSnippetEditorTagProps) {
+    super(props);
+    this.state = {
+      selectedTags: [],
+      tags: [],
+      plusIconShouldHide: false,
+      addingNewTag: false
+    };
+    this.renderTags = this.renderTags.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  componentDidMount(): void {
+    this.setState({
+      selectedTags: this.props.selectedTags,
+      tags: this.props.tags,
+      plusIconShouldHide: false,
+      addingNewTag: false
+    });
+  }
+
+  componentDidUpdate(prevProps: ICodeSnippetEditorTagProps): void {
+    if (prevProps !== this.props) {
+      this.setState({
+        selectedTags: this.props.selectedTags,
+        tags: this.props.tags
+      });
+    }
+  }
+
+  handleClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    const target = event.target as HTMLElement;
+    const clickedTag = target.innerText;
+    const parent = target.parentElement;
+
+    this.setState(
+      state => ({
+        selectedTags: this.handleClickHelper(
+          parent,
+          state.selectedTags,
+          clickedTag
+        )
+      }),
+      this.handleOnChange
+    );
+  }
+
+  handleOnChange(): void {
+    this.props.handleChange(this.state.selectedTags, this.state.tags);
+  }
+
+  handleClickHelper(
+    parent: HTMLElement,
+    tags: string[],
+    clickedTag: string
+  ): string[] {
+    const currentTags = tags.slice();
+    if (parent.classList.contains('unapplied-tag')) {
+      parent.classList.replace('unapplied-tag', 'applied-tag');
+      currentTags.splice(-1, 0, clickedTag);
+    } else if (parent.classList.contains('applied-tag')) {
+      parent.classList.replace('applied-tag', 'unapplied-tag');
+
+      const idx = currentTags.indexOf(clickedTag);
+      currentTags.splice(idx, 1);
+    }
+    return currentTags;
+  }
+
+  addTagOnClick(event: React.MouseEvent<HTMLInputElement>): void {
+    this.setState({ plusIconShouldHide: true, addingNewTag: true });
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement.value === 'Add Tag') {
+      inputElement.value = '';
+      inputElement.style.width = '62px';
+      inputElement.style.minWidth = '62px';
+    }
+  }
+
+  addTagOnKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
+    const inputElement = event.target as HTMLInputElement;
+
+    if (inputElement.value !== '' && event.keyCode === 13) {
+      if (this.state.tags.includes(inputElement.value)) {
+        alert('Duplicate Tag Name!');
+        return;
+      }
+
+      const newTag = inputElement.value;
+
+      // update state all tag and selected tag
+      this.setState(
+        state => ({
+          selectedTags: [...state.selectedTags, newTag],
+          tags: [...state.tags, newTag],
+          plusIconShouldHide: false,
+          addingNewTag: false
+        }),
+        this.handleOnChange
+      );
+
+      console.log(document.activeElement.tagName);
+
+      // inputElement.blur();
+    }
+  }
+
+  addTagOnBlur(event: React.FocusEvent<HTMLInputElement>): void {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = 'Add Tag';
+    inputElement.style.width = '50px';
+    inputElement.style.minWidth = '50px';
+    inputElement.blur();
+    this.setState({ plusIconShouldHide: false, addingNewTag: false });
+  }
+
+  renderTags(): JSX.Element {
+    const inputBox =
+      this.state.addingNewTag === true ? (
+        <ul
+          className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}
+          key={'editor-new-tag'}
+        >
+          <input
+            onClick={(
+              event: React.MouseEvent<HTMLInputElement, MouseEvent>
+            ): void => this.addTagOnClick(event)}
+            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>): void =>
+              this.addTagOnKeyDown(event)
+            }
+            onBlur={(event: React.FocusEvent<HTMLInputElement>): void =>
+              this.addTagOnBlur(event)
+            }
+            autoFocus
+          />
+        </ul>
+      ) : (
+        <ul className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}>
+          {/* button */}
+          <button onClick={event => this.setState({ addingNewTag: true })}>
+            Add Tag
+          </button>
+          {/* check icon */}
+          <addIcon.react
+            tag="span"
+            className="jp-codeSnippet-Editor-Tag-plusIcon"
+            elementPosition="center"
+            height="16px"
+            width="16px"
+            marginLeft="2px"
+          />
+        </ul>
+      );
+    return (
+      <li className={'jp-codeSnippet-Editor-tags'}>
+        {this.state.tags.map((tag: string, index: number) =>
+          (() => {
+            if (this.state.selectedTags.includes(tag)) {
+              return (
+                <ul
+                  className={'jp-codeSnippet-Editor-tag tag applied-tag'}
+                  id={'editor' + '-' + tag + '-' + index}
+                  key={'editor' + '-' + tag + '-' + index}
+                >
+                  <button onClick={this.handleClick}>{tag}</button>
+                  <checkIcon.react
+                    tag="span"
+                    elementPosition="center"
+                    height="18px"
+                    width="18px"
+                    marginLeft="5px"
+                    marginRight="-3px"
+                  />
+                </ul>
+              );
+              // this.renderSelectedTag(tag, index.toString());
+            } else {
+              return (
+                <ul
+                  className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}
+                  id={'editor' + '-' + tag + '-' + index}
+                  key={'editor' + '-' + tag + '-' + index}
+                >
+                  <button onClick={this.handleClick}>{tag}</button>
+                </ul>
+              );
+              // this.renderTag(tag, index.toString());
+            }
+          })()
+        )}
+        {inputBox}
+      </li>
+    );
+  }
+
+  render(): JSX.Element {
+    return <div>{this.renderTags()}</div>;
+  }
+}

@@ -692,7 +692,11 @@ export class CodeSnippetDisplay extends React.Component<
     const tags: string[] = [];
     for (const codeSnippet of this.props.codeSnippets) {
       if (codeSnippet.tags) {
-        tags.push(...codeSnippet.tags);
+        for (const tag of codeSnippet.tags) {
+          if (!tags.includes(tag)) {
+            tags.push(tag);
+          }
+        }
       }
     }
     return tags;
@@ -756,7 +760,16 @@ export class CodeSnippetDisplay extends React.Component<
     editSnip.textContent = 'Edit snippet';
     editSnip.onclick = (): void => {
       console.log(codeSnippet);
-      this.props.openCodeSnippetEditor(codeSnippet);
+      const allTags = this.getActiveTags();
+      this.props.openCodeSnippetEditor({
+        name: codeSnippet.name,
+        description: codeSnippet.description,
+        language: codeSnippet.language,
+        code: codeSnippet.code,
+        id: codeSnippet.id,
+        selectedTags: codeSnippet.tags,
+        allTags: allTags
+      });
       this.removeOptionsNode();
     };
     const deleteSnip = document.createElement('div');

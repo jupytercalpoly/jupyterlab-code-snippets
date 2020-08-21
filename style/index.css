@@ -354,7 +354,7 @@ mark.jp-search-bolding {
 
 .jp-snippet-editor-language {
   display: block;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   margin-left: 2%;
   border: 1px solid var(--jp-border-color0);
   width: 176px;
@@ -373,6 +373,47 @@ mark.jp-search-bolding {
 
 .jp-snippet-editor-language:hover {
   background-image: none;
+}
+
+.jp-snippet-editor-tags-label {
+  margin-bottom: 12px;
+  margin-left: 2%;
+  font-family: helvetica;
+  line-height: 18px;
+  font-size: var(--jp-ui-font-size2);
+  color: var(--jp-ui-font-color0);
+}
+
+.jp-codeSnippet-Editor-tags {
+  list-style: none;
+  margin-left: 2%;
+}
+
+.jp-codeSnippet-Editor-tag {
+  margin-left: 10px;
+  margin-right: 10px;
+  height: 12px;
+}
+
+.jp-codeSnippet-Editor-tag button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--jp-ui-font-color2);
+  padding: 0;
+  font-size: var(--jp-ui-font-size1);
+}
+
+.jp-codeSnippet-Editor-tag.applied-tag button {
+  color: var(--jp-ui-font-color1);
+}
+
+.jp-codeSnippet-Editor-tag.unapplied-tag button {
+  color: var(--jp-ui-font-color2);
+}
+
+.jp-codeSnippet-Editor-tag.tag.unapplied-tag input {
+  border: none;
 }
 
 /* input::-webkit-calendar-picker-indicator {
@@ -588,6 +629,7 @@ mark.jp-search-bolding {
 
 /* Cell tag styling */
 @import url('~@jupyterlab/celltags/style/base.css');
+
 .jp-codeSnippet-tags {
   margin-top: 8px;
 }

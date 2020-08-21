@@ -110,26 +110,26 @@ export class CodeSnippetWidget extends ReactWidget {
     console.log(this._codeSnippets.length);
 
     // const data: ICodeSnippet[] = [];
-    if (this._codeSnippets.length === 0) {
-      console.log('fetching snippets!');
-      await this.codeSnippetManager
-        .getData('snippets', 'directory')
-        .then(model => {
-          fileModels.push(...model.content);
-        });
-      console.log(fileModels);
+    // if (this._codeSnippets.length === 0) {
+    console.log('fetching snippets!');
+    await this.codeSnippetManager
+      .getData('snippets', 'directory')
+      .then(model => {
+        fileModels.push(...model.content);
+      });
+    console.log(fileModels);
 
-      fileModels.forEach(fileModel => paths.push(fileModel.path));
-      console.log(paths);
-      for (let i = 0; i < paths.length; i++) {
-        await this.codeSnippetManager.getData(paths[i], 'file').then(model => {
-          // data.push(JSON.parse(model.content));
-          this._codeSnippetWidgetModel.addSnippet(JSON.parse(model.content), i);
-        });
-      }
-      this._codeSnippets = this._codeSnippetWidgetModel.snippets;
-      return this._codeSnippetWidgetModel.snippets;
+    fileModels.forEach(fileModel => paths.push(fileModel.path));
+    console.log(paths);
+    for (let i = 0; i < paths.length; i++) {
+      await this.codeSnippetManager.getData(paths[i], 'file').then(model => {
+        // data.push(JSON.parse(model.content));
+        this._codeSnippetWidgetModel.addSnippet(JSON.parse(model.content), i);
+      });
     }
+    this._codeSnippets = this._codeSnippetWidgetModel.snippets;
+    return this._codeSnippetWidgetModel.snippets;
+    // }
     // console.log(data);
 
     return null;
