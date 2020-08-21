@@ -84,6 +84,23 @@ export class CodeSnippetEditor extends ReactWidget {
     return this._codeSnippetEditorMetaData;
   }
 
+  private getActiveTags(): string[] {
+    const tags: string[] = ['hello'];
+
+    // await this.codeSnippetWidget
+    //   .fetchData()
+    //   .then((codeSnippets: ICodeSnippet[]) => {
+    //     console.log(codeSnippets);
+    //     // for (const codeSnippet of codeSnippets) {
+    //     //   if (codeSnippet.tags) {
+    //     //     tags.push(...codeSnippet.tags);
+    //     //   }
+    //     // }
+    //     // console.log(tags);
+    //   });
+    return tags;
+  }
+
   private deactivateEditor(
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ): void {
