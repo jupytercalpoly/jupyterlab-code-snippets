@@ -6,13 +6,11 @@ import {
   ICodeSnippet,
   CodeSnippetContentsService
 } from './CodeSnippetContentsService';
-//import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
 import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
 import { PathExt } from '@jupyterlab/coreutils';
-// import { ServerConnection } from '@jupyterlab/services';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
@@ -23,7 +21,6 @@ import { IExpandableActionButton } from '@elyra/ui-components';
 
 import { Widget } from '@lumino/widgets';
 
-// import { MouseEvent } from 'react';
 import React from 'react';
 import { Drag } from '@lumino/dragdrop';
 import { Cell, CodeCellModel, ICodeCellModel } from '@jupyterlab/cells';
@@ -248,9 +245,11 @@ export class CodeSnippetDisplay extends React.Component<
   // Remove 6 dots off hover
   private dragHoverStyleRemove = (id: string): void => {
     const _id: number = parseInt(id, 10);
-    document
-      .getElementsByClassName('drag-hover')
-      [_id].classList.remove('drag-hover-selected');
+    if (document.getElementsByClassName('drag-hover')) {
+      document
+        .getElementsByClassName('drag-hover')
+        [_id].classList.remove('drag-hover-selected');
+    }
   };
 
   // Grey out snippet and include blue six dots when snippet is previewing (clicked)
@@ -278,8 +277,13 @@ export class CodeSnippetDisplay extends React.Component<
     displayed: string
   ): JSX.Element => {
     const name: string = displayed;
-    if (filter !== '' && displayed.includes(filter)) {
-      const startIndex: number = name.indexOf(filter);
+    if (
+      filter !== '' &&
+      displayed.toLowerCase().includes(filter.toLowerCase())
+    ) {
+      const startIndex: number = name
+        .toLowerCase()
+        .indexOf(filter.toLowerCase());
       const endIndex: number = startIndex + filter.length;
       const start = name.substring(0, startIndex);
       const bolded = name.substring(startIndex, endIndex);
@@ -458,9 +462,6 @@ export class CodeSnippetDisplay extends React.Component<
   ): void {
     const target = event.target as HTMLElement;
     let topAsString: string;
-    // console.log(target);
-    // console.log(target.getBoundingClientRect().top + 10);
-    // console.log(target.getBoundingClientRect().left);
     if (target.tagName === 'path') {
       topAsString =
         (target.getBoundingClientRect().top + 10).toString(10) + 'px';
@@ -499,13 +500,6 @@ export class CodeSnippetDisplay extends React.Component<
       //   }
       // },
       // {
-      //   title: 'More Options',
-      //   icon: moreIcon,
-      //   onClick: (): void => {
-      //     console.log('More option clicked!');
-      //   }
-      // },
-      // {
       //   title: 'Insert',
       //   icon: insertIcon,
       //   onClick: (): void => {
@@ -518,7 +512,6 @@ export class CodeSnippetDisplay extends React.Component<
         onClick: (
           event: React.MouseEvent<HTMLDivElement, MouseEvent>
         ): void => {
-          console.log(codeSnippet);
           showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
           this._setOptionsPosition(id, event);
         }
@@ -564,7 +557,7 @@ export class CodeSnippetDisplay extends React.Component<
         ></div>
         <div
           className={'jp-codeSnippet-metadata'}
-          onMouseEnter={(event): void => {
+          onMouseEnter={(): void => {
             showPreview(
               {
                 id: parseInt(id, 10),
@@ -572,7 +565,6 @@ export class CodeSnippetDisplay extends React.Component<
                 body: new PreviewHandler(),
                 codeSnippet: codeSnippet
               },
-              this.props.openCodeSnippetEditor,
               this.props.editorServices
             );
             this.snippetClicked(id);
@@ -582,17 +574,7 @@ export class CodeSnippetDisplay extends React.Component<
             this._evtMouseLeave();
           }}
         >
-          <div
-            key={displayName}
-            className={TITLE_CLASS}
-            id={id}
-            // onMouseOver={() => {
-            //   this.dragHoverStyle(id);
-            // }}
-            // onMouseOut={() => {
-            //   this.dragHoverStyleRemove(id);
-            // }}
-          >
+          <div key={displayName} className={TITLE_CLASS} id={id}>
             <div
               id={id}
               title={codeSnippet.name}
@@ -673,14 +655,11 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   filterSnippets = (searchValue: string, filterTags: string[]): void => {
-    console.log(searchValue);
-    console.log(filterTags);
-
     // filter with search
     let filteredSnippets = this.props.codeSnippets.filter(
       codeSnippet =>
-        codeSnippet.name.includes(searchValue) ||
-        codeSnippet.language.includes(searchValue)
+        codeSnippet.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        codeSnippet.language.toLowerCase().includes(searchValue.toLowerCase())
     );
 
     // filter with tags
@@ -721,7 +700,6 @@ export class CodeSnippetDisplay extends React.Component<
 
   private deleteCommand(codeSnippet: ICodeSnippet): void {
     const contentsService = CodeSnippetContentsService.getInstance();
-    console.log(codeSnippet);
     showDialog({
       title: 'Delete snippet?',
       body: 'Are you sure you want to delete "' + codeSnippet.name + '"? ',
@@ -735,8 +713,8 @@ export class CodeSnippetDisplay extends React.Component<
     }).then((response: any): void => {
       if (response.button.accept) {
         contentsService.delete('snippets/' + codeSnippet.name + '.json');
-        console.log(codeSnippet.id);
         this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
+        this.props._codeSnippetWidgetModel.updateSnippetContents();
         this.setState({
           codeSnippets: this.props._codeSnippetWidgetModel.snippets
         });
@@ -750,7 +728,6 @@ export class CodeSnippetDisplay extends React.Component<
     if (!temp.classList.contains('inactive')) {
       temp.classList.add('inactive');
     }
-    console.log(temp);
   }
 
   // create dropdown menu

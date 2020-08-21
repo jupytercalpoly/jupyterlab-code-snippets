@@ -392,11 +392,10 @@ const PREVIEW_CONTENT = 'jp-Preview-content';
  */
 export function showPreview<T>(
   options: Partial<Preview.IOptions<T>> = {},
-  openCodeSnippetEditor: (args: any) => void,
   editorServices: IEditorServices
 ): Promise<void> {
   //Insert check method to see if the preview is already open
-  const preview = new Preview(options, openCodeSnippetEditor, editorServices);
+  const preview = new Preview(options, editorServices);
   if (preview.ready === false) {
     return;
   }
@@ -416,7 +415,6 @@ export class Preview<T> extends Widget {
   private _hasRefreshedSinceAttach: boolean;
   constructor(
     options: Partial<Preview.IOptions<T>> = {},
-    openCodeSnippetEditor: (args: any) => void,
     editorServices: IEditorServices
   ) {
     super();
@@ -426,24 +424,11 @@ export class Preview<T> extends Widget {
     this.codeSnippet = options.codeSnippet;
     this.editorServices = editorServices;
     this.addClass(PREVIEW_CLASS);
-    //const renderer = Preview.defaultRenderer;
-    //this._host = options.host || document.body;
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
     content.addClass(PREVIEW_CONTENT);
     content.id = PREVIEW_CONTENT + this._id;
     layout.addWidget(content);
-
-    // const header = renderer.createHeader(options.title);
-    // content.addWidget(header);
-    //const body = renderer.createBody(options.body || '');
-    //content.addWidget(body);
-    // const editButton = renderer.createEditButton(
-    //   this,
-    //   openCodeSnippetEditor,
-    //   options.codeSnippet
-    // );
-    // content.addWidget(editButton);
 
     if (Preview.tracker.size > 0) {
       const previous = Preview.tracker.currentWidget;
@@ -502,12 +487,6 @@ export class Preview<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      // case 'keydown':
-      //   this._evtKeydown(event as KeyboardEvent);
-      //   break;
-      // case 'click':
-      //   this._evtClick(event as MouseEvent);
-      //   break;
       case 'contextmenu':
         event.preventDefault();
         event.stopPropagation();
@@ -516,59 +495,6 @@ export class Preview<T> extends Widget {
         break;
     }
   }
-
-  /**
-   * Handle the `'click'` event for a dialog button.
-   *
-   * @param event - The DOM event sent to the widget
-   */
-  // protected _evtClick(event: MouseEvent): void {
-  //   //gray area
-  //   const content = this.node.getElementsByClassName(
-  //     PREVIEW_CONTENT
-  //   )[0] as HTMLElement;
-  //   if (!content.contains(event.target as HTMLElement)) {
-  //     document
-  //       .getElementsByClassName('drag-hover')
-  //       [this._id].classList.remove('drag-hover-clicked');
-  //     document
-  //       .getElementsByClassName('codeSnippet-item')
-  //       [this._id].classList.remove('codeSnippet-item-clicked');
-  //     event.stopPropagation();
-  //     event.preventDefault();
-  //     this.reject();
-  //     return;
-  //   }
-  // }
-
-  // /**
-  //  * Handle the `'keydown'` event for the widget.
-  //  *
-  //  * @param event - The DOM event sent to the widget
-  //  */
-  // protected _evtKeydown(event: KeyboardEvent): void {
-  //   // Check for escape key
-  //   switch (event.keyCode) {
-  //     case 27: // Escape.
-  //       document
-  //         .getElementsByClassName('drag-hover')
-  //         [this._id].classList.remove('drag-hover-clicked');
-  //       document
-  //         .getElementsByClassName('codeSnippet-item')
-  //         [this._id].classList.remove('codeSnippet-item-clicked');
-  //       event.stopPropagation();
-  //       event.preventDefault();
-  //       this.reject();
-  //       break;
-  //     // case 13: // Enter.
-  //     //   event.stopPropagation();
-  //     //   event.preventDefault();
-  //     //   this.resolve();
-  //     //   break;
-  //     default:
-  //       break;
-  //   }
-  // }
 
   /**
    * Resolve the current dialog.
@@ -693,7 +619,7 @@ export class Preview<T> extends Widget {
         })
       });
     }
-    this.editor.setSize({ width: 300, height: 106 });
+    this.editor.setSize({ width: 200, height: 106 });
     if (this.isVisible) {
       this._hasRefreshedSinceAttach = true;
       this.editor.refresh();
@@ -758,21 +684,6 @@ export namespace Preview {
 
   export class Renderer {
     /**
-     * Create the header of the dialog.
-     *
-     * @param title - The title of the snippet.
-     *
-     * @returns A widget for the header of the preview.
-     */
-    // createHeader(title: string): Widget {
-    //   const header = ReactWidget.create(<>{title}</>);
-
-    //   header.addClass('jp-Preview-header');
-    //   // Styling.styleNode(header.node);
-    //   return header;
-    // }
-
-    /**
      * Create the body of the dialog.
      *
      * @param value - The input value for the body.
@@ -792,12 +703,7 @@ export namespace Preview {
         // order to trigger a render of the DOM nodes from the React element.
         MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
       }
-
-      // const iconNode = new Widget({ node: document.createElement('div') });
-      // iconNode.title.icon = checkIcon;
-      // body.
       body.addClass('jp-Preview-body');
-      // Styling.styleNode(body.node);
       return body;
     }
   }

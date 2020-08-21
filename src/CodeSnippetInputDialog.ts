@@ -259,25 +259,6 @@ class MessageHandler extends Widget {
   }
 }
 
-// /**
-//  * A method to create an input when the user selects the Other option.
-//  */
-// function createLanguageInput(form: HTMLFormElement): void {
-//   const newInput = document.createElement('input');
-//   newInput.id = 'alternate-user-input';
-//   form.appendChild(newInput);
-// }
-
-// /**
-//  * A method to remove an input when the user selects the Other option.
-//  */
-// function removeLanguageInput(form: HTMLFormElement): void {
-//   const unusedInput = document.getElementById('alternate-user-input');
-//   if (form.contains(unusedInput)) {
-//     form.removeChild(unusedInput);
-//   }
-// }
-
 /**
  * A namespace for private data.
  */

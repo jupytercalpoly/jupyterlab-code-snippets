@@ -20,7 +20,6 @@ const OPTIONS_CLASS = 'jp-options';
 export function showMoreOptions<T>(
   options: Partial<OptionsMessage.IOptions<T>> = {}
 ): Promise<void> {
-  console.log(options);
   const optionsMessage = new OptionsMessage(options);
   return optionsMessage.launch();
 }
@@ -41,9 +40,6 @@ export class OptionsMessage<T> extends Widget {
     layout.addWidget(content);
 
     const body = renderer.createBody(options.body || '');
-    // body.addClass('jp-Message-body');
-    // const icon = renderer.createIcon();
-    // content.addWidget(icon);
     content.addWidget(body);
 
     if (OptionsMessage.tracker.size > 0) {

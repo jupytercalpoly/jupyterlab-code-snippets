@@ -245,35 +245,6 @@ export class CodeSnippetWidget extends ReactWidget {
     return undefined;
   }
 
-  // private _evtMouseLeave(event: MouseEvent): void {
-  //   //get rid of preview by clicking anything
-  //   const target = event.target as HTMLElement;
-
-  //   const preview = document.querySelector('.jp-preview');
-  //   if (preview) {
-  //     // if target is not the code snippet name area, then add inactive
-  //     // if target area is the code snippet name area, previewSnippet widget will handle preview.
-  //     if (
-  //       !preview.classList.contains('inactive') &&
-  //       !target.classList.contains('expandableContainer-name')
-  //     ) {
-  //       preview.classList.add('inactive');
-  //       for (const elem of document.getElementsByClassName('drag-hover')) {
-  //         if (elem.classList.contains('drag-hover-clicked')) {
-  //           elem.classList.remove('drag-hover-clicked');
-  //         }
-  //       }
-  //       for (const item of document.getElementsByClassName(
-  //         'codeSnippet-item'
-  //       )) {
-  //         if (item.classList.contains('codeSnippet-item-clicked')) {
-  //           item.classList.remove('codeSnippet-item-clicked');
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
   private _evtMouseDown(event: MouseEvent): void {
     //get rid of preview by clicking anything
     const target = event.target as HTMLElement;
