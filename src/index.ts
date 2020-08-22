@@ -19,11 +19,11 @@ import editorIconSVGstr from '../style/icon/jupyter_snippeteditoricon.svg';
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 
+import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import {
-  CodeSnippetContentsService,
-  ICodeSnippet
-} from './CodeSnippetContentsService';
-import { CodeSnippetEditor } from './CodeSnippetEditor';
+  CodeSnippetEditor,
+  ICodeSnippetEditorMetadata
+} from './CodeSnippetEditor';
 
 // import undoDeleteSVG from '../style/icon/undoDelete.svg';
 // import { showUndoMessage } from './UndoDelete';
@@ -150,7 +150,9 @@ function activateCodeSnippet(
   app.shell.add(codeSnippetWidget, 'left', { rank: 900 });
 
   // open code Snippet Editor
-  const openCodeSnippetEditor = (args: ICodeSnippet): void => {
+  const openCodeSnippetEditor = (args: ICodeSnippetEditorMetadata): void => {
+    console.log(args);
+
     if (!args.name) {
       return;
     }
@@ -198,7 +200,7 @@ function activateCodeSnippet(
 
   const editorSaveCommand = 'jp-codeSnippet-editor:save';
   app.commands.addCommand(editorSaveCommand, {
-    execute: (args: any) => {
+    execute: () => {
       const editor = tracker.currentWidget;
       editor.updateSnippet();
     }
@@ -307,14 +309,15 @@ function activateCodeSnippet(
   restorer.restore(tracker, {
     command: editorCommand,
     args: widget => {
-      const codeSnippet = widget.codeSnippet;
+      const editorMetadata = widget.codeSnippetEditorMetadata;
       return {
-        name: codeSnippet.name,
-        description: codeSnippet.description,
-        language: codeSnippet.language,
-        code: codeSnippet.code,
-        id: codeSnippet.id,
-        tags: codeSnippet.tags
+        name: editorMetadata.name,
+        description: editorMetadata.description,
+        language: editorMetadata.language,
+        code: editorMetadata.code,
+        id: editorMetadata.id,
+        selectedTags: editorMetadata.selectedTags,
+        allTags: editorMetadata.allTags
       };
     },
     name: widget => {

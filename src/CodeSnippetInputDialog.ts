@@ -57,9 +57,14 @@ export function CodeSnippetInputDialog(
 
   for (const snippet of snippets) {
     if (snippet.tags) {
-      tags.push(...snippet.tags);
+      for (const tag of snippet.tags) {
+        if (!tags.includes(tag)) {
+          tags.push(tag);
+        }
+      }
     }
   }
+  console.log(tags);
 
   return showCodeSnippetForm({
     title: 'Save Code Snippet',
@@ -70,11 +75,13 @@ export function CodeSnippetInputDialog(
       CodeSnippetForm.okButton({ label: 'Save' })
     ]
   }).then((result: CodeSnippetForm.IResult<string[]>) => {
-    if (validateForm(result) === false) {
-      return CodeSnippetInputDialog(codeSnippet, code, idx); // This works but it wipes out all the data they entered previously...
-    }
+    console.log(result);
     if (!result.value) {
       return null;
+    }
+
+    if (validateForm(result) === false) {
+      return CodeSnippetInputDialog(codeSnippet, code, idx); // This works but it wipes out all the data they entered previously...
     } else {
       if (idx === -1) {
         idx = codeSnippet.codeSnippetWidgetModel.snippets.length;
@@ -264,10 +271,12 @@ class MessageHandler extends Widget {
  */
 class Private {
   static selectedTags: string[] = [];
+  static allTags: string[];
   /**
    * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
    */
   static createInputNode(tags: string[]): HTMLElement {
+    Private.allTags = tags;
     const body = document.createElement('form');
     const nameValidity = document.createElement('p');
     nameValidity.textContent =
@@ -276,7 +285,7 @@ class Private {
 
     const descriptionValidity = document.createElement('p');
     descriptionValidity.textContent =
-      'Description of the code snippet MUST be alphanumeric or composed of underscore(_)';
+      'Description of the code snippet MUST be alphanumeric or composed of underscore(_) or space';
     descriptionValidity.className = 'jp-inputDesc-validity';
 
     const nameTitle = document.createElement('label');
@@ -284,7 +293,6 @@ class Private {
     const name = document.createElement('input');
     name.className = INPUT_NEW_SNIPPET_CLASS;
     name.required = true;
-    // prettier-ignore
     name.pattern = '[a-zA-Z0-9_]+';
 
     const descriptionTitle = document.createElement('label');
@@ -292,8 +300,7 @@ class Private {
     const description = document.createElement('input');
     description.className = INPUT_NEW_SNIPPET_CLASS;
     description.required = true;
-    // prettier-ignore
-    description.pattern = '[a-zA-Z0-9_]+';
+    description.pattern = '[a-zA-Z0-9_ ,.?!]+';
 
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language*';
@@ -421,9 +428,11 @@ class Private {
     const inputElement = event.target as HTMLInputElement;
 
     if (inputElement.value !== '' && event.keyCode === 13) {
+      console.log(Private.allTags);
       // duplicate tag
-      if (Private.selectedTags.includes(inputElement.value)) {
+      if (Private.allTags.includes(inputElement.value)) {
         alert('Duplicate Tag Name!');
+        return;
       }
       event.preventDefault();
 
@@ -456,25 +465,29 @@ class Private {
 
       // add it to the selected tags
       Private.selectedTags.push(tagBtn.innerText);
+      Private.allTags.push(tagBtn.innerText);
 
+      // reset InputElement
+      inputElement.blur();
       // add plusIcon
-      const plusIcon = addIcon.element({
-        tag: 'span',
-        className: 'jp-codeSnippet-inputTag-plusIcon',
-        elementPosition: 'center',
-        height: '16px',
-        width: '16px',
-        marginLeft: '2px'
-      });
+      // const plusIcon = addIcon.element({
+      //   tag: 'span',
+      //   className: 'jp-codeSnippet-inputTag-plusIcon',
+      //   elementPosition: 'center',
+      //   height: '16px',
+      //   width: '16px',
+      //   marginLeft: '2px'
+      // });
 
-      // change input to span
-      const newTagName = document.createElement('span');
-      newTagName.innerText = 'Add Tag';
-      newTagName.style.cursor = 'pointer';
-      inputElement.parentElement.replaceChild(newTagName, inputElement);
+      // change input to button
+      // const newTagName = document.createElement('button');
+      // newTagName.innerText = 'Add Tag';
+      // newTagName.style.cursor = 'pointer';
+      // console.log(inputElement);
+      // // inputElement.parentElement.replaceChild(newTagName, inputElement);
 
-      newTagName.parentElement.appendChild(plusIcon);
-      newTagName.onclick = Private.addTag;
+      // // newTagName.parentElement.appendChild(plusIcon);
+      // newTagName.onclick = Private.addTag;
 
       event.stopPropagation();
     }
