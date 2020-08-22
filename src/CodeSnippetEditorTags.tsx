@@ -157,7 +157,7 @@ export class CodeSnippetEditorTags extends React.Component<
       ) : (
         <ul className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}>
           {/* button */}
-          <button onClick={event => this.setState({ addingNewTag: true })}>
+          <button onClick={(): void => this.setState({ addingNewTag: true })}>
             Add Tag
           </button>
           {/* check icon */}
@@ -174,7 +174,7 @@ export class CodeSnippetEditorTags extends React.Component<
     return (
       <li className={'jp-codeSnippet-Editor-tags'}>
         {this.state.tags.map((tag: string, index: number) =>
-          (() => {
+          ((): JSX.Element => {
             if (this.state.selectedTags.includes(tag)) {
               return (
                 <ul
