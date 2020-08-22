@@ -551,14 +551,14 @@ export namespace CodeSnippetForm {
      */
     createHeader<T>(
       title: Header,
-      reject: () => void = (): void => {
+      reject: () => void = () => {
         /* empty */
       },
       options: Partial<CodeSnippetForm.IOptions<T>> = {}
     ): Widget {
       let header: Widget;
 
-      const handleMouseDown = (event: React.MouseEvent): void => {
+      const handleMouseDown = (event: React.MouseEvent) => {
         // Fire action only when left button is pressed.
         if (event.button === 0) {
           event.preventDefault();
@@ -566,7 +566,7 @@ export namespace CodeSnippetForm {
         }
       };
 
-      const handleKeyDown = (event: React.KeyboardEvent): void => {
+      const handleKeyDown = (event: React.KeyboardEvent) => {
         const { key } = event;
         if (key === 'Enter' || key === ' ') {
           reject();

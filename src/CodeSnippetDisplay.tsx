@@ -461,18 +461,16 @@ export class CodeSnippetDisplay extends React.Component<
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ): void {
     const target = event.target as HTMLElement;
-    let top: number;
+    let topAsString: string;
     if (target.tagName === 'path') {
-      top = target.getBoundingClientRect().top + 10;
+      topAsString =
+        (target.getBoundingClientRect().top + 10).toString(10) + 'px';
     } else {
-      top = target.getBoundingClientRect().top + 18;
-    }
-    if (top > 0.7 * window.screen.height) {
-      top -= 120;
+      topAsString =
+        (target.getBoundingClientRect().top + 18).toString(10) + 'px';
     }
     const leftAsString =
       target.getBoundingClientRect().left.toString(10) + 'px';
-    const topAsString = top.toString(10) + 'px';
     document.documentElement.style.setProperty(
       '--more-options-top',
       topAsString

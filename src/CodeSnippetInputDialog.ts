@@ -218,7 +218,7 @@ export function validateForm(
     status = false;
   }
   if (!SUPPORTED_LANGUAGES.includes(language)) {
-    message += '\nLanguage must be one of the options';
+    message += 'Language must be one of the options';
     status = false;
   }
   if (status === false) {
