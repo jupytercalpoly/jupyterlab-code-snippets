@@ -1,5 +1,5 @@
 import { Widget } from '@lumino/widgets';
-import checkSVGstr from '../style/icon/check.svg';
+import checkSVGstr from '../style/icon/jupyter_checkmark.svg';
 import { showMessage } from './ConfirmMessage';
 
 import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
@@ -225,7 +225,7 @@ export function validateForm(
     status = false;
   }
   if (!SUPPORTED_LANGUAGES.includes(language)) {
-    message += 'Language must be one of the options';
+    message += '\nLanguage must be one of the options';
     status = false;
   }
   if (status === false) {
