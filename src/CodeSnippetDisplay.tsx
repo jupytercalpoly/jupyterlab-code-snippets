@@ -6,6 +6,7 @@ import {
   ICodeSnippet,
   CodeSnippetContentsService
 } from './CodeSnippetContentsService';
+import { find } from '@lumino/algorithm';
 
 import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
 import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
@@ -17,8 +18,6 @@ import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
 import { /**copyIcon,*/ LabIcon, addIcon } from '@jupyterlab/ui-components';
 import { IEditorServices } from '@jupyterlab/codeeditor';
 
-import { IExpandableActionButton } from '@elyra/ui-components';
-
 import { Widget } from '@lumino/widgets';
 
 import React from 'react';
@@ -28,6 +27,7 @@ import { MimeData } from '@lumino/coreutils';
 
 import * as nbformat from '@jupyterlab/nbformat';
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
+import { JupyterFrontEnd } from '@jupyterlab/application';
 
 /**
  * The class added to snippet cells
@@ -87,6 +87,7 @@ const moreOptionsIcon = new LabIcon({
  */
 interface ICodeSnippetDisplayProps {
   codeSnippets: ICodeSnippet[];
+  app: JupyterFrontEnd;
   getCurrentWidget: () => Widget;
   openCodeSnippetEditor: (args: any) => void;
   editorServices: IEditorServices;
@@ -458,7 +459,7 @@ export class CodeSnippetDisplay extends React.Component<
   //Set the position of the option to be under to the three dots on snippet.
   private _setOptionsPosition(
     id: string,
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
     const target = event.target as HTMLElement;
     let topAsString: string;
@@ -507,10 +508,10 @@ export class CodeSnippetDisplay extends React.Component<
       //   }
       // },
       {
-        title: 'More options',
+        title: 'Insert, copy, edit, and delete',
         icon: moreOptionsIcon,
         onClick: (
-          event: React.MouseEvent<HTMLDivElement, MouseEvent>
+          event: React.MouseEvent<HTMLButtonElement, MouseEvent>
         ): void => {
           showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
           this._setOptionsPosition(id, event);
@@ -583,21 +584,16 @@ export class CodeSnippetDisplay extends React.Component<
               {this.boldNameOnSearch(this.state.searchValue, displayName)}
             </div>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id}>
-              {actionButtons.map((btn: IExpandableActionButton) => {
+              {actionButtons.map(btn => {
                 return (
                   <button
                     key={btn.title}
                     title={btn.title}
                     className={buttonClasses + ' ' + ACTION_BUTTON_CLASS}
-                    onClick={(event): void => {
-                      if (btn.title === 'Copy') {
-                        alert('saved to clipboard');
-                      }
-                      if (btn.title === 'More options') {
-                        btn.onClick(event);
-                      } else {
-                        btn.onClick();
-                      }
+                    onClick={(
+                      event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ): void => {
+                      btn.onClick(event);
                     }}
                   >
                     <btn.icon.react
@@ -716,6 +712,15 @@ export class CodeSnippetDisplay extends React.Component<
       ]
     }).then((response: any): void => {
       if (response.button.accept) {
+        const widgetId = `jp-codeSnippet-editor-${codeSnippet.id}`;
+        const editor = find(
+          this.props.app.shell.widgets('main'),
+          (widget: Widget, _: number) => {
+            return widget.id === widgetId;
+          }
+        );
+        editor.dispose();
+
         contentsService.delete('snippets/' + codeSnippet.name + '.json');
         this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
         this.props._codeSnippetWidgetModel.updateSnippetContents();
