@@ -1,5 +1,5 @@
 import { Widget } from '@lumino/widgets';
-import checkSVGstr from '../style/icon/check.svg';
+import checkSVGstr from '../style/icon/jupyter_checkmark.svg';
 import { showMessage } from './ConfirmMessage';
 
 import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
