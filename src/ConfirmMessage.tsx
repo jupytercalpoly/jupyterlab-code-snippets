@@ -20,7 +20,6 @@ const CONFIRM_CLASS = 'jp-confirm';
 export function showMessage<T>(
   options: Partial<ConfirmMessage.IOptions<T>> = {}
 ): Promise<void> {
-  console.log(options);
   const confirmMessage = new ConfirmMessage(options);
   return confirmMessage.launch();
 }

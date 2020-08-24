@@ -457,7 +457,6 @@ export class CodeSnippetDisplay extends React.Component<
 
   //Set the position of the option to be under to the three dots on snippet.
   private _setOptionsPosition(
-    id: string,
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ): void {
     const target = event.target as HTMLElement;
@@ -515,7 +514,7 @@ export class CodeSnippetDisplay extends React.Component<
           event: React.MouseEvent<HTMLDivElement, MouseEvent>
         ): void => {
           showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
-          this._setOptionsPosition(id, event);
+          this._setOptionsPosition(event);
         }
       }
       // {
@@ -638,8 +637,8 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    // console.log(props.codeSnippets);
-    // console.log(state.codeSnippets);
+    console.log(props.codeSnippets);
+    console.log(state.codeSnippets);
     // console.log(state.searchValue);
     // console.log(state.filterTags === []);
     if (
