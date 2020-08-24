@@ -32,8 +32,8 @@ export class CodeSnippetEditorTags extends React.Component<
 
   componentDidMount(): void {
     this.setState({
-      selectedTags: this.props.selectedTags,
-      tags: this.props.tags,
+      selectedTags: this.props.selectedTags ? this.props.selectedTags : [],
+      tags: this.props.tags ? this.props.tags : [],
       plusIconShouldHide: false,
       addingNewTag: false
     });
@@ -42,8 +42,8 @@ export class CodeSnippetEditorTags extends React.Component<
   componentDidUpdate(prevProps: ICodeSnippetEditorTagProps): void {
     if (prevProps !== this.props) {
       this.setState({
-        selectedTags: this.props.selectedTags,
-        tags: this.props.tags
+        selectedTags: this.props.selectedTags ? this.props.selectedTags : [],
+        tags: this.props.tags ? this.props.tags : []
       });
     }
   }
@@ -57,7 +57,7 @@ export class CodeSnippetEditorTags extends React.Component<
       state => ({
         selectedTags: this.handleClickHelper(
           parent,
-          state.selectedTags,
+          state.selectedTags ? state.selectedTags : [],
           clickedTag
         )
       }),
@@ -135,6 +135,7 @@ export class CodeSnippetEditorTags extends React.Component<
   }
 
   renderTags(): JSX.Element {
+    const hasTags = this.state.tags;
     const inputBox =
       this.state.addingNewTag === true ? (
         <ul
@@ -173,41 +174,55 @@ export class CodeSnippetEditorTags extends React.Component<
       );
     return (
       <li className={'jp-codeSnippet-Editor-tags'}>
-        {this.state.tags.map((tag: string, index: number) =>
-          ((): JSX.Element => {
-            if (this.state.selectedTags.includes(tag)) {
-              return (
-                <ul
-                  className={'jp-codeSnippet-Editor-tag tag applied-tag'}
-                  id={'editor' + '-' + tag + '-' + index}
-                  key={'editor' + '-' + tag + '-' + index}
-                >
-                  <button onClick={this.handleClick}>{tag}</button>
-                  <checkIcon.react
-                    tag="span"
-                    elementPosition="center"
-                    height="18px"
-                    width="18px"
-                    marginLeft="5px"
-                    marginRight="-3px"
-                  />
-                </ul>
-              );
-              // this.renderSelectedTag(tag, index.toString());
-            } else {
-              return (
-                <ul
-                  className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}
-                  id={'editor' + '-' + tag + '-' + index}
-                  key={'editor' + '-' + tag + '-' + index}
-                >
-                  <button onClick={this.handleClick}>{tag}</button>
-                </ul>
-              );
-              // this.renderTag(tag, index.toString());
-            }
-          })()
-        )}
+        {hasTags
+          ? this.state.tags.map((tag: string, index: number) =>
+              ((): JSX.Element => {
+                if (!this.state.selectedTags) {
+                  return (
+                    <ul
+                      className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}
+                      id={'editor' + '-' + tag + '-' + index}
+                      key={'editor' + '-' + tag + '-' + index}
+                    >
+                      <button onClick={this.handleClick}>{tag}</button>
+                    </ul>
+                  );
+                }
+
+                if (this.state.selectedTags.includes(tag)) {
+                  return (
+                    <ul
+                      className={'jp-codeSnippet-Editor-tag tag applied-tag'}
+                      id={'editor' + '-' + tag + '-' + index}
+                      key={'editor' + '-' + tag + '-' + index}
+                    >
+                      <button onClick={this.handleClick}>{tag}</button>
+                      <checkIcon.react
+                        tag="span"
+                        elementPosition="center"
+                        height="18px"
+                        width="18px"
+                        marginLeft="5px"
+                        marginRight="-3px"
+                      />
+                    </ul>
+                  );
+                  // this.renderSelectedTag(tag, index.toString());
+                } else {
+                  return (
+                    <ul
+                      className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}
+                      id={'editor' + '-' + tag + '-' + index}
+                      key={'editor' + '-' + tag + '-' + index}
+                    >
+                      <button onClick={this.handleClick}>{tag}</button>
+                    </ul>
+                  );
+                  // this.renderTag(tag, index.toString());
+                }
+              })()
+            )
+          : null}
         {inputBox}
       </li>
     );

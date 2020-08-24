@@ -405,7 +405,7 @@ export class CodeSnippetWidget extends ReactWidget {
     } else {
       // Handle the case where we are copying cells
       event.dropAction = 'copy';
-
+      console.log(idx);
       CodeSnippetInputDialog(this, data, idx);
     }
   }
@@ -429,6 +429,7 @@ export class CodeSnippetWidget extends ReactWidget {
           <div>
             <CodeSnippetDisplay
               codeSnippets={codeSnippets}
+              app={this.app}
               getCurrentWidget={this.getCurrentWidget}
               openCodeSnippetEditor={this.openCodeSnippetEditor.bind(this)}
               editorServices={this.editorServices}
