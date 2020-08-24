@@ -249,6 +249,8 @@ export class CodeSnippetWidget extends ReactWidget {
   private _evtMouseDown(event: MouseEvent): void {
     //get rid of preview by clicking anything
     const target = event.target as HTMLElement;
+    // const PREVIEW_CLASS = '.jp-preview';
+    // const DRAG_HOVER = 'drag-hover';
 
     const preview = document.querySelector('.jp-preview');
     if (preview) {
