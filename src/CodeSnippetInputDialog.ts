@@ -48,12 +48,12 @@ export interface IFileContainer extends JSONObject {
  * Result.value is the value retrieved from .getValue(). ---> .getValue() returns an array of inputs.
  */
 export function CodeSnippetInputDialog(
-  codeSnippet: CodeSnippetWidget,
+  codeSnippetWidget: CodeSnippetWidget,
   code: string[],
   idx: number
 ): Promise<Contents.IModel | null> {
   const tags: string[] = [];
-  const snippets = codeSnippet.codeSnippetWidgetModel.snippets;
+  const snippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
 
   for (const snippet of snippets) {
     if (snippet.tags) {
@@ -81,10 +81,10 @@ export function CodeSnippetInputDialog(
     }
 
     if (validateForm(result) === false) {
-      return CodeSnippetInputDialog(codeSnippet, code, idx); // This works but it wipes out all the data they entered previously...
+      return CodeSnippetInputDialog(codeSnippetWidget, code, idx); // This works but it wipes out all the data they entered previously...
     } else {
       if (idx === -1) {
-        idx = codeSnippet.codeSnippetWidgetModel.snippets.length;
+        idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
       }
 
       const tags = result.value.slice(3);
@@ -98,19 +98,19 @@ export function CodeSnippetInputDialog(
         tags: tags
       };
       const contentsService = CodeSnippetContentsService.getInstance();
-      const currSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+      const currSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
       for (const snippet of currSnippets) {
         if (snippet.name === newSnippet.name) {
           // const oldPath = 'snippets/' + snippet.name + '.json';
           const result = saveOverWriteFile(
-            codeSnippet.codeSnippetWidgetModel,
+            codeSnippetWidget.codeSnippetWidgetModel,
             snippet,
             newSnippet
           );
 
           result
             .then(newSnippets => {
-              codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+              codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
             })
             .catch(_ => {
               console.log('cancelling overwrite!');
@@ -119,7 +119,7 @@ export function CodeSnippetInputDialog(
         }
       }
 
-      createNewSnippet(codeSnippet, newSnippet, contentsService);
+      createNewSnippet(codeSnippetWidget, newSnippet, contentsService);
     }
   });
 }
@@ -255,6 +255,9 @@ class InputHandler extends Widget {
     );
 
     inputs.push(...Private.selectedTags);
+
+    // reset selectedTags
+    Private.selectedTags = [];
 
     return inputs;
   }

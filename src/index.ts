@@ -153,9 +153,9 @@ function activateCodeSnippet(
   const openCodeSnippetEditor = (args: ICodeSnippetEditorMetadata): void => {
     console.log(args);
 
-    if (!args.name) {
-      return;
-    }
+    // if (!args.name) {
+    //   return;
+    // }
     // codeSnippetEditors are in the main area
     const widgetId = `jp-codeSnippet-editor-${args.id}`;
 
@@ -184,7 +184,7 @@ function activateCodeSnippet(
     codeSnippetEditor.title.closable = true;
     codeSnippetEditor.title.icon = editorIcon;
 
-    if (!tracker.has(codeSnippetEditor)) {
+    if (!args.fromScratch && !tracker.has(codeSnippetEditor)) {
       tracker.add(codeSnippetEditor);
     }
 
@@ -317,7 +317,8 @@ function activateCodeSnippet(
         code: editorMetadata.code,
         id: editorMetadata.id,
         selectedTags: editorMetadata.selectedTags,
-        allTags: editorMetadata.allTags
+        allTags: editorMetadata.allTags,
+        fromScratch: editorMetadata.fromScratch
       };
     },
     name: widget => {

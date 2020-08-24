@@ -13,6 +13,7 @@ import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './index';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
+import { Contents } from '@jupyterlab/services';
 
 /**
  * CSS style classes
@@ -37,6 +38,7 @@ export interface ICodeSnippetEditorMetadata {
   id: number;
   selectedTags: string[];
   allTags: string[];
+  fromScratch: boolean;
 }
 
 export class CodeSnippetEditor extends ReactWidget {
@@ -378,31 +380,59 @@ export class CodeSnippetEditor extends ReactWidget {
     this._codeSnippetEditorMetaData.name = name;
     this._codeSnippetEditorMetaData.description = description;
     this._codeSnippetEditorMetaData.language = language;
+    // this._codeSnippetEditorMetaData.id = this.codeSnippetWidget.codeSnippets
+    //   ? this.codeSnippetWidget.codeSnippets.length
+    //   : -1;
+
+    // console.log(this.codeSnippetWidget.codeSnippets.length);
 
     console.log(language);
     this.saved = true;
 
-    const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
     const newPath =
       'snippets/' + this._codeSnippetEditorMetaData.name + '.json';
 
-    if (newPath !== oldPath) {
-      // renaming code snippet
-      try {
-        await this.contentsService.rename(oldPath, newPath);
-      } catch (error) {
-        console.log('duplicate name!');
+    if (!this._codeSnippetEditorMetaData.fromScratch) {
+      const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
 
-        await showDialog({
-          title: 'Duplicate Name of Code Snippet',
-          body: <p> {`"${newPath}" already exists.`} </p>,
-          buttons: [Dialog.cancelButton()]
+      if (newPath !== oldPath) {
+        // renaming code snippet
+        try {
+          await this.contentsService.rename(oldPath, newPath);
+        } catch (error) {
+          console.log('duplicate name!');
+
+          await showDialog({
+            title: 'Duplicate Name of Code Snippet',
+            body: <p> {`"${newPath}" already exists.`} </p>,
+            buttons: [Dialog.cancelButton()]
+          });
+          return;
+        }
+
+        // set new name as an old name
+        this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
+      }
+    } else {
+      let nameCheck = false;
+      await this.contentsService
+        .getData(newPath, 'file')
+        .then(async (value: Contents.IModel) => {
+          if (value.name) {
+            await showDialog({
+              title: 'Duplicate Name of Code Snippet',
+              body: <p> {`"${newPath}" already exists.`} </p>,
+              buttons: [Dialog.cancelButton()]
+            });
+          }
+        })
+        .catch(() => {
+          nameCheck = true;
+          console.log('new snippet has been created!');
         });
+      if (!nameCheck) {
         return;
       }
-
-      // set new name as an old name
-      this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
     }
 
     console.log(this._codeSnippetEditorMetaData.selectedTags);
@@ -432,8 +462,10 @@ export class CodeSnippetEditor extends ReactWidget {
       '] ' +
       this._codeSnippetEditorMetaData.name;
 
-    // update tracker
-    this.tracker.save(this);
+    if (!this._codeSnippetEditorMetaData.fromScratch) {
+      // update tracker
+      this.tracker.save(this);
+    }
 
     // update the display in code snippet explorer
     this.codeSnippetWidget.updateCodeSnippets();
@@ -492,6 +524,7 @@ export class CodeSnippetEditor extends ReactWidget {
   }
 
   render(): React.ReactElement {
+    const fromScratch = this._codeSnippetEditorMetaData.fromScratch;
     return (
       <div
         className="jp-codeSnippetInputArea"
@@ -502,12 +535,15 @@ export class CodeSnippetEditor extends ReactWidget {
           this.deactivateEditor(event);
         }}
       >
-        <span className="jp-snippet-editor-title">Edit Code Snippet</span>
+        <span className="jp-snippet-editor-title">
+          {fromScratch ? 'Add New Code Snippet' : 'Edit Code Snippet'}
+        </span>
         <section className="jp-snippet-editor-metadata">
           <label className="jp-snippet-editor-name-label">Name</label>
           <input
             className="jp-snippet-editor-name"
             defaultValue={this._codeSnippetEditorMetaData.name}
+            placeholder={'Ex. starter_code'}
             type="text"
             required
             pattern={'[a-zA-Z0-9_]+'}
@@ -529,6 +565,7 @@ export class CodeSnippetEditor extends ReactWidget {
           <input
             className="jp-snippet-editor-description"
             defaultValue={this._codeSnippetEditorMetaData.description}
+            placeholder={'Description'}
             type="text"
             required
             pattern={'[a-zA-Z0-9_ ,.?!]+'}
@@ -555,7 +592,7 @@ export class CodeSnippetEditor extends ReactWidget {
         <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
         {this.renderCodeInput()}
         <Button className="saveBtn" onClick={this.saveChange}>
-          Save
+          {fromScratch ? 'Create' : 'Save'}
         </Button>
       </div>
     );

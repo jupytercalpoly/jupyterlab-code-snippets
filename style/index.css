@@ -555,6 +555,8 @@ mark.jp-search-bolding {
 /* code snippet create button */
 .jp-createSnippetBtn {
   cursor: pointer;
+  border: none;
+  background: none;
 }
 
 /* code snippet tags in inputDialog */

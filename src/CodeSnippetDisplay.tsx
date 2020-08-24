@@ -768,7 +768,8 @@ export class CodeSnippetDisplay extends React.Component<
         code: codeSnippet.code,
         id: codeSnippet.id,
         selectedTags: codeSnippet.tags,
-        allTags: allTags
+        allTags: allTags,
+        fromScratch: false
       });
       this.removeOptionsNode();
     };
@@ -792,23 +793,29 @@ export class CodeSnippetDisplay extends React.Component<
       <div>
         <header className={CODE_SNIPPETS_HEADER_CLASS}>
           <span className={'jp-codeSnippet-title'}>{'Snippets'}</span>
-          <addIcon.react
+          <button
             className={'jp-createSnippetBtn'}
-            tag="span"
-            right="7px"
-            top="5px"
-          />
+            onClick={(): void => {
+              this.props.openCodeSnippetEditor({
+                name: '',
+                description: '',
+                language: 'Python',
+                code: [],
+                id: -1,
+                // selectedTags: [],
+                allTags: this.getActiveTags(),
+                fromScratch: true
+              });
+            }}
+          >
+            <addIcon.react tag="span" right="7px" top="5px" />
+          </button>
         </header>
         {/* <div className={'jp-codeSnippet-search'}> */}
         <FilterTools
           tags={this.getActiveTags()}
           onFilter={this.filterSnippets}
         />
-        {/* <FilterSnippet
-            tags={this.getActiveTags()}
-            onFilter={this.filterSnippets}
-          /> */}
-        {/* </div> */}
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
