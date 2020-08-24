@@ -311,12 +311,20 @@ export class CodeSnippetDisplay extends React.Component<
     }
 
     const target = event.target as HTMLElement;
+    console.log(target);
 
     this._dragData = {
       pressX: event.clientX,
       pressY: event.clientY,
-      dragImage: target.parentNode.cloneNode(true) as HTMLElement
+      dragImage: target.nextSibling.firstChild.cloneNode(true) as HTMLElement
     };
+
+    const dragImageTextColor = getComputedStyle(document.body).getPropertyValue(
+      '--jp-content-font-color3'
+    );
+
+    (this._dragData.dragImage
+      .children[0] as HTMLElement).style.color = dragImageTextColor;
 
     // add CSS style
     this._dragData.dragImage.classList.add('jp-codesnippet-drag-image');

@@ -283,10 +283,11 @@ mark.jp-search-bolding {
 
 .jp-codesnippet-drag-image {
   border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
-  background: var(--jp-layout-color2);
+  background: var(--jp-cell-editor-background);
   width: var(--jp-private-notebook-dragImage-width);
   height: var(--jp-private-notebook-dragImage-height);
-  color: var(--jp-content-font-color3);
+  /* color: #808080; */
+  /* color: var(--jp-content-font-color3); */
 }
 
 .jp-snippet-editor-title {
