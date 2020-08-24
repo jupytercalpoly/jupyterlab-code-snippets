@@ -458,20 +458,21 @@ export class CodeSnippetDisplay extends React.Component<
 
   //Set the position of the option to be under to the three dots on snippet.
   private _setOptionsPosition(
-    id: string,
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
     const target = event.target as HTMLElement;
-    let topAsString: string;
+    let top: number;
     if (target.tagName === 'path') {
-      topAsString =
-        (target.getBoundingClientRect().top + 10).toString(10) + 'px';
+      top = target.getBoundingClientRect().top + 10;
     } else {
-      topAsString =
-        (target.getBoundingClientRect().top + 18).toString(10) + 'px';
+      top = target.getBoundingClientRect().top + 18;
+    }
+    if (top > 0.7 * window.screen.height) {
+      top -= 120;
     }
     const leftAsString =
       target.getBoundingClientRect().left.toString(10) + 'px';
+    const topAsString = top.toString(10) + 'px';
     document.documentElement.style.setProperty(
       '--more-options-top',
       topAsString
@@ -514,7 +515,7 @@ export class CodeSnippetDisplay extends React.Component<
           event: React.MouseEvent<HTMLButtonElement, MouseEvent>
         ): void => {
           showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
-          this._setOptionsPosition(id, event);
+          this._setOptionsPosition(event);
         }
       }
       // {
@@ -632,8 +633,8 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    // console.log(props.codeSnippets);
-    // console.log(state.codeSnippets);
+    console.log(props.codeSnippets);
+    console.log(state.codeSnippets);
     // console.log(state.searchValue);
     // console.log(state.filterTags === []);
     if (
