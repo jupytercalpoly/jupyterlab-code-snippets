@@ -728,7 +728,9 @@ export class CodeSnippetDisplay extends React.Component<
             return widget.id === widgetId;
           }
         );
-        editor.dispose();
+        if (editor) {
+          editor.dispose();
+        }
 
         contentsService.delete('snippets/' + codeSnippet.name + '.json');
         this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
