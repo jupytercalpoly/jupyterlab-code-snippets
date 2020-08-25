@@ -41,6 +41,7 @@ const CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY =
 const CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY =
   'jp-codeSnippet-inputDesc-validity';
 const CODE_SNIPPET_EDITOR_TAGS_LABEL = 'jp-codeSnippet-editor-tags-label';
+
 const EDITOR_DIRTY_CLASS = 'jp-mod-dirty';
 
 export interface ICodeSnippetEditorMetadata {

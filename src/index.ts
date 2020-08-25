@@ -1,4 +1,3 @@
-// import '../style/index.css';
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
