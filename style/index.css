@@ -63,7 +63,7 @@
   background-color: var(--jp-layout-color2);
 } */
 
-.expandableContainer-name {
+.jp-codeSnippetsContainer-name {
   /* flex: 1 1 75%; */
   /* flex-grow: 1;
   flex-basis: 75%; */
@@ -77,7 +77,7 @@
   /* font-size: 16px; */
 }
 
-.expandableContainer-name:hover {
+.jp-codeSnippetsContainer-name:hover {
   cursor: pointer;
 }
 
@@ -102,7 +102,7 @@
   align-items: center;
 }
 
-.codeSnippet-item {
+.jp-codeSnippet-item {
   border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
   display: flex;
   margin: 0;
@@ -111,11 +111,11 @@
   /* height: 113px; */
 }
 
-.codeSnippet-item:hover {
+.jp-codeSnippet-item:hover {
   background-color: var(--jp-layout-color2);
 }
 
-.jp-confirm {
+.jp-codeSnippet-confirm {
   position: absolute;
   z-index: 10000;
   display: flex;
@@ -131,7 +131,7 @@
   background: var(--jp-dialog-background);
 }
 
-.jp-Message-content {
+.jp-codeSnippet-Message-content {
   display: flex;
   flex-direction: column;
   background: var(--jp-layout-color1);
@@ -147,7 +147,7 @@
   margin: auto 6px 30px auto;
 }
 
-.jp-Message-body {
+.jp-codeSnippet-Message-body {
   display: flex;
   align-items: center;
 }
@@ -162,11 +162,11 @@
   padding-left: 10px;
 }
 
-.codeSnippet-item.jp-snippet-dropTarget {
+.jp-codeSnippet-item.jp-codeSnippet-dropTarget {
   border-top: 2px solid var(--jp-private-notebook-selected-color);
 }
 
-.jp-preview {
+.jp-codeSnippet-preview {
   position: absolute;
   z-index: 10000;
   display: flex;
@@ -212,7 +212,7 @@
   border-color: transparent #1976d2 transparent transparent;
 }
 
-.drag-hover-clicked {
+.jp-codeSnippet-drag-hover-clicked {
   background-image: url(./icon/drag_active_jupyter.svg);
   background-color: var(--jp-layout-color2);
   background-position: center;
@@ -590,7 +590,7 @@ mark.jp-search-bolding {
 }
 
 /* code snippet layout */
-.drag-hover {
+.jp-codeSnippet-drag-hover {
   /* flex: 1 1 10%; */
   flex-basis: 5%;
   min-width: 20px;
@@ -700,7 +700,7 @@ mark.jp-search-bolding {
   margin-left: 3%;
 }
 
-.jp-options {
+.jp-codeSnippet-options {
   position: absolute;
   z-index: 10000;
   height: 100%;
@@ -713,7 +713,7 @@ mark.jp-search-bolding {
   background-color: transparent;
 }
 
-.jp-options.inactive {
+.jp-codeSnippet-options.inactive {
   display: none;
 }
 
@@ -726,7 +726,7 @@ mark.jp-search-bolding {
   text-align: left;
 }
 
-.jp-Options-content {
+.jp-codeSnippet-Options-content {
   background: var(--jp-layout-color1);
   padding: 10px;
   border: 1px solid var(--jp-border-color0);
@@ -742,7 +742,7 @@ mark.jp-search-bolding {
   left: var(--more-options-left);
 }
 
-.jp-Options-body {
+.jp-codeSnippet-Options-body {
   display: flex;
   align-items: center;
 }

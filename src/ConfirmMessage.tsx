@@ -8,7 +8,9 @@ import { ArrayExt } from '@lumino/algorithm';
 /**
  * The class name for confirmation box
  */
-const CONFIRM_CLASS = 'jp-confirm';
+const CONFIRM_CLASS = 'jp-codeSnippet-confirm';
+const CONFIRM_CONTENT = 'jp-codeSnippet-Message-content';
+const CONFIRM_BODY = 'jp-codeSnippet-Message-body';
 
 /**
  * Create and show a dialog.
@@ -36,11 +38,10 @@ export class ConfirmMessage<T> extends Widget {
     this._host = options.host || document.body;
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
-    content.addClass('jp-Message-content');
+    content.addClass(CONFIRM_CONTENT);
     layout.addWidget(content);
 
     const body = renderer.createBody(options.body || '');
-    // body.addClass('jp-Message-body');
     // const icon = renderer.createIcon();
     // content.addWidget(icon);
     content.addWidget(body);
@@ -102,7 +103,7 @@ export class ConfirmMessage<T> extends Widget {
    */
   protected _evtClick(event: MouseEvent): void {
     const content = this.node.getElementsByClassName(
-      'jp-Message-content'
+      CONFIRM_CONTENT
     )[0] as HTMLElement;
     if (!content.contains(event.target as HTMLElement)) {
       event.stopPropagation();
@@ -318,7 +319,7 @@ export namespace ConfirmMessage {
       // const iconNode = new Widget({ node: document.createElement('div') });
       // iconNode.title.icon = checkIcon;
       // body.
-      body.addClass('jp-Message-body');
+      body.addClass(CONFIRM_BODY);
       // Styling.styleNode(body.node);
       return body;
     }
