@@ -1,32 +1,25 @@
-import '../style/index.css';
-
-import codeSnippetIconSVGstr from '../style/icon/jupyter_snippeticon.svg';
-
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
   ILayoutRestorer
 } from '@jupyterlab/application';
+import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
+import { IEditorServices } from '@jupyterlab/codeeditor';
+import { LabIcon } from '@jupyterlab/ui-components';
 
 import { Widget } from '@lumino/widgets';
 import { find } from '@lumino/algorithm';
-import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
 
-import { IEditorServices } from '@jupyterlab/codeeditor';
-import { LabIcon } from '@jupyterlab/ui-components';
 import editorIconSVGstr from '../style/icon/jupyter_snippeteditoricon.svg';
+import codeSnippetIconSVGstr from '../style/icon/jupyter_snippeticon.svg';
 
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
-
-// import undoDeleteSVG from '../style/icon/undoDelete.svg';
-// import { showUndoMessage } from './UndoDelete';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -185,6 +178,7 @@ function activateCodeSnippet(
       codeSnippetWidget,
       args
     );
+
     console.log('editor created!');
     codeSnippetEditor.id = widgetId;
     codeSnippetEditor.addClass(widgetId);
@@ -192,7 +186,7 @@ function activateCodeSnippet(
     codeSnippetEditor.title.closable = true;
     codeSnippetEditor.title.icon = editorIcon;
 
-    if (!args.fromScratch && !tracker.has(codeSnippetEditor)) {
+    if (!tracker.has(codeSnippetEditor)) {
       tracker.add(codeSnippetEditor);
     }
 
@@ -325,8 +319,7 @@ function activateCodeSnippet(
         code: editorMetadata.code,
         id: editorMetadata.id,
         selectedTags: editorMetadata.selectedTags,
-        allTags: editorMetadata.allTags,
-        fromScratch: editorMetadata.fromScratch
+        allTags: editorMetadata.allTags
       };
     },
     name: widget => {

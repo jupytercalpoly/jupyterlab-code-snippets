@@ -1,5 +1,4 @@
-import { InputGroup } from '@jupyterlab/ui-components';
-import { checkIcon } from '@jupyterlab/ui-components';
+import { InputGroup, checkIcon } from '@jupyterlab/ui-components';
 
 import React from 'react';
 
@@ -14,8 +13,8 @@ interface IFilterSnippetState {
   searchValue: string;
 }
 
-const FILTER_ARROW_UP = '.jp-codeSnippet-filter-arrow-up';
-const FILTER_OPTION = '.jp-codeSnippet-filter-option';
+const FILTER_ARROW_UP = 'jp-codeSnippet-filter-arrow-up';
+const FILTER_OPTION = 'jp-codeSnippet-filter-option';
 const FILTER_TAGS = 'jp-codeSnippet-filter-tags';
 const FILTER_TAG = 'jp-codeSnippet-filter-tag';
 const FILTER_CHECK = 'jp-codeSnippet-filter-check';
@@ -48,9 +47,9 @@ export class FilterTools extends React.Component<
     // this.setState(state => ({
     //   show: !state.show
     // }));
-    const filterArrow = document.querySelector(FILTER_ARROW_UP);
+    const filterArrow = document.querySelector(`.${FILTER_ARROW_UP}`);
 
-    const filterOption = document.querySelector(FILTER_OPTION);
+    const filterOption = document.querySelector(`.${FILTER_OPTION}`);
 
     filterArrow.classList.toggle('idle');
     filterOption.classList.toggle('idle');

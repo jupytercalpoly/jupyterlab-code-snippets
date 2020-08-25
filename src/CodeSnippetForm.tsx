@@ -1,4 +1,3 @@
-import '../style/index.css';
 import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget, Styling } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
@@ -7,6 +6,11 @@ import { ArrayExt, each, map, toArray } from '@lumino/algorithm';
 import { closeIcon, Button, LabIcon } from '@jupyterlab/ui-components';
 
 import * as React from 'react';
+
+/**
+ * CSS styling
+ */
+const CODE_SNIPPET_FORM = 'jp-codeSnippet-form';
 
 /**
  * Create and show a dialog.
@@ -29,7 +33,7 @@ export function showCodeSnippetForm<T>(
 export class CodeSnippetForm<T> extends Widget {
   constructor(options: Partial<CodeSnippetForm.IOptions<T>> = {}) {
     super();
-    this.addClass('jp-codeSnippet-Form');
+    this.addClass(CODE_SNIPPET_FORM);
     const normalized = Private.handleOptions(options);
     const renderer = normalized.renderer;
 

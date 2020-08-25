@@ -1,4 +1,4 @@
-import '../style/index.css';
+// import '../style/index.css';
 import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
@@ -9,8 +9,8 @@ import { ArrayExt } from '@lumino/algorithm';
  * The class name for options box
  */
 const OPTIONS_CLASS = 'jp-codeSnippet-options';
-const OPTIONS_CONTENT = 'jp-codeSnippet-Options-content';
-const OPTIONS_BODY = 'jp-codeSnippet-Options-body';
+const OPTIONS_CONTENT = 'jp-codeSnippet-options-content';
+const OPTIONS_BODY = 'jp-codeSnippet-options-body';
 
 /**
  * Create and show a dialog.

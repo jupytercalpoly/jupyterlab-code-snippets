@@ -1,4 +1,4 @@
-import '../style/index.css';
+// import '../style/index.css';
 import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
@@ -323,20 +323,6 @@ export namespace ConfirmMessage {
       // Styling.styleNode(body.node);
       return body;
     }
-
-    // createIcon(): Widget {
-    //   let iconWidget: Widget;
-    //   iconWidget = new Widget({ node: document.createElement('img') });
-    //   console.log(checkSVGstr);
-    //   const checkIcon = new LabIcon( { name: "checkIcon", svgstr: checkSVGstr} );
-
-    //   <img src={`data:image/svg+xml;utf8,${image}` />
-
-    //   iconWidget.title.icon = checkIcon;
-    //   console.log(iconWidget.title.icon instanceof LabIcon);
-    //   iconWidget.addClass('jp-confirm-icon');
-    //   return iconWidget
-    // }
   }
   /**
    * The default renderer instance.

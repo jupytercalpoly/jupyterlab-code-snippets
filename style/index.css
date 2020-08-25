@@ -1,18 +1,3 @@
-/*
- * Copyright 2018-2020 IBM Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 :root {
   --preview-distance: 0px;
   --more-options-top: 0px;
@@ -21,12 +6,16 @@
 
 #code-snippet-extension {
   background-color: var(--jp-layout-color0);
-  border-right: 3px solid var(--jp-layout-color0);
+  /* border-right: 3px solid var(--jp-layout-color0); */
   overflow: auto;
 }
 
-.expandableContainer-button,
-.expandableContainer-button.jp-mod-styled {
+.jp-codeSnippet-fileDialog label {
+  margin-bottom: 5px;
+}
+
+.jp-codeSnippetsContainer-button,
+.jp-codeSnippetsContainer-button.jp-mod-styled {
   background-color: transparent;
   vertical-align: middle;
   padding: 0;
@@ -34,19 +23,19 @@
   padding-right: 8px;
 }
 
-.expandableContainer-button:hover {
+.jp-codeSnippetsContainer-button:hover {
   cursor: pointer;
 }
 
-.expandableContainer-actionButton:hover {
+.jp-codeSnippetsContainer-actionButton:hover {
   background-color: var(--jp-layout-color1);
 }
 
-.expandableContainer-actionButton:active {
+.jp-codeSnippetsContainer-actionButton:active {
   background-color: var(--jp-layout-color2);
 }
 
-.expandableContainer-title {
+.jp-codeSnippetsContainer-title {
   align-items: center;
   display: flex;
   justify-content: space-between;
@@ -55,25 +44,22 @@
   color: var(--jp-ui-font-color0);
 }
 
-.expandableContainer-title:hover {
+.jp-codeSnippetsContainer-title:hover {
   background-color: var(--jp-layout-color2);
 }
 
-/* .expandableContainer-title:hover .elyra-expandableContainer-button {
+/* .jp-codeSnippetsContainer-title:hover .elyra-jp-codeSnippetsContainer-button {
   background-color: var(--jp-layout-color2);
 } */
 
 .jp-codeSnippetsContainer-name {
-  /* flex: 1 1 75%; */
-  /* flex-grow: 1;
-  flex-basis: 75%; */
-  font-size: 14px;
+  font-size: var(--jp-ui-font-size1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   /* line-height: 28px; */
   color: var(--jp-ui-font-color0);
-  font-family: Helvetica;
+  /* font-family: Helvetica; */
   /* font-size: 16px; */
 }
 
@@ -81,21 +67,18 @@
   cursor: pointer;
 }
 
-.jp-button {
+.jp-codeSnippetsContainer-button {
   background-repeat: no-repeat;
   background-position: center;
   border: none;
   height: 100%;
 }
 
-.codeSnippetsHeader {
+.jp-codeSnippetsHeader {
   font-size: var(--jp-ui-font-size1);
   font-weight: 600;
-  /* font-size: 13px; */
-  /* font-family: helvetica; */
   text-transform: uppercase;
   padding: 8px;
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
   color: var(--jp-ui-font-color0);
   display: flex;
   justify-content: space-between;
@@ -152,9 +135,9 @@
   align-items: center;
 }
 
-.jp-confirm-text {
+.jp-codeSnippet-confirm-text {
   width: 183px;
-  font-family: helvetica;
+  /* font-family: helvetica; */
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
@@ -177,11 +160,11 @@
   top: var(--preview-distance);
 }
 
-.jp-preview.inactive {
+.jp-codeSnippet-preview.inactive {
   display: none;
 }
 
-.jp-Preview-content {
+.jp-codeSnippet-preview-content {
   background: var(--jp-layout-color1);
   padding: 10px;
   /* min-width: 960px; */
@@ -197,7 +180,7 @@
 }
 
 .jp-codeSnippet-searchbar {
-  margin: 10px;
+  margin: 0px 8px;
 }
 
 .jp-codeSnippet-filterTools {
@@ -219,7 +202,7 @@
   background-repeat: no-repeat;
 }
 
-.drag-hover-selected {
+.jp-codeSnippet-drag-hover-selected {
   background-image: url(./icon/dragtab_jupyter.svg);
   margin-right: -2px;
   background-color: var(--jp-layout-color2);
@@ -244,44 +227,13 @@
   margin: 0px 6px 30px auto;
 }
 
-.jp-undo-delete {
-  position: absolute;
-  z-index: 10000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  bottom: 0px;
-  right: 0px;
-  margin: 0;
-  padding-left: 10px;
-  padding-top: 10px;
-}
-
-.jp-undo-delete-body {
-  display: flex;
-  align-items: center;
-}
-
-.jp-undo-delete-close {
-  width: 14px;
-  height: 14px;
-  background-image: url(./icon/close_jupyter.svg);
-  cursor: pointer;
-}
-
-.jp-click-undo {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-mark.jp-search-bolding {
+mark.jp-codeSnippet-search-bolding {
   background-color: transparent;
   font-weight: bold;
   color: var(--jp-ui-font-color0);
 }
 
-.jp-codesnippet-drag-image {
+.jp-codeSnippet-drag-image {
   border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
   background: var(--jp-cell-editor-background);
   width: var(--jp-private-notebook-dragImage-width);
@@ -290,7 +242,7 @@ mark.jp-search-bolding {
   /* color: var(--jp-content-font-color3); */
 }
 
-.jp-snippet-editor-title {
+.jp-codeSnippet-editor-title {
   margin-left: 2%;
   margin-top: 2%;
   margin-bottom: 20px;
@@ -298,7 +250,7 @@ mark.jp-search-bolding {
   font-size: 25px;
 }
 
-.jp-snippet-editor-name-label {
+.jp-codeSnippet-editor-name-label {
   position: absolute;
   margin-left: 3%;
   margin-top: -7px;
@@ -307,7 +259,7 @@ mark.jp-search-bolding {
   color: var(--jp-ui-font-color2);
 }
 
-.jp-snippet-editor-description-label {
+.jp-codeSnippet-editor-description-label {
   position: absolute;
   margin-left: 3%;
   margin-top: -7px;
@@ -316,87 +268,85 @@ mark.jp-search-bolding {
   color: var(--jp-ui-font-color2);
 }
 
-.jp-snippet-editor-label-active {
+.jp-codeSnippet-editor-label-active {
   color: var(--jp-cell-editor-active-border-color);
   background-color: var(--jp-layout-color0);
 }
 
-.jp-snippet-editor-name {
+.jp-codeSnippet-editor-name,
+.jp-codeSnippet-editor-description {
   display: block;
   margin-left: 2%;
   border-top: transparent;
   border-left: transparent;
   border-right: transparent;
   width: 94%;
-  height: 40px;
-  padding-left: 10px;
-  border-bottom: 1px solid #c4c4c4;
-  font-size: 16px;
+  height: 32px;
+  /* border-bottom: 1px solid #c4c4c4; */
+  font-size: var(--jp-ui-font-size1);
   border-radius: 2px;
-  background-color: var(--jp-layout-color0);
+  background: var(--jp-input-background);
+  box-sizing: border-box;
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  padding-left: 7px;
+  padding-right: 7px;
+  /* font-size: var(--jp-ui-font-size2); */
   color: var(--jp-ui-font-color0);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
-.jp-snippet-editor-description {
-  display: block;
-  margin-left: 2%;
-  border-top: transparent;
-  border-left: transparent;
-  border-right: transparent;
-  width: 94%;
-  height: 40px;
-  padding-left: 10px;
-  border-bottom: 1px solid #c4c4c4;
-  font-size: 16px;
-  border-radius: 2px;
-  background-color: var(--jp-layout-color0);
-  color: var(--jp-ui-font-color0);
-}
-
-.jp-snippet-editor-language {
+.jp-codeSnippet-editor-language {
   display: block;
   margin-bottom: 20px;
   margin-left: 2%;
-  border: 1px solid var(--jp-border-color0);
   width: 176px;
-  height: 40px;
-  padding-left: 10px;
-  font-size: 13px;
+  height: 32px;
+  font-size: var(--jp-ui-font-size1);
   border-radius: 2px;
   appearance: none;
   -webkit-appearance: none; /* chrome and safari */
   -moz-appearance: none; /* Mozilla */
   -ms-appearance: none; /* Internet explorer */
+  color: var(--jp-ui-font-color0);
+  outline: none;
+  background: var(--jp-input-background);
+  box-sizing: border-box;
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  padding-left: 7px;
+  padding-right: 7px;
   background-image: url(./icon/jupyter_searcharrowdown.svg);
   background-repeat: no-repeat;
   background-position: 95% center;
 }
 
-.jp-snippet-editor-language:hover {
+.jp-codeSnippet-editor-language:hover {
   background-image: none;
 }
 
-.jp-snippet-editor-tags-label {
+.jp-codeSnippet-editor-tags-label {
   margin-bottom: 12px;
   margin-left: 2%;
-  font-family: helvetica;
+  /* font-family: helvetica; */
   line-height: 18px;
   font-size: var(--jp-ui-font-size2);
   color: var(--jp-ui-font-color0);
 }
 
-.jp-codeSnippet-Editor-tags {
+.jp-codeSnippet-editor-tagList {
   list-style: none;
   margin-left: 2%;
 }
 
-.jp-codeSnippet-Editor-tag {
-  margin-left: 10px;
-  margin-right: 10px;
-  height: 12px;
+.jp-codeSnippet-editor-tag {
+  margin-left: 3px;
+  margin-right: 3px;
+  height: 5px;
 }
 
-.jp-codeSnippet-Editor-tag button {
+.jp-codeSnippet-editor-tag button {
   cursor: pointer;
   background: none;
   border: none;
@@ -405,15 +355,15 @@ mark.jp-search-bolding {
   font-size: var(--jp-ui-font-size1);
 }
 
-.jp-codeSnippet-Editor-tag.applied-tag button {
+.jp-codeSnippet-editor-tag.applied-tag button {
   color: var(--jp-ui-font-color1);
 }
 
-.jp-codeSnippet-Editor-tag.unapplied-tag button {
+.jp-codeSnippet-editor-tag.unapplied-tag button {
   color: var(--jp-ui-font-color2);
 }
 
-.jp-codeSnippet-Editor-tag.tag.unapplied-tag input {
+.jp-codeSnippet-editor-tag.tag.unapplied-tag input {
   border: none;
 }
 
@@ -421,7 +371,7 @@ mark.jp-search-bolding {
   opacity: 100;
 } */
 
-.jp-snippet-editor-active {
+.jp-codeSnippet-editor-active {
   border: 1px solid var(--jp-cell-editor-active-border-color);
   caret-color: var(--jp-cell-editor-active-border-color);
 }
@@ -442,7 +392,7 @@ mark.jp-search-bolding {
 .jp-codeSnippetInputArea-editorTitle {
   margin-bottom: 12px;
   margin-left: 2%;
-  font-family: helvetica;
+  /* font-family: helvetica; */
   line-height: 18px;
   font-size: var(--jp-ui-font-size2);
   color: var(--jp-ui-font-color0);
@@ -473,7 +423,7 @@ mark.jp-search-bolding {
   margin-right: 3%;
 }
 
-.expandableContainer-title:hover .expandableContainer-button {
+.jp-codeSnippetsContainer-title:hover .jp-codeSnippetsContainer-button {
   background-color: var(--jp-layout-color2);
 }
 
@@ -493,7 +443,7 @@ mark.jp-search-bolding {
 
 .jp-codeSnippet-filter .jp-codeSnippet-filter-btn {
   align-self: flex-end;
-  padding-right: 5px;
+  padding: 0px;
   padding-bottom: 10px;
   border: none;
   background: none;
@@ -539,9 +489,13 @@ mark.jp-search-bolding {
   padding-bottom: 5px;
 }
 
+.jp-codeSnippet-filter-tags {
+  margin: 0px 8px;
+}
+
 .jp-codeSnippet-filter-tag {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 3px;
+  margin-right: 3px;
 }
 
 .jp-codeSnippet-filter-tag button {
@@ -558,6 +512,7 @@ mark.jp-search-bolding {
   cursor: pointer;
   border: none;
   background: none;
+  padding: 0px;
 }
 
 /* code snippet tags in inputDialog */
@@ -566,8 +521,8 @@ mark.jp-search-bolding {
 }
 
 .jp-codeSnippet-inputTag {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 .jp-codeSnippet-inputTag button {
@@ -612,8 +567,8 @@ mark.jp-search-bolding {
 }
 
 .jp-codeSnippet-description p {
-  font-family: Helvetica;
-  font-size: var(--jp-ui-font-size1);
+  /* font-family: Helvetica; */
+  font-size: var(--jp-ui-font-size0);
   line-height: 15px;
   color: var(--jp-layout-color4);
   margin-bottom: 10px;
@@ -625,7 +580,7 @@ mark.jp-search-bolding {
 }
 
 /* Size of the icons in code snippet */
-.expandableContainer-action-buttons {
+.jp-codeSnippetsContainer-action-buttons {
   height: 100%;
   overflow: hidden;
 }
@@ -640,7 +595,7 @@ mark.jp-search-bolding {
 .jp-codeSnippet-tag,
 .jp-codeSnippet-inputTag,
 .jp-codeSnippet-filter-tag {
-  height: 12px;
+  height: 5px;
 }
 /* code snippet tools: search, filter */
 .jp-codeSnippet-tools {
@@ -657,7 +612,7 @@ mark.jp-search-bolding {
 } */
 
 /* USER Input Form Style */
-.jp-codeSnippet-Form {
+.jp-codeSnippet-form {
   position: absolute;
   z-index: 10000;
   display: flex;
@@ -673,28 +628,29 @@ mark.jp-search-bolding {
   background: var(--jp-dialog-background);
 }
 
-.jp-newSnippet-input:invalid,
-.jp-snippet-editor-name:invalid,
-.jp-snippet-editor-description:invalid,
-.jp-snippet-editor-language:invalid {
+.jp-codeSnippet-dialog-input:invalid,
+.jp-codeSnippet-editor-name:invalid,
+.jp-codeSnippet-editor-description:invalid,
+.jp-codeSnippet-editor-language:invalid {
   border: var(--jp-border-width) solid var(--jp-error-color1);
 }
 
 /* .jp-newSnippet-input:valid,
-.jp-snippet-editor-name:valid,
-.jp-snippet-editor-description:valid {
+.jp-codeSnippet-editor-name:valid,
+.jp-codeSnippet-editor-description:valid {
   border: var(--jp-border-width) solid var(--jp-brand-color2);
 } */
 
-.jp-inputName-validity,
-.jp-inputDesc-validity {
+.jp-codeSnippet-inputName-validity,
+.jp-codeSnippet-inputDesc-validity {
   font-size: var(--jp-ui-font-size0);
   color: var(--jp-ui-font-color1);
   margin: 5px;
+  margin-bottom: 8px;
 }
 
-.jp-snippet-editor-metadata .jp-inputName-validity,
-.jp-snippet-editor-metadata .jp-inputDesc-validity {
+.jp-codeSnippet-editor-metadata .jp-codeSnippet-inputName-validity,
+.jp-codeSnippet-editor-metadata .jp-codeSnippet-inputDesc-validity {
   margin-bottom: 30px;
   margin-top: 5px;
   margin-left: 3%;
@@ -717,16 +673,16 @@ mark.jp-search-bolding {
   display: none;
 }
 
-.jp-more-options-content {
+.jp-codeSnippet-more-options-content {
   width: 183px;
-  font-family: helvetica;
+  /* font-family: helvetica; */
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
   text-align: left;
 }
 
-.jp-codeSnippet-Options-content {
+.jp-codeSnippet-options-content {
   background: var(--jp-layout-color1);
   padding: 10px;
   border: 1px solid var(--jp-border-color0);
@@ -742,47 +698,47 @@ mark.jp-search-bolding {
   left: var(--more-options-left);
 }
 
-.jp-codeSnippet-Options-body {
+.jp-codeSnippet-options-body {
   display: flex;
   align-items: center;
 }
 
-.jp-more-options-copy {
+.jp-codeSnippet-more-options-copy {
   padding-bottom: 5px;
   cursor: pointer;
 }
 
-.jp-more-options-copy:hover {
+.jp-codeSnippet-more-options-copy:hover {
   background-color: var(--jp-layout-color2);
   cursor: pointer;
 }
 
-.jp-more-options-insert {
+.jp-codeSnippet-more-options-insert {
   padding-bottom: 5px;
   cursor: pointer;
 }
 
-.jp-more-options-insert:hover {
+.jp-codeSnippet-more-options-insert:hover {
   background-color: var(--jp-layout-color2);
   cursor: pointer;
 }
 
-.jp-more-options-edit {
+.jp-codeSnippet-more-options-edit {
   padding-bottom: 5px;
   cursor: pointer;
 }
 
-.jp-more-options-edit:hover {
+.jp-codeSnippet-more-options-edit:hover {
   background-color: var(--jp-layout-color2);
   cursor: pointer;
 }
 
-.jp-more-options-delete {
+.jp-codeSnippet-more-options-delete {
   color: var(--jp-error-color0);
   cursor: pointer;
 }
 
-.jp-more-options-delete:hover {
+.jp-codeSnippet-more-options-delete:hover {
   background-color: var(--jp-layout-color2);
   cursor: pointer;
 }

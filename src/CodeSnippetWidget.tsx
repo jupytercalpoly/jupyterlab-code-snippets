@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import '../style/index.css';
+// import '../style/index.css';
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 
@@ -112,7 +112,7 @@ export class CodeSnippetWidget extends ReactWidget {
     this._codeSnippetWidgetModel.clearSnippets();
 
     console.log(this._codeSnippetWidgetModel.snippets);
-    console.log(this._codeSnippets.length);
+    console.log(this._codeSnippetWidgetModel.snippets.length);
 
     // const data: ICodeSnippet[] = [];
     // if (this._codeSnippets.length === 0) {
@@ -126,18 +126,50 @@ export class CodeSnippetWidget extends ReactWidget {
 
     fileModels.forEach(fileModel => paths.push(fileModel.path));
     console.log(paths);
+
+    let newSnippet: ICodeSnippet = {
+      name: '',
+      description: '',
+      language: '',
+      code: [],
+      id: -1
+    };
+
+    const codeSnippetList: ICodeSnippet[] = [];
     for (let i = 0; i < paths.length; i++) {
       await this.codeSnippetManager.getData(paths[i], 'file').then(model => {
-        // data.push(JSON.parse(model.content));
-        this._codeSnippetWidgetModel.addSnippet(JSON.parse(model.content), i);
+        const codeSnippet: ICodeSnippet = JSON.parse(model.content);
+
+        // append a new snippet created from scratch to the end
+        if (codeSnippet.id === -1) {
+          codeSnippet.id = paths.length - 1;
+          newSnippet = codeSnippet;
+        }
+
+        codeSnippetList.push(codeSnippet);
+        console.log(codeSnippet);
+        console.log(codeSnippet.id);
+        // this._codeSnippetWidgetModel.addSnippet(codeSnippet, codeSnippet.id);
       });
     }
+
+    // new list of snippets
+    this._codeSnippetWidgetModel.snippets = codeSnippetList;
+
+    // sort codeSnippetList by ID
+    this._codeSnippetWidgetModel.sortSnippets();
+
+    // update the content of the new snippet
+    if (newSnippet.name !== '') {
+      this.codeSnippetManager.save('snippets/' + newSnippet.name + '.json', {
+        type: 'file',
+        format: 'text',
+        content: JSON.stringify(newSnippet)
+      });
+    }
+
     this._codeSnippets = this._codeSnippetWidgetModel.snippets;
     return this._codeSnippetWidgetModel.snippets;
-    // }
-    // console.log(data);
-
-    return null;
   }
 
   updateCodeSnippets(): void {
