@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import '../style/index.css';
+// import '../style/index.css';
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 
@@ -44,7 +44,7 @@ import { IEditorServices } from '@jupyterlab/codeeditor';
 /**
  * A class used to indicate a snippet item.
  */
-const CODE_SNIPPET_ITEM = 'codeSnippet-item';
+const CODE_SNIPPET_ITEM = 'jp-codeSnippet-item';
 
 /**
  * The mimetype used for Jupyter cell data.
@@ -54,9 +54,14 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
 /**
  * A class used to indicate a drop target.
  */
-const DROP_TARGET_CLASS = 'jp-snippet-dropTarget';
-
+const DROP_TARGET_CLASS = 'jp-codeSnippet-dropTarget';
 const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
+const PREVIEW_CLASS = '.jp-codeSnippet-preview';
+const DRAG_HOVER = 'jp-codeSnippet-drag-hover';
+const DRAG_HOVER_CLICKED = 'jp-codeSnippet-drag-hover-clicked';
+const CODE_SNIPPET_ITEM_CLICKED = 'jp-codeSnippet-item-clicked';
+const CODE_SNIPPETS_CONTAINER_NAME = 'jp-codeSnippetsContainer-name';
+const INACTIVE = 'inactive';
 
 const commands = {
   OPEN_CODE_SNIPPET_EDITOR: `${CODE_SNIPPET_EDITOR}:open`
@@ -107,7 +112,7 @@ export class CodeSnippetWidget extends ReactWidget {
     this._codeSnippetWidgetModel.clearSnippets();
 
     console.log(this._codeSnippetWidgetModel.snippets);
-    console.log(this._codeSnippets.length);
+    console.log(this._codeSnippetWidgetModel.snippets.length);
 
     // const data: ICodeSnippet[] = [];
     // if (this._codeSnippets.length === 0) {
@@ -121,18 +126,50 @@ export class CodeSnippetWidget extends ReactWidget {
 
     fileModels.forEach(fileModel => paths.push(fileModel.path));
     console.log(paths);
+
+    let newSnippet: ICodeSnippet = {
+      name: '',
+      description: '',
+      language: '',
+      code: [],
+      id: -1
+    };
+
+    const codeSnippetList: ICodeSnippet[] = [];
     for (let i = 0; i < paths.length; i++) {
       await this.codeSnippetManager.getData(paths[i], 'file').then(model => {
-        // data.push(JSON.parse(model.content));
-        this._codeSnippetWidgetModel.addSnippet(JSON.parse(model.content), i);
+        const codeSnippet: ICodeSnippet = JSON.parse(model.content);
+
+        // append a new snippet created from scratch to the end
+        if (codeSnippet.id === -1) {
+          codeSnippet.id = paths.length - 1;
+          newSnippet = codeSnippet;
+        }
+
+        codeSnippetList.push(codeSnippet);
+        console.log(codeSnippet);
+        console.log(codeSnippet.id);
+        // this._codeSnippetWidgetModel.addSnippet(codeSnippet, codeSnippet.id);
       });
     }
+
+    // new list of snippets
+    this._codeSnippetWidgetModel.snippets = codeSnippetList;
+
+    // sort codeSnippetList by ID
+    this._codeSnippetWidgetModel.sortSnippets();
+
+    // update the content of the new snippet
+    if (newSnippet.name !== '') {
+      this.codeSnippetManager.save('snippets/' + newSnippet.name + '.json', {
+        type: 'file',
+        format: 'text',
+        content: JSON.stringify(newSnippet)
+      });
+    }
+
     this._codeSnippets = this._codeSnippetWidgetModel.snippets;
     return this._codeSnippetWidgetModel.snippets;
-    // }
-    // console.log(data);
-
-    return null;
   }
 
   updateCodeSnippets(): void {
@@ -250,25 +287,23 @@ export class CodeSnippetWidget extends ReactWidget {
     //get rid of preview by clicking anything
     const target = event.target as HTMLElement;
 
-    const preview = document.querySelector('.jp-preview');
+    const preview = document.querySelector(PREVIEW_CLASS);
     if (preview) {
       // if target is not the code snippet name area, then add inactive
       // if target area is the code snippet name area, previewSnippet widget will handle preview.
       if (
-        !preview.classList.contains('inactive') &&
-        !target.classList.contains('expandableContainer-name')
+        !preview.classList.contains(INACTIVE) &&
+        !target.classList.contains(CODE_SNIPPETS_CONTAINER_NAME)
       ) {
-        preview.classList.add('inactive');
-        for (const elem of document.getElementsByClassName('drag-hover')) {
-          if (elem.classList.contains('drag-hover-clicked')) {
-            elem.classList.remove('drag-hover-clicked');
+        preview.classList.add(INACTIVE);
+        for (const elem of document.getElementsByClassName(DRAG_HOVER)) {
+          if (elem.classList.contains(DRAG_HOVER_CLICKED)) {
+            elem.classList.remove(DRAG_HOVER_CLICKED);
           }
         }
-        for (const item of document.getElementsByClassName(
-          'codeSnippet-item'
-        )) {
-          if (item.classList.contains('codeSnippet-item-clicked')) {
-            item.classList.remove('codeSnippet-item-clicked');
+        for (const item of document.getElementsByClassName(CODE_SNIPPET_ITEM)) {
+          if (item.classList.contains(CODE_SNIPPET_ITEM_CLICKED)) {
+            item.classList.remove(CODE_SNIPPET_ITEM_CLICKED);
           }
         }
       }

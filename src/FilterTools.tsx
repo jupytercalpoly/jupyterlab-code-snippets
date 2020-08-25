@@ -1,5 +1,4 @@
-import { InputGroup } from '@jupyterlab/ui-components';
-import { checkIcon } from '@jupyterlab/ui-components';
+import { InputGroup, checkIcon } from '@jupyterlab/ui-components';
 
 import React from 'react';
 
@@ -13,6 +12,18 @@ interface IFilterSnippetState {
   filteredTags: string[];
   searchValue: string;
 }
+
+const FILTER_ARROW_UP = 'jp-codeSnippet-filter-arrow-up';
+const FILTER_OPTION = 'jp-codeSnippet-filter-option';
+const FILTER_TAGS = 'jp-codeSnippet-filter-tags';
+const FILTER_TAG = 'jp-codeSnippet-filter-tag';
+const FILTER_CHECK = 'jp-codeSnippet-filter-check';
+const FILTER_TITLE = 'jp-codeSnippet-filter-title';
+const FILTER_TOOLS = 'jp-codeSnippet-filterTools';
+const FILTER_SEARCHBAR = 'jp-codeSnippet-searchbar';
+const FILTER_SEARCHWRAPPER = 'jp-codesnippet-searchwrapper';
+const FILTER_CLASS = 'jp-codeSnippet-filter';
+const FILTER_BUTTON = 'jp-codeSnippet-filter-btn';
 
 export class FilterTools extends React.Component<
   IFilterSnippetProps,
@@ -36,13 +47,9 @@ export class FilterTools extends React.Component<
     // this.setState(state => ({
     //   show: !state.show
     // }));
-    const filterArrow = document.querySelector(
-      '.jp-codeSnippet-filter-arrow-up'
-    );
+    const filterArrow = document.querySelector(`.${FILTER_ARROW_UP}`);
 
-    const filterOption = document.querySelector(
-      '.jp-codeSnippet-filter-option'
-    );
+    const filterOption = document.querySelector(`.${FILTER_OPTION}`);
 
     filterArrow.classList.toggle('idle');
     filterOption.classList.toggle('idle');
@@ -50,7 +57,7 @@ export class FilterTools extends React.Component<
 
   renderTags(): JSX.Element {
     return (
-      <div className={'jp-codeSnippet-filter-tags'}>
+      <div className={FILTER_TAGS}>
         {this.props.tags.map((tag: string, index: number) =>
           this.renderTag(tag, index.toString())
         )}
@@ -61,7 +68,7 @@ export class FilterTools extends React.Component<
   renderTag(tag: string, index: string): JSX.Element {
     return (
       <div
-        className={'jp-codeSnippet-filter-tag tag unapplied-tag'}
+        className={`${FILTER_TAG} tag unapplied-tag`}
         id={'filter' + '-' + tag + '-' + index}
         key={'filter' + '-' + tag + '-' + index}
       >
@@ -97,7 +104,7 @@ export class FilterTools extends React.Component<
     if (parent.classList.contains('unapplied-tag')) {
       parent.classList.replace('unapplied-tag', 'applied-tag');
       const iconContainer = checkIcon.element({
-        className: 'jp-codeSnippet-filter-check',
+        className: FILTER_CHECK,
         tag: 'span',
         elementPosition: 'center',
         height: '18px',
@@ -143,8 +150,8 @@ export class FilterTools extends React.Component<
 
   renderFilterOption(): JSX.Element {
     return (
-      <div className={'jp-codeSnippet-filter-option idle'}>
-        <div className={'jp-codeSnippet-filter-title'}>
+      <div className={`${FILTER_OPTION} idle`}>
+        <div className={FILTER_TITLE}>
           <span>cell tags</span>
         </div>
         {this.renderTags()}
@@ -154,10 +161,10 @@ export class FilterTools extends React.Component<
 
   render(): JSX.Element {
     return (
-      <div className="jp-codeSnippet-filterTools">
-        <div className="jp-codeSnippet-searchbar">
+      <div className={FILTER_TOOLS}>
+        <div className={FILTER_SEARCHBAR}>
           <InputGroup
-            className="jp-codesnippet-searchwrapper"
+            className={FILTER_SEARCHWRAPPER}
             type="text"
             placeholder="SEARCH SNIPPETS"
             onChange={this.handleSearch}
@@ -165,15 +172,12 @@ export class FilterTools extends React.Component<
             value={this.state.searchValue}
           />
         </div>
-        <div className={'jp-codeSnippet-filter'}>
-          <button
-            className={'jp-codeSnippet-filter-btn'}
-            onClick={this.createFilterBox}
-          >
+        <div className={FILTER_CLASS}>
+          <button className={FILTER_BUTTON} onClick={this.createFilterBox}>
             Filter By Tags
           </button>
           {/* <div className="jp-codeSnippet-filterContainer idle"> */}
-          <div className="jp-codeSnippet-filter-arrow-up idle"></div>
+          <div className={`${FILTER_ARROW_UP} idle`}></div>
           {this.renderFilterOption()}
         </div>
         {/* </div> */}

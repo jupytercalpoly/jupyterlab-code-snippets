@@ -1,4 +1,4 @@
-import '../style/index.css';
+// import '../style/index.css';
 import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
@@ -8,7 +8,9 @@ import { ArrayExt } from '@lumino/algorithm';
 /**
  * The class name for options box
  */
-const OPTIONS_CLASS = 'jp-options';
+const OPTIONS_CLASS = 'jp-codeSnippet-options';
+const OPTIONS_CONTENT = 'jp-codeSnippet-options-content';
+const OPTIONS_BODY = 'jp-codeSnippet-options-body';
 
 /**
  * Create and show a dialog.
@@ -36,7 +38,7 @@ export class OptionsMessage<T> extends Widget {
     this._host = options.host || document.body;
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
-    content.addClass('jp-Options-content');
+    content.addClass(OPTIONS_CONTENT);
     layout.addWidget(content);
 
     const body = renderer.createBody(options.body || '');
@@ -100,7 +102,7 @@ export class OptionsMessage<T> extends Widget {
    */
   protected _evtClick(event: MouseEvent): void {
     const content = this.node.getElementsByClassName(
-      'jp-Options-content'
+      OPTIONS_CONTENT
     )[0] as HTMLElement;
     if (!content.contains(event.target as HTMLElement)) {
       event.stopPropagation();
@@ -289,7 +291,7 @@ export namespace OptionsMessage {
         // order to trigger a render of the DOM nodes from the React element.
         MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
       }
-      body.addClass('jp-Options-body');
+      body.addClass(OPTIONS_BODY);
       return body;
     }
   }

@@ -1,32 +1,46 @@
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
-// import { ICodeSnippet } from './CodeSnippetContentsService';
 import {
   ReactWidget,
   showDialog,
   Dialog,
   WidgetTracker
 } from '@jupyterlab/apputils';
-import React from 'react';
-import { Message } from '@lumino/messaging';
 import { Button } from '@jupyterlab/ui-components';
+import { Contents } from '@jupyterlab/services';
+
+import { Message } from '@lumino/messaging';
+
+import React from 'react';
+
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './index';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
-import { Contents } from '@jupyterlab/services';
 
 /**
  * CSS style classes
  */
 const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
-const CODE_SNIPPET_EDITOR_NAME_LABEL = 'jp-snippet-editor-name-label';
-const CODE_SNIPPET_EDITOR_LABEL_ACTIVE = 'jp-snippet-editor-label-active';
-const CODE_SNIPPET_EDITOR_INPUT_ACTIVE = 'jp-snippet-editor-active';
-const CODE_SNIPPET_EDITOR_NAME_INPUT = 'jp-snippet-editor-name';
-const CODE_SNIPPET_EDITOR_DESC_LABEL = 'jp-snippet-editor-description-label';
-const CODE_SNIPPET_EDITOR_DESC_INPUT = 'jp-snippet-editor-description';
-const CODE_SNIPPET_EDITOR_LANG_INPUT = 'jp-snippet-editor-language';
+const CODE_SNIPPET_EDITOR_TITLE = 'jp-codeSnippet-editor-title';
+const CODE_SNIPPET_EDITOR_METADATA = 'jp-codeSnippet-editor-metadata';
+const CODE_SNIPPET_EDITOR_NAME_LABEL = 'jp-codeSnippet-editor-name-label';
+const CODE_SNIPPET_EDITOR_LABEL_ACTIVE = 'jp-codeSnippet-editor-label-active';
+const CODE_SNIPPET_EDITOR_INPUT_ACTIVE = 'jp-codeSnippet-editor-active';
+const CODE_SNIPPET_EDITOR_NAME_INPUT = 'jp-codeSnippet-editor-name';
+const CODE_SNIPPET_EDITOR_DESC_LABEL =
+  'jp-codeSnippet-editor-description-label';
+const CODE_SNIPPET_EDITOR_DESC_INPUT = 'jp-codeSnippet-editor-description';
+const CODE_SNIPPET_EDITOR_LANG_INPUT = 'jp-codeSnippet-editor-language';
 const CODE_SNIPPET_EDITOR_MIRROR = 'jp-codeSnippetInput-editor';
+const CODE_SNIPPET_EDITOR_INPUTAREA = 'jp-codeSnippetInputArea';
+const CODE_SNIPPET_EDITOR_INPUTAREA_MIRROR = 'jp-codeSnippetInputArea-editor';
+const CODE_SNIPPET_EDITOR_MIRROR_LABEL = 'jp-codeSnippetInputArea-editorTitle';
+
+const CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY =
+  'jp-codeSnippet-inputName-validity';
+const CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY =
+  'jp-codeSnippet-inputDesc-validity';
+const CODE_SNIPPET_EDITOR_TAGS_LABEL = 'jp-codeSnippet-editor-tags-label';
 
 const EDITOR_DIRTY_CLASS = 'jp-mod-dirty';
 
@@ -469,6 +483,11 @@ export class CodeSnippetEditor extends ReactWidget {
 
     // update the display in code snippet explorer
     this.codeSnippetWidget.updateCodeSnippets();
+
+    // close editor if it's from scratch
+    if (this._codeSnippetEditorMetaData.fromScratch) {
+      this.dispose();
+    }
   }
 
   handleChangeOnTag(selectedTags: string[], allTags: string[]): void {
@@ -488,7 +507,7 @@ export class CodeSnippetEditor extends ReactWidget {
   renderCodeInput(): React.ReactElement {
     return (
       <section
-        className="jp-codeSnippetInputArea-editor"
+        className={CODE_SNIPPET_EDITOR_INPUTAREA_MIRROR}
         onMouseDown={this.activateCodeMirror}
       >
         <div
@@ -527,7 +546,7 @@ export class CodeSnippetEditor extends ReactWidget {
     const fromScratch = this._codeSnippetEditorMetaData.fromScratch;
     return (
       <div
-        className="jp-codeSnippetInputArea"
+        className={CODE_SNIPPET_EDITOR_INPUTAREA}
         onMouseDown={(
           event: React.MouseEvent<HTMLDivElement, MouseEvent>
         ): void => {
@@ -535,13 +554,13 @@ export class CodeSnippetEditor extends ReactWidget {
           this.deactivateEditor(event);
         }}
       >
-        <span className="jp-snippet-editor-title">
+        <span className={CODE_SNIPPET_EDITOR_TITLE}>
           {fromScratch ? 'Add New Code Snippet' : 'Edit Code Snippet'}
         </span>
-        <section className="jp-snippet-editor-metadata">
-          <label className="jp-snippet-editor-name-label">Name</label>
+        <section className={CODE_SNIPPET_EDITOR_METADATA}>
+          <label className={CODE_SNIPPET_EDITOR_NAME_LABEL}>Name</label>
           <input
-            className="jp-snippet-editor-name"
+            className={CODE_SNIPPET_EDITOR_NAME_INPUT}
             defaultValue={this._codeSnippetEditorMetaData.name}
             placeholder={'Ex. starter_code'}
             type="text"
@@ -554,16 +573,14 @@ export class CodeSnippetEditor extends ReactWidget {
               this.handleInputFieldChange(event);
             }}
           ></input>
-          <p className="jp-inputName-validity">
+          <p className={CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY}>
             {
-              'Name of the code snippet MUST be alphanumeric or composed of underscore(_)'
+              'Name of the code snippet MUST be lowercased, alphanumeric or composed of underscore(_)'
             }
           </p>
-          <label className="jp-snippet-editor-description-label">
-            Description
-          </label>
+          <label className={CODE_SNIPPET_EDITOR_DESC_LABEL}>Description</label>
           <input
-            className="jp-snippet-editor-description"
+            className={CODE_SNIPPET_EDITOR_DESC_INPUT}
             defaultValue={this._codeSnippetEditorMetaData.description}
             placeholder={'Description'}
             type="text"
@@ -576,20 +593,20 @@ export class CodeSnippetEditor extends ReactWidget {
               this.handleInputFieldChange(event);
             }}
           ></input>
-          <p className="jp-inputDesc-validity">
+          <p className={CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY}>
             {
-              'Description of the code snippet MUST be alphanumeric or composed of underscore(_) or space'
+              'Description of the code snippet MUST be alphanumeric but can include space or punctuation'
             }
           </p>
           {this.renderLanguages()}
-          <label className="jp-snippet-editor-tags-label">Tags</label>
+          <label className={CODE_SNIPPET_EDITOR_TAGS_LABEL}>Tags</label>
           <CodeSnippetEditorTags
             selectedTags={this.codeSnippetEditorMetadata.selectedTags}
             tags={this.codeSnippetEditorMetadata.allTags}
             handleChange={this.handleChangeOnTag}
           />
         </section>
-        <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
+        <span className={CODE_SNIPPET_EDITOR_MIRROR_LABEL}>Code</span>
         {this.renderCodeInput()}
         <Button className="saveBtn" onClick={this.saveChange}>
           {fromScratch ? 'Create' : 'Save'}

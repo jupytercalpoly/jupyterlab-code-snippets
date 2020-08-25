@@ -1,32 +1,25 @@
-import '../style/index.css';
-
-import { codeSnippetIcon } from '@elyra/ui-components';
-
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
   ILayoutRestorer
 } from '@jupyterlab/application';
+import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
+import { IEditorServices } from '@jupyterlab/codeeditor';
+import { LabIcon } from '@jupyterlab/ui-components';
 
 import { Widget } from '@lumino/widgets';
 import { find } from '@lumino/algorithm';
-import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
 
-import { IEditorServices } from '@jupyterlab/codeeditor';
-import { LabIcon } from '@jupyterlab/ui-components';
 import editorIconSVGstr from '../style/icon/jupyter_snippeteditoricon.svg';
+import codeSnippetIconSVGstr from '../style/icon/jupyter_snippeticon.svg';
 
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
-
-// import undoDeleteSVG from '../style/icon/undoDelete.svg';
-// import { showUndoMessage } from './UndoDelete';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -105,6 +98,14 @@ const editorIcon = new LabIcon({
   svgstr: editorIconSVGstr
 });
 
+/**
+ * Snippet Icon
+ */
+const codeSnippetIcon = new LabIcon({
+  name: 'custom-ui-compnents:codeSnippetIcon',
+  svgstr: codeSnippetIconSVGstr
+});
+
 // get item that is right clicked (what opens the context menu)
 //let clicked: EventTarget;
 
@@ -177,6 +178,7 @@ function activateCodeSnippet(
       codeSnippetWidget,
       args
     );
+
     console.log('editor created!');
     codeSnippetEditor.id = widgetId;
     codeSnippetEditor.addClass(widgetId);
@@ -184,7 +186,7 @@ function activateCodeSnippet(
     codeSnippetEditor.title.closable = true;
     codeSnippetEditor.title.icon = editorIcon;
 
-    if (!args.fromScratch && !tracker.has(codeSnippetEditor)) {
+    if (!tracker.has(codeSnippetEditor)) {
       tracker.add(codeSnippetEditor);
     }
 
@@ -317,8 +319,7 @@ function activateCodeSnippet(
         code: editorMetadata.code,
         id: editorMetadata.id,
         selectedTags: editorMetadata.selectedTags,
-        allTags: editorMetadata.allTags,
-        fromScratch: editorMetadata.fromScratch
+        allTags: editorMetadata.allTags
       };
     },
     name: widget => {
@@ -341,72 +342,5 @@ function getSelectedText(): string {
   }
   return selectedText.toString();
 }
-
-/**
- * Wouldn't it be better to factor this class out to different class with a better name?
- */
-// class MessageHandler extends Widget {
-//   constructor(codeSnippet: CodeSnippetWidget, id: number) {
-//     super({ node: createUndoDeleteNode(codeSnippet, id) });
-//   }
-// }
-
-// export function onDelete(codeSnippet: CodeSnippetWidget, id: number): void {
-//   const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
-//   temp.parentElement.parentElement.removeChild(temp.parentElement);
-//   console.log(temp);
-//   const snippetToDeleteName =
-//     codeSnippet.codeSnippetWidgetModel.snippets[id].name;
-//   CodeSnippetContentsService.getInstance().delete(
-//     'snippets/' + snippetToDeleteName + '.json'
-//   );
-//   codeSnippet.codeSnippetWidgetModel.deleteSnippet(id);
-//   const savedSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-//   codeSnippet.codeSnippets = savedSnippets;
-//   codeSnippet.renderCodeSnippetsSignal.emit(savedSnippets);
-// }
-
-// export function onUndo(codeSnippet: CodeSnippetWidget): void {
-//   codeSnippet.codeSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-//   codeSnippet.renderCodeSnippetsSignal.emit(
-//     codeSnippet.codeSnippetWidgetModel.snippets
-//   );
-//   const temp: HTMLElement = document.getElementById('jp-undo-delete-id');
-//   temp.parentElement.parentElement.removeChild(temp.parentElement);
-// }
-
-// export function createUndoDeleteNode(
-//   codeSnippet: CodeSnippetWidget,
-//   snippetID: number
-// ): HTMLElement {
-//   const body = document.createElement('div');
-//   body.innerHTML = undoDeleteSVG;
-//   body.id = 'jp-undo-delete-id';
-
-//   const messageContainer = document.createElement('div');
-//   messageContainer.className = 'jp-confirm-text';
-//   const message = document.createElement('text');
-//   message.textContent = 'Click to ';
-//   const undo = document.createElement('span');
-//   undo.textContent = 'undo';
-//   undo.className = 'jp-click-undo';
-//   undo.onclick = function(): void {
-//     onUndo(codeSnippet);
-//   };
-//   const messageEnd = document.createElement('text');
-//   messageEnd.textContent = ' delete';
-//   messageContainer.appendChild(message);
-//   messageContainer.appendChild(undo);
-//   messageContainer.appendChild(messageEnd);
-//   body.append(messageContainer);
-
-//   const deleteMessage = document.createElement('div');
-//   deleteMessage.className = 'jp-undo-delete-close';
-//   deleteMessage.onclick = function(): void {
-//     onDelete(codeSnippet, snippetID);
-//   };
-//   body.append(deleteMessage);
-//   return body;
-// }
 
 export default code_snippet_extension;
