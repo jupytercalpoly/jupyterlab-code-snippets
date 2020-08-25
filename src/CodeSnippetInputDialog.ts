@@ -1,14 +1,9 @@
 import { Widget } from '@lumino/widgets';
-import checkSVGstr from '../style/icon/jupyter_checkmark.svg';
-import { showMessage } from './ConfirmMessage';
+import { JSONObject } from '@lumino/coreutils';
 
-import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
 import { showDialog, Dialog } from '@jupyterlab/apputils';
 import { addIcon, checkIcon } from '@jupyterlab/ui-components';
-
 import { Contents } from '@jupyterlab/services';
-
-import { JSONObject } from '@lumino/coreutils';
 
 import {
   ICodeSnippet,
@@ -18,6 +13,10 @@ import {
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 import { SUPPORTED_LANGUAGES } from './index';
+import { showMessage } from './ConfirmMessage';
+import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
+
+import checkSVGstr from '../style/icon/jupyter_checkmark.svg';
 
 /**
  * The class name added to file dialogs.
@@ -25,9 +24,16 @@ import { SUPPORTED_LANGUAGES } from './index';
 const FILE_DIALOG_CLASS = 'jp-FileDialog';
 
 /**
- * The class name added for the new name label in the rename dialog
+ * CSS STYLING
  */
-const INPUT_NEW_SNIPPET_CLASS = 'jp-newSnippet-input';
+const CODE_SNIPPET_DIALOG_INPUT = 'jp-codeSnippet-dialog-input';
+const CODE_SNIPPET_INPUTTAG_PLUS_ICON = 'jp-codeSnippet-inputTag-plusIcon';
+const CODE_SNIPPET_INPUTNAME_VALIDITY = 'jp-codeSnippet-inputName-validity';
+const CODE_SNIPPET_INPUTDESC_VALIDITY = 'jp-codeSnippet-inputDesc-validity';
+const CODE_SNIPPET_INPUTTAG_LIST = 'jp-codeSnippet-inputTagList';
+const CODE_SNIPPET_INPUT_TAG = 'jp-codeSnippet-inputTag';
+const CODE_SNIPPET_INPUT_TAG_CHECK = 'jp-codeSnippet-inputTag-check';
+const CODE_SNIPPET_CONFIRM_TEXT = 'jp-codeSnippet-confirm-text';
 
 /**
  * A stripped-down interface for a file container.
@@ -275,6 +281,7 @@ class MessageHandler extends Widget {
 class Private {
   static selectedTags: string[] = [];
   static allTags: string[];
+
   /**
    * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
    */
@@ -283,32 +290,32 @@ class Private {
     const body = document.createElement('form');
     const nameValidity = document.createElement('p');
     nameValidity.textContent =
-      'Name of the code snippet MUST be alphanumeric or composed of underscore(_)';
-    nameValidity.className = 'jp-inputName-validity';
+      'Name of the code snippet MUST be lowercased, alphanumeric, or composed of underscore(_)';
+    nameValidity.className = CODE_SNIPPET_INPUTNAME_VALIDITY;
 
     const descriptionValidity = document.createElement('p');
     descriptionValidity.textContent =
-      'Description of the code snippet MUST be alphanumeric or composed of underscore(_) or space';
-    descriptionValidity.className = 'jp-inputDesc-validity';
+      'Description of the code snippet MUST be alphanumeric but can include space or punctuation';
+    descriptionValidity.className = CODE_SNIPPET_INPUTDESC_VALIDITY;
 
     const nameTitle = document.createElement('label');
     nameTitle.textContent = 'Snippet Name*';
     const name = document.createElement('input');
-    name.className = INPUT_NEW_SNIPPET_CLASS;
+    name.className = CODE_SNIPPET_DIALOG_INPUT;
     name.required = true;
     name.pattern = '[a-zA-Z0-9_]+';
 
     const descriptionTitle = document.createElement('label');
     descriptionTitle.textContent = 'Description*';
     const description = document.createElement('input');
-    description.className = INPUT_NEW_SNIPPET_CLASS;
+    description.className = CODE_SNIPPET_DIALOG_INPUT;
     description.required = true;
     description.pattern = '[a-zA-Z0-9_ ,.?!]+';
 
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language*';
     const languageInput = document.createElement('input');
-    languageInput.className = INPUT_NEW_SNIPPET_CLASS;
+    languageInput.className = CODE_SNIPPET_DIALOG_INPUT;
     languageInput.setAttribute('list', 'languages');
     languageInput.required = true;
     const languageOption = document.createElement('datalist');
@@ -322,10 +329,10 @@ class Private {
     }
 
     const tagList = document.createElement('li');
-    tagList.classList.add('jp-codeSnippet-inputTagList');
+    tagList.classList.add(CODE_SNIPPET_INPUTTAG_LIST);
     for (const tag of tags) {
       const tagElem = document.createElement('ul');
-      tagElem.className = 'jp-codeSnippet-inputTag tag unapplied-tag';
+      tagElem.className = `${CODE_SNIPPET_INPUT_TAG} tag unapplied-tag`;
       const tagBtn = document.createElement('button');
       tagBtn.innerText = tag;
       tagBtn.onclick = Private.handleClick;
@@ -334,14 +341,14 @@ class Private {
     }
 
     const addTagElem = document.createElement('ul');
-    addTagElem.className = 'jp-codeSnippet-inputTag tag unapplied-tag';
+    addTagElem.className = `${CODE_SNIPPET_INPUT_TAG} tag unapplied-tag`;
     const newTagName = document.createElement('span');
     newTagName.innerText = 'Add Tag';
     newTagName.style.cursor = 'pointer';
     addTagElem.appendChild(newTagName);
     const plusIcon = addIcon.element({
       tag: 'span',
-      className: 'jp-codeSnippet-inputTag-plusIcon',
+      className: CODE_SNIPPET_INPUTTAG_PLUS_ICON,
       elementPosition: 'center',
       height: '16px',
       width: '16px',
@@ -442,7 +449,7 @@ class Private {
       // create new tag
       const tagList = document.querySelector('.jp-codeSnippet-inputTagList');
       const tagElem = document.createElement('ul');
-      tagElem.className = 'jp-codeSnippet-inputTag tag applied-tag';
+      tagElem.className = `${CODE_SNIPPET_INPUT_TAG} tag applied-tag`;
       const tagBtn = document.createElement('button');
       tagBtn.innerText = inputElement.value;
       tagBtn.onclick = Private.handleClick;
@@ -452,7 +459,7 @@ class Private {
 
       // add selected checked mark
       const iconContainer = checkIcon.element({
-        className: 'jp-codeSnippet-inputTag-check',
+        className: CODE_SNIPPET_INPUT_TAG_CHECK,
         tag: 'span',
         elementPosition: 'center',
         height: '18px',
@@ -503,7 +510,7 @@ class Private {
     // add plusIcon
     const plusIcon = addIcon.element({
       tag: 'span',
-      className: 'jp-codeSnippet-inputTag-plusIcon',
+      className: CODE_SNIPPET_INPUTTAG_PLUS_ICON,
       elementPosition: 'center',
       height: '16px',
       width: '16px',
@@ -532,7 +539,7 @@ class Private {
       Private.selectedTags.push(target.innerText);
       parent.classList.replace('unapplied-tag', 'applied-tag');
       const iconContainer = checkIcon.element({
-        className: 'jp-codeSnippet-inputTag-check',
+        className: CODE_SNIPPET_INPUT_TAG_CHECK,
         tag: 'span',
         elementPosition: 'center',
         height: '18px',
@@ -570,7 +577,7 @@ class Private {
     body.innerHTML = checkSVGstr;
 
     const messageContainer = document.createElement('div');
-    messageContainer.className = 'jp-confirm-text';
+    messageContainer.className = CODE_SNIPPET_CONFIRM_TEXT;
     const message = document.createElement('text');
     message.textContent = 'Saved as Snippet!';
     messageContainer.appendChild(message);

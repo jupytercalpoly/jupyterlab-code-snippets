@@ -1,5 +1,3 @@
-import '../style/index.css';
-
 import { codeSnippetIcon } from '@elyra/ui-components';
 
 import {
@@ -24,9 +22,6 @@ import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
-
-// import undoDeleteSVG from '../style/icon/undoDelete.svg';
-// import { showUndoMessage } from './UndoDelete';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -153,9 +148,9 @@ function activateCodeSnippet(
   const openCodeSnippetEditor = (args: ICodeSnippetEditorMetadata): void => {
     console.log(args);
 
-    // if (!args.name) {
-    //   return;
-    // }
+    if (!args.name) {
+      return;
+    }
     // codeSnippetEditors are in the main area
     const widgetId = `jp-codeSnippet-editor-${args.id}`;
 
@@ -184,7 +179,7 @@ function activateCodeSnippet(
     codeSnippetEditor.title.closable = true;
     codeSnippetEditor.title.icon = editorIcon;
 
-    if (!args.fromScratch && !tracker.has(codeSnippetEditor)) {
+    if (!tracker.has(codeSnippetEditor)) {
       tracker.add(codeSnippetEditor);
     }
 
@@ -317,8 +312,7 @@ function activateCodeSnippet(
         code: editorMetadata.code,
         id: editorMetadata.id,
         selectedTags: editorMetadata.selectedTags,
-        allTags: editorMetadata.allTags,
-        fromScratch: editorMetadata.fromScratch
+        allTags: editorMetadata.allTags
       };
     },
     name: widget => {
