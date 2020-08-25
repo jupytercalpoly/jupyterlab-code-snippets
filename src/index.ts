@@ -149,8 +149,6 @@ function activateCodeSnippet(
 
   // open code Snippet Editor
   const openCodeSnippetEditor = (args: ICodeSnippetEditorMetadata): void => {
-    console.log(args);
-
     // codeSnippetEditors are in the main area
     const widgetId = `jp-codeSnippet-editor-${args.id}`;
 
