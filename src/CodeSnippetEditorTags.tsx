@@ -14,6 +14,14 @@ interface ICodeSnippetEditorTagState {
   addingNewTag: boolean;
 }
 
+/**
+ * CSS STYLING
+ */
+
+const CODE_SNIPPET_EDITOR_TAG = 'jp-codeSnippet-editor-tag';
+const CODE_SNIPPET_EDITOR_TAG_PLUS_ICON = 'jp-codeSnippet-editor-tag-plusIcon';
+const CODE_SNIPPET_EDITOR_TAG_LIST = 'jp-codeSnippet-editor-tagList';
+
 export class CodeSnippetEditorTags extends React.Component<
   ICodeSnippetEditorTagProps,
   ICodeSnippetEditorTagState
@@ -139,7 +147,7 @@ export class CodeSnippetEditorTags extends React.Component<
     const inputBox =
       this.state.addingNewTag === true ? (
         <ul
-          className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}
+          className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}
           key={'editor-new-tag'}
         >
           <input
@@ -156,7 +164,7 @@ export class CodeSnippetEditorTags extends React.Component<
           />
         </ul>
       ) : (
-        <ul className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}>
+        <ul className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}>
           {/* button */}
           <button onClick={(): void => this.setState({ addingNewTag: true })}>
             Add Tag
@@ -164,7 +172,7 @@ export class CodeSnippetEditorTags extends React.Component<
           {/* check icon */}
           <addIcon.react
             tag="span"
-            className="jp-codeSnippet-Editor-Tag-plusIcon"
+            className={CODE_SNIPPET_EDITOR_TAG_PLUS_ICON}
             elementPosition="center"
             height="16px"
             width="16px"
@@ -173,14 +181,14 @@ export class CodeSnippetEditorTags extends React.Component<
         </ul>
       );
     return (
-      <li className={'jp-codeSnippet-Editor-tags'}>
+      <li className={CODE_SNIPPET_EDITOR_TAG_LIST}>
         {hasTags
           ? this.state.tags.map((tag: string, index: number) =>
               ((): JSX.Element => {
                 if (!this.state.selectedTags) {
                   return (
                     <ul
-                      className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}
+                      className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}
                       id={'editor' + '-' + tag + '-' + index}
                       key={'editor' + '-' + tag + '-' + index}
                     >
@@ -192,7 +200,7 @@ export class CodeSnippetEditorTags extends React.Component<
                 if (this.state.selectedTags.includes(tag)) {
                   return (
                     <ul
-                      className={'jp-codeSnippet-Editor-tag tag applied-tag'}
+                      className={`${CODE_SNIPPET_EDITOR_TAG} tag applied-tag`}
                       id={'editor' + '-' + tag + '-' + index}
                       key={'editor' + '-' + tag + '-' + index}
                     >
@@ -211,7 +219,7 @@ export class CodeSnippetEditorTags extends React.Component<
                 } else {
                   return (
                     <ul
-                      className={'jp-codeSnippet-Editor-tag tag unapplied-tag'}
+                      className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}
                       id={'editor' + '-' + tag + '-' + index}
                       key={'editor' + '-' + tag + '-' + index}
                     >

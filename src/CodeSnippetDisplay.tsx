@@ -1,3 +1,23 @@
+import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
+import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
+import { PathExt } from '@jupyterlab/coreutils';
+import { DocumentWidget } from '@jupyterlab/docregistry';
+import { FileEditor } from '@jupyterlab/fileeditor';
+import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
+import { LabIcon, addIcon } from '@jupyterlab/ui-components';
+import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
+import * as nbformat from '@jupyterlab/nbformat';
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import { Cell, CodeCellModel, ICodeCellModel } from '@jupyterlab/cells';
+
+import { Widget } from '@lumino/widgets';
+import { find } from '@lumino/algorithm';
+import { Drag } from '@lumino/dragdrop';
+import { MimeData } from '@lumino/coreutils';
+
+import React from 'react';
+
+import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 import { FilterTools } from './FilterTools';
 import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
 import { showPreview } from './PreviewSnippet';
@@ -6,45 +26,33 @@ import {
   ICodeSnippet,
   CodeSnippetContentsService
 } from './CodeSnippetContentsService';
-import { find } from '@lumino/algorithm';
 
-import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
-import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
-import { CodeEditor } from '@jupyterlab/codeeditor';
-import { PathExt } from '@jupyterlab/coreutils';
-import { DocumentWidget } from '@jupyterlab/docregistry';
-import { FileEditor } from '@jupyterlab/fileeditor';
-import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
-import { /**copyIcon,*/ LabIcon, addIcon } from '@jupyterlab/ui-components';
-import { IEditorServices } from '@jupyterlab/codeeditor';
-
-import { Widget } from '@lumino/widgets';
-
-import React from 'react';
-import { Drag } from '@lumino/dragdrop';
-import { Cell, CodeCellModel, ICodeCellModel } from '@jupyterlab/cells';
-import { MimeData } from '@lumino/coreutils';
-
-import * as nbformat from '@jupyterlab/nbformat';
-import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
-import { JupyterFrontEnd } from '@jupyterlab/application';
-
-/**
- * The class added to snippet cells
- */
-// const CODE_SNIPPET_CELL_CLASS = 'jp-CodeSnippet-cell';
 /**
  * The CSS class added to code snippet widget.
  */
-const CODE_SNIPPETS_HEADER_CLASS = 'codeSnippetsHeader';
-const CODE_SNIPPETS_CONTAINER = 'codeSnippetsContainer';
-
-const DISPLAY_NAME_CLASS = 'expandableContainer-name';
-const ELYRA_BUTTON_CLASS = 'jp-button';
-const BUTTON_CLASS = 'expandableContainer-button';
-const TITLE_CLASS = 'expandableContainer-title';
-const ACTION_BUTTONS_WRAPPER_CLASS = 'expandableContainer-action-buttons';
-const ACTION_BUTTON_CLASS = 'expandableContainer-actionButton';
+const CODE_SNIPPETS_HEADER_CLASS = 'jp-codeSnippetsHeader';
+const CODE_SNIPPET_TITLE = 'jp-codeSnippet-title';
+const CODE_SNIPPETS_CONTAINER = 'jp-codeSnippetsContainer';
+const DISPLAY_NAME_CLASS = 'jp-codeSnippetsContainer-name';
+const BUTTON_CLASS = 'jp-codeSnippetsContainer-button';
+const TITLE_CLASS = 'jp-codeSnippetsContainer-title';
+const ACTION_BUTTONS_WRAPPER_CLASS = 'jp-codeSnippetsContainer-action-buttons';
+const ACTION_BUTTON_CLASS = 'jp-codeSnippetsContainer-actionButton';
+const SEARCH_BOLD = 'jp-codeSnippet-search-bolding';
+const SNIPPET_DRAG_IMAGE = 'jp-codeSnippet-drag-image';
+const CODE_SNIPPET_DRAG_HOVER = 'jp-codeSnippet-drag-hover';
+const CODE_SNIPPET_DRAG_HOVER_CLICKED = 'jp-codeSnippet-drag-hover-clicked';
+const CODE_SNIPPET_DRAG_HOVER_SELECTED = 'jp-codeSnippet-drag-hover-selected';
+const CODE_SNIPPET_METADATA = 'jp-codeSnippet-metadata';
+const CODE_SNIPPET_DESC = 'jp-codeSnippet-description';
+const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
+const CODE_SNIPPET_MORE_OPTIONS = 'jp-codeSnippet-options';
+const CODE_SNIPPET_MORE_OTPIONS_CONTENT = 'jp-codeSnippet-more-options-content';
+const CODE_SNIPPET_MORE_OTPIONS_COPY = 'jp-codeSnippet-more-options-copy';
+const CODE_SNIPPET_MORE_OTPIONS_INSERT = 'jp-codeSnippet-more-options-insert';
+const CODE_SNIPPET_MORE_OTPIONS_EDIT = 'jp-codeSnippet-more-options-edit';
+const CODE_SNIPPET_MORE_OTPIONS_DELETE = 'jp-codeSnippet-more-options-delete';
+const CODE_SNIPPET_CREATE_NEW_BTN = 'jp-createSnippetBtn';
 
 /**
  * The threshold in pixels to start a drag event.
@@ -54,25 +62,13 @@ const DRAG_THRESHOLD = 5;
 /**
  * A class used to indicate a snippet item.
  */
-const CODE_SNIPPET_ITEM = 'codeSnippet-item';
+const CODE_SNIPPET_ITEM = 'jp-codeSnippet-item';
+const CODE_SNIPPET_ITEM_CLICKED = 'jp-codeSnippet-item-clicked';
 
 /**
  * The mimetype used for Jupyter cell data.
  */
 const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
-
-/**
- * Icons used for snippet
- */
-// const insertIcon = new LabIcon({
-//   name: 'custom-ui-compnents:insert',
-//   svgstr: insertSVGstr
-// });
-
-// const launchEditorIcon = new LabIcon({
-//   name: 'custom-ui-compnents:launchEditor',
-//   svgstr: launchEditorSVGstr
-// });
 
 /**
  * Icon for more options
@@ -131,7 +127,6 @@ export class CodeSnippetDisplay extends React.Component<
     const widget: Widget = this.props.getCurrentWidget();
     const snippetStr: string = snippet.code.join('\n');
 
-    // if the widget is document widget and it's a file?? in the file editor
     if (
       widget instanceof DocumentWidget &&
       (widget as DocumentWidget).content instanceof FileEditor
@@ -178,14 +173,6 @@ export class CodeSnippetDisplay extends React.Component<
       this.showErrDialog('Code snippet insert failed: Unsupported widget');
     }
   };
-
-  // // Handle deleting code snippet
-  // private deleteCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
-  //   const name = snippet.name;
-  //   // const url = 'elyra/metadata/code-snippets/' + name;
-
-  //   this.props.openCodeSnippetEditor({ namespace: name, codeSnippet: snippet });
-  // };
 
   // Handle language compatibility between code snippet and editor
   private verifyLanguageAndInsert = async (
@@ -239,17 +226,17 @@ export class CodeSnippetDisplay extends React.Component<
     const _id: number = parseInt(id, 10);
 
     document
-      .getElementsByClassName('drag-hover')
-      [_id].classList.add('drag-hover-selected');
+      .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
+      [_id].classList.add(CODE_SNIPPET_DRAG_HOVER_SELECTED);
   };
 
   // Remove 6 dots off hover
   private dragHoverStyleRemove = (id: string): void => {
     const _id: number = parseInt(id, 10);
-    if (document.getElementsByClassName('drag-hover')) {
+    if (document.getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)) {
       document
-        .getElementsByClassName('drag-hover')
-        [_id].classList.remove('drag-hover-selected');
+        .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
+        [_id].classList.remove(CODE_SNIPPET_DRAG_HOVER_SELECTED);
     }
   };
 
@@ -259,16 +246,16 @@ export class CodeSnippetDisplay extends React.Component<
 
     if (
       document
-        .getElementsByClassName('drag-hover')
-        [_id].classList.contains('drag-hover-clicked')
+        .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
+        [_id].classList.contains(CODE_SNIPPET_DRAG_HOVER_CLICKED)
     ) {
       document
-        .getElementsByClassName('drag-hover')
-        [_id].classList.remove('drag-hover-clicked');
+        .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
+        [_id].classList.remove(CODE_SNIPPET_DRAG_HOVER_CLICKED);
     } else {
       document
-        .getElementsByClassName('drag-hover')
-        [_id].classList.add('drag-hover-clicked');
+        .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
+        [_id].classList.add(CODE_SNIPPET_DRAG_HOVER_CLICKED);
     }
   };
 
@@ -292,7 +279,7 @@ export class CodeSnippetDisplay extends React.Component<
       return (
         <span>
           {start}
-          <mark className="jp-search-bolding">{bolded}</mark>
+          <mark className={SEARCH_BOLD}>{bolded}</mark>
           {end}
         </span>
       );
@@ -311,7 +298,6 @@ export class CodeSnippetDisplay extends React.Component<
     }
 
     const target = event.target as HTMLElement;
-    console.log(target);
 
     this._dragData = {
       pressX: event.clientX,
@@ -327,12 +313,11 @@ export class CodeSnippetDisplay extends React.Component<
       .children[0] as HTMLElement).style.color = dragImageTextColor;
 
     // add CSS style
-    this._dragData.dragImage.classList.add('jp-codesnippet-drag-image');
+    this._dragData.dragImage.classList.add(SNIPPET_DRAG_IMAGE);
     target.addEventListener('mouseup', this._evtMouseUp, true);
     target.addEventListener('mousemove', this.handleDragMove, true);
 
     event.preventDefault();
-    // event.stopPropagation();
   }
 
   private _evtMouseUp(event: MouseEvent): void {
@@ -347,8 +332,6 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   private handleDragMove(event: MouseEvent): void {
-    // event.preventDefault();
-    // event.stopPropagation();
     const data = this._dragData;
 
     if (
@@ -427,22 +410,22 @@ export class CodeSnippetDisplay extends React.Component<
 
   private _evtMouseLeave(): void {
     //get rid of preview by clicking anything
-    const preview = document.querySelector('.jp-preview');
+    const preview = document.querySelector('.jp-codeSnippet-preview');
     if (preview) {
       // if target is not the code snippet name area, then add inactive
       // if target area is the code snippet name area, previewSnippet widget will handle preview.
       if (!preview.classList.contains('inactive')) {
         preview.classList.add('inactive');
-        for (const elem of document.getElementsByClassName('drag-hover')) {
-          if (elem.classList.contains('drag-hover-clicked')) {
-            elem.classList.remove('drag-hover-clicked');
+        for (const elem of document.getElementsByClassName(
+          CODE_SNIPPET_DRAG_HOVER
+        )) {
+          if (elem.classList.contains(CODE_SNIPPET_DRAG_HOVER_CLICKED)) {
+            elem.classList.remove(CODE_SNIPPET_DRAG_HOVER_CLICKED);
           }
         }
-        for (const item of document.getElementsByClassName(
-          'codeSnippet-item'
-        )) {
-          if (item.classList.contains('codeSnippet-item-clicked')) {
-            item.classList.remove('codeSnippet-item-clicked');
+        for (const item of document.getElementsByClassName(CODE_SNIPPET_ITEM)) {
+          if (item.classList.contains(CODE_SNIPPET_ITEM_CLICKED)) {
+            item.classList.remove(CODE_SNIPPET_ITEM_CLICKED);
           }
         }
       }
@@ -452,9 +435,7 @@ export class CodeSnippetDisplay extends React.Component<
   //Set the position of the preview to be next to the snippet title.
   private _setPreviewPosition(id: string): void {
     const intID = parseInt(id, 10);
-    const realTarget = document.getElementsByClassName(
-      'expandableContainer-title'
-    )[intID];
+    const realTarget = document.getElementsByClassName(TITLE_CLASS)[intID];
     // distDown is the number of pixels to shift the preview down
     let distDown: number = realTarget.getBoundingClientRect().top - 40;
     if (realTarget.getBoundingClientRect().top > window.screen.height / 2) {
@@ -497,25 +478,10 @@ export class CodeSnippetDisplay extends React.Component<
     codeSnippet: ICodeSnippet,
     id: string
   ): JSX.Element => {
-    const buttonClasses = [ELYRA_BUTTON_CLASS, BUTTON_CLASS].join(' ');
+    const buttonClasses = BUTTON_CLASS;
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
-    // const tags = codeSnippet.tags;
 
     const actionButtons = [
-      // {
-      //   title: 'Copy',
-      //   icon: copyIcon,
-      //   onClick: (): void => {
-      //     Clipboard.copyToSystem(codeSnippet.code.join('\n'));
-      //   }
-      // },
-      // {
-      //   title: 'Insert',
-      //   icon: insertIcon,
-      //   onClick: (): void => {
-      //     this.insertCodeSnippet(codeSnippet);
-      //   }
-      // },
       {
         title: 'Insert, copy, edit, and delete',
         icon: moreOptionsIcon,
@@ -526,22 +492,6 @@ export class CodeSnippetDisplay extends React.Component<
           this._setOptionsPosition(event);
         }
       }
-      // {
-      //   title: 'Launch Editor',
-      //   icon: launchEditorIcon,
-      //   onClick: (): void => {
-      //     // showPreview(
-      //     //   {
-      //     //     id: parseInt(id, 10),
-      //     //     title: displayName,
-      //     //     body: new PreviewHandler(codeSnippet),
-      //     //     codeSnippet: codeSnippet
-      //     //   }
-      //     //   );
-      //     this.props.openCodeSnippetEditor(codeSnippet);
-      //     // this.snippetClicked(id);
-      //   }
-      // }
     ];
     /** TODO: if the type is a cell then display cell */
     // type of code snippet: plain code or cell
@@ -558,7 +508,7 @@ export class CodeSnippetDisplay extends React.Component<
         }}
       >
         <div
-          className="drag-hover"
+          className={CODE_SNIPPET_DRAG_HOVER}
           title="Drag to move"
           id={id}
           onMouseDown={(event): void => {
@@ -566,7 +516,7 @@ export class CodeSnippetDisplay extends React.Component<
           }}
         ></div>
         <div
-          className={'jp-codeSnippet-metadata'}
+          className={CODE_SNIPPET_METADATA}
           onMouseEnter={(): void => {
             showPreview(
               {
@@ -618,7 +568,7 @@ export class CodeSnippetDisplay extends React.Component<
               })}
             </div>
           </div>
-          <div className={'jp-codeSnippet-description'} id={id}>
+          <div className={CODE_SNIPPET_DESC} id={id}>
             <p id={id}>{`${codeSnippet.description}`}</p>
           </div>
           {/* <div className={'jp-codeSnippet-tags'}>
@@ -721,7 +671,7 @@ export class CodeSnippetDisplay extends React.Component<
       ]
     }).then((response: any): void => {
       if (response.button.accept) {
-        const widgetId = `jp-codeSnippet-editor-${codeSnippet.id}`;
+        const widgetId = `${CODE_SNIPPET_EDITOR}-${codeSnippet.id}`;
         const editor = find(
           this.props.app.shell.widgets('main'),
           (widget: Widget, _: number) => {
@@ -732,6 +682,7 @@ export class CodeSnippetDisplay extends React.Component<
         if (editor) {
           editor.dispose();
         }
+
         contentsService.delete('snippets/' + codeSnippet.name + '.json');
         this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
         this.props._codeSnippetWidgetModel.updateSnippetContents();
@@ -744,7 +695,7 @@ export class CodeSnippetDisplay extends React.Component<
 
   // remove dropdown menu
   private removeOptionsNode(): void {
-    const temp = document.getElementsByClassName('jp-options')[0];
+    const temp = document.getElementsByClassName(CODE_SNIPPET_MORE_OPTIONS)[0];
     if (!temp.classList.contains('inactive')) {
       temp.classList.add('inactive');
     }
@@ -755,16 +706,16 @@ export class CodeSnippetDisplay extends React.Component<
     const body = document.createElement('div');
 
     const optionsContainer = document.createElement('div');
-    optionsContainer.className = 'jp-more-options-content';
+    optionsContainer.className = CODE_SNIPPET_MORE_OTPIONS_CONTENT;
     const insertSnip = document.createElement('div');
-    insertSnip.className = 'jp-more-options-insert';
+    insertSnip.className = CODE_SNIPPET_MORE_OTPIONS_INSERT;
     insertSnip.textContent = 'Insert snippet';
     insertSnip.onclick = (): void => {
       this.insertCodeSnippet(codeSnippet);
       this.removeOptionsNode();
     };
     const copySnip = document.createElement('div');
-    copySnip.className = 'jp-more-options-copy';
+    copySnip.className = CODE_SNIPPET_MORE_OTPIONS_COPY;
     copySnip.textContent = 'Copy snippet to clipboard';
     copySnip.onclick = (): void => {
       Clipboard.copyToSystem(codeSnippet.code.join('\n'));
@@ -772,7 +723,7 @@ export class CodeSnippetDisplay extends React.Component<
       this.removeOptionsNode();
     };
     const editSnip = document.createElement('div');
-    editSnip.className = 'jp-more-options-edit';
+    editSnip.className = CODE_SNIPPET_MORE_OTPIONS_EDIT;
     editSnip.textContent = 'Edit snippet';
     editSnip.onclick = (): void => {
       console.log(codeSnippet);
@@ -790,7 +741,7 @@ export class CodeSnippetDisplay extends React.Component<
       this.removeOptionsNode();
     };
     const deleteSnip = document.createElement('div');
-    deleteSnip.className = 'jp-more-options-delete';
+    deleteSnip.className = CODE_SNIPPET_MORE_OTPIONS_DELETE;
     deleteSnip.textContent = 'Delete snippet';
     deleteSnip.onclick = (): void => {
       this.deleteCommand(codeSnippet);
@@ -808,9 +759,9 @@ export class CodeSnippetDisplay extends React.Component<
     return (
       <div>
         <header className={CODE_SNIPPETS_HEADER_CLASS}>
-          <span className={'jp-codeSnippet-title'}>{'Snippets'}</span>
+          <span className={CODE_SNIPPET_TITLE}>{'Snippets'}</span>
           <button
-            className={'jp-createSnippetBtn'}
+            className={CODE_SNIPPET_CREATE_NEW_BTN}
             onClick={(): void => {
               this.props.openCodeSnippetEditor({
                 name: '',
@@ -818,7 +769,6 @@ export class CodeSnippetDisplay extends React.Component<
                 language: 'Python',
                 code: [],
                 id: -1,
-                // selectedTags: [],
                 allTags: this.getActiveTags(),
                 fromScratch: true
               });
@@ -827,7 +777,6 @@ export class CodeSnippetDisplay extends React.Component<
             <addIcon.react tag="span" right="7px" top="5px" />
           </button>
         </header>
-        {/* <div className={'jp-codeSnippet-search'}> */}
         <FilterTools
           tags={this.getActiveTags()}
           onFilter={this.filterSnippets}
@@ -867,41 +816,6 @@ class Private {
   static createPreviewNode(): HTMLElement {
     return this.createPreviewContent();
   }
-
-  // static createOptionsNode(
-  //   object: any,
-  //   codeSnippet: ICodeSnippet
-  // ): HTMLElement {
-  //   const body = document.createElement('div');
-
-  //   const optionsContainer = document.createElement('div');
-  //   optionsContainer.className = 'jp-more-options-content';
-  //   const insertSnip = document.createElement('div');
-  //   insertSnip.className = 'jp-more-options-insert';
-  //   insertSnip.textContent = 'Insert snippet';
-  //   insertSnip.onclick = (): void => {
-  //     object.insertCodeSnippet(codeSnippet);
-  //   };
-  //   const copySnip = document.createElement('div');
-  //   copySnip.className = 'jp-more-options-copy';
-  //   copySnip.textContent = 'Copy snippet to clipboard';
-  //   copySnip.onclick = (): void => {
-  //     Clipboard.copyToSystem(codeSnippet.code.join('\n'));
-  //     alert('saved to clipboard');
-  //   };
-  //   const editSnip = document.createElement('div');
-  //   editSnip.className = 'jp-more-options-edit';
-  //   editSnip.textContent = 'Edit snippet';
-  //   const deleteSnip = document.createElement('div');
-  //   deleteSnip.className = 'jp-more-options-delete';
-  //   deleteSnip.textContent = 'Delete snippet';
-  //   optionsContainer.appendChild(insertSnip);
-  //   optionsContainer.appendChild(copySnip);
-  //   optionsContainer.appendChild(editSnip);
-  //   optionsContainer.appendChild(deleteSnip);
-  //   body.append(optionsContainer);
-  //   return body;
-  // }
 }
 
 /**
