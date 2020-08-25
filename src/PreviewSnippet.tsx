@@ -3,6 +3,7 @@ import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
+
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 
 import * as React from 'react';

@@ -34,13 +34,13 @@ const CODE_SNIPPET_EDITOR_LANG_INPUT = 'jp-codeSnippet-editor-language';
 const CODE_SNIPPET_EDITOR_MIRROR = 'jp-codeSnippetInput-editor';
 const CODE_SNIPPET_EDITOR_INPUTAREA = 'jp-codeSnippetInputArea';
 const CODE_SNIPPET_EDITOR_INPUTAREA_MIRROR = 'jp-codeSnippetInputArea-editor';
+const CODE_SNIPPET_EDITOR_MIRROR_LABEL = 'jp-codeSnippetInputArea-editorTitle';
 
 const CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY =
   'jp-codeSnippet-inputName-validity';
 const CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY =
   'jp-codeSnippet-inputDesc-validity';
 const CODE_SNIPPET_EDITOR_TAGS_LABEL = 'jp-codeSnippet-editor-tags-label';
-const CODE_SNIPPET_EDITOR_MIRROR_LABEL = 'jp-codeSnippetInputArea-editorTitle';
 const EDITOR_DIRTY_CLASS = 'jp-mod-dirty';
 
 export interface ICodeSnippetEditorMetadata {

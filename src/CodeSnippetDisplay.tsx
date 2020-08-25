@@ -1,5 +1,4 @@
 import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
-import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
 import { PathExt } from '@jupyterlab/coreutils';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
@@ -8,7 +7,13 @@ import { LabIcon, addIcon } from '@jupyterlab/ui-components';
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 import * as nbformat from '@jupyterlab/nbformat';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { Cell, CodeCellModel, ICodeCellModel } from '@jupyterlab/cells';
+import {
+  Cell,
+  CodeCellModel,
+  ICodeCellModel,
+  MarkdownCell,
+  CodeCell
+} from '@jupyterlab/cells';
 
 import { Widget } from '@lumino/widgets';
 import { find } from '@lumino/algorithm';

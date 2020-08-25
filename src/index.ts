@@ -1,23 +1,21 @@
 // import '../style/index.css';
-import codeSnippetIconSVGstr from '../style/icon/jupyter_snippeticon.svg';
-
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
   ILayoutRestorer
 } from '@jupyterlab/application';
+import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
+import { IEditorServices } from '@jupyterlab/codeeditor';
+import { LabIcon } from '@jupyterlab/ui-components';
 
 import { Widget } from '@lumino/widgets';
 import { find } from '@lumino/algorithm';
-import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
 
-import { IEditorServices } from '@jupyterlab/codeeditor';
-import { LabIcon } from '@jupyterlab/ui-components';
 import editorIconSVGstr from '../style/icon/jupyter_snippeteditoricon.svg';
+import codeSnippetIconSVGstr from '../style/icon/jupyter_snippeticon.svg';
 
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import {
   CodeSnippetEditor,
