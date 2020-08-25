@@ -6,8 +6,12 @@
 
 #code-snippet-extension {
   background-color: var(--jp-layout-color0);
-  border-right: 3px solid var(--jp-layout-color0);
+  /* border-right: 3px solid var(--jp-layout-color0); */
   overflow: auto;
+}
+
+.jp-codeSnippet-fileDialog label {
+  margin-bottom: 5px;
 }
 
 .jp-codeSnippetsContainer-button,
@@ -49,16 +53,13 @@
 } */
 
 .jp-codeSnippetsContainer-name {
-  /* flex: 1 1 75%; */
-  /* flex-grow: 1;
-  flex-basis: 75%; */
-  font-size: 14px;
+  font-size: var(--jp-ui-font-size1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   /* line-height: 28px; */
   color: var(--jp-ui-font-color0);
-  font-family: Helvetica;
+  /* font-family: Helvetica; */
   /* font-size: 16px; */
 }
 
@@ -76,11 +77,8 @@
 .jp-codeSnippetsHeader {
   font-size: var(--jp-ui-font-size1);
   font-weight: 600;
-  /* font-size: 13px; */
-  /* font-family: helvetica; */
   text-transform: uppercase;
   padding: 8px;
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
   color: var(--jp-ui-font-color0);
   display: flex;
   justify-content: space-between;
@@ -139,7 +137,7 @@
 
 .jp-codeSnippet-confirm-text {
   width: 183px;
-  font-family: helvetica;
+  /* font-family: helvetica; */
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
@@ -182,7 +180,7 @@
 }
 
 .jp-codeSnippet-searchbar {
-  margin: 10px;
+  margin: 0px 8px;
 }
 
 .jp-codeSnippet-filterTools {
@@ -227,11 +225,6 @@
   font-size: var(--jp-ui-font-size1);
   color: var(--jp-ui-font-color1);
   margin: 0px 6px 30px auto;
-}
-
-.jp-click-undo {
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 mark.jp-codeSnippet-search-bolding {
@@ -280,22 +273,7 @@ mark.jp-codeSnippet-search-bolding {
   background-color: var(--jp-layout-color0);
 }
 
-.jp-codeSnippet-editor-name {
-  display: block;
-  margin-left: 2%;
-  border-top: transparent;
-  border-left: transparent;
-  border-right: transparent;
-  width: 94%;
-  height: 40px;
-  padding-left: 10px;
-  border-bottom: 1px solid #c4c4c4;
-  font-size: 16px;
-  border-radius: 2px;
-  background-color: var(--jp-layout-color0);
-  color: var(--jp-ui-font-color0);
-}
-
+.jp-codeSnippet-editor-name,
 .jp-codeSnippet-editor-description {
   display: block;
   margin-left: 2%;
@@ -303,29 +281,42 @@ mark.jp-codeSnippet-search-bolding {
   border-left: transparent;
   border-right: transparent;
   width: 94%;
-  height: 40px;
-  padding-left: 10px;
-  border-bottom: 1px solid #c4c4c4;
-  font-size: 16px;
+  height: 32px;
+  /* border-bottom: 1px solid #c4c4c4; */
+  font-size: var(--jp-ui-font-size1);
   border-radius: 2px;
-  background-color: var(--jp-layout-color0);
+  background: var(--jp-input-background);
+  box-sizing: border-box;
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  padding-left: 7px;
+  padding-right: 7px;
+  /* font-size: var(--jp-ui-font-size2); */
   color: var(--jp-ui-font-color0);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 .jp-codeSnippet-editor-language {
   display: block;
   margin-bottom: 20px;
   margin-left: 2%;
-  border: 1px solid var(--jp-border-color0);
   width: 176px;
-  height: 40px;
-  padding-left: 10px;
-  font-size: 13px;
+  height: 32px;
+  font-size: var(--jp-ui-font-size1);
   border-radius: 2px;
   appearance: none;
   -webkit-appearance: none; /* chrome and safari */
   -moz-appearance: none; /* Mozilla */
   -ms-appearance: none; /* Internet explorer */
+  color: var(--jp-ui-font-color0);
+  outline: none;
+  background: var(--jp-input-background);
+  box-sizing: border-box;
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  padding-left: 7px;
+  padding-right: 7px;
   background-image: url(./icon/jupyter_searcharrowdown.svg);
   background-repeat: no-repeat;
   background-position: 95% center;
@@ -338,7 +329,7 @@ mark.jp-codeSnippet-search-bolding {
 .jp-codeSnippet-editor-tags-label {
   margin-bottom: 12px;
   margin-left: 2%;
-  font-family: helvetica;
+  /* font-family: helvetica; */
   line-height: 18px;
   font-size: var(--jp-ui-font-size2);
   color: var(--jp-ui-font-color0);
@@ -350,9 +341,9 @@ mark.jp-codeSnippet-search-bolding {
 }
 
 .jp-codeSnippet-editor-tag {
-  margin-left: 10px;
-  margin-right: 10px;
-  height: 12px;
+  margin-left: 3px;
+  margin-right: 3px;
+  height: 5px;
 }
 
 .jp-codeSnippet-editor-tag button {
@@ -401,7 +392,7 @@ mark.jp-codeSnippet-search-bolding {
 .jp-codeSnippetInputArea-editorTitle {
   margin-bottom: 12px;
   margin-left: 2%;
-  font-family: helvetica;
+  /* font-family: helvetica; */
   line-height: 18px;
   font-size: var(--jp-ui-font-size2);
   color: var(--jp-ui-font-color0);
@@ -452,7 +443,7 @@ mark.jp-codeSnippet-search-bolding {
 
 .jp-codeSnippet-filter .jp-codeSnippet-filter-btn {
   align-self: flex-end;
-  padding-right: 5px;
+  padding: 0px;
   padding-bottom: 10px;
   border: none;
   background: none;
@@ -498,9 +489,13 @@ mark.jp-codeSnippet-search-bolding {
   padding-bottom: 5px;
 }
 
+.jp-codeSnippet-filter-tags {
+  margin: 0px 8px;
+}
+
 .jp-codeSnippet-filter-tag {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 3px;
+  margin-right: 3px;
 }
 
 .jp-codeSnippet-filter-tag button {
@@ -517,6 +512,7 @@ mark.jp-codeSnippet-search-bolding {
   cursor: pointer;
   border: none;
   background: none;
+  padding: 0px;
 }
 
 /* code snippet tags in inputDialog */
@@ -525,8 +521,8 @@ mark.jp-codeSnippet-search-bolding {
 }
 
 .jp-codeSnippet-inputTag {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 .jp-codeSnippet-inputTag button {
@@ -571,8 +567,8 @@ mark.jp-codeSnippet-search-bolding {
 }
 
 .jp-codeSnippet-description p {
-  font-family: Helvetica;
-  font-size: var(--jp-ui-font-size1);
+  /* font-family: Helvetica; */
+  font-size: var(--jp-ui-font-size0);
   line-height: 15px;
   color: var(--jp-layout-color4);
   margin-bottom: 10px;
@@ -599,7 +595,7 @@ mark.jp-codeSnippet-search-bolding {
 .jp-codeSnippet-tag,
 .jp-codeSnippet-inputTag,
 .jp-codeSnippet-filter-tag {
-  height: 12px;
+  height: 5px;
 }
 /* code snippet tools: search, filter */
 .jp-codeSnippet-tools {
@@ -650,6 +646,7 @@ mark.jp-codeSnippet-search-bolding {
   font-size: var(--jp-ui-font-size0);
   color: var(--jp-ui-font-color1);
   margin: 5px;
+  margin-bottom: 8px;
 }
 
 .jp-codeSnippet-editor-metadata .jp-codeSnippet-inputName-validity,
@@ -678,7 +675,7 @@ mark.jp-codeSnippet-search-bolding {
 
 .jp-codeSnippet-more-options-content {
   width: 183px;
-  font-family: helvetica;
+  /* font-family: helvetica; */
   font-style: normal;
   font-weight: normal;
   font-size: 13px;

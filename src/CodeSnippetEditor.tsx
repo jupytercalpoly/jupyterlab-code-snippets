@@ -483,6 +483,11 @@ export class CodeSnippetEditor extends ReactWidget {
 
     // update the display in code snippet explorer
     this.codeSnippetWidget.updateCodeSnippets();
+
+    // close editor if it's from scratch
+    if (this._codeSnippetEditorMetaData.fromScratch) {
+      this.dispose();
+    }
   }
 
   handleChangeOnTag(selectedTags: string[], allTags: string[]): void {

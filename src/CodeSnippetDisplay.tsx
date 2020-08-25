@@ -683,10 +683,7 @@ export class CodeSnippetDisplay extends React.Component<
             return widget.id === widgetId;
           }
         );
-<<<<<<< HEAD
 
-=======
->>>>>>> 44eb768adbfd5a43af2803c7ec67608d0ff093fd
         if (editor) {
           editor.dispose();
         }

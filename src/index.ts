@@ -154,9 +154,9 @@ function activateCodeSnippet(
   const openCodeSnippetEditor = (args: ICodeSnippetEditorMetadata): void => {
     console.log(args);
 
-    if (!args.name) {
-      return;
-    }
+    // if (!args.name) {
+    //   return;
+    // }
     // codeSnippetEditors are in the main area
     const widgetId = `jp-codeSnippet-editor-${args.id}`;
 
@@ -178,6 +178,7 @@ function activateCodeSnippet(
       codeSnippetWidget,
       args
     );
+    
     console.log('editor created!');
     codeSnippetEditor.id = widgetId;
     codeSnippetEditor.addClass(widgetId);

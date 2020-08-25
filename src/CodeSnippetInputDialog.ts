@@ -21,7 +21,7 @@ import checkSVGstr from '../style/icon/jupyter_checkmark.svg';
 /**
  * The class name added to file dialogs.
  */
-const FILE_DIALOG_CLASS = 'jp-FileDialog';
+const FILE_DIALOG_CLASS = 'jp-codeSnippet-fileDialog';
 
 /**
  * CSS STYLING
