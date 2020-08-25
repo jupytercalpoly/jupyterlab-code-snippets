@@ -178,7 +178,7 @@ function activateCodeSnippet(
       codeSnippetWidget,
       args
     );
-    
+
     console.log('editor created!');
     codeSnippetEditor.id = widgetId;
     codeSnippetEditor.addClass(widgetId);
