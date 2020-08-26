@@ -41,6 +41,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--jp-ui-font-color0);
+  display: flex;
 }
 
 .jp-codeSnippetsContainer-button {
@@ -404,7 +405,7 @@ mark.jp-codeSnippet-search-bolding {
 
 .jp-codeSnippet-filter-arrow-up {
   position: absolute;
-  margin-top: 22px;
+  margin-top: 20px;
   border: var(--jp-border-width) solid var(--jp-border-color1);
   border-width: 0 var(--jp-border-width) var(--jp-border-width) 0;
   padding: 4px;
@@ -513,10 +514,15 @@ mark.jp-codeSnippet-search-bolding {
   background: var(--jp-dialog-background);
 }
 
-.jp-codeSnippet-dialog-input:invalid,
-.jp-codeSnippet-editor-name:invalid,
-.jp-codeSnippet-editor-description:invalid,
-.jp-codeSnippet-editor-language:invalid {
+/* .jp-codesnippet-editor-name:required {
+  border-color: #808080;
+  border-width: 3px;
+} */
+
+.jp-codeSnippet-dialog-input.touched:invalid,
+.jp-codeSnippet-editor-name.touched:invalid,
+.jp-codeSnippet-editor-description.touched:invalid,
+.jp-codeSnippet-editor-language.touched:invalid {
   border: var(--jp-border-width) solid var(--jp-error-color1);
 }
 

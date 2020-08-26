@@ -14,7 +14,7 @@ import React from 'react';
 
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-import { SUPPORTED_LANGUAGES } from './index';
+import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
 
 /**
@@ -323,8 +323,16 @@ export class CodeSnippetEditor extends ReactWidget {
       message += 'Name must be filled out\n';
       status = false;
     }
+    if (name.match(/[^a-z0-9_]+/)) {
+      message += 'Wrong format of the name\n';
+      status = false;
+    }
     if (description === '') {
       message += 'Description must be filled out\n';
+      status = false;
+    }
+    if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
+      message += 'Wrong format of the description\n';
       status = false;
     }
     if (language === '') {
@@ -457,6 +465,13 @@ export class CodeSnippetEditor extends ReactWidget {
     this.saved = false;
   }
 
+  handleOnBlur(event: React.FocusEvent<HTMLInputElement>): void {
+    const target = event.target as HTMLElement;
+    if (!target.classList.contains('touched')) {
+      target.classList.add('touched');
+    }
+  }
+
   /**
    * TODO: clean CSS style class - "Use constant"
    */
@@ -527,6 +542,7 @@ export class CodeSnippetEditor extends ReactWidget {
             onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
               this.handleInputFieldChange(event);
             }}
+            onBlur={this.handleOnBlur}
           ></input>
           <p className={CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY}>
             {
@@ -549,6 +565,7 @@ export class CodeSnippetEditor extends ReactWidget {
             onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
               this.handleInputFieldChange(event);
             }}
+            onBlur={this.handleOnBlur}
           ></input>
           <p className={CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY}>
             {
@@ -569,7 +586,7 @@ export class CodeSnippetEditor extends ReactWidget {
         <span className={CODE_SNIPPET_EDITOR_LABEL}>Code</span>
         {this.renderCodeInput()}
         <Button className="saveBtn" onClick={this.saveChange}>
-          {fromScratch ? 'Create' : 'Save'}
+          {fromScratch ? 'Create & Close' : 'Save'}
         </Button>
       </div>
     );

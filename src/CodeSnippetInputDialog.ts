@@ -12,7 +12,7 @@ import {
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
-import { SUPPORTED_LANGUAGES } from './index';
+import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { showMessage } from './ConfirmMessage';
 import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
 
@@ -214,12 +214,21 @@ export function validateForm(
   const name = input.value[0];
   const description = input.value[1];
   const language = input.value[2];
+
   if (name === '') {
     message += 'Name must be filled out\n';
     status = false;
   }
+  if (name.match(/[^a-z0-9_]+/)) {
+    message += 'Wrong format of the name\n';
+    status = false;
+  }
   if (description === '') {
     message += 'Description must be filled out\n';
+    status = false;
+  }
+  if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
+    message += 'Wrong format of the description\n';
     status = false;
   }
   if (language === '') {
@@ -227,7 +236,7 @@ export function validateForm(
     status = false;
   }
   if (!SUPPORTED_LANGUAGES.includes(language)) {
-    message += '\nLanguage must be one of the options';
+    message += 'Language must be one of the options';
     status = false;
   }
   if (status === false) {
@@ -278,6 +287,13 @@ class Private {
   static selectedTags: string[] = [];
   static allTags: string[];
 
+  static handleOnBlur(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.classList.contains('touched')) {
+      target.classList.add('touched');
+    }
+  }
+
   /**
    * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
    */
@@ -300,6 +316,7 @@ class Private {
     name.className = CODE_SNIPPET_DIALOG_INPUT;
     name.required = true;
     name.pattern = '[a-zA-Z0-9_]+';
+    name.onblur = Private.handleOnBlur;
 
     const descriptionTitle = document.createElement('label');
     descriptionTitle.textContent = 'Description*';
@@ -307,6 +324,7 @@ class Private {
     description.className = CODE_SNIPPET_DIALOG_INPUT;
     description.required = true;
     description.pattern = '[a-zA-Z0-9_ ,.?!]+';
+    description.onblur = Private.handleOnBlur;
 
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language*';
@@ -316,6 +334,7 @@ class Private {
     languageInput.required = true;
     const languageOption = document.createElement('datalist');
     languageOption.id = 'languages';
+    languageOption.onblur = Private.handleOnBlur;
 
     SUPPORTED_LANGUAGES.sort();
     for (const language of SUPPORTED_LANGUAGES) {
