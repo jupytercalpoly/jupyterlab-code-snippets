@@ -1,38 +1,61 @@
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
-import { ICodeSnippet } from './CodeSnippetContentsService';
 import {
   ReactWidget,
   showDialog,
   Dialog,
   WidgetTracker
 } from '@jupyterlab/apputils';
-import React from 'react';
-import { Message } from '@lumino/messaging';
 import { Button } from '@jupyterlab/ui-components';
+import { Contents } from '@jupyterlab/services';
+
+import { Message } from '@lumino/messaging';
+
+import React from 'react';
+
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
+import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
+import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
 
 /**
  * CSS style classes
  */
 const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
-const CODE_SNIPPET_EDITOR_NAME_LABEL = 'jp-snippet-editor-name-label';
-const CODE_SNIPPET_EDITOR_LABEL_ACTIVE = 'jp-snippet-editor-label-active';
-const CODE_SNIPPET_EDITOR_INPUT_ACTIVE = 'jp-snippet-editor-active';
-const CODE_SNIPPET_EDITOR_NAME_INPUT = 'jp-snippet-editor-name';
-const CODE_SNIPPET_EDITOR_DESC_LABEL = 'jp-snippet-editor-description-label';
-const CODE_SNIPPET_EDITOR_DESC_INPUT = 'jp-snippet-editor-description';
-const CODE_SNIPPET_EDITOR_LANG_INPUT = 'jp-snippet-editor-language';
+const CODE_SNIPPET_EDITOR_TITLE = 'jp-codeSnippet-editor-title';
+const CODE_SNIPPET_EDITOR_METADATA = 'jp-codeSnippet-editor-metadata';
+const CODE_SNIPPET_EDITOR_INPUT_ACTIVE = 'jp-codeSnippet-editor-active';
+const CODE_SNIPPET_EDITOR_NAME_INPUT = 'jp-codeSnippet-editor-name';
+const CODE_SNIPPET_EDITOR_LABEL = 'jp-codeSnippet-editor-label';
+const CODE_SNIPPET_EDITOR_DESC_INPUT = 'jp-codeSnippet-editor-description';
+const CODE_SNIPPET_EDITOR_LANG_INPUT = 'jp-codeSnippet-editor-language';
 const CODE_SNIPPET_EDITOR_MIRROR = 'jp-codeSnippetInput-editor';
+const CODE_SNIPPET_EDITOR_INPUTAREA = 'jp-codeSnippetInputArea';
+const CODE_SNIPPET_EDITOR_INPUTAREA_MIRROR = 'jp-codeSnippetInputArea-editor';
+
+const CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY =
+  'jp-codeSnippet-inputName-validity';
+const CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY =
+  'jp-codeSnippet-inputDesc-validity';
 
 const EDITOR_DIRTY_CLASS = 'jp-mod-dirty';
+
+export interface ICodeSnippetEditorMetadata {
+  name: string;
+  description: string;
+  language: string;
+  code: string[];
+  id: number;
+  selectedTags: string[];
+  allTags: string[];
+  fromScratch: boolean;
+}
 
 export class CodeSnippetEditor extends ReactWidget {
   editorServices: IEditorServices;
   private editor: CodeEditor.IEditor;
   private saved: boolean;
   private oldCodeSnippetName: string;
-  private _codeSnippet: ICodeSnippet;
+  private _codeSnippetEditorMetaData: ICodeSnippetEditorMetadata;
   private _hasRefreshedSinceAttach: boolean;
   contentsService: CodeSnippetContentsService;
   codeSnippetWidget: CodeSnippetWidget;
@@ -43,7 +66,7 @@ export class CodeSnippetEditor extends ReactWidget {
     editorServices: IEditorServices,
     tracker: WidgetTracker,
     codeSnippetWidget: CodeSnippetWidget,
-    args: ICodeSnippet
+    args: ICodeSnippetEditorMetadata
   ) {
     super();
 
@@ -52,7 +75,7 @@ export class CodeSnippetEditor extends ReactWidget {
     this.editorServices = editorServices;
     this.tracker = tracker;
 
-    this._codeSnippet = args;
+    this._codeSnippetEditorMetaData = args;
 
     this.oldCodeSnippetName = args.name;
     this.saved = true;
@@ -64,10 +87,11 @@ export class CodeSnippetEditor extends ReactWidget {
     this.activateCodeMirror = this.activateCodeMirror.bind(this);
     this.saveChange = this.saveChange.bind(this);
     this.updateSnippet = this.updateSnippet.bind(this);
+    this.handleChangeOnTag = this.handleChangeOnTag.bind(this);
   }
 
-  get codeSnippet(): ICodeSnippet {
-    return this._codeSnippet;
+  get codeSnippetEditorMetadata(): ICodeSnippetEditorMetadata {
+    return this._codeSnippetEditorMetaData;
   }
 
   private deactivateEditor(
@@ -86,57 +110,40 @@ export class CodeSnippetEditor extends ReactWidget {
       target = target.parentElement;
     }
 
-    const nameLabel = document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_NAME_LABEL}`
-    );
     const nameInput = document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
-    );
-    const descriptionLabel = document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_DESC_LABEL}`
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
     );
     const descriptionInput = document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
     );
     const editor = document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} #code-${this._codeSnippet.id}`
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} #code-${this._codeSnippetEditorMetaData.id}`
     );
 
     if (target.classList.contains(CODE_SNIPPET_EDITOR_NAME_INPUT)) {
-      this.deactivateDescriptionField(descriptionLabel, descriptionInput);
+      this.deactivateDescriptionField(descriptionInput);
       this.deactivateCodeMirror(editor);
     } else if (target.classList.contains(CODE_SNIPPET_EDITOR_DESC_INPUT)) {
-      this.deactivateNameField(nameLabel, nameInput);
+      this.deactivateNameField(nameInput);
       this.deactivateCodeMirror(editor);
     } else if (target.classList.contains(CODE_SNIPPET_EDITOR_MIRROR)) {
-      this.deactivateNameField(nameLabel, nameInput);
-      this.deactivateDescriptionField(descriptionLabel, descriptionInput);
+      this.deactivateNameField(nameInput);
+      this.deactivateDescriptionField(descriptionInput);
     } else {
-      this.deactivateNameField(nameLabel, nameInput);
-      this.deactivateDescriptionField(descriptionLabel, descriptionInput);
+      this.deactivateNameField(nameInput);
+      this.deactivateDescriptionField(descriptionInput);
       this.deactivateCodeMirror(editor);
     }
   }
 
-  private deactivateNameField(nameLabel: Element, nameInput: Element): void {
-    if (
-      nameLabel.classList.contains(CODE_SNIPPET_EDITOR_LABEL_ACTIVE) &&
-      nameInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)
-    ) {
-      nameLabel.classList.remove(CODE_SNIPPET_EDITOR_LABEL_ACTIVE);
+  private deactivateNameField(nameInput: Element): void {
+    if (nameInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)) {
       nameInput.classList.remove(CODE_SNIPPET_EDITOR_INPUT_ACTIVE);
     }
   }
 
-  private deactivateDescriptionField(
-    descriptionLabel: Element,
-    descriptionInput: Element
-  ): void {
-    if (
-      descriptionLabel.classList.contains(CODE_SNIPPET_EDITOR_LABEL_ACTIVE) &&
-      descriptionInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)
-    ) {
-      descriptionLabel.classList.remove(CODE_SNIPPET_EDITOR_LABEL_ACTIVE);
+  private deactivateDescriptionField(descriptionInput: Element): void {
+    if (descriptionInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)) {
       descriptionInput.classList.remove(CODE_SNIPPET_EDITOR_INPUT_ACTIVE);
     }
   }
@@ -145,22 +152,8 @@ export class CodeSnippetEditor extends ReactWidget {
     event: React.MouseEvent<HTMLInputElement, MouseEvent>
   ): void {
     const target = event.target as HTMLElement;
-
-    let label;
-    // if target is a description input, activate description label; if target is a name input, activate name label
-    if (target.classList.contains(CODE_SNIPPET_EDITOR_DESC_INPUT)) {
-      label = document.querySelector(
-        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_DESC_LABEL}`
-      );
-    } else if (target.classList.contains(CODE_SNIPPET_EDITOR_NAME_INPUT)) {
-      label = document.querySelector(
-        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_NAME_LABEL}`
-      );
-    }
-
     if (!target.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)) {
       target.classList.add(CODE_SNIPPET_EDITOR_INPUT_ACTIVE);
-      label.classList.add(CODE_SNIPPET_EDITOR_LABEL_ACTIVE);
     }
   }
 
@@ -169,24 +162,26 @@ export class CodeSnippetEditor extends ReactWidget {
 
     if (
       !this.editor &&
-      document.getElementById('code-' + this._codeSnippet.id)
+      document.getElementById('code-' + this._codeSnippetEditorMetaData.id)
     ) {
       const editorFactory = this.editorServices.factoryService.newInlineEditor;
       const getMimeTypeByLanguage = this.editorServices.mimeTypeService
         .getMimeTypeByLanguage;
 
       this.editor = editorFactory({
-        host: document.getElementById('code-' + this._codeSnippet.id),
+        host: document.getElementById(
+          'code-' + this._codeSnippetEditorMetaData.id
+        ),
         model: new CodeEditor.Model({
-          value: this._codeSnippet.code.join('\n'),
+          value: this._codeSnippetEditorMetaData.code.join('\n'),
           mimeType: getMimeTypeByLanguage({
-            name: this._codeSnippet.language,
-            codemirror_mode: this._codeSnippet.language
+            name: this._codeSnippetEditorMetaData.language,
+            codemirror_mode: this._codeSnippetEditorMetaData.language
           })
         })
       });
       this.editor.model.value.changed.connect((args: any) => {
-        this._codeSnippet.code = args.text.split('\n');
+        this._codeSnippetEditorMetaData.code = args.text.split('\n');
         if (!this.title.className.includes(EDITOR_DIRTY_CLASS)) {
           this.title.className += ` ${EDITOR_DIRTY_CLASS}`;
         }
@@ -236,7 +231,7 @@ export class CodeSnippetEditor extends ReactWidget {
         body: (
           <p>
             {' '}
-            {`"${this._codeSnippet.name}" has unsaved changes, close without saving?`}{' '}
+            {`"${this._codeSnippetEditorMetaData.name}" has unsaved changes, close without saving?`}{' '}
           </p>
         ),
         buttons: [Dialog.cancelButton(), Dialog.okButton()]
@@ -269,7 +264,7 @@ export class CodeSnippetEditor extends ReactWidget {
     }
 
     const editor = document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} #code-${this._codeSnippet.id}`
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} #code-${this._codeSnippetEditorMetaData.id}`
     );
 
     if (target.classList.contains(CODE_SNIPPET_EDITOR_MIRROR)) {
@@ -300,51 +295,136 @@ export class CodeSnippetEditor extends ReactWidget {
   }
 
   saveChange(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
-    this.updateSnippet();
+    const name = (document.querySelector(
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
+    ) as HTMLInputElement).value;
+    const description = (document.querySelector(
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
+    ) as HTMLInputElement).value;
+    const language = (document.querySelector(
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
+    ) as HTMLSelectElement).value;
+
+    console.log(language);
+    const validity = this.validateInputs(name, description, language);
+    if (validity) {
+      this.updateSnippet();
+    }
+  }
+
+  private validateInputs(
+    name: string,
+    description: string,
+    language: string
+  ): boolean {
+    let status = true;
+    let message = '';
+    if (name === '') {
+      message += 'Name must be filled out\n';
+      status = false;
+    }
+    if (name.match(/[^a-z0-9_]+/)) {
+      message += 'Wrong format of the name\n';
+      status = false;
+    }
+    if (description === '') {
+      message += 'Description must be filled out\n';
+      status = false;
+    }
+    if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
+      message += 'Wrong format of the description\n';
+      status = false;
+    }
+    if (language === '') {
+      message += 'Language must be filled out';
+      status = false;
+    }
+    if (!SUPPORTED_LANGUAGES.includes(language)) {
+      message += 'Language must be one of the options';
+      status = false;
+    }
+    if (status === false) {
+      alert(message);
+    }
+    return status;
   }
 
   async updateSnippet(): Promise<void> {
     const name = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
     ) as HTMLInputElement).value;
     const description = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
     ) as HTMLInputElement).value;
     const language = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippet.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
+      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
     ) as HTMLSelectElement).value;
 
-    this._codeSnippet.name = name;
-    this._codeSnippet.description = description;
-    this._codeSnippet.language = language;
+    this._codeSnippetEditorMetaData.name = name;
+    this._codeSnippetEditorMetaData.description = description;
+    this._codeSnippetEditorMetaData.language = language;
 
+    console.log(language);
     this.saved = true;
 
-    const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
-    const newPath = 'snippets/' + this._codeSnippet.name + '.json';
+    const newPath =
+      'snippets/' + this._codeSnippetEditorMetaData.name + '.json';
 
-    if (newPath !== oldPath) {
-      // renaming code snippet
-      try {
-        await this.contentsService.rename(oldPath, newPath);
-      } catch (error) {
-        console.log('duplicate name!');
+    if (!this._codeSnippetEditorMetaData.fromScratch) {
+      const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
 
-        await showDialog({
-          title: 'Duplicate Name of Code Snippet',
-          body: <p> {`"${newPath}" already exists.`} </p>,
-          buttons: [Dialog.cancelButton()]
+      if (newPath !== oldPath) {
+        // renaming code snippet
+        try {
+          await this.contentsService.rename(oldPath, newPath);
+        } catch (error) {
+          console.log('duplicate name!');
+
+          await showDialog({
+            title: 'Duplicate Name of Code Snippet',
+            body: <p> {`"${newPath}" already exists.`} </p>,
+            buttons: [Dialog.cancelButton()]
+          });
+          return;
+        }
+
+        // set new name as an old name
+        this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
+      }
+    } else {
+      let nameCheck = false;
+      await this.contentsService
+        .getData(newPath, 'file')
+        .then(async (value: Contents.IModel) => {
+          if (value.name) {
+            await showDialog({
+              title: 'Duplicate Name of Code Snippet',
+              body: <p> {`"${newPath}" already exists.`} </p>,
+              buttons: [Dialog.cancelButton()]
+            });
+          }
+        })
+        .catch(() => {
+          nameCheck = true;
+          console.log('new snippet has been created!');
         });
+      if (!nameCheck) {
         return;
       }
-
-      // set new name as an old name
-      this.oldCodeSnippetName = this._codeSnippet.name;
     }
+
+    console.log(this._codeSnippetEditorMetaData.selectedTags);
     await this.contentsService.save(newPath, {
       type: 'file',
       format: 'text',
-      content: JSON.stringify(this._codeSnippet)
+      content: JSON.stringify({
+        name: this._codeSnippetEditorMetaData.name,
+        description: this._codeSnippetEditorMetaData.description,
+        language: this._codeSnippetEditorMetaData.language,
+        code: this._codeSnippetEditorMetaData.code,
+        id: this._codeSnippetEditorMetaData.id,
+        tags: this._codeSnippetEditorMetaData.selectedTags
+      })
     });
 
     // remove the dirty state
@@ -355,13 +435,41 @@ export class CodeSnippetEditor extends ReactWidget {
 
     // change label
     this.title.label =
-      '[' + this._codeSnippet.language + '] ' + this._codeSnippet.name;
+      '[' +
+      this._codeSnippetEditorMetaData.language +
+      '] ' +
+      this._codeSnippetEditorMetaData.name;
 
-    // update tracker
-    this.tracker.save(this);
+    if (!this._codeSnippetEditorMetaData.fromScratch) {
+      // update tracker
+      this.tracker.save(this);
+    }
 
     // update the display in code snippet explorer
     this.codeSnippetWidget.updateCodeSnippets();
+
+    // close editor if it's from scratch
+    if (this._codeSnippetEditorMetaData.fromScratch) {
+      this.dispose();
+    }
+  }
+
+  handleChangeOnTag(selectedTags: string[], allTags: string[]): void {
+    if (!this.title.className.includes(EDITOR_DIRTY_CLASS)) {
+      this.title.className += ` ${EDITOR_DIRTY_CLASS}`;
+    }
+
+    this._codeSnippetEditorMetaData.selectedTags = selectedTags;
+    this._codeSnippetEditorMetaData.allTags = allTags;
+
+    this.saved = false;
+  }
+
+  handleOnBlur(event: React.FocusEvent<HTMLInputElement>): void {
+    const target = event.target as HTMLElement;
+    if (!target.classList.contains('touched')) {
+      target.classList.add('touched');
+    }
   }
 
   /**
@@ -370,92 +478,115 @@ export class CodeSnippetEditor extends ReactWidget {
   renderCodeInput(): React.ReactElement {
     return (
       <section
-        className="jp-codeSnippetInputArea-editor"
+        className={CODE_SNIPPET_EDITOR_INPUTAREA_MIRROR}
         onMouseDown={this.activateCodeMirror}
       >
         <div
           className={CODE_SNIPPET_EDITOR_MIRROR}
-          id={'code-' + this._codeSnippet.id.toString()}
+          id={'code-' + this._codeSnippetEditorMetaData.id.toString()}
         ></div>
       </section>
     );
   }
 
+  renderLanguages(): React.ReactElement {
+    SUPPORTED_LANGUAGES.sort();
+
+    return (
+      <div>
+        <input
+          className={CODE_SNIPPET_EDITOR_LANG_INPUT}
+          list="languages"
+          name="language"
+          defaultValue={this._codeSnippetEditorMetaData.language}
+          onChange={this.handleInputFieldChange}
+          required
+        />
+        <datalist id="languages">
+          {SUPPORTED_LANGUAGES.map(lang => this.renderLanguageOptions(lang))}
+        </datalist>
+      </div>
+    );
+  }
+
+  renderLanguageOptions(option: string): JSX.Element {
+    return <option key={option} value={option} />;
+  }
+
   render(): React.ReactElement {
+    const fromScratch = this._codeSnippetEditorMetaData.fromScratch;
     return (
       <div
-        className="jp-codeSnippetInputArea"
+        className={CODE_SNIPPET_EDITOR_INPUTAREA}
         onMouseDown={(
           event: React.MouseEvent<HTMLDivElement, MouseEvent>
         ): void => {
-          // this.deactivateEditor(event);
           this.deactivateEditor(event);
         }}
       >
-        <span className="jp-snippet-editor-title">Edit Code Snippet</span>
-        <section className="jp-snippet-editor-metadata">
-          <label className="jp-snippet-editor-name-label">Name</label>
+        <span className={CODE_SNIPPET_EDITOR_TITLE}>
+          {fromScratch ? 'New Code Snippet' : 'Edit Code Snippet'}
+        </span>
+        <section className={CODE_SNIPPET_EDITOR_METADATA}>
+          <label className={CODE_SNIPPET_EDITOR_LABEL}>Name (required)</label>
           <input
-            className="jp-snippet-editor-name"
-            defaultValue={this._codeSnippet.name}
+            className={CODE_SNIPPET_EDITOR_NAME_INPUT}
+            defaultValue={this._codeSnippetEditorMetaData.name}
+            placeholder={'Ex. starter_code'}
             type="text"
+            required
+            pattern={'[a-zA-Z0-9_]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
             onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
               this.handleInputFieldChange(event);
             }}
+            onBlur={this.handleOnBlur}
           ></input>
-          <label className="jp-snippet-editor-description-label">
-            Description
+          <p className={CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY}>
+            {
+              'Name of the code snippet MUST be lowercased, alphanumeric or composed of underscore(_)'
+            }
+          </p>
+          <label className={CODE_SNIPPET_EDITOR_LABEL}>
+            Description (required)
           </label>
           <input
-            className="jp-snippet-editor-description"
-            defaultValue={this._codeSnippet.description}
+            className={CODE_SNIPPET_EDITOR_DESC_INPUT}
+            defaultValue={this._codeSnippetEditorMetaData.description}
+            placeholder={'Description'}
             type="text"
+            required
+            pattern={'[a-zA-Z0-9_ ,.?!]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
             onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
               this.handleInputFieldChange(event);
             }}
+            onBlur={this.handleOnBlur}
           ></input>
-          {/* <input
-            className="jp-snippet-editor-language"
-            type="text"
-            name="language"
-            list="languages"
-            defaultValue={this.args.codeSnippet.language}
-          ></input>
-          <datalist id="languages">
-            <option value="Python"></option>
-            <option value="R"></option>
-            <option value="Scala"></option>
-            <option value="Other"></option>
-          </datalist> */}
-          <select
-            className="jp-snippet-editor-language"
-            defaultValue={this._codeSnippet.language}
-            name="languages"
-          >
-            <option className="jp-snippet-editor-options" value="python">
-              python
-            </option>
-            <option className="jp-snippet-editor-options" value="R">
-              R
-            </option>
-            <option className="jp-snippet-editor-options" value="Scala">
-              Scala
-            </option>
-            <option className="jp-snippet-editor-options" value="Other">
-              Other
-            </option>
-          </select>
+          <p className={CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY}>
+            {
+              'Description of the code snippet MUST be alphanumeric but can include space or punctuation'
+            }
+          </p>
+          <label className={CODE_SNIPPET_EDITOR_LABEL}>
+            Language (required)
+          </label>
+          {this.renderLanguages()}
+          <label className={CODE_SNIPPET_EDITOR_LABEL}>Tags</label>
+          <CodeSnippetEditorTags
+            selectedTags={this.codeSnippetEditorMetadata.selectedTags}
+            tags={this.codeSnippetEditorMetadata.allTags}
+            handleChange={this.handleChangeOnTag}
+          />
         </section>
-        <span className="jp-codeSnippetInputArea-editorTitle">Code</span>
+        <span className={CODE_SNIPPET_EDITOR_LABEL}>Code</span>
         {this.renderCodeInput()}
         <Button className="saveBtn" onClick={this.saveChange}>
-          Save
+          {fromScratch ? 'Create & Close' : 'Save'}
         </Button>
       </div>
     );

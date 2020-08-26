@@ -1,4 +1,4 @@
-import '../style/index.css';
+// import '../style/index.css';
 import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
 import { Message, MessageLoop } from '@lumino/messaging';
@@ -6,9 +6,11 @@ import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
 
 /**
- * The class name for confirmation box
+ * The class name for options box
  */
-const CONFIRM_CLASS = 'jp-undo-delete';
+const OPTIONS_CLASS = 'jp-codeSnippet-options';
+const OPTIONS_CONTENT = 'jp-codeSnippet-options-content';
+const OPTIONS_BODY = 'jp-codeSnippet-options-body';
 
 /**
  * Create and show a dialog.
@@ -17,43 +19,38 @@ const CONFIRM_CLASS = 'jp-undo-delete';
  *
  * @returns A promise that resolves with whether the dialog was accepted.
  */
-export function showUndoMessage<T>(
-  options: Partial<UndoDelete.IOptions<T>> = {}
+export function showMoreOptions<T>(
+  options: Partial<OptionsMessage.IOptions<T>> = {}
 ): Promise<void> {
-  console.log(options);
-  const confirmMessage = new UndoDelete(options);
-  return confirmMessage.launch();
+  const optionsMessage = new OptionsMessage(options);
+  return optionsMessage.launch();
 }
 
 /**
- * A widget used to show undo delete message.
+ * A widget used to show options message.
  */
-export class UndoDelete<T> extends Widget {
-  constructor(options: Partial<UndoDelete.IOptions<T>> = {}) {
+export class OptionsMessage<T> extends Widget {
+  constructor(options: Partial<OptionsMessage.IOptions<T>> = {}) {
     super();
-    this.addClass(CONFIRM_CLASS);
-    const renderer = UndoDelete.defaultRenderer;
+    this.addClass(OPTIONS_CLASS);
+    const renderer = OptionsMessage.defaultRenderer;
 
     this._host = options.host || document.body;
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
-    content.addClass('jp-undo-delete-content');
+    content.addClass(OPTIONS_CONTENT);
     layout.addWidget(content);
 
-    const body = renderer.createBody(options.body || '');
-    // body.addClass('jp-Message-body');
-    // const icon = renderer.createIcon();
-    // content.addWidget(icon);
+    const body = renderer.createBody(options.body);
     content.addWidget(body);
 
-    if (UndoDelete.tracker.size > 0) {
-      console.log('hihihihi');
-      const previous = UndoDelete.tracker.currentWidget;
+    if (OptionsMessage.tracker.size > 0) {
+      const previous = OptionsMessage.tracker.currentWidget;
       previous.reject();
-      UndoDelete.tracker.dispose();
+      OptionsMessage.tracker.dispose();
     }
 
-    void UndoDelete.tracker.add(this);
+    void OptionsMessage.tracker.add(this);
   }
   /**
    * Launch the dialog as a modal window.
@@ -68,29 +65,47 @@ export class UndoDelete<T> extends Widget {
     const promise = (this._promise = new PromiseDelegate<void>());
     const promises = Promise.all(Private.launchQueue);
     Private.launchQueue.push(this._promise.promise);
-    console.log(Private.launchQueue);
     return promises.then(() => {
-      console.log('here44');
       Widget.attach(this, this._host);
       return promise.promise;
     });
   }
 
   /**
-   * Resolve the current dialog.
+   * Handle the DOM events for the directory listing.
    *
-   * @param index - An optional index to the button to resolve.
+   * @param event - The DOM event sent to the widget.
    *
    * #### Notes
-   * Will default to the defaultIndex.
-   * Will resolve the current `show()` with the button value.
-   * Will be a no-op if the dialog is not shown.
+   * This method implements the DOM `EventListener` interface and is
+   * called in response to events on the panel's DOM node. It should
+   * not be called directly by user code.
    */
-  resolve(): void {
-    if (!this._promise) {
+  handleEvent(event: Event): void {
+    switch (event.type) {
+      case 'click':
+        this._evtClick(event as MouseEvent);
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+   * Handle the `'click'` event for a dialog button.
+   *
+   * @param event - The DOM event sent to the widget
+   */
+  protected _evtClick(event: MouseEvent): void {
+    const content = this.node.getElementsByClassName(
+      OPTIONS_CONTENT
+    )[0] as HTMLElement;
+    if (!content.contains(event.target as HTMLElement)) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.reject();
       return;
     }
-    this._resolve();
   }
 
   /**
@@ -136,36 +151,30 @@ export class UndoDelete<T> extends Widget {
   }
 
   /**
-   * A message handler invoked on a `'close-request'` message.
+   *  A message handler invoked on an `'after-attach'` message.
    */
-  protected onCloseRequest(msg: Message): void {
-    if (this._promise) {
-      this.reject();
-    }
-    super.onCloseRequest(msg);
+  protected onAfterAttach(msg: Message): void {
+    const node = this.node;
+    node.addEventListener('click', this, true);
+  }
+
+  /**
+   *  A message handler invoked on an `'after-detach'` message.
+   */
+  protected onAfterDetach(msg: Message): void {
+    const node = this.node;
+    node.removeEventListener('click', this, true);
   }
 
   private _promise: PromiseDelegate<void> | null;
   private _host: HTMLElement;
 }
 
-export namespace UndoDelete {
+export namespace OptionsMessage {
   /**
    * The body input types.
    */
-  export type Body<T> = IBodyWidget<T> | React.ReactElement<any> | string;
-  /**
-   * The options used to create a dialog.
-   */
-  /**
-   * A widget used as a dialog body.
-   */
-  export interface IBodyWidget<T = string> extends Widget {
-    /**
-     * Get the serialized value of the widget.
-     */
-    getValue?(): T;
-  }
+  export type Body = Widget;
 
   export interface IOptions<T> {
     /**
@@ -180,17 +189,12 @@ export namespace UndoDelete {
      * A string argument will be used as raw `textContent`.
      * All `input` and `select` nodes will be wrapped and styled.
      */
-    body: Body<T>;
+    body: Body;
 
     /**
      * The host element for the dialog. Defaults to `document.body`.
      */
     host: HTMLElement;
-
-    /**
-     * When "true", renders a close button for the dialog
-     */
-    hasClose: boolean;
 
     /**
      * An optional renderer for dialog items.  Defaults to a shared
@@ -207,8 +211,7 @@ export namespace UndoDelete {
      *
      * @returns A widget for the body.
      */
-    createBody(body: Body<any>): Widget;
-    createIcon(): Widget;
+    createBody(body: Body): Widget;
   }
 
   export class Renderer {
@@ -219,7 +222,7 @@ export namespace UndoDelete {
      *
      * @returns A widget for the body.
      */
-    createBody(value: Body<any>): Widget {
+    createBody(value: Body): Widget {
       let body: Widget;
       if (typeof value === 'string') {
         body = new Widget({ node: document.createElement('span') });
@@ -232,27 +235,9 @@ export namespace UndoDelete {
         // order to trigger a render of the DOM nodes from the React element.
         MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
       }
-      // const iconNode = new Widget({ node: document.createElement('div') });
-      // iconNode.title.icon = checkIcon;
-      // body.
-      body.addClass('jp-undo-delete-body');
-      // Styling.styleNode(body.node);
+      body.addClass(OPTIONS_BODY);
       return body;
     }
-
-    // createIcon(): Widget {
-    //   let iconWidget: Widget;
-    //   iconWidget = new Widget({ node: document.createElement('img') });
-    //   console.log(checkSVGstr);
-    //   const checkIcon = new LabIcon( { name: "checkIcon", svgstr: checkSVGstr} );
-
-    //   <img src={`data:image/svg+xml;utf8,${image}` />
-
-    //   iconWidget.title.icon = checkIcon;
-    //   console.log(iconWidget.title.icon instanceof LabIcon);
-    //   iconWidget.addClass('jp-confirm-icon');
-    //   return iconWidget
-    // }
   }
   /**
    * The default renderer instance.
@@ -262,8 +247,8 @@ export namespace UndoDelete {
   /**
    * The dialog widget tracker.
    */
-  export const tracker = new WidgetTracker<UndoDelete<any>>({
-    namespace: '@jupyterlab/code_snippet:UndoDeleteWidget'
+  export const tracker = new WidgetTracker<OptionsMessage<any>>({
+    namespace: '@jupyterlab/code_snippet:OptionsWidget'
   });
 }
 

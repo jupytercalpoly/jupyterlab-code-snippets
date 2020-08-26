@@ -22,12 +22,16 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
     return this._snippets;
   }
 
+  set snippets(snippetList: ICodeSnippet[]) {
+    this._snippets = snippetList;
+  }
+
   addSnippet(newSnippet: ICodeSnippet, index: number): void {
+    // append a new snippet created from input form to the end
     if (newSnippet.id === -1) {
-      newSnippet.id = this.snippets.length;
+      newSnippet.id = this._snippets.length;
     }
     this.insertSnippet(newSnippet, index);
-    // this.updateSnippetContents();
   }
 
   sortSnippets(): void {
@@ -87,8 +91,11 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
   private insertSnippet(newSnippet: ICodeSnippet, index = -1): void {
     const numSnippets = this._snippets.length;
 
+    console.log(index);
+    console.log(numSnippets);
+    console.log(this._snippets);
     // add it at the end of the list
-    if (index < 0 || index > numSnippets) {
+    if (index < 0 || index >= numSnippets) {
       this._snippets.push(newSnippet);
     } else {
       // Update list
