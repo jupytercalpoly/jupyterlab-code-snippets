@@ -174,7 +174,7 @@ function activateCodeSnippet(
   //Put the command above in context menu
   app.contextMenu.addItem({
     command: saveCommand,
-    selector: '.jp-CodeCell'
+    selector: '.jp-Cell'
   });
 
   // Add keybinding to save
@@ -182,7 +182,7 @@ function activateCodeSnippet(
     command: saveCommand,
     args: {},
     keys: ['Shift S'],
-    selector: '.jp-CodeCell'
+    selector: '.jp-Cell'
   });
 
   // Track and restore the widget state
