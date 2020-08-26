@@ -3,7 +3,13 @@ import { PathExt } from '@jupyterlab/coreutils';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
-import { LabIcon, addIcon } from '@jupyterlab/ui-components';
+import {
+  LabIcon,
+  addIcon,
+  pythonIcon,
+  fileIcon,
+  rKernelIcon
+} from '@jupyterlab/ui-components';
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 import * as nbformat from '@jupyterlab/nbformat';
 import { JupyterFrontEnd } from '@jupyterlab/application';
@@ -24,7 +30,6 @@ import React from 'react';
 
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 import { FilterTools } from './FilterTools';
-import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
 import { showPreview } from './PreviewSnippet';
 import { showMoreOptions } from './MoreOptions';
 import {
@@ -32,6 +37,45 @@ import {
   CodeSnippetContentsService
 } from './CodeSnippetContentsService';
 
+import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
+import {
+  babelIcon,
+  javaIcon,
+  juliaIcon,
+  matlabIcon,
+  schemeIcon,
+  processingIcon,
+  scalaIcon,
+  groovyIcon,
+  forthIcon,
+  haskellIcon,
+  rubyIcon,
+  typescriptIcon,
+  javascriptIcon,
+  coffeescriptIcon,
+  livescriptIcon,
+  csharpIcon,
+  fsharpIcon,
+  goIcon,
+  erlangIcon,
+  ocamlIcon,
+  fortranIcon,
+  perlIcon,
+  phpIcon,
+  clojureIcon,
+  luaIcon,
+  purescriptIcon,
+  cppIcon,
+  prologIcon,
+  lispIcon,
+  cIcon,
+  kotlinIcon,
+  nodejsIcon,
+  coconutIcon,
+  sbtIcon,
+  rustIcon,
+  qsharpIcon
+} from './LanguageIconImports';
 /**
  * The CSS class added to code snippet widget.
  */
@@ -77,7 +121,7 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  * Icon for more options
  */
 const moreOptionsIcon = new LabIcon({
-  name: 'custom-ui-compnents:moreOptions',
+  name: 'custom-ui-components:moreOptions',
   svgstr: moreSVGstr
 });
 
@@ -444,6 +488,186 @@ export class CodeSnippetDisplay extends React.Component<
     );
   }
 
+  private renderLanguageIcon(language: string): JSX.Element {
+    switch (language) {
+      case 'Python': {
+        return (
+          <pythonIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Java': {
+        return <javaIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'R': {
+        return (
+          <rKernelIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Julia': {
+        return (
+          <juliaIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Matlab': {
+        return (
+          <matlabIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Scheme': {
+        return (
+          <schemeIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Processing': {
+        return (
+          <processingIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Scala': {
+        return (
+          <scalaIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Groovy': {
+        return (
+          <groovyIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Fortran': {
+        return (
+          <fortranIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Haskell': {
+        return (
+          <haskellIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Ruby': {
+        return <rubyIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'TypeScript': {
+        return (
+          <typescriptIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'JavaScript': {
+        return (
+          <javascriptIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'CoffeeScript': {
+        return (
+          <coffeescriptIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+          />
+        );
+      }
+      case 'LiveScript': {
+        return (
+          <livescriptIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'C#': {
+        return (
+          <csharpIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'F#': {
+        return (
+          <fsharpIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Go': {
+        return <goIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'Erlang': {
+        return (
+          <erlangIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'OCaml': {
+        return (
+          <ocamlIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Forth': {
+        return (
+          <forthIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Perl': {
+        return <perlIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'PHP': {
+        return <phpIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'Clojure': {
+        return (
+          <clojureIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Lua': {
+        return <luaIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'PureScript': {
+        return (
+          <purescriptIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'C++': {
+        return <cppIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'Prolog': {
+        return (
+          <prologIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Common Lisp': {
+        return <lispIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'C': {
+        return <cIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'Kotlin': {
+        return (
+          <kotlinIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'NodeJS': {
+        return (
+          <nodejsIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Coconut': {
+        return (
+          <coconutIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'Babel': {
+        return (
+          <babelIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      case 'sbt': {
+        return <sbtIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'Rust': {
+        return <rustIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+      case 'Q#': {
+        return (
+          <qsharpIcon.react tag="span" width="16px" right="7px" top="5px" />
+        );
+      }
+      default: {
+        return <fileIcon.react tag="span" width="16px" right="7px" top="5px" />;
+      }
+    }
+  }
   // Render display of code snippet list
   private renderCodeSnippet = (
     codeSnippet: ICodeSnippet,
@@ -508,6 +732,7 @@ export class CodeSnippetDisplay extends React.Component<
               title={codeSnippet.name}
               className={DISPLAY_NAME_CLASS}
             >
+              {this.renderLanguageIcon(codeSnippet.language)}
               {this.boldNameOnSearch(this.state.searchValue, displayName)}
             </div>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id}>
