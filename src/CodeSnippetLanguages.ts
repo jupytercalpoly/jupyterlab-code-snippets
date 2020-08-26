@@ -38,6 +38,73 @@ import schemeSVGstr from '../style/icon/language_icons/scheme.svg';
 import typescriptSVGstr from '../style/icon/language_icons/typescript.svg';
 
 /**
+ * List of languages supported by JupyterLab
+ */
+export const SUPPORTED_LANGUAGES = [
+  'Python',
+  'Java',
+  'R',
+  'Julia',
+  'Matlab',
+  'Octave',
+  'Scheme',
+  'Processing',
+  'Scala',
+  'Groovy',
+  'Agda',
+  'Fortran',
+  'Haskell',
+  'Ruby',
+  'TypeScript',
+  'JavaScript',
+  'CoffeeScript',
+  'LiveScript',
+  'C#',
+  'F#',
+  'Go',
+  'Galileo',
+  'Erlang',
+  'PARI/GP',
+  'Aldor',
+  'OCaml',
+  'Forth',
+  'Perl',
+  'PHP',
+  'Scilab',
+  'bash',
+  'zsh',
+  'Clojure',
+  'Hy',
+  'Lua',
+  'PureScript',
+  'Q',
+  'Cryptol',
+  'C++',
+  'Xonsh',
+  'Prolog',
+  'Common Lisp',
+  'Maxima',
+  'C',
+  'Kotlin',
+  'Pike',
+  'NodeJS',
+  'Singular',
+  'TaQL',
+  'Coconut',
+  'Babel',
+  'Clojurescript',
+  'sbt',
+  'Guile',
+  'Stata',
+  'Racekt',
+  'SQL',
+  'HiveQL',
+  'Rust',
+  'Rascal',
+  'Q#'
+];
+
+/**
  * Language icons
  */
 export const babelIcon = new LabIcon({
