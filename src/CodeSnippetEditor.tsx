@@ -23,24 +23,19 @@ import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
 const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
 const CODE_SNIPPET_EDITOR_TITLE = 'jp-codeSnippet-editor-title';
 const CODE_SNIPPET_EDITOR_METADATA = 'jp-codeSnippet-editor-metadata';
-const CODE_SNIPPET_EDITOR_NAME_LABEL = 'jp-codeSnippet-editor-name-label';
-const CODE_SNIPPET_EDITOR_LABEL_ACTIVE = 'jp-codeSnippet-editor-label-active';
 const CODE_SNIPPET_EDITOR_INPUT_ACTIVE = 'jp-codeSnippet-editor-active';
 const CODE_SNIPPET_EDITOR_NAME_INPUT = 'jp-codeSnippet-editor-name';
-const CODE_SNIPPET_EDITOR_DESC_LABEL =
-  'jp-codeSnippet-editor-description-label';
+const CODE_SNIPPET_EDITOR_LABEL = 'jp-codeSnippet-editor-label';
 const CODE_SNIPPET_EDITOR_DESC_INPUT = 'jp-codeSnippet-editor-description';
 const CODE_SNIPPET_EDITOR_LANG_INPUT = 'jp-codeSnippet-editor-language';
 const CODE_SNIPPET_EDITOR_MIRROR = 'jp-codeSnippetInput-editor';
 const CODE_SNIPPET_EDITOR_INPUTAREA = 'jp-codeSnippetInputArea';
 const CODE_SNIPPET_EDITOR_INPUTAREA_MIRROR = 'jp-codeSnippetInputArea-editor';
-const CODE_SNIPPET_EDITOR_MIRROR_LABEL = 'jp-codeSnippetInputArea-editorTitle';
 
 const CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY =
   'jp-codeSnippet-inputName-validity';
 const CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY =
   'jp-codeSnippet-inputDesc-validity';
-const CODE_SNIPPET_EDITOR_TAGS_LABEL = 'jp-codeSnippet-editor-tags-label';
 
 const EDITOR_DIRTY_CLASS = 'jp-mod-dirty';
 
@@ -115,14 +110,8 @@ export class CodeSnippetEditor extends ReactWidget {
       target = target.parentElement;
     }
 
-    const nameLabel = document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_LABEL}`
-    );
     const nameInput = document.querySelector(
       `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
-    );
-    const descriptionLabel = document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_LABEL}`
     );
     const descriptionInput = document.querySelector(
       `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
@@ -132,40 +121,29 @@ export class CodeSnippetEditor extends ReactWidget {
     );
 
     if (target.classList.contains(CODE_SNIPPET_EDITOR_NAME_INPUT)) {
-      this.deactivateDescriptionField(descriptionLabel, descriptionInput);
+      this.deactivateDescriptionField(descriptionInput);
       this.deactivateCodeMirror(editor);
     } else if (target.classList.contains(CODE_SNIPPET_EDITOR_DESC_INPUT)) {
-      this.deactivateNameField(nameLabel, nameInput);
+      this.deactivateNameField(nameInput);
       this.deactivateCodeMirror(editor);
     } else if (target.classList.contains(CODE_SNIPPET_EDITOR_MIRROR)) {
-      this.deactivateNameField(nameLabel, nameInput);
-      this.deactivateDescriptionField(descriptionLabel, descriptionInput);
+      this.deactivateNameField(nameInput);
+      this.deactivateDescriptionField(descriptionInput);
     } else {
-      this.deactivateNameField(nameLabel, nameInput);
-      this.deactivateDescriptionField(descriptionLabel, descriptionInput);
+      this.deactivateNameField(nameInput);
+      this.deactivateDescriptionField(descriptionInput);
       this.deactivateCodeMirror(editor);
     }
   }
 
-  private deactivateNameField(nameLabel: Element, nameInput: Element): void {
-    if (
-      nameLabel.classList.contains(CODE_SNIPPET_EDITOR_LABEL_ACTIVE) &&
-      nameInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)
-    ) {
-      nameLabel.classList.remove(CODE_SNIPPET_EDITOR_LABEL_ACTIVE);
+  private deactivateNameField(nameInput: Element): void {
+    if (nameInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)) {
       nameInput.classList.remove(CODE_SNIPPET_EDITOR_INPUT_ACTIVE);
     }
   }
 
-  private deactivateDescriptionField(
-    descriptionLabel: Element,
-    descriptionInput: Element
-  ): void {
-    if (
-      descriptionLabel.classList.contains(CODE_SNIPPET_EDITOR_LABEL_ACTIVE) &&
-      descriptionInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)
-    ) {
-      descriptionLabel.classList.remove(CODE_SNIPPET_EDITOR_LABEL_ACTIVE);
+  private deactivateDescriptionField(descriptionInput: Element): void {
+    if (descriptionInput.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)) {
       descriptionInput.classList.remove(CODE_SNIPPET_EDITOR_INPUT_ACTIVE);
     }
   }
@@ -174,22 +152,8 @@ export class CodeSnippetEditor extends ReactWidget {
     event: React.MouseEvent<HTMLInputElement, MouseEvent>
   ): void {
     const target = event.target as HTMLElement;
-
-    let label;
-    // if target is a description input, activate description label; if target is a name input, activate name label
-    if (target.classList.contains(CODE_SNIPPET_EDITOR_DESC_INPUT)) {
-      label = document.querySelector(
-        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_LABEL}`
-      );
-    } else if (target.classList.contains(CODE_SNIPPET_EDITOR_NAME_INPUT)) {
-      label = document.querySelector(
-        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_LABEL}`
-      );
-    }
-
     if (!target.classList.contains(CODE_SNIPPET_EDITOR_INPUT_ACTIVE)) {
       target.classList.add(CODE_SNIPPET_EDITOR_INPUT_ACTIVE);
-      label.classList.add(CODE_SNIPPET_EDITOR_LABEL_ACTIVE);
     }
   }
 
@@ -357,17 +321,14 @@ export class CodeSnippetEditor extends ReactWidget {
     let message = '';
     if (name === '') {
       message += 'Name must be filled out\n';
-      //alert("Description must be filled out");
       status = false;
     }
     if (description === '') {
       message += 'Description must be filled out\n';
-      //alert("");
       status = false;
     }
     if (language === '') {
       message += 'Language must be filled out';
-      //alert("Description ");
       status = false;
     }
     if (!SUPPORTED_LANGUAGES.includes(language)) {
@@ -394,11 +355,6 @@ export class CodeSnippetEditor extends ReactWidget {
     this._codeSnippetEditorMetaData.name = name;
     this._codeSnippetEditorMetaData.description = description;
     this._codeSnippetEditorMetaData.language = language;
-    // this._codeSnippetEditorMetaData.id = this.codeSnippetWidget.codeSnippets
-    //   ? this.codeSnippetWidget.codeSnippets.length
-    //   : -1;
-
-    // console.log(this.codeSnippetWidget.codeSnippets.length);
 
     console.log(language);
     this.saved = true;
@@ -550,15 +506,14 @@ export class CodeSnippetEditor extends ReactWidget {
         onMouseDown={(
           event: React.MouseEvent<HTMLDivElement, MouseEvent>
         ): void => {
-          // this.deactivateEditor(event);
           this.deactivateEditor(event);
         }}
       >
         <span className={CODE_SNIPPET_EDITOR_TITLE}>
-          {fromScratch ? 'Add New Code Snippet' : 'Edit Code Snippet'}
+          {fromScratch ? 'New Code Snippet' : 'Edit Code Snippet'}
         </span>
         <section className={CODE_SNIPPET_EDITOR_METADATA}>
-          <label className={CODE_SNIPPET_EDITOR_NAME_LABEL}>Name</label>
+          <label className={CODE_SNIPPET_EDITOR_LABEL}>Name (required)</label>
           <input
             className={CODE_SNIPPET_EDITOR_NAME_INPUT}
             defaultValue={this._codeSnippetEditorMetaData.name}
@@ -578,7 +533,9 @@ export class CodeSnippetEditor extends ReactWidget {
               'Name of the code snippet MUST be lowercased, alphanumeric or composed of underscore(_)'
             }
           </p>
-          <label className={CODE_SNIPPET_EDITOR_DESC_LABEL}>Description</label>
+          <label className={CODE_SNIPPET_EDITOR_LABEL}>
+            Description (required)
+          </label>
           <input
             className={CODE_SNIPPET_EDITOR_DESC_INPUT}
             defaultValue={this._codeSnippetEditorMetaData.description}
@@ -598,15 +555,18 @@ export class CodeSnippetEditor extends ReactWidget {
               'Description of the code snippet MUST be alphanumeric but can include space or punctuation'
             }
           </p>
+          <label className={CODE_SNIPPET_EDITOR_LABEL}>
+            Language (required)
+          </label>
           {this.renderLanguages()}
-          <label className={CODE_SNIPPET_EDITOR_TAGS_LABEL}>Tags</label>
+          <label className={CODE_SNIPPET_EDITOR_LABEL}>Tags</label>
           <CodeSnippetEditorTags
             selectedTags={this.codeSnippetEditorMetadata.selectedTags}
             tags={this.codeSnippetEditorMetadata.allTags}
             handleChange={this.handleChangeOnTag}
           />
         </section>
-        <span className={CODE_SNIPPET_EDITOR_MIRROR_LABEL}>Code</span>
+        <span className={CODE_SNIPPET_EDITOR_LABEL}>Code</span>
         {this.renderCodeInput()}
         <Button className="saveBtn" onClick={this.saveChange}>
           {fromScratch ? 'Create' : 'Save'}

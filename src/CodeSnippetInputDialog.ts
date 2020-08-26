@@ -107,7 +107,6 @@ export function CodeSnippetInputDialog(
       const currSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
       for (const snippet of currSnippets) {
         if (snippet.name === newSnippet.name) {
-          // const oldPath = 'snippets/' + snippet.name + '.json';
           const result = saveOverWriteFile(
             codeSnippetWidget.codeSnippetWidgetModel,
             snippet,
@@ -217,17 +216,14 @@ export function validateForm(
   const language = input.value[2];
   if (name === '') {
     message += 'Name must be filled out\n';
-    //alert("Description must be filled out");
     status = false;
   }
   if (description === '') {
     message += 'Description must be filled out\n';
-    //alert("");
     status = false;
   }
   if (language === '') {
     message += 'Language must be filled out';
-    //alert("Description ");
     status = false;
   }
   if (!SUPPORTED_LANGUAGES.includes(language)) {
@@ -360,37 +356,6 @@ class Private {
     addTagElem.appendChild(plusIcon);
     tagList.append(addTagElem);
 
-    // const optionPython = document.createElement('option');
-    // optionPython.textContent = 'python';
-    // const optionR = document.createElement('option');
-    // optionR.textContent = 'R';
-    // const optionScala = document.createElement('option');
-    // optionScala.textContent = 'Scala';
-    // const optionOther = document.createElement('option');
-    // optionOther.textContent = 'Other';
-    // optionOther.onclick = (): void => {
-    //   createLanguageInput(body);
-    // };
-    // optionPython.onclick = (): void => {
-    //   removeLanguageInput(body);
-    // };
-    // optionScala.onclick = (): void => {
-    //   removeLanguageInput(body);
-    // };
-    // optionR.onclick = (): void => {
-    //   removeLanguageInput(body);
-    // };
-    // language.appendChild(optionPython);
-    // language.appendChild(optionR);
-    // language.appendChild(optionScala);
-    // language.appendChild(optionOther);
-
-    // if (language.value === 'Other') {
-    //   createLanguageInput(body);
-    // } else {
-    //   removeLanguageInput(body);
-    // }
-
     body.appendChild(nameTitle);
     body.appendChild(name);
     body.appendChild(nameValidity);
@@ -417,20 +382,9 @@ class Private {
     const newTagName = document.createElement('input');
     target.parentElement.replaceChild(newTagName, target);
 
-    // document.addEventListener('keydown', this.addTagOnKeyDown, true);
     newTagName.onkeydown = Private.addTagOnKeyDown;
     newTagName.onblur = Private.addTagOnBlur;
-
-    // (document.querySelector('.jp-Dialog') as HTMLElement).onkeydown = null;
-
     newTagName.focus();
-
-    // newTagName.addEventListener('ch)
-
-    // newTagName.addEventListener('blur', Private.addTagOnBlur, true);
-
-    // newTagName.addEventListener('blur', this.addTagOnBlur, false);
-
     return false;
   }
 
@@ -455,7 +409,6 @@ class Private {
       tagBtn.onclick = Private.handleClick;
       tagElem.appendChild(tagBtn);
       tagList.insertBefore(tagElem, inputElement.parentElement);
-      // this.selectedTags.push(tagBtn.innerText);
 
       // add selected checked mark
       const iconContainer = checkIcon.element({
@@ -479,29 +432,8 @@ class Private {
 
       // reset InputElement
       inputElement.blur();
-      // add plusIcon
-      // const plusIcon = addIcon.element({
-      //   tag: 'span',
-      //   className: 'jp-codeSnippet-inputTag-plusIcon',
-      //   elementPosition: 'center',
-      //   height: '16px',
-      //   width: '16px',
-      //   marginLeft: '2px'
-      // });
-
-      // change input to button
-      // const newTagName = document.createElement('button');
-      // newTagName.innerText = 'Add Tag';
-      // newTagName.style.cursor = 'pointer';
-      // console.log(inputElement);
-      // // inputElement.parentElement.replaceChild(newTagName, inputElement);
-
-      // // newTagName.parentElement.appendChild(plusIcon);
-      // newTagName.onclick = Private.addTag;
-
       event.stopPropagation();
     }
-    // return false;
   }
 
   static addTagOnBlur(event: FocusEvent): void {
@@ -528,13 +460,9 @@ class Private {
   }
 
   static handleClick(event: MouseEvent): boolean {
-    // event.preventDefault();
-
     const target = event.target as HTMLElement;
     const parent = target.parentElement;
-    // const filteredTags = this.state.filteredTags.slice();
 
-    // console.log(Private.selectedTags);
     if (parent.classList.contains('unapplied-tag')) {
       Private.selectedTags.push(target.innerText);
       parent.classList.replace('unapplied-tag', 'applied-tag');

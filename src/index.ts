@@ -106,9 +106,6 @@ const codeSnippetIcon = new LabIcon({
   svgstr: codeSnippetIconSVGstr
 });
 
-// get item that is right clicked (what opens the context menu)
-//let clicked: EventTarget;
-
 /**
  * Initialization data for the code_snippets extension.
  */
@@ -154,9 +151,6 @@ function activateCodeSnippet(
   const openCodeSnippetEditor = (args: ICodeSnippetEditorMetadata): void => {
     console.log(args);
 
-    // if (!args.name) {
-    //   return;
-    // }
     // codeSnippetEditors are in the main area
     const widgetId = `jp-codeSnippet-editor-${args.id}`;
 
@@ -182,7 +176,10 @@ function activateCodeSnippet(
     console.log('editor created!');
     codeSnippetEditor.id = widgetId;
     codeSnippetEditor.addClass(widgetId);
-    codeSnippetEditor.title.label = '[' + args.language + '] ' + args.name;
+    codeSnippetEditor.title.label =
+      args.name === ''
+        ? 'New Code Snippet'
+        : '[' + args.language + '] ' + args.name;
     codeSnippetEditor.title.closable = true;
     codeSnippetEditor.title.icon = editorIcon;
 
@@ -225,7 +222,6 @@ function activateCodeSnippet(
 
   //Add an application command
   const saveCommand = 'save as code snippet';
-  // const delCommand = 'delete code snippet';
   const toggled = false;
   app.commands.addCommand(saveCommand, {
     label: 'Save As Code Snippet',
@@ -244,37 +240,6 @@ function activateCodeSnippet(
     }
   });
 
-  // eventListener to get access to element that is right clicked.
-  // document.addEventListener(
-  //   'contextmenu',
-  //   event => {
-  //     const clickedEl = event.target;
-  //     clicked = clickedEl;
-  //   },
-  //   true
-  // );
-
-  //Application command to delete code snippet
-  // app.commands.addCommand(delCommand, {
-  //   label: 'Delete Code Snippet',
-  //   isEnabled: () => true,
-  //   isVisible: () => true,
-  //   isToggled: () => toggled,
-  //   iconClass: 'some-css-icon-class',
-  //   execute: async () => {
-  //     const target = clicked as HTMLElement;
-  //     const _id = parseInt(target.id, 10);
-  //     console.log(target.id);
-  //     const frontEndSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets.slice();
-  //     frontEndSnippets.splice(_id, 1);
-  //     codeSnippetWidget.codeSnippets = frontEndSnippets;
-  //     codeSnippetWidget.renderCodeSnippetsSignal.emit(frontEndSnippets);
-  //     showUndoMessage({
-  //       body: /*"Undo delete"*/ new MessageHandler(codeSnippetWidget, _id)
-  //     });
-  //   }
-  // });
-
   //Put the command above in context menu
   app.contextMenu.addItem({
     command: saveCommand,
@@ -288,17 +253,6 @@ function activateCodeSnippet(
     keys: ['Shift S'],
     selector: '.jp-CodeCell'
   });
-
-  // //Put the command above in context menu
-  // app.contextMenu.addItem({
-  //   command: commandID,
-  //   selector: '.jp-InputArea-editor'
-  // });
-
-  // app.contextMenu.addItem({
-  //   command: delCommand,
-  //   selector: '.codeSnippet-item'
-  // });
 
   // Track and restore the widget state
   const tracker = new WidgetTracker<CodeSnippetEditor>({

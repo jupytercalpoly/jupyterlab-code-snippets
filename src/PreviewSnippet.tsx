@@ -6,7 +6,6 @@ import { ArrayExt } from '@lumino/algorithm';
 
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 
-import * as React from 'react';
 import { ICodeSnippet } from './CodeSnippetContentsService';
 
 /**
@@ -92,44 +91,6 @@ export class Preview<T> extends Widget {
   }
 
   /**
-   * Handle the DOM events for the directory listing.
-   *
-   * @param event - The DOM event sent to the widget.
-   *
-   * #### Notes
-   * This method implements the DOM `EventListener` interface and is
-   * called in response to events on the panel's DOM node. It should
-   * not be called directly by user code.
-   */
-  handleEvent(event: Event): void {
-    switch (event.type) {
-      case 'contextmenu':
-        event.preventDefault();
-        event.stopPropagation();
-        break;
-      default:
-        break;
-    }
-  }
-
-  /**
-   * Resolve the current dialog.
-   *
-   * @param index - An optional index to the button to resolve.
-   *
-   * #### Notes
-   * Will default to the defaultIndex.
-   * Will resolve the current `show()` with the button value.
-   * Will be a no-op if the dialog is not shown.
-   */
-  resolve(): void {
-    if (!this._promise) {
-      return;
-    }
-    this._resolve();
-  }
-
-  /**
    * Reject the current dialog with a default reject value.
    *
    * #### Notes
@@ -172,41 +133,14 @@ export class Preview<T> extends Widget {
   }
 
   /**
-   * A message handler invoked on a `'close-request'` message.
-   */
-  protected onCloseRequest(msg: Message): void {
-    if (this._promise) {
-      this.reject();
-    }
-    super.onCloseRequest(msg);
-  }
-
-  /**
    *  A message handler invoked on an `'after-attach'` message.
    */
   protected onAfterAttach(msg: Message): void {
-    const node = this.node;
-    node.addEventListener('keydown', this, true);
-    node.addEventListener('contextmenu', this, true);
-    node.addEventListener('click', this, true);
-    this._original = document.activeElement as HTMLElement;
     super.onAfterAttach(msg);
     this._hasRefreshedSinceAttach = false;
     if (this.isVisible) {
       this.update();
     }
-  }
-
-  /**
-   *  A message handler invoked on an `'after-detach'` message.
-   */
-  protected onAfterDetach(msg: Message): void {
-    const node = this.node;
-    node.removeEventListener('keydown', this, true);
-    node.removeEventListener('contextmenu', this, true);
-    node.removeEventListener('click', this, true);
-    document.removeEventListener('focus', this, true);
-    this._original.focus();
   }
 
   onAfterShow(msg: Message): void {
@@ -243,27 +177,13 @@ export class Preview<T> extends Widget {
   }
 
   private _promise: PromiseDelegate<void> | null;
-  //private _host: HTMLElement;
-  private _original: HTMLElement;
 }
 
 export namespace Preview {
   /**
    * The body input types.
    */
-  export type Body<T> = IBodyWidget<T> | React.ReactElement<any> | string;
-  /**
-   * The options used to create a dialog.
-   */
-  /**
-   * A widget used as a dialog body.
-   */
-  export interface IBodyWidget<T = string> extends Widget {
-    /**
-     * Get the serialized value of the widget.
-     */
-    getValue?(): T;
-  }
+  export type Body = Widget;
 
   export interface IOptions<T> {
     title: string;
@@ -280,7 +200,7 @@ export namespace Preview {
      * A string argument will be used as raw `textContent`.
      * All `input` and `select` nodes will be wrapped and styled.
      */
-    body: Body<T>;
+    body: Body;
     codeSnippet: ICodeSnippet;
   }
 
@@ -294,8 +214,7 @@ export namespace Preview {
      *
      * @returns A widget for the body.
      */
-    createBody(body: Body<any>): Widget;
-    // createEditButton(): Widget;
+    createBody(body: Body): Widget;
   }
 
   export class Renderer {
@@ -306,7 +225,7 @@ export namespace Preview {
      *
      * @returns A widget for the body.
      */
-    createBody(value: Body<any>): Widget {
+    createBody(value: Body): Widget {
       let body: Widget;
       if (typeof value === 'string') {
         body = new Widget({ node: document.createElement('span') });
