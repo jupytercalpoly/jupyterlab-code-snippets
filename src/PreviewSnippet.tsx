@@ -169,7 +169,7 @@ export class Preview<T> extends Widget {
         })
       });
     }
-    this.editor.setSize({ width: 200, height: 106 });
+    /*this.editor.setSize({ width: 150, height: 106 });*/
     if (this.isVisible) {
       this._hasRefreshedSinceAttach = true;
       this.editor.refresh();

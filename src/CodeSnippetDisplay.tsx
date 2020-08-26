@@ -409,7 +409,7 @@ export class CodeSnippetDisplay extends React.Component<
     const intID = parseInt(id, 10);
     const realTarget = document.getElementsByClassName(TITLE_CLASS)[intID];
     // distDown is the number of pixels to shift the preview down
-    let distDown: number = realTarget.getBoundingClientRect().top - 40;
+    let distDown: number = realTarget.getBoundingClientRect().top - 43;
     if (realTarget.getBoundingClientRect().top > window.screen.height / 2) {
       distDown = distDown - 66;
     }
