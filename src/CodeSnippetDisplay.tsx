@@ -75,7 +75,7 @@ import {
   sbtIcon,
   rustIcon,
   qsharpIcon
-} from './LanguageIconImports';
+} from './CodeSnippetLanguages';
 /**
  * The CSS class added to code snippet widget.
  */
@@ -289,28 +289,40 @@ export class CodeSnippetDisplay extends React.Component<
 
   // Bold text in snippet name based on search
   private boldNameOnSearch = (
-    filter: string,
-    displayed: string
+    searchValue: string,
+    language: string,
+    name: string
   ): JSX.Element => {
-    const name: string = displayed;
+    const displayName = language + name;
+
     if (
-      filter !== '' &&
-      displayed.toLowerCase().includes(filter.toLowerCase())
+      searchValue !== '' &&
+      displayName.toLowerCase().includes(searchValue.toLowerCase())
     ) {
-      const startIndex: number = name
+      const startIndex: number = displayName
         .toLowerCase()
-        .indexOf(filter.toLowerCase());
-      const endIndex: number = startIndex + filter.length;
-      const start = name.substring(0, startIndex);
-      const bolded = name.substring(startIndex, endIndex);
-      const end = name.substring(endIndex);
-      return (
-        <span>
-          {start}
-          <mark className={SEARCH_BOLD}>{bolded}</mark>
-          {end}
-        </span>
-      );
+        .indexOf(searchValue.toLowerCase());
+
+      // Pythonlanguage
+      // if (startIndex > language.length - 1) {
+      // }
+      const endIndex: number = startIndex + searchValue.length;
+      console.log(endIndex);
+      console.log(language.length);
+      if (endIndex <= language.length) {
+        return <span>{name}</span>;
+      } else {
+        const start = displayName.substring(language.length, startIndex);
+        const bolded = displayName.substring(startIndex, endIndex);
+        const end = displayName.substring(endIndex);
+        return (
+          <span>
+            {start}
+            <mark className={SEARCH_BOLD}>{bolded}</mark>
+            {end}
+          </span>
+        );
+      }
     }
     return <span>{name}</span>;
   };
@@ -492,68 +504,156 @@ export class CodeSnippetDisplay extends React.Component<
     switch (language) {
       case 'Python': {
         return (
-          <pythonIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <pythonIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Java': {
-        return <javaIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <javaIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'R': {
         return (
-          <rKernelIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <rKernelIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Julia': {
         return (
-          <juliaIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <juliaIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Matlab': {
         return (
-          <matlabIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <matlabIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Scheme': {
         return (
-          <schemeIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <schemeIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Processing': {
         return (
-          <processingIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <processingIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Scala': {
         return (
-          <scalaIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <scalaIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Groovy': {
         return (
-          <groovyIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <groovyIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Fortran': {
         return (
-          <fortranIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <fortranIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Haskell': {
         return (
-          <haskellIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <haskellIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Ruby': {
-        return <rubyIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <rubyIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'TypeScript': {
         return (
-          <typescriptIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <typescriptIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'JavaScript': {
         return (
-          <javascriptIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <javascriptIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'CoffeeScript': {
@@ -563,108 +663,273 @@ export class CodeSnippetDisplay extends React.Component<
             width="16px"
             right="7px"
             top="5px"
+            margin-right="3px"
           />
         );
       }
       case 'LiveScript': {
         return (
-          <livescriptIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <livescriptIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'C#': {
         return (
-          <csharpIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <csharpIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'F#': {
         return (
-          <fsharpIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <fsharpIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Go': {
-        return <goIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <goIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'Erlang': {
         return (
-          <erlangIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <erlangIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'OCaml': {
         return (
-          <ocamlIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <ocamlIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Forth': {
         return (
-          <forthIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <forthIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Perl': {
-        return <perlIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <perlIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'PHP': {
-        return <phpIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <phpIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'Clojure': {
         return (
-          <clojureIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <clojureIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Lua': {
-        return <luaIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <luaIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'PureScript': {
         return (
-          <purescriptIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <purescriptIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'C++': {
-        return <cppIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <cppIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'Prolog': {
         return (
-          <prologIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <prologIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Common Lisp': {
-        return <lispIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <lispIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'C': {
-        return <cIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <cIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'Kotlin': {
         return (
-          <kotlinIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <kotlinIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'NodeJS': {
         return (
-          <nodejsIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <nodejsIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Coconut': {
         return (
-          <coconutIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <coconutIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'Babel': {
         return (
-          <babelIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <babelIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       case 'sbt': {
-        return <sbtIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <sbtIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'Rust': {
-        return <rustIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <rustIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
       case 'Q#': {
         return (
-          <qsharpIcon.react tag="span" width="16px" right="7px" top="5px" />
+          <qsharpIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
         );
       }
       default: {
-        return <fileIcon.react tag="span" width="16px" right="7px" top="5px" />;
+        return (
+          <fileIcon.react
+            tag="span"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
       }
     }
   }
@@ -675,6 +940,8 @@ export class CodeSnippetDisplay extends React.Component<
   ): JSX.Element => {
     const buttonClasses = BUTTON_CLASS;
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
+    const name = codeSnippet.name;
+    const language = codeSnippet.language;
 
     const actionButtons = [
       {
@@ -733,7 +1000,7 @@ export class CodeSnippetDisplay extends React.Component<
               className={DISPLAY_NAME_CLASS}
             >
               {this.renderLanguageIcon(codeSnippet.language)}
-              {this.boldNameOnSearch(this.state.searchValue, displayName)}
+              {this.boldNameOnSearch(this.state.searchValue, language, name)}
             </div>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id}>
               {actionButtons.map(btn => {
