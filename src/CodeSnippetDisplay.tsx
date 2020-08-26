@@ -46,7 +46,6 @@ const ACTION_BUTTON_CLASS = 'jp-codeSnippetsContainer-actionButton';
 const SEARCH_BOLD = 'jp-codeSnippet-search-bolding';
 const SNIPPET_DRAG_IMAGE = 'jp-codeSnippet-drag-image';
 const CODE_SNIPPET_DRAG_HOVER = 'jp-codeSnippet-drag-hover';
-const CODE_SNIPPET_DRAG_HOVER_CLICKED = 'jp-codeSnippet-drag-hover-clicked';
 const CODE_SNIPPET_DRAG_HOVER_SELECTED = 'jp-codeSnippet-drag-hover-selected';
 const CODE_SNIPPET_METADATA = 'jp-codeSnippet-metadata';
 const CODE_SNIPPET_DESC = 'jp-codeSnippet-description';
@@ -68,7 +67,6 @@ const DRAG_THRESHOLD = 5;
  * A class used to indicate a snippet item.
  */
 const CODE_SNIPPET_ITEM = 'jp-codeSnippet-item';
-const CODE_SNIPPET_ITEM_CLICKED = 'jp-codeSnippet-item-clicked';
 
 /**
  * The mimetype used for Jupyter cell data.
@@ -245,25 +243,6 @@ export class CodeSnippetDisplay extends React.Component<
     }
   };
 
-  // Grey out snippet and include blue six dots when snippet is previewing (clicked)
-  private snippetClicked = (id: string): void => {
-    const _id: number = parseInt(id, 10);
-
-    if (
-      document
-        .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
-        [_id].classList.contains(CODE_SNIPPET_DRAG_HOVER_CLICKED)
-    ) {
-      document
-        .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
-        [_id].classList.remove(CODE_SNIPPET_DRAG_HOVER_CLICKED);
-    } else {
-      document
-        .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
-        [_id].classList.add(CODE_SNIPPET_DRAG_HOVER_CLICKED);
-    }
-  };
-
   // Bold text in snippet name based on search
   private boldNameOnSearch = (
     filter: string,
@@ -421,18 +400,6 @@ export class CodeSnippetDisplay extends React.Component<
       // if target area is the code snippet name area, previewSnippet widget will handle preview.
       if (!preview.classList.contains('inactive')) {
         preview.classList.add('inactive');
-        for (const elem of document.getElementsByClassName(
-          CODE_SNIPPET_DRAG_HOVER
-        )) {
-          if (elem.classList.contains(CODE_SNIPPET_DRAG_HOVER_CLICKED)) {
-            elem.classList.remove(CODE_SNIPPET_DRAG_HOVER_CLICKED);
-          }
-        }
-        for (const item of document.getElementsByClassName(CODE_SNIPPET_ITEM)) {
-          if (item.classList.contains(CODE_SNIPPET_ITEM_CLICKED)) {
-            item.classList.remove(CODE_SNIPPET_ITEM_CLICKED);
-          }
-        }
       }
     }
   }
@@ -478,7 +445,6 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   // Render display of code snippet list
-  // To get the variety of color based on code length just append -long to CODE_SNIPPET_ITEM
   private renderCodeSnippet = (
     codeSnippet: ICodeSnippet,
     id: string
@@ -498,8 +464,6 @@ export class CodeSnippetDisplay extends React.Component<
         }
       }
     ];
-    /** TODO: if the type is a cell then display cell */
-    // type of code snippet: plain code or cell
     return (
       <div
         key={codeSnippet.name}
@@ -532,7 +496,6 @@ export class CodeSnippetDisplay extends React.Component<
               },
               this.props.editorServices
             );
-            this.snippetClicked(id);
             this._setPreviewPosition(id);
           }}
           onMouseLeave={(): void => {
@@ -563,8 +526,6 @@ export class CodeSnippetDisplay extends React.Component<
                     <btn.icon.react
                       tag="span"
                       elementPosition="center"
-                      // right="7px"
-                      // top="5px"
                       width="16px"
                       height="16px"
                     />
@@ -576,21 +537,10 @@ export class CodeSnippetDisplay extends React.Component<
           <div className={CODE_SNIPPET_DESC} id={id}>
             <p id={id}>{`${codeSnippet.description}`}</p>
           </div>
-          {/* <div className={'jp-codeSnippet-tags'}>
-            {tags ? tags.map((tag: string) => this.renderTag(tag, id)) : null}
-          </div> */}
         </div>
       </div>
     );
   };
-
-  // private renderTag(tag: string, id: string): JSX.Element {
-  //   return (
-  //     <div className={'tag applied-tag'} key={tag + '-' + id}>
-  //       <label className={'tag-header'}>{tag}</label>
-  //     </div>
-  //   );
-  // }
 
   static getDerivedStateFromProps(
     props: ICodeSnippetDisplayProps,
@@ -598,8 +548,6 @@ export class CodeSnippetDisplay extends React.Component<
   ): ICodeSnippetDisplayState {
     console.log(props.codeSnippets);
     console.log(state.codeSnippets);
-    // console.log(state.searchValue);
-    // console.log(state.filterTags === []);
     if (
       props.codeSnippets !== state.codeSnippets &&
       state.searchValue === '' &&
@@ -683,7 +631,6 @@ export class CodeSnippetDisplay extends React.Component<
             return widget.id === widgetId;
           }
         );
-
         if (editor) {
           editor.dispose();
         }

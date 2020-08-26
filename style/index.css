@@ -6,7 +6,6 @@
 
 #code-snippet-extension {
   background-color: var(--jp-layout-color0);
-  /* border-right: 3px solid var(--jp-layout-color0); */
   overflow: auto;
 }
 
@@ -14,25 +13,17 @@
   margin-bottom: 5px;
 }
 
+/*Code Snippet Container CSS*/
 .jp-codeSnippetsContainer-button,
 .jp-codeSnippetsContainer-button.jp-mod-styled {
   background-color: transparent;
   vertical-align: middle;
   padding: 0;
-  /* width: 20px; */
   padding-right: 8px;
 }
 
 .jp-codeSnippetsContainer-button:hover {
   cursor: pointer;
-}
-
-.jp-codeSnippetsContainer-actionButton:hover {
-  background-color: var(--jp-layout-color1);
-}
-
-.jp-codeSnippetsContainer-actionButton:active {
-  background-color: var(--jp-layout-color2);
 }
 
 .jp-codeSnippetsContainer-title {
@@ -44,27 +35,12 @@
   color: var(--jp-ui-font-color0);
 }
 
-.jp-codeSnippetsContainer-title:hover {
-  background-color: var(--jp-layout-color2);
-}
-
-/* .jp-codeSnippetsContainer-title:hover .elyra-jp-codeSnippetsContainer-button {
-  background-color: var(--jp-layout-color2);
-} */
-
 .jp-codeSnippetsContainer-name {
   font-size: var(--jp-ui-font-size1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* line-height: 28px; */
   color: var(--jp-ui-font-color0);
-  /* font-family: Helvetica; */
-  /* font-size: 16px; */
-}
-
-.jp-codeSnippetsContainer-name:hover {
-  cursor: pointer;
 }
 
 .jp-codeSnippetsContainer-button {
@@ -74,6 +50,45 @@
   height: 100%;
 }
 
+/* Size of the icons in code snippet */
+.jp-codeSnippetsContainer-action-buttons {
+  height: 100%;
+  overflow: hidden;
+}
+
+.jp-codeSnippet-item {
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
+  display: flex;
+  margin: 0;
+  padding: 0;
+  height: fit-content;
+}
+
+.jp-codeSnippet-item:hover {
+  background-color: var(--jp-layout-color2);
+}
+
+.jp-codeSnippet-metadata {
+  flex-basis: 95%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.jp-codeSnippet-description p {
+  font-size: var(--jp-ui-font-size0);
+  line-height: 15px;
+  color: var(--jp-layout-color4);
+  margin-bottom: 10px;
+  width: 90%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Header bar of code snippets */
 .jp-codeSnippetsHeader {
   font-size: var(--jp-ui-font-size1);
   font-weight: 600;
@@ -85,19 +100,7 @@
   align-items: center;
 }
 
-.jp-codeSnippet-item {
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
-  display: flex;
-  margin: 0;
-  padding: 0;
-  height: fit-content;
-  /* height: 113px; */
-}
-
-.jp-codeSnippet-item:hover {
-  background-color: var(--jp-layout-color2);
-}
-
+/* Save Notification CSS */
 .jp-codeSnippet-confirm {
   position: absolute;
   z-index: 10000;
@@ -137,7 +140,6 @@
 
 .jp-codeSnippet-confirm-text {
   width: 183px;
-  /* font-family: helvetica; */
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
@@ -145,10 +147,7 @@
   padding-left: 10px;
 }
 
-.jp-codeSnippet-item.jp-codeSnippet-dropTarget {
-  border-top: 2px solid var(--jp-private-notebook-selected-color);
-}
-
+/* Code Snippet Preview CSS */
 .jp-codeSnippet-preview {
   position: absolute;
   z-index: 10000;
@@ -179,29 +178,7 @@
   margin: 10px 10px 10px 10px;
 }
 
-.jp-codeSnippet-searchbar {
-  margin: 0px 8px;
-}
-
-.jp-codeSnippet-filterTools {
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
-}
-
-.triangle:hover {
-  border-color: transparent #1976d2 transparent transparent;
-}
-
-.selected {
-  border-color: transparent #1976d2 transparent transparent;
-}
-
-.jp-codeSnippet-drag-hover-clicked {
-  background-image: url(./icon/drag_active_jupyter.svg);
-  background-color: var(--jp-layout-color2);
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
+/* Code Snippet Drag and Drop CSS */
 .jp-codeSnippet-drag-hover-selected {
   background-image: url(./icon/dragtab_jupyter.svg);
   margin-right: -2px;
@@ -210,38 +187,26 @@
   background-repeat: no-repeat;
 }
 
-.jp-undo-delete-content {
-  display: flex;
-  flex-direction: column;
-  background: var(--jp-layout-color1);
-  padding: 10px;
-  border-top: 3px solid #f57c00;
-  height: auto;
-  width: 250px;
-  box-sizing: border-box;
-  box-shadow: var(--jp-elevation-z4);
-  word-wrap: break-word;
-  border-radius: var(--jp-border-radius);
-  font-size: var(--jp-ui-font-size1);
-  color: var(--jp-ui-font-color1);
-  margin: 0px 6px 30px auto;
-}
-
-mark.jp-codeSnippet-search-bolding {
-  background-color: transparent;
-  font-weight: bold;
-  color: var(--jp-ui-font-color0);
-}
-
 .jp-codeSnippet-drag-image {
   border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
   background: var(--jp-cell-editor-background);
   width: var(--jp-private-notebook-dragImage-width);
   height: var(--jp-private-notebook-dragImage-height);
-  /* color: #808080; */
-  /* color: var(--jp-content-font-color3); */
 }
 
+.jp-codeSnippet-item.jp-codeSnippet-dropTarget {
+  border-top: 2px solid var(--jp-private-notebook-selected-color);
+}
+
+.jp-codeSnippet-drag-hover {
+  flex-basis: 5%;
+  min-width: 20px;
+  padding-right: 5px;
+  margin-right: 5px;
+  cursor: move;
+}
+
+/* Code Snippet Editor CSS */
 .jp-codeSnippet-editor-title {
   margin-left: 2%;
   margin-top: 2%;
@@ -250,27 +215,11 @@ mark.jp-codeSnippet-search-bolding {
   font-size: 25px;
 }
 
-.jp-codeSnippet-editor-name-label {
-  position: absolute;
-  margin-left: 3%;
-  margin-top: -7px;
-  background-color: var(--jp-layout-color0);
-  font-size: 12px;
+.jp-codeSnippet-editor-label {
+  margin-left: 2%;
+  margin-bottom: 5px;
+  font-size: var(--jp-ui-font-size1);
   color: var(--jp-ui-font-color2);
-}
-
-.jp-codeSnippet-editor-description-label {
-  position: absolute;
-  margin-left: 3%;
-  margin-top: -7px;
-  background-color: var(--jp-layout-color0);
-  font-size: 12px;
-  color: var(--jp-ui-font-color2);
-}
-
-.jp-codeSnippet-editor-label-active {
-  color: var(--jp-cell-editor-active-border-color);
-  background-color: var(--jp-layout-color0);
 }
 
 .jp-codeSnippet-editor-name,
@@ -282,7 +231,6 @@ mark.jp-codeSnippet-search-bolding {
   border-right: transparent;
   width: 94%;
   height: 32px;
-  /* border-bottom: 1px solid #c4c4c4; */
   font-size: var(--jp-ui-font-size1);
   border-radius: 2px;
   background: var(--jp-input-background);
@@ -290,12 +238,12 @@ mark.jp-codeSnippet-search-bolding {
   border: var(--jp-border-width) solid var(--jp-border-color1);
   padding-left: 7px;
   padding-right: 7px;
-  /* font-size: var(--jp-ui-font-size2); */
   color: var(--jp-ui-font-color0);
   outline: none;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  margin-top: 5px;
 }
 
 .jp-codeSnippet-editor-language {
@@ -320,24 +268,18 @@ mark.jp-codeSnippet-search-bolding {
   background-image: url(./icon/jupyter_searcharrowdown.svg);
   background-repeat: no-repeat;
   background-position: 95% center;
+  margin-top: 5px;
 }
 
 .jp-codeSnippet-editor-language:hover {
   background-image: none;
 }
 
-.jp-codeSnippet-editor-tags-label {
-  margin-bottom: 12px;
-  margin-left: 2%;
-  /* font-family: helvetica; */
-  line-height: 18px;
-  font-size: var(--jp-ui-font-size2);
-  color: var(--jp-ui-font-color0);
-}
-
 .jp-codeSnippet-editor-tagList {
   list-style: none;
   margin-left: 2%;
+  margin-bottom: 8px;
+  margin-top: -8px;
 }
 
 .jp-codeSnippet-editor-tag {
@@ -367,13 +309,9 @@ mark.jp-codeSnippet-search-bolding {
   border: none;
 }
 
-/* input::-webkit-calendar-picker-indicator {
-  opacity: 100;
-} */
-
 .jp-codeSnippet-editor-active {
   border: 1px solid var(--jp-cell-editor-active-border-color);
-  caret-color: var(--jp-cell-editor-active-border-color);
+  background-color: var(--jp-input-active-background);
 }
 .jp-codeSnippetInputArea {
   display: flex;
@@ -387,15 +325,7 @@ mark.jp-codeSnippet-search-bolding {
   overflow: auto;
   margin-left: 2%;
   margin-right: 3%;
-}
-
-.jp-codeSnippetInputArea-editorTitle {
-  margin-bottom: 12px;
-  margin-left: 2%;
-  /* font-family: helvetica; */
-  line-height: 18px;
-  font-size: var(--jp-ui-font-size2);
-  color: var(--jp-ui-font-color0);
+  margin-top: 5px;
 }
 
 .jp-codeSnippetInput-editor {
@@ -423,17 +353,31 @@ mark.jp-codeSnippet-search-bolding {
   margin-right: 3%;
 }
 
-.jp-codeSnippetsContainer-title:hover .jp-codeSnippetsContainer-button {
-  background-color: var(--jp-layout-color2);
+/* code snippet create button */
+.jp-createSnippetBtn {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0px;
 }
-
-/* [data-jp-theme-light='false'] .jp-TableOfContents-icon {
-  background-image: url(./icon/undoDelete.svg);
-} */
 
 @import url('~@jupyterlab/codeeditor/style/index.css');
 
-/* code snippet filter */
+/* Code Snippet Filter CSS */
+.jp-codeSnippet-searchbar {
+  margin: 0px 8px;
+}
+
+.jp-codeSnippet-filterTools {
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
+}
+
+mark.jp-codeSnippet-search-bolding {
+  background-color: transparent;
+  font-weight: bold;
+  color: var(--jp-ui-font-color0);
+}
+
 .jp-codeSnippet-filter {
   display: flex;
   flex-direction: column;
@@ -449,10 +393,8 @@ mark.jp-codeSnippet-search-bolding {
   background: none;
   cursor: pointer;
   color: var(--jp-brand-color2);
-  /* position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black; */
 }
+
 .jp-codeSnippet-filter-arrow-up.idle,
 .jp-codeSnippet-filter-option.idle {
   display: none;
@@ -469,7 +411,6 @@ mark.jp-codeSnippet-search-bolding {
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
   background-color: var(--jp-layout-color0);
-  /* border: var(--jp-border-width) solid var(--jp-border-color1); */
 }
 
 .jp-codeSnippet-filter-option {
@@ -507,15 +448,11 @@ mark.jp-codeSnippet-search-bolding {
   font-size: var(--jp-ui-font-size1);
 }
 
-/* code snippet create button */
-.jp-createSnippetBtn {
-  cursor: pointer;
-  border: none;
-  background: none;
-  padding: 0px;
+.jp-codeSnippet-tools {
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
 }
 
-/* code snippet tags in inputDialog */
+/* Code Snippet Tags in InputDialog */
 .jp-codeSnippet-inputTagList {
   list-style: none;
 }
@@ -544,47 +481,6 @@ mark.jp-codeSnippet-search-bolding {
   width: 50px;
 }
 
-/* code snippet layout */
-.jp-codeSnippet-drag-hover {
-  /* flex: 1 1 10%; */
-  flex-basis: 5%;
-  min-width: 20px;
-  /* height: 100%; */
-  padding-right: 5px;
-  margin-right: 5px;
-  cursor: move;
-  /*background-image: url(./icon/dragtab_jupyter.svg);;
-  transition: background-image ease;*/
-}
-
-.jp-codeSnippet-metadata {
-  /* flex: 1 1 90%; */
-  flex-basis: 95%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-}
-
-.jp-codeSnippet-description p {
-  /* font-family: Helvetica; */
-  font-size: var(--jp-ui-font-size0);
-  line-height: 15px;
-  color: var(--jp-layout-color4);
-  margin-bottom: 10px;
-  width: 90%;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
-/* Size of the icons in code snippet */
-.jp-codeSnippetsContainer-action-buttons {
-  height: 100%;
-  overflow: hidden;
-}
-
 /* Cell tag styling */
 @import url('~@jupyterlab/celltags/style/base.css');
 
@@ -597,19 +493,6 @@ mark.jp-codeSnippet-search-bolding {
 .jp-codeSnippet-filter-tag {
   height: 5px;
 }
-/* code snippet tools: search, filter */
-.jp-codeSnippet-tools {
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
-}
-/* .tag-holder {
-} */
-/* 
-.f15r8jkt svg {
-  display: block;
-  margin: 0 auto;
-  width: 21px;
-  height: 21px;
-} */
 
 /* USER Input Form Style */
 .jp-codeSnippet-form {
@@ -635,12 +518,6 @@ mark.jp-codeSnippet-search-bolding {
   border: var(--jp-border-width) solid var(--jp-error-color1);
 }
 
-/* .jp-newSnippet-input:valid,
-.jp-codeSnippet-editor-name:valid,
-.jp-codeSnippet-editor-description:valid {
-  border: var(--jp-border-width) solid var(--jp-brand-color2);
-} */
-
 .jp-codeSnippet-inputName-validity,
 .jp-codeSnippet-inputDesc-validity {
   font-size: var(--jp-ui-font-size0);
@@ -651,11 +528,12 @@ mark.jp-codeSnippet-search-bolding {
 
 .jp-codeSnippet-editor-metadata .jp-codeSnippet-inputName-validity,
 .jp-codeSnippet-editor-metadata .jp-codeSnippet-inputDesc-validity {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   margin-top: 5px;
   margin-left: 3%;
 }
 
+/* 3 Dots Dropdown On Code Snippet */
 .jp-codeSnippet-options {
   position: absolute;
   z-index: 10000;
@@ -675,7 +553,6 @@ mark.jp-codeSnippet-search-bolding {
 
 .jp-codeSnippet-more-options-content {
   width: 183px;
-  /* font-family: helvetica; */
   font-style: normal;
   font-weight: normal;
   font-size: 13px;

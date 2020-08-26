@@ -41,9 +41,7 @@ export class ConfirmMessage<T> extends Widget {
     content.addClass(CONFIRM_CONTENT);
     layout.addWidget(content);
 
-    const body = renderer.createBody(options.body || '');
-    // const icon = renderer.createIcon();
-    // content.addWidget(icon);
+    const body = renderer.createBody(options.body);
     content.addWidget(body);
 
     console.log(content);
@@ -87,10 +85,6 @@ export class ConfirmMessage<T> extends Widget {
       case 'click':
         this._evtClick(event as MouseEvent);
         break;
-      case 'contextmenu':
-        event.preventDefault();
-        event.stopPropagation();
-        break;
       default:
         break;
     }
@@ -126,31 +120,9 @@ export class ConfirmMessage<T> extends Widget {
         event.preventDefault();
         this.reject();
         break;
-      case 13: // Enter.
-        event.stopPropagation();
-        event.preventDefault();
-        this.resolve();
-        break;
       default:
         break;
     }
-  }
-
-  /**
-   * Resolve the current dialog.
-   *
-   * @param index - An optional index to the button to resolve.
-   *
-   * #### Notes
-   * Will default to the defaultIndex.
-   * Will resolve the current `show()` with the button value.
-   * Will be a no-op if the dialog is not shown.
-   */
-  resolve(): void {
-    if (!this._promise) {
-      return;
-    }
-    this._resolve();
   }
 
   /**
@@ -166,9 +138,9 @@ export class ConfirmMessage<T> extends Widget {
     this._resolve();
   }
 
-  /**
-   * Resolve a button item.
-   */
+  // /**
+  //  * Resolve a button item.
+  //  */
   private _resolve(): void {
     // Prevent loopback.
     const promise = this._promise;
@@ -196,24 +168,12 @@ export class ConfirmMessage<T> extends Widget {
   }
 
   /**
-   * A message handler invoked on a `'close-request'` message.
-   */
-  protected onCloseRequest(msg: Message): void {
-    if (this._promise) {
-      this.reject();
-    }
-    super.onCloseRequest(msg);
-  }
-
-  /**
    *  A message handler invoked on an `'after-attach'` message.
    */
   protected onAfterAttach(msg: Message): void {
     const node = this.node;
     node.addEventListener('keydown', this, true);
-    node.addEventListener('contextmenu', this, true);
     node.addEventListener('click', this, true);
-    this._original = document.activeElement as HTMLElement;
   }
 
   /**
@@ -222,34 +182,18 @@ export class ConfirmMessage<T> extends Widget {
   protected onAfterDetach(msg: Message): void {
     const node = this.node;
     node.removeEventListener('keydown', this, true);
-    node.removeEventListener('contextmenu', this, true);
     node.removeEventListener('click', this, true);
-    document.removeEventListener('focus', this, true);
-    this._original.focus();
   }
 
   private _promise: PromiseDelegate<void> | null;
   private _host: HTMLElement;
-  private _original: HTMLElement;
 }
 
 export namespace ConfirmMessage {
   /**
    * The body input types.
    */
-  export type Body<T> = IBodyWidget<T> | React.ReactElement<any> | string;
-  /**
-   * The options used to create a dialog.
-   */
-  /**
-   * A widget used as a dialog body.
-   */
-  export interface IBodyWidget<T = string> extends Widget {
-    /**
-     * Get the serialized value of the widget.
-     */
-    getValue?(): T;
-  }
+  export type Body = Widget;
 
   export interface IOptions<T> {
     /**
@@ -264,7 +208,7 @@ export namespace ConfirmMessage {
      * A string argument will be used as raw `textContent`.
      * All `input` and `select` nodes will be wrapped and styled.
      */
-    body: Body<T>;
+    body: Body;
 
     /**
      * The host element for the dialog. Defaults to `document.body`.
@@ -291,7 +235,7 @@ export namespace ConfirmMessage {
      *
      * @returns A widget for the body.
      */
-    createBody(body: Body<any>): Widget;
+    createBody(body: Body): Widget;
     createIcon(): Widget;
   }
 
@@ -303,7 +247,7 @@ export namespace ConfirmMessage {
      *
      * @returns A widget for the body.
      */
-    createBody(value: Body<any>): Widget {
+    createBody(value: Body): Widget {
       let body: Widget;
       if (typeof value === 'string') {
         body = new Widget({ node: document.createElement('span') });
@@ -316,11 +260,7 @@ export namespace ConfirmMessage {
         // order to trigger a render of the DOM nodes from the React element.
         MessageLoop.sendMessage(body, Widget.Msg.UpdateRequest);
       }
-      // const iconNode = new Widget({ node: document.createElement('div') });
-      // iconNode.title.icon = checkIcon;
-      // body.
       body.addClass(CONFIRM_BODY);
-      // Styling.styleNode(body.node);
       return body;
     }
   }

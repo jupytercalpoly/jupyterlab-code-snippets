@@ -126,10 +126,6 @@ export class CodeSnippetEditorTags extends React.Component<
         }),
         this.handleOnChange
       );
-
-      console.log(document.activeElement.tagName);
-
-      // inputElement.blur();
     }
   }
 
@@ -215,7 +211,6 @@ export class CodeSnippetEditorTags extends React.Component<
                       />
                     </ul>
                   );
-                  // this.renderSelectedTag(tag, index.toString());
                 } else {
                   return (
                     <ul
@@ -226,7 +221,6 @@ export class CodeSnippetEditorTags extends React.Component<
                       <button onClick={this.handleClick}>{tag}</button>
                     </ul>
                   );
-                  // this.renderTag(tag, index.toString());
                 }
               })()
             )

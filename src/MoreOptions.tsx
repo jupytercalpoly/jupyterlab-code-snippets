@@ -41,7 +41,7 @@ export class OptionsMessage<T> extends Widget {
     content.addClass(OPTIONS_CONTENT);
     layout.addWidget(content);
 
-    const body = renderer.createBody(options.body || '');
+    const body = renderer.createBody(options.body);
     content.addWidget(body);
 
     if (OptionsMessage.tracker.size > 0) {
@@ -86,10 +86,6 @@ export class OptionsMessage<T> extends Widget {
       case 'click':
         this._evtClick(event as MouseEvent);
         break;
-      case 'contextmenu':
-        event.preventDefault();
-        event.stopPropagation();
-        break;
       default:
         break;
     }
@@ -110,23 +106,6 @@ export class OptionsMessage<T> extends Widget {
       this.reject();
       return;
     }
-  }
-
-  /**
-   * Resolve the current dialog.
-   *
-   * @param index - An optional index to the button to resolve.
-   *
-   * #### Notes
-   * Will default to the defaultIndex.
-   * Will resolve the current `show()` with the button value.
-   * Will be a no-op if the dialog is not shown.
-   */
-  resolve(): void {
-    if (!this._promise) {
-      return;
-    }
-    this._resolve();
   }
 
   /**
@@ -172,24 +151,11 @@ export class OptionsMessage<T> extends Widget {
   }
 
   /**
-   * A message handler invoked on a `'close-request'` message.
-   */
-  protected onCloseRequest(msg: Message): void {
-    if (this._promise) {
-      this.reject();
-    }
-    super.onCloseRequest(msg);
-  }
-
-  /**
    *  A message handler invoked on an `'after-attach'` message.
    */
   protected onAfterAttach(msg: Message): void {
     const node = this.node;
-    node.addEventListener('keydown', this, true);
-    node.addEventListener('contextmenu', this, true);
     node.addEventListener('click', this, true);
-    this._original = document.activeElement as HTMLElement;
   }
 
   /**
@@ -197,35 +163,18 @@ export class OptionsMessage<T> extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     const node = this.node;
-    node.removeEventListener('keydown', this, true);
-    node.removeEventListener('contextmenu', this, true);
     node.removeEventListener('click', this, true);
-    document.removeEventListener('focus', this, true);
-    this._original.focus();
   }
 
   private _promise: PromiseDelegate<void> | null;
   private _host: HTMLElement;
-  private _original: HTMLElement;
 }
 
 export namespace OptionsMessage {
   /**
    * The body input types.
    */
-  export type Body<T> = IBodyWidget<T> | React.ReactElement<any> | string;
-  /**
-   * The options used to create a dialog.
-   */
-  /**
-   * A widget used as a dialog body.
-   */
-  export interface IBodyWidget<T = string> extends Widget {
-    /**
-     * Get the serialized value of the widget.
-     */
-    getValue?(): T;
-  }
+  export type Body = Widget;
 
   export interface IOptions<T> {
     /**
@@ -240,17 +189,12 @@ export namespace OptionsMessage {
      * A string argument will be used as raw `textContent`.
      * All `input` and `select` nodes will be wrapped and styled.
      */
-    body: Body<T>;
+    body: Body;
 
     /**
      * The host element for the dialog. Defaults to `document.body`.
      */
     host: HTMLElement;
-
-    /**
-     * When "true", renders a close button for the dialog
-     */
-    hasClose: boolean;
 
     /**
      * An optional renderer for dialog items.  Defaults to a shared
@@ -267,7 +211,7 @@ export namespace OptionsMessage {
      *
      * @returns A widget for the body.
      */
-    createBody(body: Body<any>): Widget;
+    createBody(body: Body): Widget;
   }
 
   export class Renderer {
@@ -278,7 +222,7 @@ export namespace OptionsMessage {
      *
      * @returns A widget for the body.
      */
-    createBody(value: Body<any>): Widget {
+    createBody(value: Body): Widget {
       let body: Widget;
       if (typeof value === 'string') {
         body = new Widget({ node: document.createElement('span') });

@@ -38,15 +38,9 @@ export class FilterTools extends React.Component<
     this.renderTag = this.renderTag.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.filterSnippets = this.filterSnippets.bind(this);
-    // this.searchSnippets = this.searchSnippets.bind(this);
-    // this.updateValue = this.updateValue.bind(this);
   }
 
   createFilterBox(): void {
-    // toggle filtercontainer display none ...
-    // this.setState(state => ({
-    //   show: !state.show
-    // }));
     const filterArrow = document.querySelector(`.${FILTER_ARROW_UP}`);
 
     const filterOption = document.querySelector(`.${FILTER_OPTION}`);
@@ -176,11 +170,9 @@ export class FilterTools extends React.Component<
           <button className={FILTER_BUTTON} onClick={this.createFilterBox}>
             Filter By Tags
           </button>
-          {/* <div className="jp-codeSnippet-filterContainer idle"> */}
           <div className={`${FILTER_ARROW_UP} idle`}></div>
           {this.renderFilterOption()}
         </div>
-        {/* </div> */}
       </div>
     );
   }

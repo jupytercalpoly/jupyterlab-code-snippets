@@ -18,10 +18,10 @@
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 
-import { ReactWidget, UseSignal, WidgetTracker } from '@jupyterlab/apputils';
-import { IDocumentManager } from '@jupyterlab/docmanager';
-import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
-import { Widget, PanelLayout } from '@lumino/widgets';
+import { ReactWidget, UseSignal /*WidgetTracker*/ } from '@jupyterlab/apputils';
+//import { IDocumentManager } from '@jupyterlab/docmanager';
+//import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import { Widget /*PanelLayout*/ } from '@lumino/widgets';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
 
@@ -56,19 +56,10 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  */
 const DROP_TARGET_CLASS = 'jp-codeSnippet-dropTarget';
 const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
-const PREVIEW_CLASS = '.jp-codeSnippet-preview';
-const DRAG_HOVER = 'jp-codeSnippet-drag-hover';
-const DRAG_HOVER_CLICKED = 'jp-codeSnippet-drag-hover-clicked';
-const CODE_SNIPPET_ITEM_CLICKED = 'jp-codeSnippet-item-clicked';
-const CODE_SNIPPETS_CONTAINER_NAME = 'jp-codeSnippetsContainer-name';
-const INACTIVE = 'inactive';
 
 const commands = {
   OPEN_CODE_SNIPPET_EDITOR: `${CODE_SNIPPET_EDITOR}:open`
 };
-
-// const CODE_SNIPPET_NAMESPACE = 'code-snippets';
-// const CODE_SNIPPET_SCHEMA = 'code-snippet';
 
 /**
  * A widget for Code Snippets.
@@ -84,7 +75,6 @@ export class CodeSnippetWidget extends ReactWidget {
   private editorServices: IEditorServices;
 
   constructor(
-    // codeSnippets: ICodeSnippet[],
     getCurrentWidget: () => Widget,
     app: JupyterFrontEnd,
     editorServices: IEditorServices
@@ -100,7 +90,6 @@ export class CodeSnippetWidget extends ReactWidget {
     this.openCodeSnippetEditor.bind(this);
     this.updateCodeSnippets.bind(this);
     this.codeSnippetManager = CodeSnippetContentsService.getInstance();
-    // CodeSnippetWidget.tracker.add(this);
   }
 
   // Request code snippets from server
@@ -114,8 +103,6 @@ export class CodeSnippetWidget extends ReactWidget {
     console.log(this._codeSnippetWidgetModel.snippets);
     console.log(this._codeSnippetWidgetModel.snippets.length);
 
-    // const data: ICodeSnippet[] = [];
-    // if (this._codeSnippets.length === 0) {
     console.log('fetching snippets!');
     await this.codeSnippetManager
       .getData('snippets', 'directory')
@@ -149,7 +136,6 @@ export class CodeSnippetWidget extends ReactWidget {
         codeSnippetList.push(codeSnippet);
         console.log(codeSnippet);
         console.log(codeSnippet.id);
-        // this._codeSnippetWidgetModel.addSnippet(codeSnippet, codeSnippet.id);
       });
     }
 
@@ -211,12 +197,6 @@ export class CodeSnippetWidget extends ReactWidget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case 'mousedown':
-        this._evtMouseDown(event as IDragEvent);
-        break;
-      // case 'mouseleave':
-      //   this._evtMouseLeave(event as MouseEvent);
-      //   break;
       case 'lm-dragenter':
         this._evtDragEnter(event as IDragEvent);
         break;
@@ -241,14 +221,12 @@ export class CodeSnippetWidget extends ReactWidget {
   protected onAfterAttach(msg: Message): void {
     console.log('On after Attach');
     super.onAfterAttach(msg);
-    // this.renderCodeSnippetsSignal.emit(this._codeSnippets);
 
     const node = this.node;
     node.addEventListener('lm-dragenter', this);
     node.addEventListener('lm-dragleave', this);
     node.addEventListener('lm-dragover', this);
     node.addEventListener('lm-drop', this);
-    node.addEventListener('mousedown', this);
   }
 
   /**
@@ -281,33 +259,6 @@ export class CodeSnippetWidget extends ReactWidget {
       n = n.parentElement;
     }
     return undefined;
-  }
-
-  private _evtMouseDown(event: MouseEvent): void {
-    //get rid of preview by clicking anything
-    const target = event.target as HTMLElement;
-
-    const preview = document.querySelector(PREVIEW_CLASS);
-    if (preview) {
-      // if target is not the code snippet name area, then add inactive
-      // if target area is the code snippet name area, previewSnippet widget will handle preview.
-      if (
-        !preview.classList.contains(INACTIVE) &&
-        !target.classList.contains(CODE_SNIPPETS_CONTAINER_NAME)
-      ) {
-        preview.classList.add(INACTIVE);
-        for (const elem of document.getElementsByClassName(DRAG_HOVER)) {
-          if (elem.classList.contains(DRAG_HOVER_CLICKED)) {
-            elem.classList.remove(DRAG_HOVER_CLICKED);
-          }
-        }
-        for (const item of document.getElementsByClassName(CODE_SNIPPET_ITEM)) {
-          if (item.classList.contains(CODE_SNIPPET_ITEM_CLICKED)) {
-            item.classList.remove(CODE_SNIPPET_ITEM_CLICKED);
-          }
-        }
-      }
-    }
   }
 
   /**
@@ -381,14 +332,10 @@ export class CodeSnippetWidget extends ReactWidget {
   private async _evtDrop(event: IDragEvent): Promise<void> {
     const data = Private.findCellData(event.mimeData);
     console.log(event);
-    // console.log(event.mimeData.getData('internal:cells'));
     console.log(data);
     if (data === undefined) {
       return;
     }
-
-    const elements = this.node.getElementsByClassName(DROP_TARGET_CLASS);
-    console.log(elements);
 
     event.preventDefault();
     event.stopPropagation();
@@ -425,13 +372,6 @@ export class CodeSnippetWidget extends ReactWidget {
       event.dropAction = 'move';
       if (event.mimeData.hasData('snippet/id')) {
         const srcIdx = event.mimeData.getData('snippet/id') as number;
-        // console.log(srcIdx);
-        // move snippet from src index to target index
-        // this._codeSnippetWidgetModel.moveSnippet(srcIdx, idx);
-        // this._codeSnippets = this._codeSnippetWidgetModel.snippets;
-        // // const newSnippets = this._codeSnippets;
-        // console.log(this._codeSnippets);
-        // this.updateSnippet(this._codeSnippets);
         if (idx === -1) {
           idx = this._codeSnippets.length;
         }
@@ -444,12 +384,6 @@ export class CodeSnippetWidget extends ReactWidget {
       CodeSnippetInputDialog(this, data, idx);
     }
   }
-  // deleteCodeSnippet(snippet: ICodeSnippet): void {
-  //   const idx = this._codeSnippets.indexOf(snippet);
-  //   this._codeSnippetWidgetModel.deleteSnippet(idx);
-  //   this._codeSnippets = this._codeSnippetWidgetModel.snippets;
-  //   this.renderCodeSnippetsSignal.emit(this._codeSnippets);
-  // }
 
   moveCodeSnippet(srcIdx: number, targetIdx: number): void {
     this._codeSnippetWidgetModel.moveSnippet(srcIdx, targetIdx);
@@ -479,56 +413,37 @@ export class CodeSnippetWidget extends ReactWidget {
 }
 
 /**
- * A custom panel layout for the notebook.
- */
-export class SnippetPanelLayout extends PanelLayout {
-  /**
-   * A message handler invoked on an `'update-request'` message.
-   *
-   * #### Notes
-   * This is a reimplementation of the base class method,
-   * and is a no-op.
-   */
-  protected onUpdateRequest(msg: Message): void {
-    // This is a no-op.
-  }
-}
-
-/**
  * A namespace for CodeSnippet statics.
  */
-export namespace CodeSnippetWidget {
-  /**
-   * Interface describing table of contents widget options.
-   */
-  export interface IOptions {
-    /**
-     * Application document manager.
-     */
-    docmanager: IDocumentManager;
+// export namespace CodeSnippetWidget {
+//   /**
+//    * Interface describing table of contents widget options.
+//    */
+//   export interface IOptions {
+//     /**
+//      * Application document manager.
+//      */
+//     docmanager: IDocumentManager;
 
-    /**
-     * Application rendered MIME type.
-     */
-    rendermime: IRenderMimeRegistry;
-  }
+//     /**
+//      * Application rendered MIME type.
+//      */
+//     rendermime: IRenderMimeRegistry;
+//   }
 
-  /**
-   * The dialog widget tracker.
-   */
-  export const tracker = new WidgetTracker<CodeSnippetWidget>({
-    namespace: '@jupyterlab/code_snippet:CodeSnippetWidget'
-  });
-}
+//   /**
+//    * The dialog widget tracker.
+//    */
+//   export const tracker = new WidgetTracker<CodeSnippetWidget>({
+//     namespace: '@jupyterlab/code_snippet:CodeSnippetWidget'
+//   });
+// }
 
 class Private {
   /**
    * Given a MimeData instance, extract the data, if any.
    */
   static findCellData(mime: MimeData): string[] {
-    // const types = mime.types();
-    // console.log(types);
-    // application/vnd.jupyter.cells
     const code = mime.getData('text/plain');
 
     return code.split('\n');
