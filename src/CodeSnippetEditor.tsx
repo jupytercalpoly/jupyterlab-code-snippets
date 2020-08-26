@@ -569,7 +569,7 @@ export class CodeSnippetEditor extends ReactWidget {
         <span className={CODE_SNIPPET_EDITOR_LABEL}>Code</span>
         {this.renderCodeInput()}
         <Button className="saveBtn" onClick={this.saveChange}>
-          {fromScratch ? 'Create' : 'Save'}
+          {fromScratch ? 'Create & Close' : 'Save'}
         </Button>
       </div>
     );
