@@ -1,45 +1,23 @@
-/*
- * Copyright 2018-2020 IBM Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import { ReactWidget, UseSignal } from '@jupyterlab/apputils';
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import { IEditorServices } from '@jupyterlab/codeeditor';
+import { Contents } from '@jupyterlab/services';
 
-// import '../style/index.css';
-import { CodeSnippetDisplay } from './CodeSnippetDisplay';
-import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
-
-import { ReactWidget, UseSignal /*WidgetTracker*/ } from '@jupyterlab/apputils';
-//import { IDocumentManager } from '@jupyterlab/docmanager';
-//import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
-import { Widget /*PanelLayout*/ } from '@lumino/widgets';
+import { Widget } from '@lumino/widgets';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
-
-import React from 'react';
+import { IDragEvent } from '@lumino/dragdrop';
+import { MimeData } from '@lumino/coreutils';
 
 import {
   CodeSnippetContentsService,
   ICodeSnippet
 } from './CodeSnippetContentsService';
-import { Contents } from '@jupyterlab/services';
-
-import { IDragEvent } from '@lumino/dragdrop';
-
-import { MimeData } from '@lumino/coreutils';
-
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
-import { JupyterFrontEnd } from '@jupyterlab/application';
-import { IEditorServices } from '@jupyterlab/codeeditor';
+import { CodeSnippetDisplay } from './CodeSnippetDisplay';
+import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
+
+import React from 'react';
 
 /**
  * A class used to indicate a snippet item.
@@ -65,7 +43,6 @@ const commands = {
  * A widget for Code Snippets.
  */
 export class CodeSnippetWidget extends ReactWidget {
-  // state: ICodeSnippetWidgetState;
   getCurrentWidget: () => Widget;
   private _codeSnippetWidgetModel: CodeSnippetWidgetModel;
   _codeSnippets: ICodeSnippet[];
@@ -92,7 +69,15 @@ export class CodeSnippetWidget extends ReactWidget {
     this.codeSnippetManager = CodeSnippetContentsService.getInstance();
   }
 
-  // Request code snippets from server
+  get codeSnippetWidgetModel(): CodeSnippetWidgetModel {
+    return this._codeSnippetWidgetModel;
+  }
+
+  set codeSnippets(codeSnippets: ICodeSnippet[]) {
+    this._codeSnippets = codeSnippets;
+  }
+
+  // Request code snippets from contents service
   async fetchData(): Promise<ICodeSnippet[]> {
     const fileModels: Contents.IModel[] = [];
     const paths: string[] = [];
@@ -100,19 +85,14 @@ export class CodeSnippetWidget extends ReactWidget {
     // Clear the current snippets
     this._codeSnippetWidgetModel.clearSnippets();
 
-    console.log(this._codeSnippetWidgetModel.snippets);
-    console.log(this._codeSnippetWidgetModel.snippets.length);
-
     console.log('fetching snippets!');
     await this.codeSnippetManager
       .getData('snippets', 'directory')
       .then(model => {
         fileModels.push(...model.content);
       });
-    console.log(fileModels);
 
     fileModels.forEach(fileModel => paths.push(fileModel.path));
-    console.log(paths);
 
     let newSnippet: ICodeSnippet = {
       name: '',
@@ -134,8 +114,6 @@ export class CodeSnippetWidget extends ReactWidget {
         }
 
         codeSnippetList.push(codeSnippet);
-        console.log(codeSnippet);
-        console.log(codeSnippet.id);
       });
     }
 
@@ -161,24 +139,13 @@ export class CodeSnippetWidget extends ReactWidget {
   updateCodeSnippets(): void {
     this.fetchData().then((codeSnippets: ICodeSnippet[]) => {
       if (codeSnippets !== null) {
-        console.log(codeSnippets);
         this.renderCodeSnippetsSignal.emit(codeSnippets);
       }
     });
   }
 
   onAfterShow(msg: Message): void {
-    console.log('On after show!');
-    console.log(this._codeSnippets);
     this.updateCodeSnippets();
-  }
-
-  get codeSnippetWidgetModel(): CodeSnippetWidgetModel {
-    return this._codeSnippetWidgetModel;
-  }
-
-  set codeSnippets(codeSnippets: ICodeSnippet[]) {
-    this._codeSnippets = codeSnippets;
   }
 
   openCodeSnippetEditor(args: any): void {
@@ -219,7 +186,6 @@ export class CodeSnippetWidget extends ReactWidget {
    * @param msg
    */
   protected onAfterAttach(msg: Message): void {
-    console.log('On after Attach');
     super.onAfterAttach(msg);
 
     const node = this.node;
@@ -242,10 +208,10 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   /**
-   * Find the snippet index containing the target html element.
+   * Find the snippet containing the target html element.
    *
    * #### Notes
-   * Returns -1 if the cell is not found.
+   * Returns undefined if the cell is not found.
    */
   private _findSnippet(node: HTMLElement): HTMLElement {
     // Trace up the DOM hierarchy to find the root cell node.
@@ -305,7 +271,7 @@ export class CodeSnippetWidget extends ReactWidget {
    * Handle the `'lm-dragover'` event for the widget.
    */
   private _evtDragOver(event: IDragEvent): void {
-    const data = Private.findCellData(event.mimeData);
+    const data = this.findCellData(event.mimeData);
     if (data === undefined) {
       return;
     }
@@ -326,13 +292,16 @@ export class CodeSnippetWidget extends ReactWidget {
     snippetNode.classList.add(DROP_TARGET_CLASS);
   }
 
+  private findCellData(mime: MimeData): string[] {
+    const code = mime.getData('text/plain');
+
+    return code.split('\n');
+  }
   /**
-   * Hanlde the `'lm-drop'` event for the widget.
+   * Handle the `'lm-drop'` event for the widget.
    */
   private async _evtDrop(event: IDragEvent): Promise<void> {
-    const data = Private.findCellData(event.mimeData);
-    console.log(event);
-    console.log(data);
+    const data = this.findCellData(event.mimeData);
     if (data === undefined) {
       return;
     }
@@ -346,7 +315,6 @@ export class CodeSnippetWidget extends ReactWidget {
     }
 
     let target = event.target as HTMLElement;
-    console.log(target);
 
     while (target && target.parentElement) {
       if (target.classList.contains(DROP_TARGET_CLASS)) {
@@ -380,11 +348,11 @@ export class CodeSnippetWidget extends ReactWidget {
     } else {
       // Handle the case where we are copying cells
       event.dropAction = 'copy';
-      console.log(idx);
       CodeSnippetInputDialog(this, data, idx);
     }
   }
 
+  // move code snippet within code snippet explorer
   moveCodeSnippet(srcIdx: number, targetIdx: number): void {
     this._codeSnippetWidgetModel.moveSnippet(srcIdx, targetIdx);
     const newSnippets = this._codeSnippetWidgetModel.snippets;
@@ -409,43 +377,5 @@ export class CodeSnippetWidget extends ReactWidget {
         )}
       </UseSignal>
     );
-  }
-}
-
-/**
- * A namespace for CodeSnippet statics.
- */
-// export namespace CodeSnippetWidget {
-//   /**
-//    * Interface describing table of contents widget options.
-//    */
-//   export interface IOptions {
-//     /**
-//      * Application document manager.
-//      */
-//     docmanager: IDocumentManager;
-
-//     /**
-//      * Application rendered MIME type.
-//      */
-//     rendermime: IRenderMimeRegistry;
-//   }
-
-//   /**
-//    * The dialog widget tracker.
-//    */
-//   export const tracker = new WidgetTracker<CodeSnippetWidget>({
-//     namespace: '@jupyterlab/code_snippet:CodeSnippetWidget'
-//   });
-// }
-
-class Private {
-  /**
-   * Given a MimeData instance, extract the data, if any.
-   */
-  static findCellData(mime: MimeData): string[] {
-    const code = mime.getData('text/plain');
-
-    return code.split('\n');
   }
 }

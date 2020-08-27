@@ -1,26 +1,25 @@
-import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
+import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
+
+import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
 
-import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
-
 import { ICodeSnippet } from './CodeSnippetContentsService';
 
 /**
- * The class name for confirmation box
+ * The class name for preview box
  */
 const PREVIEW_CLASS = 'jp-codeSnippet-preview';
 const PREVIEW_CONTENT = 'jp-codeSnippet-preview-content';
 const PREVIEW_BODY = 'jp-codeSnippet-preview-body';
 
 /**
- * Create and show a dialog.
+ * Create and show a preview.
  *
- * @param options - The dialog setup options.
+ * @param options - The preview setup options.
  *
- * @returns A promise that resolves with whether the dialog was accepted.
  */
 export function showPreview<T>(
   options: Partial<Preview.IOptions<T>> = {},
@@ -35,7 +34,7 @@ export function showPreview<T>(
 }
 
 /**
- * A widget used to show confirmation message.
+ * A widget used to show preview
  */
 export class Preview<T> extends Widget {
   ready: boolean;
@@ -72,12 +71,10 @@ export class Preview<T> extends Widget {
     }
   }
   /**
-   * Launch the dialog as a modal window.
-   *
-   * @returns a promise that resolves with the result of the dialog.
+   * Launch the preview as a modal window.
    */
   launch(): Promise<void> {
-    // Return the existing dialog if already open.
+    // Return the existing preview if already open.
     if (this._promise) {
       return this._promise.promise;
     }
@@ -91,10 +88,10 @@ export class Preview<T> extends Widget {
   }
 
   /**
-   * Reject the current dialog with a default reject value.
+   * Reject the current preview with a default reject value.
    *
    * #### Notes
-   * Will be a no-op if the dialog is not shown.
+   * Will be a no-op if the preview is not shown.
    */
   reject(): void {
     if (!this._promise) {
@@ -120,7 +117,7 @@ export class Preview<T> extends Widget {
   }
 
   /**
-   * Dispose of the resources used by the dialog.
+   * Dispose of the resources used by the preview.
    */
   dispose(): void {
     const promise = this._promise;
@@ -169,7 +166,6 @@ export class Preview<T> extends Widget {
         })
       });
     }
-    /*this.editor.setSize({ width: 150, height: 106 });*/
     if (this.isVisible) {
       this._hasRefreshedSinceAttach = true;
       this.editor.refresh();
@@ -189,14 +185,14 @@ export namespace Preview {
     title: string;
     id: number;
     /**
-     * The main body element for the dialog or a message to display.
+     * The main body element for the preview or a message to display.
      * Defaults to an empty string.
      *
      * #### Notes
      * If a widget is given as the body, it will be disposed after the
-     * dialog is resolved.  If the widget has a `getValue()` method,
+     * preview is resolved.  If the widget has a `getValue()` method,
      * the method will be called prior to disposal and the value
-     * will be provided as part of the dialog result.
+     * will be provided as part of the preview result.
      * A string argument will be used as raw `textContent`.
      * All `input` and `select` nodes will be wrapped and styled.
      */
@@ -205,10 +201,8 @@ export namespace Preview {
   }
 
   export interface IRenderer {
-    // createHeader(title: string): Widget;
-
     /**
-     * Create the body of the dialog.
+     * Create the body of the preview.
      *
      * @param value - The input value for the body.
      *
@@ -219,7 +213,7 @@ export namespace Preview {
 
   export class Renderer {
     /**
-     * Create the body of the dialog.
+     * Create the body of the preview.
      *
      * @param value - The input value for the body.
      *
@@ -248,7 +242,7 @@ export namespace Preview {
   export const defaultRenderer = new Renderer();
 
   /**
-   * The dialog widget tracker.
+   * The preview widget tracker.
    */
   export const tracker = new WidgetTracker<Preview<any>>({
     namespace: '@jupyterlab/code_snippet:ConfirmWidget'
@@ -260,7 +254,7 @@ export namespace Preview {
  */
 namespace Private {
   /**
-   * The queue for launching dialogs.
+   * The queue for launching previews.
    */
   export const launchQueue: Promise<void>[] = [];
 }

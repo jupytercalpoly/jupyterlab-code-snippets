@@ -130,7 +130,6 @@ export class FilterTools extends React.Component<
       const idx = currentTags.indexOf(clickedTag);
       currentTags.splice(idx, 1);
     }
-    console.log(currentTags);
     return currentTags;
   }
 

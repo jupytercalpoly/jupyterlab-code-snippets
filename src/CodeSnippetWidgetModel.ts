@@ -38,6 +38,7 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
     this._snippets.sort((a, b) => a.id - b.id);
   }
 
+  // move snippetes within explorer
   moveSnippet(fromIdx: number, toIdx: number): void {
     if (toIdx > fromIdx) {
       toIdx = toIdx - 1;
@@ -90,10 +91,6 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
    */
   private insertSnippet(newSnippet: ICodeSnippet, index = -1): void {
     const numSnippets = this._snippets.length;
-
-    console.log(index);
-    console.log(numSnippets);
-    console.log(this._snippets);
     // add it at the end of the list
     if (index < 0 || index >= numSnippets) {
       this._snippets.push(newSnippet);

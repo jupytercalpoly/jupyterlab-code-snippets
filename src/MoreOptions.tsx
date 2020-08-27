@@ -1,6 +1,6 @@
-// import '../style/index.css';
-import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
+
+import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
@@ -13,11 +13,11 @@ const OPTIONS_CONTENT = 'jp-codeSnippet-options-content';
 const OPTIONS_BODY = 'jp-codeSnippet-options-body';
 
 /**
- * Create and show a dialog.
+ * Create and show a code snippet options.
  *
- * @param options - The dialog setup options.
+ * @param options - The code snippet options setup options.
  *
- * @returns A promise that resolves with whether the dialog was accepted.
+ * @returns A promise that resolves with whether the code snippet options was accepted.
  */
 export function showMoreOptions<T>(
   options: Partial<OptionsMessage.IOptions<T>> = {}
@@ -53,12 +53,12 @@ export class OptionsMessage<T> extends Widget {
     void OptionsMessage.tracker.add(this);
   }
   /**
-   * Launch the dialog as a modal window.
+   * Launch the code snippet options as a modal window.
    *
-   * @returns a promise that resolves with the result of the dialog.
+   * @returns a promise that resolves with the result of the code snippet options.
    */
   launch(): Promise<void> {
-    // Return the existing dialog if already open.
+    // Return the existing code snippet options if already open.
     if (this._promise) {
       return this._promise.promise;
     }
@@ -92,7 +92,7 @@ export class OptionsMessage<T> extends Widget {
   }
 
   /**
-   * Handle the `'click'` event for a dialog button.
+   * Handle the `'click'` event for a code snippet options button.
    *
    * @param event - The DOM event sent to the widget
    */
@@ -109,10 +109,10 @@ export class OptionsMessage<T> extends Widget {
   }
 
   /**
-   * Reject the current dialog with a default reject value.
+   * Reject the current code snippet options with a default reject value.
    *
    * #### Notes
-   * Will be a no-op if the dialog is not shown.
+   * Will be a no-op if the code snippet options is not shown.
    */
   reject(): void {
     if (!this._promise) {
@@ -138,7 +138,7 @@ export class OptionsMessage<T> extends Widget {
   }
 
   /**
-   * Dispose of the resources used by the dialog.
+   * Dispose of the resources used by the code snippet options.
    */
   dispose(): void {
     const promise = this._promise;
@@ -178,26 +178,26 @@ export namespace OptionsMessage {
 
   export interface IOptions<T> {
     /**
-     * The main body element for the dialog or a message to display.
+     * The main body element for the code snippet options or a message to display.
      * Defaults to an empty string.
      *
      * #### Notes
      * If a widget is given as the body, it will be disposed after the
-     * dialog is resolved.  If the widget has a `getValue()` method,
+     * code snippet options is resolved.  If the widget has a `getValue()` method,
      * the method will be called prior to disposal and the value
-     * will be provided as part of the dialog result.
+     * will be provided as part of the code snippet options result.
      * A string argument will be used as raw `textContent`.
      * All `input` and `select` nodes will be wrapped and styled.
      */
     body: Body;
 
     /**
-     * The host element for the dialog. Defaults to `document.body`.
+     * The host element for the code snippet options. Defaults to `document.body`.
      */
     host: HTMLElement;
 
     /**
-     * An optional renderer for dialog items.  Defaults to a shared
+     * An optional renderer for code snippet options items.  Defaults to a shared
      * default renderer.
      */
     renderer: IRenderer;
@@ -205,7 +205,7 @@ export namespace OptionsMessage {
 
   export interface IRenderer {
     /**
-     * Create the body of the dialog.
+     * Create the body of the code snippet options.
      *
      * @param value - The input value for the body.
      *
@@ -216,7 +216,7 @@ export namespace OptionsMessage {
 
   export class Renderer {
     /**
-     * Create the body of the dialog.
+     * Create the body of the code snippet options.
      *
      * @param value - The input value for the body.
      *
@@ -245,7 +245,7 @@ export namespace OptionsMessage {
   export const defaultRenderer = new Renderer();
 
   /**
-   * The dialog widget tracker.
+   * The code snippet options widget tracker.
    */
   export const tracker = new WidgetTracker<OptionsMessage<any>>({
     namespace: '@jupyterlab/code_snippet:OptionsWidget'
@@ -257,7 +257,7 @@ export namespace OptionsMessage {
  */
 namespace Private {
   /**
-   * The queue for launching dialogs.
+   * The queue for launching code snippet optionss.
    */
   export const launchQueue: Promise<void>[] = [];
 }

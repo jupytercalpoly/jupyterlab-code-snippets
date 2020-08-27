@@ -1,9 +1,9 @@
-import { Widget } from '@lumino/widgets';
-import { JSONObject } from '@lumino/coreutils';
-
 import { showDialog, Dialog } from '@jupyterlab/apputils';
 import { addIcon, checkIcon } from '@jupyterlab/ui-components';
 import { Contents } from '@jupyterlab/services';
+
+import { Widget } from '@lumino/widgets';
+import { JSONObject } from '@lumino/coreutils';
 
 import {
   ICodeSnippet,
@@ -70,7 +70,6 @@ export function CodeSnippetInputDialog(
       }
     }
   }
-  console.log(tags);
 
   return showCodeSnippetForm({
     title: 'Save Code Snippet',
@@ -81,7 +80,6 @@ export function CodeSnippetInputDialog(
       CodeSnippetForm.okButton({ label: 'Save' })
     ]
   }).then((result: CodeSnippetForm.IResult<string[]>) => {
-    console.log(result);
     if (!result.value) {
       return null;
     }
@@ -94,7 +92,6 @@ export function CodeSnippetInputDialog(
       }
 
       const tags = result.value.slice(3);
-      console.log(tags);
       const newSnippet: ICodeSnippet = {
         name: result.value[0].replace(' ', '').toLowerCase(),
         description: result.value[1],
@@ -151,7 +148,7 @@ function createNewSnippet(
     codeSnippet.codeSnippets = newSnippets;
     codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
     showMessage({
-      body: /*"Saved as Snippet"*/ new MessageHandler()
+      body: new MessageHandler()
     });
   });
 }
@@ -249,7 +246,7 @@ export function validateForm(
  */
 class InputHandler extends Widget {
   /**
-   * Construct a new "rename" dialog.
+   * Construct a new "code snippet" dialog.
    * readonly inputNode: HTMLInputElement; <--- in Widget class
    */
   constructor(tags: string[]) {
@@ -295,7 +292,7 @@ class Private {
   }
 
   /**
-   * Create the node for a rename handler. This is what's creating all of the elements to be displayed.
+   * Create the node for a code snippet form handler. This is what's creating all of the elements to be displayed.
    */
   static createInputNode(tags: string[]): HTMLElement {
     Private.allTags = tags;
@@ -411,7 +408,6 @@ class Private {
     const inputElement = event.target as HTMLInputElement;
 
     if (inputElement.value !== '' && event.keyCode === 13) {
-      console.log(Private.allTags);
       // duplicate tag
       if (Private.allTags.includes(inputElement.value)) {
         alert('Duplicate Tag Name!');
@@ -429,7 +425,7 @@ class Private {
       tagElem.appendChild(tagBtn);
       tagList.insertBefore(tagElem, inputElement.parentElement);
 
-      // add selected checked mark
+      // add check mark when tag gets selected
       const iconContainer = checkIcon.element({
         className: CODE_SNIPPET_INPUT_TAG_CHECK,
         tag: 'span',
@@ -519,6 +515,7 @@ class Private {
     return false;
   }
 
+  // create a confirm message when new snippet is created successfully
   static createConfirmMessageNode(): HTMLElement {
     const body = document.createElement('div');
     body.innerHTML = checkSVGstr;
