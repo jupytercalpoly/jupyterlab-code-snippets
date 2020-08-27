@@ -500,6 +500,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <pythonIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -511,6 +512,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <javaIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -522,6 +524,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <rKernelIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -533,6 +536,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <juliaIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -544,6 +548,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <matlabIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -555,6 +560,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <schemeIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -566,6 +572,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <processingIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -577,6 +584,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <scalaIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -588,6 +596,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <groovyIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -599,6 +608,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <fortranIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -610,6 +620,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <haskellIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -621,6 +632,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <rubyIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -632,6 +644,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <typescriptIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -643,6 +656,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <javascriptIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -654,6 +668,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <coffeescriptIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -665,6 +680,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <livescriptIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -676,6 +692,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <csharpIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -687,6 +704,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <fsharpIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -698,6 +716,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <goIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -709,6 +728,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <erlangIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -720,6 +740,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <ocamlIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -731,6 +752,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <forthIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -742,6 +764,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <perlIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -753,6 +776,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <phpIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -764,6 +788,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <clojureIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -775,6 +800,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <luaIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -786,6 +812,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <purescriptIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -797,6 +824,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <cppIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -808,6 +836,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <prologIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -819,6 +848,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <lispIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -830,6 +860,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <cIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -841,6 +872,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <kotlinIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -852,6 +884,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <nodejsIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -863,6 +896,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <coconutIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -874,6 +908,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <babelIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -885,6 +920,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <sbtIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -896,6 +932,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <rustIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -907,6 +944,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <qsharpIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"
@@ -918,6 +956,7 @@ export class CodeSnippetDisplay extends React.Component<
         return (
           <fileIcon.react
             tag="span"
+            height="16px"
             width="16px"
             right="7px"
             top="5px"

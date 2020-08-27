@@ -379,14 +379,3 @@ export class CodeSnippetWidget extends ReactWidget {
     );
   }
 }
-
-// class Private {
-//   /**
-//    * Given a MimeData instance, extract the data, if any.
-//    */
-//   static findCellData(mime: MimeData): string[] {
-//     const code = mime.getData('text/plain');
-
-//     return code.split('\n');
-//   }
-// }
