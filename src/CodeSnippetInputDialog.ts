@@ -311,7 +311,7 @@ class Private {
     descriptionValidity.className = CODE_SNIPPET_INPUTDESC_VALIDITY;
 
     const nameTitle = document.createElement('label');
-    nameTitle.textContent = 'Snippet Name*';
+    nameTitle.textContent = 'Snippet Name (required)';
     const name = document.createElement('input');
     name.className = CODE_SNIPPET_DIALOG_INPUT;
     name.required = true;
@@ -319,7 +319,7 @@ class Private {
     name.onblur = Private.handleOnBlur;
 
     const descriptionTitle = document.createElement('label');
-    descriptionTitle.textContent = 'Description*';
+    descriptionTitle.textContent = 'Description (required)';
     const description = document.createElement('input');
     description.className = CODE_SNIPPET_DIALOG_INPUT;
     description.required = true;
@@ -327,7 +327,7 @@ class Private {
     description.onblur = Private.handleOnBlur;
 
     const languageTitle = document.createElement('label');
-    languageTitle.textContent = 'Language*';
+    languageTitle.textContent = 'Language (required)';
     const languageInput = document.createElement('input');
     languageInput.className = CODE_SNIPPET_DIALOG_INPUT;
     languageInput.setAttribute('list', 'languages');
