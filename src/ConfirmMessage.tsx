@@ -1,6 +1,6 @@
-// import '../style/index.css';
-import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { WidgetTracker, ReactWidget } from '@jupyterlab/apputils';
+
+import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
@@ -48,6 +48,7 @@ export class ConfirmMessage<T> extends Widget {
 
     void ConfirmMessage.tracker.add(this);
   }
+
   /**
    * Launch the dialog as a modal window.
    *
@@ -138,9 +139,9 @@ export class ConfirmMessage<T> extends Widget {
     this._resolve();
   }
 
-  // /**
-  //  * Resolve a button item.
-  //  */
+  /**
+   * Resolve a button item.
+   */
   private _resolve(): void {
     // Prevent loopback.
     const promise = this._promise;
@@ -270,7 +271,7 @@ export namespace ConfirmMessage {
   export const defaultRenderer = new Renderer();
 
   /**
-   * The dialog widget tracker.
+   * The confirm message widget tracker.
    */
   export const tracker = new WidgetTracker<ConfirmMessage<any>>({
     namespace: '@jupyterlab/code_snippet:ConfirmWidget'
@@ -282,7 +283,7 @@ export namespace ConfirmMessage {
  */
 namespace Private {
   /**
-   * The queue for launching dialogs.
+   * The queue for launching confirm message.
    */
   export const launchQueue: Promise<void>[] = [];
 }

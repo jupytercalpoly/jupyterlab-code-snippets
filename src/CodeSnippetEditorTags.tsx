@@ -1,5 +1,6 @@
-import React from 'react';
 import { checkIcon, addIcon } from '@jupyterlab/ui-components';
+
+import React from 'react';
 
 interface ICodeSnippetEditorTagProps {
   selectedTags: string[];
@@ -17,7 +18,6 @@ interface ICodeSnippetEditorTagState {
 /**
  * CSS STYLING
  */
-
 const CODE_SNIPPET_EDITOR_TAG = 'jp-codeSnippet-editor-tag';
 const CODE_SNIPPET_EDITOR_TAG_PLUS_ICON = 'jp-codeSnippet-editor-tag-plusIcon';
 const CODE_SNIPPET_EDITOR_TAG_LIST = 'jp-codeSnippet-editor-tagList';
@@ -161,11 +161,9 @@ export class CodeSnippetEditorTags extends React.Component<
         </ul>
       ) : (
         <ul className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}>
-          {/* button */}
           <button onClick={(): void => this.setState({ addingNewTag: true })}>
             Add Tag
           </button>
-          {/* check icon */}
           <addIcon.react
             tag="span"
             className={CODE_SNIPPET_EDITOR_TAG_PLUS_ICON}

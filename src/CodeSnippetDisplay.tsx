@@ -76,6 +76,7 @@ import {
   rustIcon,
   qsharpIcon
 } from './CodeSnippetLanguages';
+
 /**
  * The CSS class added to code snippet widget.
  */
@@ -268,7 +269,7 @@ export class CodeSnippetDisplay extends React.Component<
     });
   };
 
-  // Insert 6 dots on hover
+  // Create 6 dots drag/drop image on hover
   private dragHoverStyle = (id: string): void => {
     const _id: number = parseInt(id, 10);
 
@@ -303,12 +304,8 @@ export class CodeSnippetDisplay extends React.Component<
         .toLowerCase()
         .indexOf(searchValue.toLowerCase());
 
-      // Pythonlanguage
-      // if (startIndex > language.length - 1) {
-      // }
       const endIndex: number = startIndex + searchValue.length;
-      console.log(endIndex);
-      console.log(language.length);
+
       if (endIndex <= language.length) {
         return <span>{name}</span>;
       } else {
@@ -449,11 +446,8 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   private _evtMouseLeave(): void {
-    //get rid of preview by clicking anything
     const preview = document.querySelector('.jp-codeSnippet-preview');
     if (preview) {
-      // if target is not the code snippet name area, then add inactive
-      // if target area is the code snippet name area, previewSnippet widget will handle preview.
       if (!preview.classList.contains('inactive')) {
         preview.classList.add('inactive');
       }
@@ -933,6 +927,7 @@ export class CodeSnippetDisplay extends React.Component<
       }
     }
   }
+
   // Render display of code snippet list
   private renderCodeSnippet = (
     codeSnippet: ICodeSnippet,
@@ -1038,8 +1033,6 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    console.log(props.codeSnippets);
-    console.log(state.codeSnippets);
     if (
       props.codeSnippets !== state.codeSnippets &&
       state.searchValue === '' &&
@@ -1081,7 +1074,6 @@ export class CodeSnippetDisplay extends React.Component<
         filterTags: filterTags
       },
 
-      // { codeSnippets: newSnippets, searchValue: this.state.searchValue },
       () => {
         console.log('CodeSnippets are succesfully filtered.');
       }
@@ -1170,7 +1162,6 @@ export class CodeSnippetDisplay extends React.Component<
     editSnip.className = CODE_SNIPPET_MORE_OTPIONS_EDIT;
     editSnip.textContent = 'Edit snippet';
     editSnip.onclick = (): void => {
-      console.log(codeSnippet);
       const allTags = this.getActiveTags();
       this.props.openCodeSnippetEditor({
         name: codeSnippet.name,
@@ -1238,8 +1229,8 @@ export class CodeSnippetDisplay extends React.Component<
 }
 
 class OptionsHandler extends Widget {
-  constructor(object: CodeSnippetDisplay, codeSnippet: ICodeSnippet) {
-    super({ node: object.createOptionsNode(codeSnippet) });
+  constructor(display: CodeSnippetDisplay, codeSnippet: ICodeSnippet) {
+    super({ node: display.createOptionsNode(codeSnippet) });
   }
 }
 

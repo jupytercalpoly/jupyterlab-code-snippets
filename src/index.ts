@@ -70,7 +70,6 @@ function activateCodeSnippet(
   codeSnippetWidget.title.icon = codeSnippetIcon;
   codeSnippetWidget.title.caption = 'Code Snippet Explorer';
 
-  console.log('creating snippets folder!');
   const contentsService = CodeSnippetContentsService.getInstance();
   contentsService.save('snippets', { type: 'directory' });
 
@@ -104,7 +103,6 @@ function activateCodeSnippet(
       args
     );
 
-    console.log('editor created!');
     codeSnippetEditor.id = widgetId;
     codeSnippetEditor.addClass(widgetId);
     codeSnippetEditor.title.label =
@@ -215,11 +213,9 @@ function activateCodeSnippet(
 
 function getSelectedText(): string {
   let selectedText;
-  console.log('This is the code: ', selectedText);
   // window.getSelection
   if (window.getSelection) {
     selectedText = window.getSelection();
-    console.log(selectedText.toString);
   }
   // document.getSelection
   else if (document.getSelection) {

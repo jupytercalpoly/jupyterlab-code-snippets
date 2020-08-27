@@ -1,9 +1,10 @@
-import { Widget, PanelLayout, Panel } from '@lumino/widgets';
+import { closeIcon, Button, LabIcon } from '@jupyterlab/ui-components';
 import { WidgetTracker, ReactWidget, Styling } from '@jupyterlab/apputils';
+
+import { Widget, PanelLayout, Panel } from '@lumino/widgets';
 import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt, each, map, toArray } from '@lumino/algorithm';
-import { closeIcon, Button, LabIcon } from '@jupyterlab/ui-components';
 
 import * as React from 'react';
 
@@ -11,24 +12,24 @@ import * as React from 'react';
  * CSS styling
  */
 const CODE_SNIPPET_FORM = 'jp-codeSnippet-form';
+const DIALOG_CONTENT = 'jp-Dialog-content';
 
 /**
- * Create and show a dialog.
+ * Create and show a code snippet form.
  *
- * @param options - The dialog setup options.
+ * @param options - The code snippet form setup options.
  *
- * @returns A promise that resolves with whether the dialog was accepted.
+ * @returns A promise that resolves with whether the form was accepted.
  */
 export function showCodeSnippetForm<T>(
   options: Partial<CodeSnippetForm.IOptions<T>> = {}
 ): Promise<CodeSnippetForm.IResult<T>> {
-  console.log(options);
   const codeSnippetForm = new CodeSnippetForm(options);
   return codeSnippetForm.launch();
 }
 
 /**
- * A widget used to show confirmation message.
+ * A widget used to show code snippet form
  */
 export class CodeSnippetForm<T> extends Widget {
   constructor(options: Partial<CodeSnippetForm.IOptions<T>> = {}) {
@@ -48,7 +49,7 @@ export class CodeSnippetForm<T> extends Widget {
 
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
-    content.addClass('jp-Dialog-content');
+    content.addClass(DIALOG_CONTENT);
     layout.addWidget(content);
 
     this._body = normalized.body;
@@ -58,6 +59,7 @@ export class CodeSnippetForm<T> extends Widget {
       () => this.reject(),
       options
     );
+
     const body = renderer.createBody(normalized.body);
     const footer = renderer.createFooter(this._buttonNodes);
     content.addWidget(header);
@@ -67,12 +69,12 @@ export class CodeSnippetForm<T> extends Widget {
     this._primary = this._buttonNodes[this._defaultButton];
     this._focusNodeSelector = options.focusNodeSelector;
 
-    // Add new dialogs to the tracker.
+    // Add new code snippet form to the tracker.
     void CodeSnippetForm.tracker.add(this);
   }
 
   /**
-   * Dispose of the resources used by the dialog.
+   * Dispose of the resources used by the code snippet form.
    */
   dispose(): void {
     const promise = this._promise;
@@ -85,12 +87,12 @@ export class CodeSnippetForm<T> extends Widget {
   }
 
   /**
-   * Launch the dialog as a modal window.
+   * Launch the code snippet form as a modal window.
    *
-   * @returns a promise that resolves with the result of the dialog.
+   * @returns a promise that resolves with the result of the code snippet form.
    */
   launch(): Promise<CodeSnippetForm.IResult<T>> {
-    // Return the existing dialog if already open.
+    // Return the existing code snippet form if already open.
     if (this._promise) {
       return this._promise.promise;
     }
@@ -106,14 +108,14 @@ export class CodeSnippetForm<T> extends Widget {
   }
 
   /**
-   * Resolve the current dialog.
+   * Resolve the current code snippet form.
    *
    * @param index - An optional index to the button to resolve.
    *
    * #### Notes
    * Will default to the defaultIndex.
    * Will resolve the current `show()` with the button value.
-   * Will be a no-op if the dialog is not shown.
+   * Will be a no-op if the code snippet form is not shown.
    */
   resolve(index?: number): void {
     if (!this._promise) {
@@ -126,10 +128,10 @@ export class CodeSnippetForm<T> extends Widget {
   }
 
   /**
-   * Reject the current dialog with a default reject value.
+   * Reject the current code snippet form with a default reject value.
    *
    * #### Notes
-   * Will be a no-op if the dialog is not shown.
+   * Will be a no-op if the code snippet form is not shown.
    */
   reject(): void {
     if (!this._promise) {
@@ -203,7 +205,7 @@ export class CodeSnippetForm<T> extends Widget {
   }
 
   /**
-   * Handle the `'click'` event for a dialog button.
+   * Handle the `'click'` event for a code snippet form button.
    *
    * @param event - The DOM event sent to the widget
    */
@@ -315,7 +317,7 @@ export namespace CodeSnippetForm {
    */
   export type Header = React.ReactElement<any> | string;
   /**
-   * A widget used as a dialog body.
+   * A widget used as a code snippet form body.
    */
   export interface IBodyWidget<T = string> extends Widget {
     /**
@@ -354,12 +356,12 @@ export namespace CodeSnippetForm {
     className: string;
 
     /**
-     * The dialog action to perform when the button is clicked.
+     * The code snippet form action to perform when the button is clicked.
      */
     accept: boolean;
 
     /**
-     * The additional dialog actions to perform when the button is clicked.
+     * The additional code snippet form actions to perform when the button is clicked.
      */
     actions: Array<string>;
 
@@ -371,26 +373,26 @@ export namespace CodeSnippetForm {
 
   export interface IOptions<T> {
     /**
-     * The top level text for the dialog.  Defaults to an empty string.
+     * The top level text for the code snippet form.  Defaults to an empty string.
      */
     title: Header;
 
     /**
-     * The main body element for the dialog or a message to display.
+     * The main body element for the code snippet form to display.
      * Defaults to an empty string.
      *
      * #### Notes
      * If a widget is given as the body, it will be disposed after the
-     * dialog is resolved.  If the widget has a `getValue()` method,
+     * code snippet form is resolved.  If the widget has a `getValue()` method,
      * the method will be called prior to disposal and the value
-     * will be provided as part of the dialog result.
+     * will be provided as part of the code snippet form result.
      * A string argument will be used as raw `textContent`.
      * All `input` and `select` nodes will be wrapped and styled.
      */
     body: Body<T>;
 
     /**
-     * The host element for the dialog. Defaults to `document.body`.
+     * The host element for the code snippet form. Defaults to `document.body`.
      */
     host: HTMLElement;
 
@@ -405,34 +407,34 @@ export namespace CodeSnippetForm {
     defaultButton: number;
 
     /**
-     * A selector for the primary element that should take focus in the dialog.
+     * A selector for the primary element that should take focus in the code snippet form.
      * Defaults to an empty string, causing the [[defaultButton]] to take
      * focus.
      */
     focusNodeSelector: string;
 
     /**
-     * When "true", renders a close button for the dialog
+     * When "true", renders a close button for the code snippet form
      */
     hasClose: boolean;
 
     /**
-     * An optional renderer for dialog items.  Defaults to a shared
+     * An optional renderer for code snippet form items.  Defaults to a shared
      * default renderer.
      */
     renderer: IRenderer;
   }
 
   /**
-   * A dialog renderer.
+   * A code snippet form renderer.
    */
   export interface IRenderer {
     /**
-     * Create the header of the dialog.
+     * Create the header of the code snippet form.
      *
-     * @param title - The title of the dialog.
+     * @param title - The title of the code snippet form.
      *
-     * @returns A widget for the dialog header.
+     * @returns A widget for the code snippet form header.
      */
     createHeader<T>(
       title: Header,
@@ -441,7 +443,7 @@ export namespace CodeSnippetForm {
     ): Widget;
 
     /**
-     * Create the body of the dialog.
+     * Create the body of the code snippet form.
      *
      * @param value - The input value for the body.
      *
@@ -450,7 +452,7 @@ export namespace CodeSnippetForm {
     createBody(body: Body<any>): Widget;
 
     /**
-     * Create the footer of the dialog.
+     * Create the footer of the code snippet form.
      *
      * @param buttons - The button nodes to add to the footer.
      *
@@ -459,7 +461,7 @@ export namespace CodeSnippetForm {
     createFooter(buttons: ReadonlyArray<HTMLElement>): Widget;
 
     /**
-     * Create a button node for the dialog.
+     * Create a button node for the code snippet form.
      *
      * @param button - The button data.
      *
@@ -469,7 +471,7 @@ export namespace CodeSnippetForm {
   }
 
   /**
-   * The result of a dialog.
+   * The result of a code snippet form.
    */
   export interface IResult<T> {
     /**
@@ -530,7 +532,7 @@ export namespace CodeSnippetForm {
   }
 
   /**
-   * Disposes all dialog instances.
+   * Disposes all code snippet form instances.
    *
    * #### Notes
    * This function should only be used in tests or cases where application state
@@ -543,15 +545,15 @@ export namespace CodeSnippetForm {
   }
 
   /**
-   * The default implementation of a dialog renderer.
+   * The default implementation of a code snippet form renderer.
    */
   export class Renderer {
     /**
-     * Create the header of the dialog.
+     * Create the header of the code snippet form.
      *
-     * @param title - The title of the dialog.
+     * @param title - The title of the code snippet form.
      *
-     * @returns A widget for the dialog header.
+     * @returns A widget for the code snippet form header.
      */
     createHeader<T>(
       title: Header,
@@ -608,7 +610,7 @@ export namespace CodeSnippetForm {
     }
 
     /**
-     * Create the body of the dialog.
+     * Create the body of the code snippet form.
      *
      * @param value - The input value for the body.
      *
@@ -633,7 +635,7 @@ export namespace CodeSnippetForm {
     }
 
     /**
-     * Create the footer of the dialog.
+     * Create the footer of the code snippet form.
      *
      * @param buttonNodes - The buttons nodes to add to the footer.
      *
@@ -650,7 +652,7 @@ export namespace CodeSnippetForm {
     }
 
     /**
-     * Create a button node for the dialog.
+     * Create a button node for the code snippet form.
      *
      * @param button - The button data.
      *
@@ -696,7 +698,7 @@ export namespace CodeSnippetForm {
     }
 
     /**
-     * Render an icon element for a dialog item.
+     * Render an icon element for a code snippet form item.
      *
      * @param data - The data to use for rendering the icon.
      *
@@ -744,7 +746,7 @@ export namespace CodeSnippetForm {
   export const defaultRenderer = new Renderer();
 
   /**
-   * The dialog widget tracker.
+   * The code snippet form widget tracker.
    */
   export const tracker = new WidgetTracker<CodeSnippetForm<any>>({
     namespace: '@jupyterlab/apputils:CodeSnippetForm'
@@ -756,14 +758,14 @@ export namespace CodeSnippetForm {
  */
 namespace Private {
   /**
-   * The queue for launching dialogs.
+   * The queue for launching code snippet forms.
    */
   export const launchQueue: Promise<CodeSnippetForm.IResult<any>>[] = [];
 
   export const errorMessagePromiseCache: Map<string, Promise<void>> = new Map();
 
   /**
-   * Handle the input options for a dialog.
+   * Handle the input options for a code snippet form.
    *
    * @param options - The input options.
    *
@@ -793,7 +795,7 @@ namespace Private {
   }
 
   /**
-   *  Find the first focusable item in the dialog.
+   *  Find the first focusable item in the code snippet form.
    */
   export function findFirstFocusable(node: HTMLElement): HTMLElement {
     const candidateSelectors = [
