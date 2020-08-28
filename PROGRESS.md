@@ -11,23 +11,37 @@
 - [x] Search bar for snippets
 - [x] Snippet preview (on the side)
 - [x] Drag snippet into notebook
-- [ ] Filters on snippet panel
-- [ ] Code snippet editor
-- [ ] Recently used snippets
-- [ ] Right click and save highlighted cell
-- [ ] Plus button to create new snippet
-- [x] Undo delete snippet
+- [x] Move snippet within snippet explorer
+- [x] Filters on snippet panel
+- [x] Code snippet editor
+- [x] Plus button to create new snippet
+
+## Future development
+- [ ] Tab completion
+- [ ] Templated Fields
+- [ ] Color Code Tags
+- [ ] Multi-cell Saving
+
+## Demo 3 (Aug 25)
+- Design review
+- Usability tests
+- Minimap preview
+- Removing extra icons
+- Filter with cell tags
+- Code snippet editor
+- ‘+’ create snippets
+- Design refinements
 
 ## Demo 2 (Aug 5)
-- [x] Search ability
-  - [x] search by name/language
-  - [x] search bolding
-- [ ] Snippet preview
-  - [ ] editing mode
-  - [ ] snippet description
-- [x] Drag and drop
-  - [x] drag snippet into notebook - create new cell
-- [x] Undo/redo functionality
+- Search ability
+  - search by name/language
+  - search bolding
+- Snippet preview
+  - editing mode
+  - snippet description
+- Drag and drop
+  - drag snippet into notebook - create new cell
+- Undo/redo functionality
   
 ## Log of Changes/Progress
 
