@@ -305,7 +305,6 @@ export class CodeSnippetEditor extends ReactWidget {
       `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
     ) as HTMLSelectElement).value;
 
-    console.log(language);
     const validity = this.validateInputs(name, description, language);
     if (validity) {
       this.updateSnippet();
@@ -364,7 +363,6 @@ export class CodeSnippetEditor extends ReactWidget {
     this._codeSnippetEditorMetaData.description = description;
     this._codeSnippetEditorMetaData.language = language;
 
-    console.log(language);
     this.saved = true;
 
     const newPath =
@@ -378,8 +376,6 @@ export class CodeSnippetEditor extends ReactWidget {
         try {
           await this.contentsService.rename(oldPath, newPath);
         } catch (error) {
-          console.log('duplicate name!');
-
           await showDialog({
             title: 'Duplicate Name of Code Snippet',
             body: <p> {`"${newPath}" already exists.`} </p>,
@@ -406,14 +402,12 @@ export class CodeSnippetEditor extends ReactWidget {
         })
         .catch(() => {
           nameCheck = true;
-          console.log('new snippet has been created!');
         });
       if (!nameCheck) {
         return;
       }
     }
 
-    console.log(this._codeSnippetEditorMetaData.selectedTags);
     await this.contentsService.save(newPath, {
       type: 'file',
       format: 'text',
