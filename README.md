@@ -13,6 +13,7 @@ Check out [the Current Progress](./PROGRESS.md) to keep up with our feature upda
 This extension is composed of a NPM package named `jupyterlab-code-snippets`
 for the frontend extension.
 
+![Alt Text](./Design/overview.gif)
 ## Requirements
 
 - JupyterLab >= 2.0
