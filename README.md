@@ -4,7 +4,7 @@
 
 ![Github Actions Status](https://github.com/jupytercalpoly/jupyterlab-code-snippets/workflows/Build/badge.svg) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/jupyterlab-code-snippets.git/master?urlpath=lab) [![NPM Version](https://img.shields.io/npm/v/jupyterlab-code-snippets.svg?style=flat)](https://npmjs.org/package/jupyterlab-code-snippets "View this project on npm") [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/jupytercalpoly/jupyterlab-code-snippets/blob/master/LICENSE) [![Documentation Status](https://readthedocs.org/projects/jupyterlab-code-snippets-documentation/badge/?version=latest)](https://jupyterlab-code-snippets-documentation.readthedocs.io/en/latest/?badge=latest)
 
-This extension is inspired by [Elyra](https://github.com/elyra-ai/elyra) and further developed by Jupyter Cal Poly Team.
+This extension is a derivative of [Elyra](https://github.com/elyra-ai/elyra)'s original design and further developed by Jupyter Cal Poly Team.
 
 Read [Press Release](./PRESSRELEASE.md) for more information.
 
