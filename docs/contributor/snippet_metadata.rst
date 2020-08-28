@@ -2,6 +2,16 @@
 
 Snippet JSON Format
 -------------------
+.. code::
+
+   {
+      code: string,
+      description: string,
+      language: string,
+      code: string[],
+      id: number,
+      tags?: string[]
+   }
 
 This is a sample json file:
 
