@@ -85,7 +85,6 @@ export class CodeSnippetWidget extends ReactWidget {
     // Clear the current snippets
     this._codeSnippetWidgetModel.clearSnippets();
 
-    console.log('fetching snippets!');
     await this.codeSnippetManager
       .getData('snippets', 'directory')
       .then(model => {
@@ -337,6 +336,15 @@ export class CodeSnippetWidget extends ReactWidget {
      */
     const source = event.source;
     if (source instanceof CodeSnippetDisplay) {
+      if (
+        source.state.searchValue !== '' ||
+        source.state.filterTags.length !== 0
+      ) {
+        alert(
+          "Sorry, in the current version, you can't move snippets within explorer while filtering or searching"
+        );
+        return;
+      }
       event.dropAction = 'move';
       if (event.mimeData.hasData('snippet/id')) {
         const srcIdx = event.mimeData.getData('snippet/id') as number;

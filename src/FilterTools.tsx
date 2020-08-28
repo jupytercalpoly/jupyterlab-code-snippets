@@ -9,7 +9,7 @@ interface IFilterSnippetProps {
 
 interface IFilterSnippetState {
   show: boolean;
-  filteredTags: string[];
+  selectedTags: string[];
   searchValue: string;
 }
 
@@ -31,13 +31,27 @@ export class FilterTools extends React.Component<
 > {
   constructor(props: IFilterSnippetProps) {
     super(props);
-    this.state = { show: false, filteredTags: [], searchValue: '' };
+    this.state = { show: false, selectedTags: [], searchValue: '' };
     this.createFilterBox = this.createFilterBox.bind(this);
     this.renderFilterOption = this.renderFilterOption.bind(this);
     this.renderTags = this.renderTags.bind(this);
     this.renderTag = this.renderTag.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.filterSnippets = this.filterSnippets.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ show: false, selectedTags: [], searchValue: '' });
+  }
+
+  componentDidUpdate(prevProps: IFilterSnippetProps) {
+    if (prevProps !== this.props) {
+      this.setState(state => ({
+        selectedTags: state.selectedTags.filter(tag =>
+          this.props.tags.includes(tag)
+        )
+      }));
+    }
   }
 
   createFilterBox(): void {
@@ -78,10 +92,10 @@ export class FilterTools extends React.Component<
 
     this.setState(
       state => ({
-        filteredTags: this.handleClickHelper(
+        selectedTags: this.handleClickHelper(
           target,
           parent,
-          state.filteredTags,
+          state.selectedTags,
           clickedTag
         )
       }),
@@ -138,7 +152,7 @@ export class FilterTools extends React.Component<
   };
 
   filterSnippets(): void {
-    this.props.onFilter(this.state.searchValue, this.state.filteredTags);
+    this.props.onFilter(this.state.searchValue, this.state.selectedTags);
   }
 
   renderFilterOption(): JSX.Element {

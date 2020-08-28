@@ -1072,15 +1072,29 @@ export class CodeSnippetDisplay extends React.Component<
     props: ICodeSnippetDisplayProps,
     state: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    if (
-      props.codeSnippets !== state.codeSnippets &&
-      state.searchValue === '' &&
-      state.filterTags.length === 0
-    ) {
+    if (state.searchValue === '' && state.filterTags.length === 0) {
       return {
         codeSnippets: props.codeSnippets,
         searchValue: '',
         filterTags: []
+      };
+    }
+
+    if (state.searchValue !== '' || state.filterTags.length !== 0) {
+      const newSnippets = props.codeSnippets.filter(codeSnippet => {
+        return (
+          (state.searchValue !== '' &&
+            codeSnippet.name.toLowerCase().includes(state.searchValue)) ||
+          (state.searchValue !== '' &&
+            codeSnippet.language.toLowerCase().includes(state.searchValue)) ||
+          (codeSnippet.tags &&
+            codeSnippet.tags.some(tag => state.filterTags.includes(tag)))
+        );
+      });
+      return {
+        codeSnippets: newSnippets,
+        searchValue: state.searchValue,
+        filterTags: state.filterTags
       };
     }
     return null;
@@ -1106,17 +1120,11 @@ export class CodeSnippetDisplay extends React.Component<
       });
     }
 
-    this.setState(
-      {
-        codeSnippets: filteredSnippets,
-        searchValue: searchValue,
-        filterTags: filterTags
-      },
-
-      () => {
-        console.log('CodeSnippets are succesfully filtered.');
-      }
-    );
+    this.setState({
+      codeSnippets: filteredSnippets,
+      searchValue: searchValue,
+      filterTags: filterTags
+    });
   };
 
   getActiveTags(): string[] {
@@ -1158,12 +1166,19 @@ export class CodeSnippetDisplay extends React.Component<
           editor.dispose();
         }
 
+        // deleting snippets when there is one snippet active
         contentsService.delete('snippets/' + codeSnippet.name + '.json');
         this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
         this.props._codeSnippetWidgetModel.updateSnippetContents();
-        this.setState({
-          codeSnippets: this.props._codeSnippetWidgetModel.snippets
-        });
+
+        // active tags after delete
+        const activeTags = this.getActiveTags();
+
+        // filterTags: only the tags that are still being used
+        this.setState(state => ({
+          codeSnippets: this.props._codeSnippetWidgetModel.snippets,
+          filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
+        }));
       }
     });
   }
