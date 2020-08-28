@@ -33,3 +33,4 @@ JupyterLab Code Snippets empowers you to write code more rapidly. `Try it on Bin
    
    contributor/codebase
    contributor/contribute
+   contributor/snippet_metadata
