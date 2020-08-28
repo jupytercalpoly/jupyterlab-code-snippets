@@ -8,7 +8,7 @@ JupyterLab Code Snippets Documentation
 
 JupyterLab Code Snippets empowers you to write code more rapidly. `Try it on Binder <https://mybinder.org/v2/gh/jupytercalpoly/jupyterlab-code-snippets.git/master?urlpath=lab>`__.
 
-.. image:: ../Design/gifs/overview.gif
+.. image:: ../Design/overview.gif
    :align: center
 
 .. toctree::
