@@ -2,7 +2,7 @@
 
 ## Save, reuse, and share code snippets using JupyterLab Code Snippets
 
-![Github Actions Status](https://github.com/jupytercalpoly/jupyterlab-code-snippets/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/jupyterlab-code-snippets.git/master?urlpath=lab)[![NPM Version](https://img.shields.io/npm/v/jupyterlab-code-snippets.svg?style=flat)](https://npmjs.org/package/jupyterlab-code-snippets "View this project on npm")
+![Github Actions Status](https://github.com/jupytercalpoly/jupyterlab-code-snippets/workflows/Build/badge.svg) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/jupyterlab-code-snippets.git/master?urlpath=lab) [![NPM Version](https://img.shields.io/npm/v/jupyterlab-code-snippets.svg?style=flat)](https://npmjs.org/package/jupyterlab-code-snippets "View this project on npm") [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 
 This extension is inspired by [Elyra](https://github.com/elyra-ai/elyra) and further developed by Jupyter Cal Poly Team.
 
