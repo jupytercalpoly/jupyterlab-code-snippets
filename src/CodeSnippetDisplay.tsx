@@ -1120,17 +1120,11 @@ export class CodeSnippetDisplay extends React.Component<
       });
     }
 
-    this.setState(
-      {
-        codeSnippets: filteredSnippets,
-        searchValue: searchValue,
-        filterTags: filterTags
-      },
-
-      () => {
-        console.log('CodeSnippets are succesfully filtered.');
-      }
-    );
+    this.setState({
+      codeSnippets: filteredSnippets,
+      searchValue: searchValue,
+      filterTags: filterTags
+    });
   };
 
   getActiveTags(): string[] {

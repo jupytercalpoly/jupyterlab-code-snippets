@@ -85,7 +85,6 @@ export class CodeSnippetWidget extends ReactWidget {
     // Clear the current snippets
     this._codeSnippetWidgetModel.clearSnippets();
 
-    console.log('fetching snippets!');
     await this.codeSnippetManager
       .getData('snippets', 'directory')
       .then(model => {

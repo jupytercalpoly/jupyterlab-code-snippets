@@ -44,8 +44,6 @@ export class ConfirmMessage<T> extends Widget {
     const body = renderer.createBody(options.body);
     content.addWidget(body);
 
-    console.log(content);
-
     void ConfirmMessage.tracker.add(this);
   }
 
