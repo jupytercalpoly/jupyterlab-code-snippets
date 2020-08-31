@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # install extension
+jupyter labextension update jupyter-offlinenotebook --no-build
 jupyter labextension install jupyterlab-code-snippets
 
 # remove unnecessary directories when using the binder

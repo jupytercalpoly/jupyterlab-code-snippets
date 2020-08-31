@@ -9,7 +9,7 @@ are stored, following a schema defined below.
 .. code::
 
    {
-      code: string,
+      name: string,
       description: string,
       language: string,
       code: string[],
