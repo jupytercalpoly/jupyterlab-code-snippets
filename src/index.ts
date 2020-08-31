@@ -179,7 +179,7 @@ function activateCodeSnippet(
   app.commands.addKeyBinding({
     command: saveCommand,
     args: {},
-    keys: ['Shift S'],
+    keys: ['Accel Shift S'],
     selector: '.jp-Cell'
   });
 
