@@ -2,7 +2,7 @@
 
 # install extension
 jupyter labextension update jupyter-offlinenotebook --no-build
-jupyter labextension install jupyterlab-code-snippets
+jupyter labextension install --minimize=False jupyterlab-code-snippets
 
 # remove unnecessary directories when using the binder
 rm -rf src
