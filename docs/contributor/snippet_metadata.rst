@@ -1,6 +1,6 @@
 .. _snippet_metadata:
 
-Snippet JSON Format
+Code Snippet Metadata 
 -------------------
 .. code::
 
@@ -13,7 +13,7 @@ Snippet JSON Format
       tags?: string[]
    }
 
-This is a sample json file:
+This is a sample code snippet metadata:
 
 .. code:: json
 
