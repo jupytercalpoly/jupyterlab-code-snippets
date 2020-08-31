@@ -2,6 +2,10 @@
 
 Code Snippet Metadata 
 -------------------
+This extension uses JupyterLab Contents Service and creates a
+``snippets/`` if it doesn’t exist. This is where code snippet json files
+are stored, following a schema defined below.
+
 .. code::
 
    {
@@ -13,7 +17,7 @@ Code Snippet Metadata
       tags?: string[]
    }
 
-This is a sample code snippet metadata:
+This is a sample code snippet json file:
 
 .. code:: json
 
