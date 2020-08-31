@@ -1,0 +1,1 @@
+{"name":"gdp_calculator","description":"Calculate total GDP, in trillions of dollars, by region, over time","language":"R","code":["gdp_regions <- nations %>%","  mutate(gdp = gdp_percap * population,","         gdp_tn = gdp/1000000000000) %>%","  group_by(region, year) %>%","  summarize(total_gdp_tn = sum(gdp_tn, na.rm = TRUE))",""],"id":11,"tags":["Countries Project"]}
