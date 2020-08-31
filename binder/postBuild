@@ -9,6 +9,8 @@ rm -rf src
 rm -rf style
 rm -rf .github
 rm -rf binder
+rm -rf Design
+rm -rf docs
 rm package.json
 rm tsconfig.json
 rm yarn.lock
