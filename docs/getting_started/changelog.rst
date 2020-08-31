@@ -2,6 +2,10 @@
 
 Changelog
 ---------
+v1.0.3
+^^^^^^
+* Fixed the issue with keyboard shortcut to create a code snippet with highlighted text
+
 v1.0.2
 ^^^^^^
 * Fixed editing or deleting errors during filtering or searching
