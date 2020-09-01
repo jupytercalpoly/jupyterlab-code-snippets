@@ -331,6 +331,7 @@ export class CodeSnippetWidget extends ReactWidget {
       idx = parseInt(snippet.id);
     }
 
+    console.log(this._codeSnippetWidgetModel.snippets);
     /**
      * moving snippets inside the snippet panel
      */

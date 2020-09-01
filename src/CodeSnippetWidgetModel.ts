@@ -26,6 +26,13 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
     this._snippets = snippetList;
   }
 
+  reorderSnippet(): void {
+    this.sortSnippets();
+    for (let i = 0; i < this._snippets.length; i++) {
+      this._snippets[i].id = i;
+    }
+  }
+
   addSnippet(newSnippet: ICodeSnippet, index: number): void {
     // append a new snippet created from input form to the end
     if (newSnippet.id === -1) {
