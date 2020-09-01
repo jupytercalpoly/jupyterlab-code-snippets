@@ -2,6 +2,11 @@
 
 Changelog
 ---------
+v1.0.4
+^^^^^^
+* Fixed the issue with deleting a snippet while searching or filtering
+* Fixed the issue with adding a snippet while searching or filtering
+
 v1.0.3
 ^^^^^^
 * Fixed the issue with keyboard shortcut to create a code snippet with highlighted text

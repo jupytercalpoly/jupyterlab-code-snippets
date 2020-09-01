@@ -1,6 +1,6 @@
 {
   "name": "jupyterlab-code-snippets",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "EXPERIMENTAL: Save, reuse, and share code snippets using JupyterLab Code Snippets",
   "keywords": [
     "jupyter",
