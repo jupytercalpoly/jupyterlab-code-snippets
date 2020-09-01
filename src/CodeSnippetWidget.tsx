@@ -331,7 +331,6 @@ export class CodeSnippetWidget extends ReactWidget {
       idx = parseInt(snippet.id);
     }
 
-    console.log(this._codeSnippetWidgetModel.snippets);
     /**
      * moving snippets inside the snippet panel
      */
@@ -359,6 +358,9 @@ export class CodeSnippetWidget extends ReactWidget {
       event.dropAction = 'copy';
       CodeSnippetInputDialog(this, data, idx);
     }
+
+    // Reorder snippet just to make sure id's are in order.
+    this._codeSnippetWidgetModel.reorderSnippet();
   }
 
   // move code snippet within code snippet explorer
