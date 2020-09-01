@@ -358,6 +358,9 @@ export class CodeSnippetWidget extends ReactWidget {
       event.dropAction = 'copy';
       CodeSnippetInputDialog(this, data, idx);
     }
+
+    // Reorder snippet just to make sure id's are in order.
+    this._codeSnippetWidgetModel.reorderSnippet();
   }
 
   // move code snippet within code snippet explorer

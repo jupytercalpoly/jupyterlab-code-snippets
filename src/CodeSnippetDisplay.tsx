@@ -1169,6 +1169,7 @@ export class CodeSnippetDisplay extends React.Component<
         // deleting snippets when there is one snippet active
         contentsService.delete('snippets/' + codeSnippet.name + '.json');
         this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
+        this.props._codeSnippetWidgetModel.reorderSnippet();
         this.props._codeSnippetWidgetModel.updateSnippetContents();
 
         // active tags after delete

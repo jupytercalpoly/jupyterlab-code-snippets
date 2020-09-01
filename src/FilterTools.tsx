@@ -35,21 +35,26 @@ export class FilterTools extends React.Component<
     this.createFilterBox = this.createFilterBox.bind(this);
     this.renderFilterOption = this.renderFilterOption.bind(this);
     this.renderTags = this.renderTags.bind(this);
-    this.renderTag = this.renderTag.bind(this);
+    this.renderAppliedTag = this.renderAppliedTag.bind(this);
+    this.renderUnappliedTag = this.renderUnappliedTag.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.filterSnippets = this.filterSnippets.bind(this);
   }
 
   componentDidMount() {
-    this.setState({ show: false, selectedTags: [], searchValue: '' });
+    this.setState({
+      show: false,
+      selectedTags: [],
+      searchValue: ''
+    });
   }
 
   componentDidUpdate(prevProps: IFilterSnippetProps) {
     if (prevProps !== this.props) {
       this.setState(state => ({
-        selectedTags: state.selectedTags.filter(tag =>
-          this.props.tags.includes(tag)
-        )
+        selectedTags: state.selectedTags
+          .filter(tag => this.props.tags.includes(tag))
+          .sort()
       }));
     }
   }
@@ -66,14 +71,39 @@ export class FilterTools extends React.Component<
   renderTags(): JSX.Element {
     return (
       <div className={FILTER_TAGS}>
-        {this.props.tags.map((tag: string, index: number) =>
-          this.renderTag(tag, index.toString())
-        )}
+        {this.props.tags.sort().map((tag: string, index: number) => {
+          if (this.state.selectedTags.includes(tag)) {
+            return this.renderAppliedTag(tag, index.toString());
+          } else {
+            return this.renderUnappliedTag(tag, index.toString());
+          }
+        })}
       </div>
     );
   }
 
-  renderTag(tag: string, index: string): JSX.Element {
+  renderAppliedTag(tag: string, index: string): JSX.Element {
+    return (
+      <div
+        className={`${FILTER_TAG} tag applied-tag`}
+        id={'filter' + '-' + tag + '-' + index}
+        key={'filter' + '-' + tag + '-' + index}
+      >
+        <button onClick={this.handleClick}>{tag}</button>
+        <checkIcon.react
+          className={FILTER_CHECK}
+          tag="span"
+          elementPosition="center"
+          height="18px"
+          width="18px"
+          marginLeft="5px"
+          marginRight="-3px"
+        />
+      </div>
+    );
+  }
+
+  renderUnappliedTag(tag: string, index: string): JSX.Element {
     return (
       <div
         className={`${FILTER_TAG} tag unapplied-tag`}
@@ -93,7 +123,6 @@ export class FilterTools extends React.Component<
     this.setState(
       state => ({
         selectedTags: this.handleClickHelper(
-          target,
           parent,
           state.selectedTags,
           clickedTag
@@ -104,47 +133,21 @@ export class FilterTools extends React.Component<
   }
 
   handleClickHelper(
-    target: HTMLElement,
     parent: HTMLElement,
     currentTags: string[],
     clickedTag: string
   ): string[] {
     if (parent.classList.contains('unapplied-tag')) {
       parent.classList.replace('unapplied-tag', 'applied-tag');
-      const iconContainer = checkIcon.element({
-        className: FILTER_CHECK,
-        tag: 'span',
-        elementPosition: 'center',
-        height: '18px',
-        width: '18px',
-        marginLeft: '5px',
-        marginRight: '-3px'
-      });
-      const color = getComputedStyle(document.documentElement).getPropertyValue(
-        '--jp-ui-font-color1'
-      );
-      target.style.color = color;
-      if (parent.children.length === 1) {
-        parent.appendChild(iconContainer);
-      }
 
       currentTags.splice(-1, 0, clickedTag);
     } else if (parent.classList.contains('applied-tag')) {
       parent.classList.replace('applied-tag', 'unapplied-tag');
-      const color = getComputedStyle(document.documentElement).getPropertyValue(
-        '--jp-ui-font-color2'
-      );
-      target.style.color = color;
-
-      if (parent.children.length !== 1) {
-        // remove check icon
-        parent.removeChild(parent.children.item(1));
-      }
 
       const idx = currentTags.indexOf(clickedTag);
       currentTags.splice(idx, 1);
     }
-    return currentTags;
+    return currentTags.sort();
   }
 
   handleSearch = (event: React.ChangeEvent<HTMLInputElement>): void => {
