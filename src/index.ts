@@ -169,10 +169,16 @@ function activateCodeSnippet(
     }
   });
 
-  //Put the command above in context menu
+  // Put the saveCommand above in context menu
   app.contextMenu.addItem({
     command: saveCommand,
     selector: '.jp-Cell'
+  });
+
+  // Put the saveCommand in non-notebook file context menu
+  app.contextMenu.addItem({
+    command: saveCommand,
+    selector: '.jp-FileEditor'
   });
 
   // Add keybinding to save
