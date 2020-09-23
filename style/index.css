@@ -178,9 +178,9 @@
   background: var(--jp-layout-color1);
   padding: 5px;
   width: 180px;
-  /*height: fit-content;
-  max-height: 150px;*/
-  height: 106px;
+  height: fit-content;
+  max-height: 75px;
+  /*height: 106px;*/
   box-sizing: border-box;
   box-shadow: var(--jp-elevation-z2);
   word-wrap: break-word;
