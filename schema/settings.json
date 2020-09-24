@@ -1,0 +1,10 @@
+{
+  "jupyter.lab.shortcuts": [
+    {
+      "command": "codeSnippet:save-as-snippet",
+      "keys": ["Accel Shift S"],
+      "selector": ".jp-Cell"
+    }
+  ],
+  "type": "object"
+}
