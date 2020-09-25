@@ -169,6 +169,7 @@ function activateCodeSnippet(
         highlightedCode.split('\n'),
         -1
       );
+      // if highlightedCode is empty, check the code of the entire cell.
     }
   });
 
