@@ -2,8 +2,13 @@
   "jupyter.lab.shortcuts": [
     {
       "command": "codeSnippet:save-as-snippet",
-      "keys": ["Accel Shift S"],
+      "keys": ["Accel Shift A"],
       "selector": ".jp-Cell"
+    },
+    {
+      "command": "codeSnippet:save-as-snippet",
+      "keys": ["Accel Shift A"],
+      "selector": ".jp-FileEditor"
     }
   ],
   "type": "object"
