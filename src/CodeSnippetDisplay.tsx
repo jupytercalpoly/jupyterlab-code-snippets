@@ -168,6 +168,7 @@ export class CodeSnippetDisplay extends React.Component<
     this._dragData = null;
     this.handleDragMove = this.handleDragMove.bind(this);
     this._evtMouseUp = this._evtMouseUp.bind(this);
+    this.handleRenameSnippet = this.handleRenameSnippet.bind(this);
   }
 
   // Handle code snippet insert into an editor
@@ -321,8 +322,74 @@ export class CodeSnippetDisplay extends React.Component<
         );
       }
     }
-    return <span>{name}</span>;
+    return <span onDoubleClick={this.handleRenameSnippet}>{name}</span>;
   };
+
+  // rename snippet on double click
+  // TODO: duplicate name check!
+  private handleRenameSnippet(
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+  ): void {
+    const contentsService = CodeSnippetContentsService.getInstance();
+    console.log(event.currentTarget);
+    console.log(event.target);
+    const target = event.target as HTMLElement;
+    const oldPath = 'snippets/' + target.innerHTML + '.json';
+
+    const new_element = document.createElement('input');
+    new_element.setAttribute('type', 'text');
+    new_element.id = 'jp-codeSnippet-rename';
+    // new_element.innerHTML = target.innerHTML;
+
+    target.replaceWith(new_element);
+    new_element.value = target.innerHTML;
+
+    new_element.focus();
+    new_element.setSelectionRange(0, new_element.value.length);
+
+    new_element.onblur = (): void => {
+      if (target.innerHTML !== new_element.value) {
+        const newPath = 'snippets/' + new_element.value + '.json';
+
+        new_element.replaceWith(target);
+
+        contentsService.rename(oldPath, newPath);
+        this.props._codeSnippetWidgetModel.renameSnippet(
+          target.innerHTML,
+          new_element.value
+        );
+
+        target.innerHTML = new_element.value;
+      }
+    };
+    new_element.onkeydown = (event: KeyboardEvent): void => {
+      switch (event.code) {
+        case 'Enter' || 'NumpadEnter': // Enter
+          event.stopPropagation();
+          event.preventDefault();
+          new_element.blur();
+          break;
+        case 'Escape': // Escape
+          event.stopPropagation();
+          event.preventDefault();
+          new_element.blur();
+          break;
+        case 'ArrowUp': // Up arrow
+          event.stopPropagation();
+          event.preventDefault();
+          new_element.selectionStart = new_element.selectionEnd = 0;
+          break;
+        case 'ArrowDown': // Down arrow
+          event.stopPropagation();
+          event.preventDefault();
+          new_element.selectionStart = new_element.selectionEnd =
+            new_element.value.length;
+          break;
+        default:
+          break;
+      }
+    };
+  }
 
   private handleDragSnippet(
     event: React.MouseEvent<HTMLDivElement, MouseEvent>

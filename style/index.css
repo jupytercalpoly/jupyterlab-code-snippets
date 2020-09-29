@@ -69,6 +69,13 @@
   background-color: var(--jp-layout-color2);
 }
 
+#jp-codeSnippet-rename {
+  background-color: var(--jp-layout-color2);
+  border: 1px solid var(--jp-layout-color1);
+  border-radius: 2px;
+  font-size: var(--jp-ui-font-size1);
+}
+
 .jp-codeSnippet-metadata {
   flex-basis: 95%;
   width: 100%;
