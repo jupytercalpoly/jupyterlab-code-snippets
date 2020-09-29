@@ -348,10 +348,10 @@ export class CodeSnippetDisplay extends React.Component<
     new_element.setSelectionRange(0, new_element.value.length);
 
     new_element.onblur = (): void => {
+      new_element.replaceWith(target);
+
       if (target.innerHTML !== new_element.value) {
         const newPath = 'snippets/' + new_element.value + '.json';
-
-        new_element.replaceWith(target);
 
         contentsService.rename(oldPath, newPath);
         this.props._codeSnippetWidgetModel.renameSnippet(
