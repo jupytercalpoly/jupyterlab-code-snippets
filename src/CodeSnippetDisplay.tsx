@@ -327,9 +327,9 @@ export class CodeSnippetDisplay extends React.Component<
 
   // rename snippet on double click
   // TODO: duplicate name check!
-  private handleRenameSnippet(
+  private async handleRenameSnippet(
     event: React.MouseEvent<HTMLSpanElement, MouseEvent>
-  ): void {
+  ): Promise<void> {
     const contentsService = CodeSnippetContentsService.getInstance();
     console.log(event.currentTarget);
     console.log(event.target);
@@ -339,7 +339,7 @@ export class CodeSnippetDisplay extends React.Component<
     const new_element = document.createElement('input');
     new_element.setAttribute('type', 'text');
     new_element.id = 'jp-codeSnippet-rename';
-    // new_element.innerHTML = target.innerHTML;
+    new_element.innerHTML = target.innerHTML;
 
     target.replaceWith(new_element);
     new_element.value = target.innerHTML;
@@ -347,20 +347,30 @@ export class CodeSnippetDisplay extends React.Component<
     new_element.focus();
     new_element.setSelectionRange(0, new_element.value.length);
 
-    new_element.onblur = (): void => {
-      new_element.replaceWith(target);
-
+    new_element.onblur = async (): Promise<void> => {
+      console.log(target.innerHTML);
+      console.log(new_element.value);
       if (target.innerHTML !== new_element.value) {
         const newPath = 'snippets/' + new_element.value + '.json';
+        try {
+          await contentsService.rename(oldPath, newPath);
+        } catch (error) {
+          new_element.replaceWith(target);
 
-        contentsService.rename(oldPath, newPath);
+          await showDialog({
+            title: 'Duplicate Name of Code Snippet',
+            body: <p> {`"${newPath}" already exists.`} </p>,
+            buttons: [Dialog.okButton({ label: 'Dismiss' })]
+          });
+          return;
+        }
         this.props._codeSnippetWidgetModel.renameSnippet(
           target.innerHTML,
           new_element.value
         );
-
         target.innerHTML = new_element.value;
       }
+      new_element.replaceWith(target);
     };
     new_element.onkeydown = (event: KeyboardEvent): void => {
       switch (event.code) {
