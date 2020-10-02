@@ -22,6 +22,12 @@ import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
+import {
+  /*NotebookPanel,*/
+  /*NotebookActions,*/
+  NotebookTracker
+} from '@jupyterlab/notebook';
+//import { ReadonlyPartialJSONObject } from '@lumino/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -56,9 +62,23 @@ function activateCodeSnippet(
   app: JupyterFrontEnd,
   palette: ICommandPalette,
   restorer: ILayoutRestorer,
-  editorServices: IEditorServices
+  editorServices: IEditorServices,
+  trackerNotebook: NotebookTracker
 ): void {
   console.log('JupyterLab extension code-snippets is activated!');
+  // const { shell } = app;
+
+  // Get the current widget and activate unless the args specify otherwise.
+  // function getCurrent(args: ReadonlyPartialJSONObject): NotebookPanel | null {
+  //   const widget = trackerNotebook.currentWidget;
+  //   const activate = args['activate'] !== false;
+
+  //   if (activate && widget) {
+  //     shell.activateById(widget.id);
+  //   }
+
+  //   return widget;
+  // }
 
   const getCurrentWidget = (): Widget => {
     return app.shell.currentWidget;
@@ -163,12 +183,27 @@ function activateCodeSnippet(
     iconClass: 'some-css-icon-class',
     execute: () => {
       const highlightedCode = getSelectedText();
-
-      CodeSnippetInputDialog(
-        codeSnippetWidget,
-        highlightedCode.split('\n'),
-        -1
-      );
+      if (highlightedCode === '') {
+        //let current = getCurrent(args);
+        const curr = document.getElementsByClassName(
+          'jp-Cell jp-mod-selected'
+        )[1];
+        const text = curr as HTMLElement;
+        const textContent = text.innerText;
+        const arrayInput = textContent.split('\n');
+        const indexedInput = arrayInput.slice(1);
+        // console.log(textContent);
+        // for (let i = 0; i < indexedInput.length; i++) {
+        //   console.log(indexedInput[i]);
+        // }
+        CodeSnippetInputDialog(codeSnippetWidget, indexedInput, -1);
+      } else {
+        CodeSnippetInputDialog(
+          codeSnippetWidget,
+          highlightedCode.split('\n'),
+          -1
+        );
+      }
       // if highlightedCode is empty, check the code of the entire cell.
     }
   });
