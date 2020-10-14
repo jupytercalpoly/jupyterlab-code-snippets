@@ -22,12 +22,6 @@ import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
-import {
-  /*NotebookPanel,*/
-  /*NotebookActions,*/
-  NotebookTracker
-} from '@jupyterlab/notebook';
-//import { ReadonlyPartialJSONObject } from '@lumino/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -62,23 +56,9 @@ function activateCodeSnippet(
   app: JupyterFrontEnd,
   palette: ICommandPalette,
   restorer: ILayoutRestorer,
-  editorServices: IEditorServices,
-  trackerNotebook: NotebookTracker
+  editorServices: IEditorServices
 ): void {
   console.log('JupyterLab extension code-snippets is activated!');
-  // const { shell } = app;
-
-  // Get the current widget and activate unless the args specify otherwise.
-  // function getCurrent(args: ReadonlyPartialJSONObject): NotebookPanel | null {
-  //   const widget = trackerNotebook.currentWidget;
-  //   const activate = args['activate'] !== false;
-
-  //   if (activate && widget) {
-  //     shell.activateById(widget.id);
-  //   }
-
-  //   return widget;
-  // }
 
   const getCurrentWidget = (): Widget => {
     return app.shell.currentWidget;
@@ -184,7 +164,7 @@ function activateCodeSnippet(
     execute: () => {
       const highlightedCode = getSelectedText();
       if (highlightedCode === '') {
-        //let current = getCurrent(args);
+        //if user just right-clicks the whole cell to save
         const curr = document.getElementsByClassName(
           'jp-Cell jp-mod-selected'
         )[1];
