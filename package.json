@@ -15,7 +15,8 @@
   "author": "Jay Ahn, Kiran Pinnipati",
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
+    "schema/*.json"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -43,7 +44,6 @@
     "@jupyterlab/application": "^2.1.2",
     "@jupyterlab/apputils": "^2.2.4",
     "@jupyterlab/cells": "^2.2.4",
-    "@jupyterlab/coreutils": "^4.1.0",
     "@jupyterlab/docmanager": "^2.1.2",
     "@jupyterlab/docregistry": "^2.1.2",
     "@jupyterlab/fileeditor": "^2.1.2",
@@ -77,7 +77,8 @@
     "style/*.css"
   ],
   "jupyterlab": {
-    "extension": true
+    "extension": true,
+    "schemaDir": "schema"
   },
   "husky": {
     "hooks": {
