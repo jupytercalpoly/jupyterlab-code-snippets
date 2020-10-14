@@ -1,5 +1,6 @@
 :root {
   --preview-distance: 0px;
+  --preview-max-height: 75px;
   --more-options-top: 0px;
   --more-options-left: 0px;
 }
@@ -179,7 +180,7 @@
   padding: 5px;
   width: 180px;
   height: fit-content;
-  max-height: 75px;
+  max-height: var(--preview-max-height);
   /*height: 106px;*/
   box-sizing: border-box;
   box-shadow: var(--jp-elevation-z2);
