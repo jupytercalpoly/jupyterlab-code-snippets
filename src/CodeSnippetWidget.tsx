@@ -67,6 +67,7 @@ export class CodeSnippetWidget extends ReactWidget {
     this.openCodeSnippetEditor.bind(this);
     this.updateCodeSnippets.bind(this);
     this.codeSnippetManager = CodeSnippetContentsService.getInstance();
+    this.node.setAttribute('data-lm-dragscroll', 'true');
   }
 
   get codeSnippetWidgetModel(): CodeSnippetWidgetModel {
