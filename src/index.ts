@@ -4,6 +4,8 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
+
 import { IEditorServices } from '@jupyterlab/codeeditor';
 import { LabIcon } from '@jupyterlab/ui-components';
 
@@ -23,6 +25,7 @@ import {
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
+const CODE_SNIPPET_SETTING_ID = 'jupyterlab-code-snippets:settings';
 /**
  * Snippet Editor Icon
  */
@@ -150,7 +153,7 @@ function activateCodeSnippet(
   });
 
   //Add an application command
-  const saveCommand = 'save as code snippet';
+  const saveCommand = 'codeSnippet:save-as-snippet';
   const toggled = false;
   app.commands.addCommand(saveCommand, {
     label: 'Save As Code Snippet',
@@ -169,18 +172,16 @@ function activateCodeSnippet(
     }
   });
 
-  //Put the command above in context menu
+  // Put the saveCommand above in context menu
   app.contextMenu.addItem({
     command: saveCommand,
     selector: '.jp-Cell'
   });
 
-  // Add keybinding to save
-  app.commands.addKeyBinding({
+  // Put the saveCommand in non-notebook file context menu
+  app.contextMenu.addItem({
     command: saveCommand,
-    args: {},
-    keys: ['Accel Shift S'],
-    selector: '.jp-Cell'
+    selector: '.jp-FileEditor'
   });
 
   // Track and restore the widget state
@@ -211,6 +212,18 @@ function activateCodeSnippet(
   });
 }
 
+const codeSnippetExtensionSetting: JupyterFrontEndPlugin<void> = {
+  id: CODE_SNIPPET_SETTING_ID,
+  autoStart: true,
+  requires: [ISettingRegistry],
+  activate: (app: JupyterFrontEnd, settingRegistry: ISettingRegistry) => {
+    void settingRegistry
+      .load(CODE_SNIPPET_SETTING_ID)
+      .then(_ => console.log('settingRegistry successfully loaded!'))
+      .catch(e => console.log(e));
+  }
+};
+
 function getSelectedText(): string {
   let selectedText;
   // window.getSelection
@@ -224,4 +237,4 @@ function getSelectedText(): string {
   return selectedText.toString();
 }
 
-export default code_snippet_extension;
+export default [code_snippet_extension, codeSnippetExtensionSetting];

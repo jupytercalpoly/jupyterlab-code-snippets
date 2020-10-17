@@ -33,6 +33,19 @@ export class CodeSnippetWidgetModel implements ICodeSnippetWidgetModel {
     }
   }
 
+  renameSnippet(oldName: string, newName: string): void {
+    for (const snippet of this._snippets) {
+      if (snippet.name === oldName) {
+        snippet.name = newName;
+        CodeSnippetContentsService.getInstance().save(
+          'snippets/' + snippet.name + '.json',
+          { type: 'file', format: 'text', content: JSON.stringify(snippet) }
+        );
+        break;
+      }
+    }
+  }
+
   addSnippet(newSnippet: ICodeSnippet, index: number): void {
     // append a new snippet created from input form to the end
     if (newSnippet.id === -1) {
