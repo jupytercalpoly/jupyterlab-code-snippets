@@ -106,7 +106,7 @@ const CODE_SNIPPET_CREATE_NEW_BTN = 'jp-createSnippetBtn';
 /**
  * The threshold in pixels to start a drag event.
  */
-const DRAG_THRESHOLD = 5;
+const DRAG_THRESHOLD = 3;
 
 /**
  * A class used to indicate a snippet item.
@@ -431,6 +431,9 @@ export class CodeSnippetDisplay extends React.Component<
     target.addEventListener('mouseup', this._evtMouseUp, true);
     target.addEventListener('mousemove', this.handleDragMove, true);
 
+    // since a browser has its own drag'n'drop support for images and some other elements.
+    target.ondragstart = () => false;
+
     event.preventDefault();
   }
 
@@ -446,6 +449,9 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   private handleDragMove(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
     const data = this._dragData;
 
     if (
@@ -460,7 +466,12 @@ export class CodeSnippetDisplay extends React.Component<
       const idx = (event.target as HTMLElement).id;
       const codeSnippet = this.state.codeSnippets[parseInt(idx)];
 
-      this.startDrag(data.dragImage, codeSnippet, event.clientX, event.clientY);
+      void this.startDrag(
+        data.dragImage,
+        codeSnippet,
+        event.clientX,
+        event.clientY
+      );
     }
   }
 
@@ -481,7 +492,7 @@ export class CodeSnippetDisplay extends React.Component<
   ): boolean {
     const dx = Math.abs(nextX - prevX);
     const dy = Math.abs(nextY - prevY);
-    return dx >= DRAG_THRESHOLD || dy >= DRAG_THRESHOLD;
+    return dx >= 0 || dy >= DRAG_THRESHOLD;
   }
 
   private async startDrag(
