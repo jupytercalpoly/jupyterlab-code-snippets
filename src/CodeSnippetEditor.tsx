@@ -234,11 +234,38 @@ export class CodeSnippetEditor extends ReactWidget {
             {`"${this._codeSnippetEditorMetaData.name}" has unsaved changes, close without saving?`}{' '}
           </p>
         ),
-        buttons: [Dialog.cancelButton(), Dialog.okButton()]
+        buttons: [
+          Dialog.cancelButton(),
+          Dialog.warnButton({ label: 'Discard' }),
+          Dialog.okButton({ label: 'Save' })
+        ]
       }).then((response: any): void => {
+        console.log(response.button);
         if (response.button.accept) {
-          this.dispose();
-          super.onCloseRequest(msg);
+          if (response.button.label === 'Discard') {
+            this.dispose();
+            super.onCloseRequest(msg);
+          } else if (response.button.label === 'Save') {
+            const name = (document.querySelector(
+              `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
+            ) as HTMLInputElement).value;
+            const description = (document.querySelector(
+              `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
+            ) as HTMLInputElement).value;
+            const language = (document.querySelector(
+              `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
+            ) as HTMLSelectElement).value;
+
+            const validity = this.validateInputs(name, description, language);
+            if (validity) {
+              this.updateSnippet().then(value => {
+                if (value) {
+                  this.dispose();
+                  super.onCloseRequest(msg);
+                }
+              });
+            }
+          }
         }
       });
     } else {
@@ -348,7 +375,7 @@ export class CodeSnippetEditor extends ReactWidget {
     return status;
   }
 
-  async updateSnippet(): Promise<void> {
+  async updateSnippet(): Promise<boolean> {
     const name = (document.querySelector(
       `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
     ) as HTMLInputElement).value;
@@ -362,8 +389,6 @@ export class CodeSnippetEditor extends ReactWidget {
     this._codeSnippetEditorMetaData.name = name;
     this._codeSnippetEditorMetaData.description = description;
     this._codeSnippetEditorMetaData.language = language;
-
-    this.saved = true;
 
     const newPath =
       'snippets/' + this._codeSnippetEditorMetaData.name + '.json';
@@ -379,9 +404,9 @@ export class CodeSnippetEditor extends ReactWidget {
           await showDialog({
             title: 'Duplicate Name of Code Snippet',
             body: <p> {`"${newPath}" already exists.`} </p>,
-            buttons: [Dialog.cancelButton()]
+            buttons: [Dialog.okButton({ label: 'Dismiss' })]
           });
-          return;
+          return false;
         }
 
         // set new name as an old name
@@ -396,7 +421,7 @@ export class CodeSnippetEditor extends ReactWidget {
             await showDialog({
               title: 'Duplicate Name of Code Snippet',
               body: <p> {`"${newPath}" already exists.`} </p>,
-              buttons: [Dialog.cancelButton()]
+              buttons: [Dialog.okButton({ label: 'Dismiss' })]
             });
           }
         })
@@ -404,9 +429,11 @@ export class CodeSnippetEditor extends ReactWidget {
           nameCheck = true;
         });
       if (!nameCheck) {
-        return;
+        return false;
       }
     }
+
+    this.saved = true;
 
     await this.contentsService.save(newPath, {
       type: 'file',
@@ -446,6 +473,7 @@ export class CodeSnippetEditor extends ReactWidget {
     if (this._codeSnippetEditorMetaData.fromScratch) {
       this.dispose();
     }
+    return true;
   }
 
   handleChangeOnTag(selectedTags: string[], allTags: string[]): void {
