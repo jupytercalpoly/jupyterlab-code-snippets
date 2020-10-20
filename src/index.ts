@@ -169,8 +169,7 @@ function activateCodeSnippet(
           'jp-Cell jp-mod-selected'
         )[1];
         const text = curr as HTMLElement;
-        let textContent = text.innerText;
-        textContent = textContent.replace(/\uFFFD/g, '');
+        const textContent = text.innerText;
         const arrayInput = textContent.split('\n');
         const indexedInput = arrayInput.slice(1);
         for (let i = 0; i < indexedInput.length; i++) {

@@ -535,9 +535,7 @@ export class CodeSnippetDisplay extends React.Component<
   private _setPreviewPosition(id: string): void {
     const intID = parseInt(id, 10);
     const realTarget = document.getElementsByClassName(TITLE_CLASS)[intID];
-    const newTarget = document.getElementsByClassName('jp-codeSnippet-item')[
-      intID
-    ];
+    const newTarget = document.getElementsByClassName(CODE_SNIPPET_ITEM)[intID];
     // distDown is the number of pixels to shift the preview down
     const distDown: number = realTarget.getBoundingClientRect().top - 43; //this is bumping it up
     const elementSnippet = newTarget as HTMLElement;
