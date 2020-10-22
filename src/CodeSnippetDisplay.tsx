@@ -144,6 +144,7 @@ interface ICodeSnippetDisplayProps {
  */
 interface ICodeSnippetDisplayState {
   codeSnippets: ICodeSnippet[];
+  matchIndices: { [key: number]: number[] };
   searchValue: string;
   filterTags: string[];
 }
@@ -161,6 +162,7 @@ export class CodeSnippetDisplay extends React.Component<
     super(props);
     this.state = {
       codeSnippets: this.props.codeSnippets,
+      matchIndices: {},
       searchValue: '',
       filterTags: []
     };
@@ -271,56 +273,98 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   // Create 6 dots drag/drop image on hover
-  private dragHoverStyle = (id: string): void => {
-    const _id: number = parseInt(id, 10);
-
+  private dragHoverStyle = (id: number): void => {
     document
       .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
-      [_id].classList.add(CODE_SNIPPET_DRAG_HOVER_SELECTED);
+      [id].classList.add(CODE_SNIPPET_DRAG_HOVER_SELECTED);
   };
 
   // Remove 6 dots off hover
-  private dragHoverStyleRemove = (id: string): void => {
-    const _id: number = parseInt(id, 10);
+  private dragHoverStyleRemove = (id: number): void => {
     if (document.getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)) {
       document
         .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
-        [_id].classList.remove(CODE_SNIPPET_DRAG_HOVER_SELECTED);
+        [id].classList.remove(CODE_SNIPPET_DRAG_HOVER_SELECTED);
     }
   };
 
   // Bold text in snippet name based on search
   private boldNameOnSearch = (
-    searchValue: string,
+    id: number,
     language: string,
     name: string
   ): JSX.Element => {
     const displayName = language + name;
 
+    // check if this snippet is one of the filtered snippets
+    // console.log(displayName);
     if (
-      searchValue !== '' &&
-      displayName.toLowerCase().includes(searchValue.toLowerCase())
+      this.state.searchValue !== '' &&
+      Object.keys(this.state.matchIndices).includes(id.toString())
     ) {
-      const startIndex: number = displayName
-        .toLowerCase()
-        .indexOf(searchValue.toLowerCase());
+      // remove space
+      // const tempSearchValue = searchValue.replace(/ /g, '');
+      // const char_list = tempSearchValue.split('');
 
-      const endIndex: number = startIndex + searchValue.length;
+      // console.log(char_list);
+      // // form regular expression
+      // let re = '/';
+      // for (const ch of char_list) {
+      //   re += ch + '.*';
+      // }
+      // re += '/g';
 
-      if (endIndex <= language.length) {
-        return <span>{name}</span>;
-      } else {
-        const start = displayName.substring(language.length, startIndex);
-        const bolded = displayName.substring(startIndex, endIndex);
-        const end = displayName.substring(endIndex);
-        return (
+      // console.log(re);
+
+      // const startIndex: number = displayName
+      //   .toLowerCase()
+      //   .indexOf(searchValue.toLowerCase());
+
+      // const endIndex: number = startIndex + searchValue.length;
+
+      const elements = [];
+      const boldIndices = this.state.matchIndices[id];
+      for (const index of boldIndices) {
+        if (index >= language.length) {
+          elements.push(
+            <span>{displayName.substring(language.length, index)}</span>
+          );
+          elements.push(
+            <mark className={SEARCH_BOLD}>
+              {displayName.substring(index, index + 1)}
+            </mark>
+          );
+        }
+      }
+
+      if (boldIndices[-1] < displayName.length) {
+        elements.push(
           <span>
-            {start}
-            <mark className={SEARCH_BOLD}>{bolded}</mark>
-            {end}
+            {displayName.substring(boldIndices[-1] + 1, displayName.length)}
           </span>
         );
       }
+
+      if (elements.length === 0) {
+        return <span>{name}</span>;
+      } else {
+        return <span>{elements}</span>;
+      }
+
+      // if (endIndex <= language.length) {
+      //   return <span>{name}</span>;
+      // } else {
+      //   const start = displayName.substring(language.length, startIndex);
+      //   const bolded = displayName.substring(startIndex, endIndex);
+      //   const end = displayName.substring(endIndex);
+      //   return (
+      //     <span>
+      //       {start}
+      //       <mark className={SEARCH_BOLD}>{bolded}</mark>
+      //       {end}
+      //     </span>
+      //   );
+      // }
     }
     return <span onDoubleClick={this.handleRenameSnippet}>{name}</span>;
   };
@@ -516,7 +560,7 @@ export class CodeSnippetDisplay extends React.Component<
     target.removeEventListener('mouseup', this._evtMouseUp, true);
 
     return this._drag.start(clientX, clientY).then(() => {
-      this.dragHoverStyleRemove(codeSnippet.id.toString());
+      this.dragHoverStyleRemove(codeSnippet.id);
       this._drag = null;
       this._dragData = null;
     });
@@ -532,9 +576,8 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   //Set the position of the preview to be next to the snippet title.
-  private _setPreviewPosition(id: string): void {
-    const intID = parseInt(id, 10);
-    const realTarget = document.getElementsByClassName(TITLE_CLASS)[intID];
+  private _setPreviewPosition(id: number): void {
+    const realTarget = document.getElementsByClassName(TITLE_CLASS)[id];
     // distDown is the number of pixels to shift the preview down
     let distDown: number = realTarget.getBoundingClientRect().top - 43;
     if (realTarget.getBoundingClientRect().top > window.screen.height / 2) {
@@ -1047,7 +1090,7 @@ export class CodeSnippetDisplay extends React.Component<
   // Render display of code snippet list
   private renderCodeSnippet = (
     codeSnippet: ICodeSnippet,
-    id: string
+    id: number
   ): JSX.Element => {
     const buttonClasses = BUTTON_CLASS;
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
@@ -1070,7 +1113,7 @@ export class CodeSnippetDisplay extends React.Component<
       <div
         key={codeSnippet.name}
         className={CODE_SNIPPET_ITEM}
-        id={id}
+        id={id.toString()}
         onMouseOver={(): void => {
           this.dragHoverStyle(id);
         }}
@@ -1081,7 +1124,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div
           className={CODE_SNIPPET_DRAG_HOVER}
           title="Drag to move"
-          id={id}
+          id={id.toString()}
           onMouseDown={(event): void => {
             this.handleDragSnippet(event);
           }}
@@ -1091,7 +1134,7 @@ export class CodeSnippetDisplay extends React.Component<
           onMouseEnter={(): void => {
             showPreview(
               {
-                id: parseInt(id, 10),
+                id: id,
                 title: displayName,
                 body: new PreviewHandler(),
                 codeSnippet: codeSnippet
@@ -1104,16 +1147,16 @@ export class CodeSnippetDisplay extends React.Component<
             this._evtMouseLeave();
           }}
         >
-          <div key={displayName} className={TITLE_CLASS} id={id}>
+          <div key={displayName} className={TITLE_CLASS} id={id.toString()}>
             <div
-              id={id}
+              id={id.toString()}
               title={codeSnippet.name}
               className={DISPLAY_NAME_CLASS}
             >
               {this.renderLanguageIcon(codeSnippet.language)}
-              {this.boldNameOnSearch(this.state.searchValue, language, name)}
+              {this.boldNameOnSearch(id, language, name)}
             </div>
-            <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id}>
+            <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id.toString()}>
               {actionButtons.map(btn => {
                 return (
                   <button
@@ -1137,8 +1180,8 @@ export class CodeSnippetDisplay extends React.Component<
               })}
             </div>
           </div>
-          <div className={CODE_SNIPPET_DESC} id={id}>
-            <p id={id}>{`${codeSnippet.description}`}</p>
+          <div className={CODE_SNIPPET_DESC} id={id.toString()}>
+            <p id={id.toString()}>{`${codeSnippet.description}`}</p>
           </div>
         </div>
       </div>
@@ -1152,6 +1195,7 @@ export class CodeSnippetDisplay extends React.Component<
     if (state.searchValue === '' && state.filterTags.length === 0) {
       return {
         codeSnippets: props.codeSnippets,
+        matchIndices: {},
         searchValue: '',
         filterTags: []
       };
@@ -1170,6 +1214,7 @@ export class CodeSnippetDisplay extends React.Component<
       });
       return {
         codeSnippets: newSnippets,
+        matchIndices: state.matchIndices,
         searchValue: state.searchValue,
         filterTags: state.filterTags
       };
@@ -1177,13 +1222,92 @@ export class CodeSnippetDisplay extends React.Component<
     return null;
   }
 
+  /**
+   * Return an object with the entry of (id, matched_indices)
+   * @param id unique id of snippet
+   * @param regex regular expression to match
+   * @param str name or language of the code snippet
+   * @param char_list list of characters searched
+   */
+  matchSnippet(
+    id: number,
+    regex: RegExp,
+    str: string,
+    char_list: string[]
+  ): [number, number[]] {
+    const matches: { [key: string]: number } = {};
+    let match = [];
+    while ((match = regex.exec(str))) {
+      matches[match[0]] = regex.lastIndex - 1;
+      // console.log(match);
+      // console.log("match found at " + match.index);
+    }
+
+    console.log(str);
+
+    // Object.keys(matches).length
+    if (Object.keys(matches).length !== char_list.length) {
+      return null;
+    }
+
+    console.log(matches);
+    return [id, Object.values(matches)];
+  }
+
   filterSnippets = (searchValue: string, filterTags: string[]): void => {
+    // remove space
+    const tempSearchValue = searchValue.replace(/ /g, '');
+    const char_list = tempSearchValue.split('');
+
+    // form regular expression
+    // let re = '.*';
+    // for (const ch of char_list) {
+    //   re += ch + '.*';
+    // }
+    let re = '[';
+    for (const ch of char_list) {
+      re += ch;
+    }
+    re += ']';
+
+    const regex = new RegExp(re, 'g');
+    // console.log(regex);
+
+    // const str = 'Pythonmost_frequent';
+
+    // let match = [];
+    // let match_index = [];
+    // while(match = regex.exec(str)) {
+    //   match_index.push(match.index)
+    //   // console.log(match);
+    //   // console.log("match found at " + match.index);
+    // }
+
+    // if(match_index.length !== char_list.length){
+    //   match_index = []
+    // }
+    // console.log(match_index);
+
+    // const found = [...'Pythonmost_frequent'.matchAll(regex)];
+    // console.log(found.index);
+
+    // TODO: filter codes nippet with regex!
     // filter with search
-    let filteredSnippets = this.props.codeSnippets.filter(
-      codeSnippet =>
-        codeSnippet.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        codeSnippet.language.toLowerCase().includes(searchValue.toLowerCase())
-    );
+    const matchIndices: { [key: number]: number[] } = {};
+    let filteredSnippets = this.props.codeSnippets.filter(codeSnippet => {
+      const matchIndex = this.matchSnippet(
+        codeSnippet.id,
+        regex,
+        codeSnippet.language + codeSnippet.name,
+        char_list
+      );
+      if (matchIndex) {
+        matchIndices[matchIndex[0]] = matchIndex[1];
+      }
+      return matchIndex;
+    });
+    console.log(filteredSnippets);
+    console.log(matchIndices);
 
     // filter with tags
     if (filterTags.length !== 0) {
@@ -1199,6 +1323,7 @@ export class CodeSnippetDisplay extends React.Component<
 
     this.setState({
       codeSnippets: filteredSnippets,
+      matchIndices: matchIndices,
       searchValue: searchValue,
       filterTags: filterTags
     });
@@ -1350,8 +1475,8 @@ export class CodeSnippetDisplay extends React.Component<
         />
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
-            {this.state.codeSnippets.map((codeSnippet, id) =>
-              this.renderCodeSnippet(codeSnippet, id.toString())
+            {this.state.codeSnippets.map(codeSnippet =>
+              this.renderCodeSnippet(codeSnippet, codeSnippet.id)
             )}
           </div>
         </div>
