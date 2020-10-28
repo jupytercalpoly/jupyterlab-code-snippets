@@ -164,22 +164,25 @@ function activateCodeSnippet(
     execute: () => {
       const highlightedCode = getSelectedText();
       if (highlightedCode === '') {
-        //if user just right-clicks the whole cell to save
-        const curr = document.getElementsByClassName(
-          'jp-Cell jp-mod-selected'
-        )[1];
-        const text = curr as HTMLElement;
-        const textContent = text.innerText;
-        const arrayInput = textContent.split('\n');
-        const indexedInput = arrayInput.slice(1);
-        for (let i = 0; i < indexedInput.length; i++) {
-          for (let j = 0; j < indexedInput[i].length; j++) {
-            if (indexedInput[i].charCodeAt(j) === 8203) {
-              indexedInput[i] = '';
+        //if user just right-clicks cell(s) to save
+        const curr = document.getElementsByClassName('jp-Cell jp-mod-selected');
+        const resultArray = [];
+        for (let i = 1; i < curr.length; i++) {
+          //loop through each cell
+          const text = curr[i] as HTMLElement;
+          const textContent = text.innerText;
+          const arrayInput = textContent.split('\n');
+          const indexedInput = arrayInput.slice(1);
+          for (let i = 0; i < indexedInput.length; i++) {
+            // looping through each line in cell
+            if (indexedInput[i].charCodeAt(0) === 8203) {
+              //check if first char in line is invalid
+              indexedInput[i] = ''; //replace invalid line with empty string
             }
+            resultArray.push(indexedInput[i]); //push cell code lines into result
           }
         }
-        CodeSnippetInputDialog(codeSnippetWidget, indexedInput, -1);
+        CodeSnippetInputDialog(codeSnippetWidget, resultArray, -1);
       } else {
         CodeSnippetInputDialog(
           codeSnippetWidget,
