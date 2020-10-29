@@ -328,7 +328,7 @@ export class CodeSnippetDisplay extends React.Component<
         while (nextIndex !== null) {
           // make the current index bold
           elements.push(
-            <mark className={SEARCH_BOLD}>
+            <mark key={id + '_' + currIndex} className={SEARCH_BOLD}>
               {displayName.substring(currIndex, currIndex + 1)}
             </mark>
           );
@@ -342,10 +342,9 @@ export class CodeSnippetDisplay extends React.Component<
             nextIndex = null;
           }
         }
-        // key={id+'_'+currIndex}
         if (nextIndex === null) {
           elements.push(
-            <mark className={SEARCH_BOLD}>
+            <mark key={id + '_' + currIndex} className={SEARCH_BOLD}>
               {displayName.substring(currIndex, currIndex + 1)}
             </mark>
           );
@@ -1492,8 +1491,8 @@ export class CodeSnippetDisplay extends React.Component<
         />
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
-            {this.state.codeSnippets.map(codeSnippet =>
-              this.renderCodeSnippet(codeSnippet, codeSnippet.id)
+            {this.state.codeSnippets.map((codeSnippet, id) =>
+              this.renderCodeSnippet(codeSnippet, id)
             )}
           </div>
         </div>
