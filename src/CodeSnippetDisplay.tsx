@@ -295,12 +295,6 @@ export class CodeSnippetDisplay extends React.Component<
     name: string
   ): JSX.Element => {
     const displayName = language + name;
-    console.log(displayName);
-    console.log(this.state.searchValue);
-    console.log(this.state.codeSnippets.length);
-    console.log(id);
-    console.log(this.state.matchIndices);
-    // console.log(this.state.matchIndices[id]);
 
     // check if the searchValue is not ''
     if (this.state.searchValue !== '') {
@@ -358,7 +352,6 @@ export class CodeSnippetDisplay extends React.Component<
             displayName.substring(currIndex + 1, displayName.length)
           );
         }
-        console.log(elements);
         return <span>{elements}</span>;
       }
     }
@@ -371,8 +364,6 @@ export class CodeSnippetDisplay extends React.Component<
     event: React.MouseEvent<HTMLSpanElement, MouseEvent>
   ): Promise<void> {
     const contentsService = CodeSnippetContentsService.getInstance();
-    console.log(event.currentTarget);
-    console.log(event.target);
     const target = event.target as HTMLElement;
     const oldPath = 'snippets/' + target.innerHTML + '.json';
 
@@ -388,8 +379,6 @@ export class CodeSnippetDisplay extends React.Component<
     new_element.setSelectionRange(0, new_element.value.length);
 
     new_element.onblur = async (): Promise<void> => {
-      // console.log(target.innerHTML);
-      // console.log(new_element.value);
       if (target.innerHTML !== new_element.value) {
         const newPath = 'snippets/' + new_element.value + '.json';
         try {
@@ -1128,7 +1117,6 @@ export class CodeSnippetDisplay extends React.Component<
         <div
           className={CODE_SNIPPET_METADATA}
           onMouseEnter={(): void => {
-            console.log(id);
             showPreview(
               {
                 id: id,
@@ -1216,129 +1204,63 @@ export class CodeSnippetDisplay extends React.Component<
     return null;
   }
 
-  // /**
-  //  * Return an object with the entry of (id, matched_indices)
-  //  * @param id unique id of snippet
-  //  * @param regex regular expression to match
-  //  * @param str name or language of the code snippet
-  //  * @param char_list list of characters searched
-  //  */
-  // matchSnippet(
-  //   id: number,
-  //   regex: RegExp,
-  //   str: string,
-  //   char_list: string[]
-  // ): [number, number[]] {
-  //   const match_indices = [];
-  //   let match = [];
-  //   while ((match = regex.exec(str))) {
-  //     if (match != []) {
-  //       const matched_string = match[0];
-  //       const start_idx = match['index'];
-  //       for (const match_ch of match.slice(1)) {
-  //         const match_index = matched_string.indexOf(match_ch) + start_idx;
-  //         match_indices.push(match_index);
-  //       }
-
-  //       // Object.keys(matches).length
-  //       // if (Object.keys(matches).length !== char_list.length) {
-  //       //   return null;
-  //       // }
-
-  //       return [id, match_indices];
-  //     }
-  //   }
-  //   // console.log(regex.exec(str));
-  //   return null;
-  // }
-
   filterSnippets = (searchValue: string, filterTags: string[]): void => {
-    // console.log(regex);
-
-    // const str = 'Pythonmost_frequent';
-
-    // let match = [];
-    // let match_index = [];
-    // while(match = regex.exec(str)) {
-    //   match_index.push(match.index)
-    //   // console.log(match);
-    //   // console.log("match found at " + match.index);
-    // }
-
-    // if(match_index.length !== char_list.length){
-    //   match_index = []
-    // }
-    // console.log(match_index);
-
-    // const found = [...'Pythonmost_frequent'.matchAll(regex)];
-    // console.log(found.index);
-
-    // TODO: filter codes nippet with regex!
     // filter with search
-    const matchIndices: number[][] = [];
+    let matchIndices: number[][] = [];
+    const matchResults: StringExt.IMatchResult[] = [];
     let filteredSnippets = this.props.codeSnippets;
+    const filteredSnippetsScore: {
+      score: number;
+      snippet: ICodeSnippet;
+    }[] = [];
     if (searchValue !== '') {
-      filteredSnippets = filteredSnippets.filter(snippet => {
-        const indices = StringExt.findIndices(
+      filteredSnippets.forEach(snippet => {
+        const matchResult = StringExt.matchSumOfSquares(
           (snippet.language + snippet.name).toLowerCase(),
-          searchValue.toLowerCase()
+          searchValue.replace(' ', '').toLowerCase()
         );
-        if (indices) {
-          matchIndices.push(indices);
+
+        if (matchResult) {
+          matchResults.push(matchResult);
+          filteredSnippetsScore.push({
+            score: matchResult.score,
+            snippet: snippet
+          });
         }
-        return indices !== null;
       });
 
-      // remove space
-      //   const tempSearchValue = searchValue.replace(/ /g, '');
-      //   const char_list = tempSearchValue.split('');
+      // sort snippets by its score
+      filteredSnippetsScore.sort((a, b) => a.score - b.score);
+      const newFilteredSnippets: ICodeSnippet[] = [];
+      filteredSnippetsScore.forEach(snippetScore =>
+        newFilteredSnippets.push(snippetScore.snippet)
+      );
+      filteredSnippets = newFilteredSnippets;
 
-      //   // form regular expression
-      //   let re = '';
-      //   for (const ch of char_list) {
-      //     if ("[].*?^$+|(){}".includes(ch)) {
-      //       re += '(\\' + ch + ').*?';
-      //     }
-      //     else{
-      //       re += '(' + ch + ').*?';
-      //     }
-      //   }
-      //   re = re.substring(0, re.length - 3);
-      //   console.log('regex:' + re);
-
-      //   const regex = new RegExp(re, 'i');
-
-      //   filteredSnippets = this.props.codeSnippets.filter(codeSnippet => {
-      //     // console.log(codeSnippet.language + codeSnippet.name);
-      //     const matchIndex = this.matchSnippet(
-      //       codeSnippet.id,
-      //       regex,
-      //       codeSnippet.language + codeSnippet.name,
-      //       char_list
-      //     );
-      //     // console.log(matchIndex);
-
-      //     if (matchIndex) {
-      //       matchIndices[matchIndex[0]] = matchIndex[1];
-      //     }
-      //     return matchIndex !== null;
-      //   });
+      // sort the matchResults by its score
+      matchResults.sort((a, b) => a.score - b.score);
+      matchResults.forEach(res => matchIndices.push(res.indices));
     }
 
     // filter with tags
     if (filterTags.length !== 0) {
-      filteredSnippets = filteredSnippets.filter(codeSnippet => {
+      const newMatchIndices = matchIndices.slice();
+      filteredSnippets = filteredSnippets.filter((codeSnippet, id) => {
         return filterTags.some(tag => {
           if (codeSnippet.tags) {
-            return codeSnippet.tags.includes(tag);
+            if (codeSnippet.tags.includes(tag)) {
+              return true;
+            }
           }
+          // if the snippet does not have the tag, remove its mathed index
+          const matchedIndex = matchIndices[id];
+          const indexToDelete = newMatchIndices.indexOf(matchedIndex);
+          newMatchIndices.splice(indexToDelete, 1);
           return false;
         });
       });
+      matchIndices = newMatchIndices;
     }
-
-    console.log(filteredSnippets);
-    console.log(matchIndices);
 
     this.setState(
       {
