@@ -22,7 +22,7 @@ import {
 } from '@jupyterlab/cells';
 
 import { Widget } from '@lumino/widgets';
-import { find } from '@lumino/algorithm';
+import { find, StringExt } from '@lumino/algorithm';
 import { Drag } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
 
@@ -297,46 +297,10 @@ export class CodeSnippetDisplay extends React.Component<
     const displayName = language + name;
 
     // check if this snippet is one of the filtered snippets
-    if (
-      this.state.searchValue !== '' &&
-      Object.keys(this.state.matchIndices).includes(id.toString())
-    ) {
-      // remove space
-      // const tempSearchValue = searchValue.replace(/ /g, '');
-      // const char_list = tempSearchValue.split('');
-
-      // console.log(char_list);
-      // // form regular expression
-      // let re = '/';
-      // for (const ch of char_list) {
-      //   re += ch + '.*';
-      // }
-      // re += '/g';
-
-      // console.log(re);
-
-      // const startIndex: number = displayName
-      //   .toLowerCase()
-      //   .indexOf(searchValue.toLowerCase());
-
-      // const endIndex: number = startIndex + searchValue.length;
-
+    if (this.state.searchValue !== '' && this.state.matchIndices[id] !== null) {
       const elements = [];
       const boldIndices = this.state.matchIndices[id].slice();
-      // boldIndices.sort((a,b) => a - b);
-      // for (const index of boldIndices) {
-      //   if (index >= language.length) {
-      //     elements.push(
-      //       displayName.substring(language.length, index)
-      //     );
-      //     elements.push(
-      //       <mark className={SEARCH_BOLD}>
-      //         {displayName.substring(index, index + 1)}
-      //       </mark>
-      //     );
-      //   }
-      // }
-      // console.log(boldIndices);
+
       // get first match index in the name
       let i = 0;
       while (i < boldIndices.length) {
@@ -347,33 +311,38 @@ export class CodeSnippetDisplay extends React.Component<
         i++;
       }
 
-      // when it matches the language
+      // when there is no match in name but language
       if (i >= boldIndices.length) {
         return <span>{name}</span>;
       } else {
+        // current and next indices are bold indices
         let currIndex = boldIndices[i];
         let nextIndex;
+        // check if the match is the end of the name
         if (i < boldIndices.length - 1) {
-          nextIndex = boldIndices[i + 1];
+          i++;
+          nextIndex = boldIndices[i];
         } else {
           nextIndex = null;
         }
         while (nextIndex !== null) {
+          // make the current index bold
           elements.push(
             <mark className={SEARCH_BOLD}>
               {displayName.substring(currIndex, currIndex + 1)}
             </mark>
           );
+          // add the regular string until we reach the next bold index
           elements.push(displayName.substring(currIndex + 1, nextIndex));
           currIndex = nextIndex;
           i++;
           if (i < boldIndices.length - 1) {
-            nextIndex = boldIndices[i + 1];
+            nextIndex = boldIndices[i];
           } else {
             nextIndex = null;
           }
         }
-
+        // key={id+'_'+currIndex}
         if (nextIndex === null) {
           elements.push(
             <mark className={SEARCH_BOLD}>
@@ -384,36 +353,8 @@ export class CodeSnippetDisplay extends React.Component<
             displayName.substring(currIndex + 1, displayName.length)
           );
         }
-        // if (boldIndices[boldIndices.length - 1] < displayName.length) {
-        //   elements.push(
-        //     // <span>
-        //       displayName.substring(boldIndices[boldIndices.length - 1] + 1, displayName.length)
-        //     // </span>
-        //   );
-        // }
-        // console.log(elements);
-
-        // if (elements.length === 0) {
-        //   return <span>{name}</span>;
-        // } else {
         return <span>{elements}</span>;
-        // }
       }
-
-      // if (endIndex <= language.length) {
-      //   return <span>{name}</span>;
-      // } else {
-      //   const start = displayName.substring(language.length, startIndex);
-      //   const bolded = displayName.substring(startIndex, endIndex);
-      //   const end = displayName.substring(endIndex);
-      //   return (
-      //     <span>
-      //       {start}
-      //       <mark className={SEARCH_BOLD}>{bolded}</mark>
-      //       {end}
-      //     </span>
-      //   );
-      // }
     }
     return <span onDoubleClick={this.handleRenameSnippet}>{name}</span>;
   };
@@ -1181,6 +1122,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div
           className={CODE_SNIPPET_METADATA}
           onMouseEnter={(): void => {
+            console.log(id);
             showPreview(
               {
                 id: id,
@@ -1197,12 +1139,8 @@ export class CodeSnippetDisplay extends React.Component<
           }}
         >
           <div key={displayName} className={TITLE_CLASS} id={id.toString()}>
-            <div
-              id={id.toString()}
-              title={codeSnippet.name}
-              className={DISPLAY_NAME_CLASS}
-            >
-              {this.renderLanguageIcon(codeSnippet.language)}
+            <div id={id.toString()} title={name} className={DISPLAY_NAME_CLASS}>
+              {this.renderLanguageIcon(language)}
               {this.boldNameOnSearch(id, language, name)}
             </div>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id.toString()}>
@@ -1253,7 +1191,7 @@ export class CodeSnippetDisplay extends React.Component<
     if (state.searchValue !== '' || state.filterTags.length !== 0) {
       const newSnippets = props.codeSnippets.filter(codeSnippet => {
         return (
-          Object.keys(state.matchIndices).includes(codeSnippet.id.toString()) ||
+          state.matchIndices[codeSnippet.id] !== null ||
           // (state.searchValue !== '' &&
           //   codeSnippet.name.toLowerCase().includes(state.searchValue)) ||
           // (state.searchValue !== '' &&
@@ -1272,43 +1210,41 @@ export class CodeSnippetDisplay extends React.Component<
     return null;
   }
 
-  /**
-   * Return an object with the entry of (id, matched_indices)
-   * @param id unique id of snippet
-   * @param regex regular expression to match
-   * @param str name or language of the code snippet
-   * @param char_list list of characters searched
-   */
-  matchSnippet(
-    id: number,
-    regex: RegExp,
-    str: string,
-    char_list: string[]
-  ): [number, number[]] {
-    const match_indices = [];
-    let match = [];
-    while ((match = regex.exec(str))) {
-      console.log(str);
-      console.log(match);
-      if (match) {
-        const matched_string = match[0];
-        const start_idx = match['index'];
-        for (const match_ch of match.slice(1)) {
-          const match_index = matched_string.indexOf(match_ch) + start_idx;
-          match_indices.push(match_index);
-        }
+  // /**
+  //  * Return an object with the entry of (id, matched_indices)
+  //  * @param id unique id of snippet
+  //  * @param regex regular expression to match
+  //  * @param str name or language of the code snippet
+  //  * @param char_list list of characters searched
+  //  */
+  // matchSnippet(
+  //   id: number,
+  //   regex: RegExp,
+  //   str: string,
+  //   char_list: string[]
+  // ): [number, number[]] {
+  //   const match_indices = [];
+  //   let match = [];
+  //   while ((match = regex.exec(str))) {
+  //     if (match != []) {
+  //       const matched_string = match[0];
+  //       const start_idx = match['index'];
+  //       for (const match_ch of match.slice(1)) {
+  //         const match_index = matched_string.indexOf(match_ch) + start_idx;
+  //         match_indices.push(match_index);
+  //       }
 
-        // Object.keys(matches).length
-        // if (Object.keys(matches).length !== char_list.length) {
-        //   return null;
-        // }
+  //       // Object.keys(matches).length
+  //       // if (Object.keys(matches).length !== char_list.length) {
+  //       //   return null;
+  //       // }
 
-        console.log(match_indices);
-        return [id, match_indices];
-      }
-    }
-    return null;
-  }
+  //       return [id, match_indices];
+  //     }
+  //   }
+  //   // console.log(regex.exec(str));
+  //   return null;
+  // }
 
   filterSnippets = (searchValue: string, filterTags: string[]): void => {
     // console.log(regex);
@@ -1336,34 +1272,49 @@ export class CodeSnippetDisplay extends React.Component<
     const matchIndices: { [key: number]: number[] } = {};
     let filteredSnippets = this.props.codeSnippets;
     if (searchValue !== '') {
-      // remove space
-      const tempSearchValue = searchValue.replace(/ /g, '');
-      const char_list = tempSearchValue.split('');
-
-      // form regular expression
-      let re = '';
-      for (const ch of char_list) {
-        re += '(' + ch + ').*';
-      }
-      re = re.substring(0, re.length - 2);
-      console.log('regex:' + re);
-
-      const regex = new RegExp(re, 'gi');
-
-      filteredSnippets = this.props.codeSnippets.filter(codeSnippet => {
-        const matchIndex = this.matchSnippet(
-          codeSnippet.id,
-          regex,
-          codeSnippet.language + codeSnippet.name,
-          char_list
+      filteredSnippets = filteredSnippets.filter(snippet => {
+        const indices = StringExt.findIndices(
+          (snippet.language + snippet.name).toLowerCase(),
+          searchValue.toLowerCase()
         );
-        console.log(matchIndex);
-
-        if (matchIndex) {
-          matchIndices[matchIndex[0]] = matchIndex[1];
-        }
-        return matchIndex !== null;
+        matchIndices[snippet.id] = indices;
+        return indices;
       });
+
+      // remove space
+      //   const tempSearchValue = searchValue.replace(/ /g, '');
+      //   const char_list = tempSearchValue.split('');
+
+      //   // form regular expression
+      //   let re = '';
+      //   for (const ch of char_list) {
+      //     if ("[].*?^$+|(){}".includes(ch)) {
+      //       re += '(\\' + ch + ').*?';
+      //     }
+      //     else{
+      //       re += '(' + ch + ').*?';
+      //     }
+      //   }
+      //   re = re.substring(0, re.length - 3);
+      //   console.log('regex:' + re);
+
+      //   const regex = new RegExp(re, 'i');
+
+      //   filteredSnippets = this.props.codeSnippets.filter(codeSnippet => {
+      //     // console.log(codeSnippet.language + codeSnippet.name);
+      //     const matchIndex = this.matchSnippet(
+      //       codeSnippet.id,
+      //       regex,
+      //       codeSnippet.language + codeSnippet.name,
+      //       char_list
+      //     );
+      //     // console.log(matchIndex);
+
+      //     if (matchIndex) {
+      //       matchIndices[matchIndex[0]] = matchIndex[1];
+      //     }
+      //     return matchIndex !== null;
+      //   });
     }
 
     // filter with tags
