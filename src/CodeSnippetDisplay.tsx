@@ -144,7 +144,7 @@ interface ICodeSnippetDisplayProps {
  */
 interface ICodeSnippetDisplayState {
   codeSnippets: ICodeSnippet[];
-  matchIndices: { [key: number]: number[] };
+  matchIndices: number[][];
   searchValue: string;
   filterTags: string[];
 }
@@ -162,7 +162,7 @@ export class CodeSnippetDisplay extends React.Component<
     super(props);
     this.state = {
       codeSnippets: this.props.codeSnippets,
-      matchIndices: {},
+      matchIndices: [],
       searchValue: '',
       filterTags: []
     };
@@ -295,9 +295,15 @@ export class CodeSnippetDisplay extends React.Component<
     name: string
   ): JSX.Element => {
     const displayName = language + name;
+    console.log(displayName);
+    console.log(this.state.searchValue);
+    console.log(this.state.codeSnippets.length);
+    console.log(id);
+    console.log(this.state.matchIndices);
+    // console.log(this.state.matchIndices[id]);
 
-    // check if this snippet is one of the filtered snippets
-    if (this.state.searchValue !== '' && this.state.matchIndices[id] !== null) {
+    // check if the searchValue is not ''
+    if (this.state.searchValue !== '') {
       const elements = [];
       const boldIndices = this.state.matchIndices[id].slice();
 
@@ -335,8 +341,8 @@ export class CodeSnippetDisplay extends React.Component<
           // add the regular string until we reach the next bold index
           elements.push(displayName.substring(currIndex + 1, nextIndex));
           currIndex = nextIndex;
-          i++;
           if (i < boldIndices.length - 1) {
+            i++;
             nextIndex = boldIndices[i];
           } else {
             nextIndex = null;
@@ -352,6 +358,7 @@ export class CodeSnippetDisplay extends React.Component<
             displayName.substring(currIndex + 1, displayName.length)
           );
         }
+        console.log(elements);
         return <span>{elements}</span>;
       }
     }
@@ -1181,26 +1188,26 @@ export class CodeSnippetDisplay extends React.Component<
     if (state.searchValue === '' && state.filterTags.length === 0) {
       return {
         codeSnippets: props.codeSnippets,
-        matchIndices: {},
+        matchIndices: [],
         searchValue: '',
         filterTags: []
       };
     }
 
     if (state.searchValue !== '' || state.filterTags.length !== 0) {
-      const newSnippets = props.codeSnippets.filter(codeSnippet => {
-        return (
-          state.matchIndices[codeSnippet.id] !== null ||
-          // (state.searchValue !== '' &&
-          //   codeSnippet.name.toLowerCase().includes(state.searchValue)) ||
-          // (state.searchValue !== '' &&
-          //   codeSnippet.language.toLowerCase().includes(state.searchValue)) ||
-          (codeSnippet.tags &&
-            codeSnippet.tags.some(tag => state.filterTags.includes(tag)))
-        );
-      });
+      // const newSnippets = props.codeSnippets.filter(codeSnippet => {
+      //   return (
+      //     state.matchIndices[codeSnippet.id] !== null ||
+      //     // (state.searchValue !== '' &&
+      //     //   codeSnippet.name.toLowerCase().includes(state.searchValue)) ||
+      //     // (state.searchValue !== '' &&
+      //     //   codeSnippet.language.toLowerCase().includes(state.searchValue)) ||
+      //     (codeSnippet.tags &&
+      //       codeSnippet.tags.some(tag => state.filterTags.includes(tag)))
+      //   );
+      // });
       return {
-        codeSnippets: newSnippets,
+        codeSnippets: state.codeSnippets,
         matchIndices: state.matchIndices,
         searchValue: state.searchValue,
         filterTags: state.filterTags
@@ -1268,7 +1275,7 @@ export class CodeSnippetDisplay extends React.Component<
 
     // TODO: filter codes nippet with regex!
     // filter with search
-    const matchIndices: { [key: number]: number[] } = {};
+    const matchIndices: number[][] = [];
     let filteredSnippets = this.props.codeSnippets;
     if (searchValue !== '') {
       filteredSnippets = filteredSnippets.filter(snippet => {
@@ -1276,8 +1283,10 @@ export class CodeSnippetDisplay extends React.Component<
           (snippet.language + snippet.name).toLowerCase(),
           searchValue.toLowerCase()
         );
-        matchIndices[snippet.id] = indices;
-        return indices;
+        if (indices) {
+          matchIndices.push(indices);
+        }
+        return indices !== null;
       });
 
       // remove space
@@ -1342,7 +1351,6 @@ export class CodeSnippetDisplay extends React.Component<
         console.log('snippets filtered');
       }
     );
-    console.log(this.state.codeSnippets);
   };
 
   getActiveTags(): string[] {
