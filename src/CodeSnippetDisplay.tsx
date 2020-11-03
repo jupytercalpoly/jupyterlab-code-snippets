@@ -22,7 +22,7 @@ import {
 } from '@jupyterlab/cells';
 
 import { Widget } from '@lumino/widgets';
-import { find } from '@lumino/algorithm';
+import { find, StringExt } from '@lumino/algorithm';
 import { Drag } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
 
@@ -144,6 +144,7 @@ interface ICodeSnippetDisplayProps {
  */
 interface ICodeSnippetDisplayState {
   codeSnippets: ICodeSnippet[];
+  matchIndices: number[][];
   searchValue: string;
   filterTags: string[];
 }
@@ -161,6 +162,7 @@ export class CodeSnippetDisplay extends React.Component<
     super(props);
     this.state = {
       codeSnippets: this.props.codeSnippets,
+      matchIndices: [],
       searchValue: '',
       filterTags: []
     };
@@ -271,55 +273,86 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   // Create 6 dots drag/drop image on hover
-  private dragHoverStyle = (id: string): void => {
-    const _id: number = parseInt(id, 10);
-
+  private dragHoverStyle = (id: number): void => {
     document
       .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
-      [_id].classList.add(CODE_SNIPPET_DRAG_HOVER_SELECTED);
+      [id].classList.add(CODE_SNIPPET_DRAG_HOVER_SELECTED);
   };
 
   // Remove 6 dots off hover
-  private dragHoverStyleRemove = (id: string): void => {
-    const _id: number = parseInt(id, 10);
+  private dragHoverStyleRemove = (id: number): void => {
     if (document.getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)) {
       document
         .getElementsByClassName(CODE_SNIPPET_DRAG_HOVER)
-        [_id].classList.remove(CODE_SNIPPET_DRAG_HOVER_SELECTED);
+        [id].classList.remove(CODE_SNIPPET_DRAG_HOVER_SELECTED);
     }
   };
 
   // Bold text in snippet name based on search
   private boldNameOnSearch = (
-    searchValue: string,
+    id: number,
     language: string,
     name: string
   ): JSX.Element => {
     const displayName = language + name;
 
-    if (
-      searchValue !== '' &&
-      displayName.toLowerCase().includes(searchValue.toLowerCase())
-    ) {
-      const startIndex: number = displayName
-        .toLowerCase()
-        .indexOf(searchValue.toLowerCase());
+    // check if the searchValue is not ''
+    if (this.state.searchValue !== '') {
+      const elements = [];
+      const boldIndices = this.state.matchIndices[id].slice();
 
-      const endIndex: number = startIndex + searchValue.length;
+      // get first match index in the name
+      let i = 0;
+      while (i < boldIndices.length) {
+        if (boldIndices[i] >= language.length) {
+          elements.push(displayName.substring(language.length, boldIndices[i]));
+          break;
+        }
+        i++;
+      }
 
-      if (endIndex <= language.length) {
+      // when there is no match in name but language
+      if (i >= boldIndices.length) {
         return <span>{name}</span>;
       } else {
-        const start = displayName.substring(language.length, startIndex);
-        const bolded = displayName.substring(startIndex, endIndex);
-        const end = displayName.substring(endIndex);
-        return (
-          <span>
-            {start}
-            <mark className={SEARCH_BOLD}>{bolded}</mark>
-            {end}
-          </span>
-        );
+        // current and next indices are bold indices
+        let currIndex = boldIndices[i];
+        let nextIndex;
+        // check if the match is the end of the name
+        if (i < boldIndices.length - 1) {
+          i++;
+          nextIndex = boldIndices[i];
+        } else {
+          nextIndex = null;
+        }
+        while (nextIndex !== null) {
+          // make the current index bold
+          elements.push(
+            <mark key={id + '_' + currIndex} className={SEARCH_BOLD}>
+              {displayName.substring(currIndex, currIndex + 1)}
+            </mark>
+          );
+          // add the regular string until we reach the next bold index
+          elements.push(displayName.substring(currIndex + 1, nextIndex));
+          currIndex = nextIndex;
+          if (i < boldIndices.length - 1) {
+            i++;
+            nextIndex = boldIndices[i];
+          } else {
+            nextIndex = null;
+          }
+        }
+        if (nextIndex === null) {
+          elements.push(
+            <mark key={id + '_' + currIndex} className={SEARCH_BOLD}>
+              {displayName.substring(currIndex, currIndex + 1)}
+            </mark>
+          );
+          elements.push(
+            displayName.substring(currIndex + 1, displayName.length)
+          );
+        }
+        return <span>{elements}</span>;
       }
     }
     return <span onDoubleClick={this.handleRenameSnippet}>{name}</span>;
@@ -331,8 +364,6 @@ export class CodeSnippetDisplay extends React.Component<
     event: React.MouseEvent<HTMLSpanElement, MouseEvent>
   ): Promise<void> {
     const contentsService = CodeSnippetContentsService.getInstance();
-    console.log(event.currentTarget);
-    console.log(event.target);
     const target = event.target as HTMLElement;
     const oldPath = 'snippets/' + target.innerHTML + '.json';
 
@@ -348,8 +379,6 @@ export class CodeSnippetDisplay extends React.Component<
     new_element.setSelectionRange(0, new_element.value.length);
 
     new_element.onblur = async (): Promise<void> => {
-      console.log(target.innerHTML);
-      console.log(new_element.value);
       if (target.innerHTML !== new_element.value) {
         const newPath = 'snippets/' + new_element.value + '.json';
         try {
@@ -527,7 +556,7 @@ export class CodeSnippetDisplay extends React.Component<
     target.removeEventListener('mouseup', this._evtMouseUp, true);
 
     return this._drag.start(clientX, clientY).then(() => {
-      this.dragHoverStyleRemove(codeSnippet.id.toString());
+      this.dragHoverStyleRemove(codeSnippet.id);
       this._drag = null;
       this._dragData = null;
     });
@@ -543,10 +572,10 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   //Set the position of the preview to be next to the snippet title.
-  private _setPreviewPosition(id: string): void {
-    const intID = parseInt(id, 10);
-    const realTarget = document.getElementsByClassName(TITLE_CLASS)[intID];
-    const newTarget = document.getElementsByClassName(CODE_SNIPPET_ITEM)[intID];
+
+  private _setPreviewPosition(id: number): void {
+    const realTarget = document.getElementsByClassName(TITLE_CLASS)[id];
+    const newTarget = document.getElementsByClassName(CODE_SNIPPET_ITEM)[id];
     // distDown is the number of pixels to shift the preview down
     const distDown: number = realTarget.getBoundingClientRect().top - 43; //this is bumping it up
     const elementSnippet = newTarget as HTMLElement;
@@ -1066,7 +1095,7 @@ export class CodeSnippetDisplay extends React.Component<
   // Render display of code snippet list
   private renderCodeSnippet = (
     codeSnippet: ICodeSnippet,
-    id: string
+    id: number
   ): JSX.Element => {
     const buttonClasses = BUTTON_CLASS;
     const displayName = '[' + codeSnippet.language + '] ' + codeSnippet.name;
@@ -1089,7 +1118,7 @@ export class CodeSnippetDisplay extends React.Component<
       <div
         key={codeSnippet.name}
         className={CODE_SNIPPET_ITEM}
-        id={id}
+        id={id.toString()}
         onMouseOver={(): void => {
           this.dragHoverStyle(id);
         }}
@@ -1100,7 +1129,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div
           className={CODE_SNIPPET_DRAG_HOVER}
           title="Drag to move"
-          id={id}
+          id={id.toString()}
           onMouseDown={(event): void => {
             this.handleDragSnippet(event);
           }}
@@ -1110,7 +1139,7 @@ export class CodeSnippetDisplay extends React.Component<
           onMouseEnter={(): void => {
             showPreview(
               {
-                id: parseInt(id, 10),
+                id: id,
                 title: displayName,
                 body: new PreviewHandler(),
                 codeSnippet: codeSnippet
@@ -1123,16 +1152,12 @@ export class CodeSnippetDisplay extends React.Component<
             this._evtMouseLeave();
           }}
         >
-          <div key={displayName} className={TITLE_CLASS} id={id}>
-            <div
-              id={id}
-              title={codeSnippet.name}
-              className={DISPLAY_NAME_CLASS}
-            >
-              {this.renderLanguageIcon(codeSnippet.language)}
-              {this.boldNameOnSearch(this.state.searchValue, language, name)}
+          <div key={displayName} className={TITLE_CLASS} id={id.toString()}>
+            <div id={id.toString()} title={name} className={DISPLAY_NAME_CLASS}>
+              {this.renderLanguageIcon(language)}
+              {this.boldNameOnSearch(id, language, name)}
             </div>
-            <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id}>
+            <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id.toString()}>
               {actionButtons.map(btn => {
                 return (
                   <button
@@ -1156,8 +1181,8 @@ export class CodeSnippetDisplay extends React.Component<
               })}
             </div>
           </div>
-          <div className={CODE_SNIPPET_DESC} id={id}>
-            <p id={id}>{`${codeSnippet.description}`}</p>
+          <div className={CODE_SNIPPET_DESC} id={id.toString()}>
+            <p id={id.toString()}>{`${codeSnippet.description}`}</p>
           </div>
         </div>
       </div>
@@ -1171,24 +1196,27 @@ export class CodeSnippetDisplay extends React.Component<
     if (state.searchValue === '' && state.filterTags.length === 0) {
       return {
         codeSnippets: props.codeSnippets,
+        matchIndices: [],
         searchValue: '',
         filterTags: []
       };
     }
 
     if (state.searchValue !== '' || state.filterTags.length !== 0) {
-      const newSnippets = props.codeSnippets.filter(codeSnippet => {
-        return (
-          (state.searchValue !== '' &&
-            codeSnippet.name.toLowerCase().includes(state.searchValue)) ||
-          (state.searchValue !== '' &&
-            codeSnippet.language.toLowerCase().includes(state.searchValue)) ||
-          (codeSnippet.tags &&
-            codeSnippet.tags.some(tag => state.filterTags.includes(tag)))
-        );
-      });
+      // const newSnippets = props.codeSnippets.filter(codeSnippet => {
+      //   return (
+      //     state.matchIndices[codeSnippet.id] !== null ||
+      //     // (state.searchValue !== '' &&
+      //     //   codeSnippet.name.toLowerCase().includes(state.searchValue)) ||
+      //     // (state.searchValue !== '' &&
+      //     //   codeSnippet.language.toLowerCase().includes(state.searchValue)) ||
+      //     (codeSnippet.tags &&
+      //       codeSnippet.tags.some(tag => state.filterTags.includes(tag)))
+      //   );
+      // });
       return {
-        codeSnippets: newSnippets,
+        codeSnippets: state.codeSnippets,
+        matchIndices: state.matchIndices,
         searchValue: state.searchValue,
         filterTags: state.filterTags
       };
@@ -1198,29 +1226,73 @@ export class CodeSnippetDisplay extends React.Component<
 
   filterSnippets = (searchValue: string, filterTags: string[]): void => {
     // filter with search
-    let filteredSnippets = this.props.codeSnippets.filter(
-      codeSnippet =>
-        codeSnippet.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        codeSnippet.language.toLowerCase().includes(searchValue.toLowerCase())
-    );
+    let matchIndices: number[][] = [];
+    const matchResults: StringExt.IMatchResult[] = [];
+    let filteredSnippets = this.props.codeSnippets;
+    const filteredSnippetsScore: {
+      score: number;
+      snippet: ICodeSnippet;
+    }[] = [];
+    if (searchValue !== '') {
+      filteredSnippets.forEach(snippet => {
+        const matchResult = StringExt.matchSumOfSquares(
+          (snippet.language + snippet.name).toLowerCase(),
+          searchValue.replace(' ', '').toLowerCase()
+        );
+
+        if (matchResult) {
+          matchResults.push(matchResult);
+          filteredSnippetsScore.push({
+            score: matchResult.score,
+            snippet: snippet
+          });
+        }
+      });
+
+      // sort snippets by its score
+      filteredSnippetsScore.sort((a, b) => a.score - b.score);
+      const newFilteredSnippets: ICodeSnippet[] = [];
+      filteredSnippetsScore.forEach(snippetScore =>
+        newFilteredSnippets.push(snippetScore.snippet)
+      );
+      filteredSnippets = newFilteredSnippets;
+
+      // sort the matchResults by its score
+      matchResults.sort((a, b) => a.score - b.score);
+      matchResults.forEach(res => matchIndices.push(res.indices));
+    }
 
     // filter with tags
     if (filterTags.length !== 0) {
-      filteredSnippets = filteredSnippets.filter(codeSnippet => {
+      const newMatchIndices = matchIndices.slice();
+      filteredSnippets = filteredSnippets.filter((codeSnippet, id) => {
         return filterTags.some(tag => {
           if (codeSnippet.tags) {
-            return codeSnippet.tags.includes(tag);
+            if (codeSnippet.tags.includes(tag)) {
+              return true;
+            }
           }
+          // if the snippet does not have the tag, remove its mathed index
+          const matchedIndex = matchIndices[id];
+          const indexToDelete = newMatchIndices.indexOf(matchedIndex);
+          newMatchIndices.splice(indexToDelete, 1);
           return false;
         });
       });
+      matchIndices = newMatchIndices;
     }
 
-    this.setState({
-      codeSnippets: filteredSnippets,
-      searchValue: searchValue,
-      filterTags: filterTags
-    });
+    this.setState(
+      {
+        codeSnippets: filteredSnippets,
+        matchIndices: matchIndices,
+        searchValue: searchValue,
+        filterTags: filterTags
+      },
+      () => {
+        console.log('snippets filtered');
+      }
+    );
   };
 
   getActiveTags(): string[] {
@@ -1370,7 +1442,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
-              this.renderCodeSnippet(codeSnippet, id.toString())
+              this.renderCodeSnippet(codeSnippet, id)
             )}
           </div>
         </div>
