@@ -74,7 +74,8 @@ import {
   coconutIcon,
   sbtIcon,
   rustIcon,
-  qsharpIcon
+  qsharpIcon,
+  sasIcon
 } from './CodeSnippetLanguages';
 
 /**
@@ -1032,6 +1033,18 @@ export class CodeSnippetDisplay extends React.Component<
       case 'Babel': {
         return (
           <babelIcon.react
+            tag="span"
+            height="16px"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
+      }
+      case 'SAS': {
+        return (
+          <sasIcon.react
             tag="span"
             height="16px"
             width="16px"

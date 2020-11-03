@@ -32,6 +32,7 @@ import purescriptSVGstr from '../style/icon/language_icons/purescript.svg';
 import qsharpSVGstr from '../style/icon/language_icons/qsharp.svg';
 import rubySVGstr from '../style/icon/language_icons/ruby.svg';
 import rustSVGstr from '../style/icon/language_icons/rust.svg';
+import sasSVGstr from '../style/icon/language_icons/sas.svg';
 import sbtSVGstr from '../style/icon/language_icons/sbt.svg';
 import scalaSVGstr from '../style/icon/language_icons/scala.svg';
 import schemeSVGstr from '../style/icon/language_icons/scheme.svg';
@@ -95,6 +96,7 @@ export const SUPPORTED_LANGUAGES = [
   'Clojurescript',
   'sbt',
   'Guile',
+  'SAS',
   'Stata',
   'Racekt',
   'SQL',
@@ -264,6 +266,11 @@ export const kotlinIcon = new LabIcon({
 export const nodejsIcon = new LabIcon({
   name: 'custom-ui-components:nodejs',
   svgstr: nodejsSVGstr
+});
+
+export const sasIcon = new LabIcon({
+  name: 'custom-ui-components:sas',
+  svgstr: sasSVGstr
 });
 
 export const coconutIcon = new LabIcon({
