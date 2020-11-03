@@ -1,6 +1,7 @@
 // Copyright (c) 2020, jupytercalpoly
 // Distributed under the terms of the BSD-3 Clause License.
-// Some lines of code are from Elyra
+
+// Some lines of code are from Elyra Code Snippet.
 
 /*
  * Copyright 2018-2020 IBM Corporation
