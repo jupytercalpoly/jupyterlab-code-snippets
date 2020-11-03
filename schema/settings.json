@@ -3,7 +3,7 @@
     {
       "command": "codeSnippet:save-as-snippet",
       "keys": ["Accel Shift A"],
-      "selector": ".jp-Cell"
+      "selector": ".jp-Notebook"
     },
     {
       "command": "codeSnippet:save-as-snippet",
