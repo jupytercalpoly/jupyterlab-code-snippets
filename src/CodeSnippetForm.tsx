@@ -1,3 +1,6 @@
+// Copyright (c) 2020, jupytercalpoly
+// Distributed under the terms of the BSD-3 Clause License.
+
 import { closeIcon, Button, LabIcon } from '@jupyterlab/ui-components';
 import { WidgetTracker, ReactWidget, Styling } from '@jupyterlab/apputils';
 
