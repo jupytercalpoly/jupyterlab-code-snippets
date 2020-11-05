@@ -15,7 +15,7 @@
         "es2015.iterable",
         "es2017.object"
       ],
-      "types": ["jest"],
+      "types": ["jest", "node"],
       "typeRoots": ["./types", "./node_modules/@types"],
       "jsx": "react",
       "resolveJsonModule": true,
