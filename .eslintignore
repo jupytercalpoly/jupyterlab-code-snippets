@@ -2,5 +2,7 @@ node_modules
 dist
 coverage
 **/*.d.ts
-tests
 _temp_extension
+test
+babel.config.ts
+jest.config.ts
