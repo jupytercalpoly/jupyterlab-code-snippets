@@ -47,6 +47,7 @@ import React from 'react';
 
 import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 import { FilterTools } from './FilterTools';
+import { SortTools } from './SortTools';
 import { showPreview } from './PreviewSnippet';
 import { showMoreOptions } from './MoreOptions';
 import {
@@ -120,6 +121,7 @@ const CODE_SNIPPET_MORE_OTPIONS_INSERT = 'jp-codeSnippet-more-options-insert';
 const CODE_SNIPPET_MORE_OTPIONS_EDIT = 'jp-codeSnippet-more-options-edit';
 const CODE_SNIPPET_MORE_OTPIONS_DELETE = 'jp-codeSnippet-more-options-delete';
 const CODE_SNIPPET_CREATE_NEW_BTN = 'jp-createSnippetBtn';
+const CODE_SNIPPET_HEADER_BOX = 'jp-codeSnippet-header-class';
 
 /**
  * The threshold in pixels to start a drag event.
@@ -1465,10 +1467,13 @@ export class CodeSnippetDisplay extends React.Component<
             <addIcon.react tag="span" right="7px" top="5px" />
           </button>
         </header>
-        <FilterTools
-          tags={this.getActiveTags()}
-          onFilter={this.filterSnippets}
-        />
+        <div className={CODE_SNIPPET_HEADER_BOX}>
+          <FilterTools
+            tags={this.getActiveTags()}
+            onFilter={this.filterSnippets}
+          />
+          <SortTools />
+        </div>
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
