@@ -30,8 +30,7 @@ export class SortTools extends React.Component {
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
     const target = event.target as HTMLElement;
-    const top: number;
-    top = target.getBoundingClientRect().top + 30;
+    const top = target.getBoundingClientRect().top + 30;
     const leftAsString =
       (target.getBoundingClientRect().left - 164).toString(10) + 'px';
     const topAsString = top.toString(10) + 'px';
