@@ -20,5 +20,5 @@
     "target": "es2017",
     "types": []
   },
-  "include": ["src/*", "src/*.tsx", "test/*"]
+  "include": ["src/*", "src/*.tsx"]
 }
