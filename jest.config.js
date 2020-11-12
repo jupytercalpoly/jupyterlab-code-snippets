@@ -4,8 +4,12 @@ module.exports = {
   verbose: true,
   preset: 'ts-jest/presets/js-with-babel',
   transform: {
+<<<<<<< HEAD
     '^.+\\.tsx?$': 'ts-jest',
     '^.+\\.(js|jsx)$': 'babel-jest'
+=======
+    '^.+\\.tsx?$': 'ts-jest'
+>>>>>>> Remove unnecessary setup
   },
   setupFiles: ['<rootDir>/testutils/jest-setup-files.js'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
