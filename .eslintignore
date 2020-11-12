@@ -2,10 +2,5 @@ node_modules
 dist
 coverage
 **/*.d.ts
-<<<<<<< HEAD
 tests
 _temp_extension
-=======
-babel.config.js
-jest.config.js
->>>>>>> Start unit testing
