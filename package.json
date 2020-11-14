@@ -75,6 +75,7 @@
     "eslint": "^7.5.0",
     "@babel/core": "^7",
     "@babel/preset-env": "^7",
+    "@jupyterlab/testutils": "^2.2.7",
     "@testing-library/react": "^11.1.1",
     "@types/jest": "^26.0.15",
     "eslint-config-prettier": "^6.10.1",

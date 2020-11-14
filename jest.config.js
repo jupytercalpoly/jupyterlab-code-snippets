@@ -4,7 +4,8 @@ module.exports = {
   verbose: true,
   preset: 'ts-jest/presets/js-with-babel',
   transform: {
-    '^.+\\.tsx?$': 'ts-jest'
+    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.(js|jsx)$': 'babel-jest'
   },
   setupFiles: ['<rootDir>/testutils/jest-setup-files.js'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
