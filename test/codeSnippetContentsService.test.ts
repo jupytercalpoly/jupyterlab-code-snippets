@@ -130,3 +130,46 @@ test('test delete', async () => {
   const path = 'foo/test';
   await codeSnippetContentsService.delete(path);
 });
+
+// test('test save', () => {
+//   const newContent = {
+//     name: 'new_array',
+//     description:
+//       'Scala program of array. Declare, print, and calculate sum of all elements.',
+//     language: 'Scala',
+//     code: [],
+//     id: 11,
+//     tags: ['math']
+//   };
+//   codeSnippetContentsService.save('snippets/sum_array.json', {
+//     type: 'file',
+//     format: 'text',
+//     content: JSON.stringify(newContent)
+//   });
+
+//   const data = codeSnippetContentsService.getData(
+//     'snippets/sum_array.json',
+//     'file'
+//   );
+
+//   data.then(val => expect(JSON.parse(val.content).code.length).toBe(0));
+// });
+
+// test('test rename', () => {
+//   const oldPath = 'snippets/sum_array.json';
+//   const newPath = 'snippets/new_array.json';
+//   codeSnippetContentsService.rename(oldPath, newPath);
+
+//   codeSnippetContentsService
+//     .getData(newPath, 'file')
+//     .then(val => expect(val).toBeTruthy());
+// });
+
+// test('test delete', () => {
+//   const path = 'snippets/sum_array.json';
+//   codeSnippetContentsService.delete(path);
+
+//   codeSnippetContentsService
+//     .getData(path, 'file')
+//     .then(val => expect(val).toBeNull());
+// });
