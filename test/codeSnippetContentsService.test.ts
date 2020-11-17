@@ -45,6 +45,7 @@ function handleRequest(item: IService, status: number, body: any) {
 
     // Create the response and return it as a promise.
     const response = new Response(body, { status });
+
     return Promise.resolve(response as any);
   };
 
@@ -56,98 +57,76 @@ test('test get instance', () => {
   expect(codeSnippetContentsService).toBeInstanceOf(CodeSnippetContentsService);
 });
 
-test('test getData', async () => {
-  handleRequest(codeSnippetContentsService.contentsManager, 200, DEFAULT_FILE);
-  const options: Contents.IFetchOptions = { type: 'file' };
-  const model = await codeSnippetContentsService.contentsManager.get(
-    '/foo',
-    options
-  );
+describe('test get', () => {
+  it('test getData', async () => {
+    handleRequest(
+      codeSnippetContentsService.contentsManager,
+      200,
+      DEFAULT_FILE
+    );
+    const model = await codeSnippetContentsService.getData('/foo', 'file');
 
-  console.log(model.content);
+    expect(model.content).toBe(DEFAULT_FILE.content);
+  });
 
-  // const res = {
-  //   name: 'sum_array',
-  //   description:
-  //     'Scala program of array. Declare, print, and calculate sum of all elements.',
-  //   language: 'Scala',
-  //   code: [
-  //     'object ExampleArray1 {',
-  //     '    ',
-  //     '   def main(args: Array[String]) {',
-  //     '       ',
-  //     '      var numbers = Array(10,20,30,40,50);',
-  //     '      var N:Int=0;',
-  //     '      ',
-  //     '      //print all array elements',
-  //     '      println("All array elements: ");',
-  //     '      for ( N <- numbers ) {',
-  //     '         println(N);',
-  //     '      }',
-  //     '      //calculating SUM of all elements',
-  //     '      var sum: Int=0;',
-  //     '      for ( N <- numbers ) {',
-  //     '         sum+=N;',
-  //     '      }      ',
-  //     '      println("Sum of all array elements: "+sum);',
-  //     '',
-  //     '   }',
-  //     '}'
-  //   ],
-  //   id: 11,
-  //   tags: ['math']
-  // };
-  const data = codeSnippetContentsService.getData(
-    'snippets/sum_array.json',
-    'file'
-  );
+  it('test getDataError', async () => {
+    handleRequest(
+      codeSnippetContentsService.contentsManager,
+      201,
+      DEFAULT_FILE
+    );
 
-  data.then(val => {
-    console.log(val.content);
-    // console.log(JSON.stringify(val));
-    // expect(val).toBe(res);
+    const model = await codeSnippetContentsService.getData('/foo', 'file');
+
+    expect(model.content).toBe(undefined);
   });
 });
 
-// test('test save', () => {
-//   const newContent = {
-//     name: 'new_array',
-//     description:
-//       'Scala program of array. Declare, print, and calculate sum of all elements.',
-//     language: 'Scala',
-//     code: [],
-//     id: 11,
-//     tags: ['math']
-//   };
-//   codeSnippetContentsService.save('snippets/sum_array.json', {
-//     type: 'file',
-//     format: 'text',
-//     content: JSON.stringify(newContent)
-//   });
+test('test save', async () => {
+  handleRequest(codeSnippetContentsService.contentsManager, 200, DEFAULT_FILE);
 
-//   const data = codeSnippetContentsService.getData(
-//     'snippets/sum_array.json',
-//     'file'
-//   );
+  const saved = await codeSnippetContentsService.save('foo/bar', {
+    type: 'file',
+    format: 'text'
+  });
 
-//   data.then(val => expect(JSON.parse(val.content).code.length).toBe(0));
-// });
+  expect(saved.content).toBe('hello, world!');
+  expect(saved.path).toBe('foo/bar');
+});
 
-// test('test rename', () => {
-//   const oldPath = 'snippets/sum_array.json';
-//   const newPath = 'snippets/new_array.json';
-//   codeSnippetContentsService.rename(oldPath, newPath);
+describe('test rename', () => {
+  it('test rename', async () => {
+    handleRequest(
+      codeSnippetContentsService.contentsManager,
+      200,
+      DEFAULT_FILE
+    );
 
-//   codeSnippetContentsService
-//     .getData(newPath, 'file')
-//     .then(val => expect(val).toBeTruthy());
-// });
+    const oldPath = 'foo/test';
+    const newPath = 'foo/test2';
+    const renamed = await codeSnippetContentsService.rename(oldPath, newPath);
 
-// test('test delete', () => {
-//   const path = 'snippets/sum_array.json';
-//   codeSnippetContentsService.delete(path);
+    expect(renamed.path).toBe('foo/test2');
+  });
 
-//   codeSnippetContentsService
-//     .getData(path, 'file')
-//     .then(val => expect(val).toBeNull());
-// });
+  it('test rename error', async () => {
+    handleRequest(
+      codeSnippetContentsService.contentsManager,
+      201,
+      DEFAULT_FILE
+    );
+
+    const oldPath = 'foo/test';
+    const newPath = 'foo/test2';
+    const renamed = await codeSnippetContentsService.rename(oldPath, newPath);
+
+    expect(renamed.content).toBe(undefined);
+  });
+});
+
+test('test delete', async () => {
+  handleRequest(codeSnippetContentsService.contentsManager, 200, DEFAULT_FILE);
+
+  const path = 'foo/test';
+  await codeSnippetContentsService.delete(path);
+});
