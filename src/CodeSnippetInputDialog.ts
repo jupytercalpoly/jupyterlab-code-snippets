@@ -101,7 +101,8 @@ export function CodeSnippetInputDialog(
         language: result.value[2],
         code: code,
         id: idx,
-        tags: tags
+        tags: tags,
+        date_created: new Date().toLocaleString()
       };
       const contentsService = CodeSnippetContentsService.getInstance();
       const currSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;

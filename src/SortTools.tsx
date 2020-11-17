@@ -11,9 +11,11 @@ const SORT_ICON_ACTIVE = 'jp-codeSnippet-sort-icon-active';
 const CODE_SNIPPET_SORT_CONTENT = 'jp-codeSnippet-sort-content';
 const CODE_SNIPPET_SORT_SORTBY = 'jp-codeSnippet-sort-sortby';
 const CODE_SNIPPET_SORT_OPTION = 'jp-codeSnippet-sort-option';
+// const CODE_SNIPPET_SORT_SELECTED = 'jp-codeSnippet-sort-selected';
 
 /* Add on click to span and then create function to actually do the sorting*/
 /* Right now the coloring of the arrows is off, make sure when dialog disappears arrow turns back to gray*/
+/* Add innerHTML for the checkmark when something is clicked. When its clicked again remove the checkmark. */
 
 class OptionsHandler extends Widget {
   constructor(display: SortTools) {
@@ -49,27 +51,29 @@ export class SortTools extends React.Component {
     body.className = 'jp-codeSnippet-sort-test-container';
     const optionsContainer = document.createElement('div');
     optionsContainer.className = CODE_SNIPPET_SORT_CONTENT;
-    const insertSnip = document.createElement('div');
-    insertSnip.className = CODE_SNIPPET_SORT_SORTBY;
-    // 4 space start to sortby
-    insertSnip.textContent = '    Sort by:';
-    /*insertSnip.onclick = (): void => {};*/
-    const copySnip = document.createElement('div');
-    copySnip.className = CODE_SNIPPET_SORT_OPTION;
-    copySnip.textContent = '    Last Modified';
+    const sortBy = document.createElement('div');
+    sortBy.className = CODE_SNIPPET_SORT_SORTBY;
+    // 4 space start
+    sortBy.textContent = '    Sort by:';
+    const lastMod = document.createElement('div');
+    lastMod.className = CODE_SNIPPET_SORT_OPTION;
+    // const checkMark = document.createElement('span');
+    // checkMark.className = CODE_SNIPPET_SORT_SELECTED;
+    // copySnip.appendChild(checkMark);
+    lastMod.textContent = '    Last Modified';
     /*copySnip.onclick = (): void => {};*/
-    const editSnip = document.createElement('div');
-    editSnip.className = CODE_SNIPPET_SORT_OPTION;
-    editSnip.textContent = '    Date Created: Newest';
+    const createNew = document.createElement('div');
+    createNew.className = CODE_SNIPPET_SORT_OPTION;
+    createNew.textContent = '    Date Created: Newest';
     /*editSnip.onclick = (): void => {};*/
-    const deleteSnip = document.createElement('div');
-    deleteSnip.className = CODE_SNIPPET_SORT_OPTION;
-    deleteSnip.textContent = '    Date Created: Oldest';
+    const createOld = document.createElement('div');
+    createOld.className = CODE_SNIPPET_SORT_OPTION;
+    createOld.textContent = '    Date Created: Oldest';
     /*deleteSnip.onclick = (): void => {};*/
-    optionsContainer.appendChild(insertSnip);
-    optionsContainer.appendChild(copySnip);
-    optionsContainer.appendChild(editSnip);
-    optionsContainer.appendChild(deleteSnip);
+    optionsContainer.appendChild(sortBy);
+    optionsContainer.appendChild(lastMod);
+    optionsContainer.appendChild(createNew);
+    optionsContainer.appendChild(createOld);
     body.append(optionsContainer);
     return body;
   }

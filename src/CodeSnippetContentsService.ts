@@ -11,6 +11,8 @@ export interface ICodeSnippet {
   code: string[];
   id: number;
   tags?: string[];
+  date_created?: string;
+  date_modified?: string;
 }
 
 /**
