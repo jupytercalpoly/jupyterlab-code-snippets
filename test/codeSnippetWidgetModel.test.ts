@@ -148,4 +148,63 @@ describe('test snippet manipulation', () => {
 
     expect(codeSnippetWidgetModel.snippets.length).toBe(0);
   });
+
+  it('test add snippet with id = -1', () => {
+    const insertSnippet = jest.spyOn(
+      CodeSnippetWidgetModel.prototype as any,
+      'insertSnippet'
+    );
+
+    const expectedId = codeSnippetWidgetModel.snippets.length;
+    const newSnippet = {
+      name: 'test_snippet_three',
+      description: 'testing code snippet widget model',
+      language: 'Python',
+      code: ["print('testing')"],
+      id: -1
+    };
+    codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
+
+    expect(
+      codeSnippetWidgetModel.snippets[
+        codeSnippetWidgetModel.snippets.length - 1
+      ].id
+    ).toBe(expectedId);
+
+    expect(insertSnippet).toHaveBeenCalled();
+  });
+
+  it('test moveSnippets to same index', () => {
+    const before = codeSnippetWidgetModel.snippets;
+    codeSnippetWidgetModel.moveSnippet(0, 0);
+    const after = codeSnippetWidgetModel.snippets;
+
+    expect(before).toEqual(after);
+  });
+
+  it('test addSnippet to the middle of list', () => {
+    const insertSnippet = jest.spyOn(
+      CodeSnippetWidgetModel.prototype as any,
+      'insertSnippet'
+    );
+
+    const newSnippet2 = {
+      name: 'test_snippet_three',
+      description: 'testing code snippet widget model',
+      language: 'Python',
+      code: ["print('testing')"],
+      id: 0
+    };
+
+    codeSnippetWidgetModel.addSnippet(newSnippet2, newSnippet2.id);
+    expect(codeSnippetWidgetModel.snippets[0]).toBe(newSnippet2);
+
+    expect(insertSnippet).toHaveBeenCalled();
+  });
+
+  it('test delete the first snippet', () => {
+    codeSnippetWidgetModel.deleteSnippet(0);
+
+    expect(codeSnippetWidgetModel.snippets.length).toBe(1);
+  });
 });
