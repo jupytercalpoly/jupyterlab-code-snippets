@@ -65,6 +65,8 @@ export interface ICodeSnippetEditorMetadata {
   selectedTags: string[];
   allTags: string[];
   fromScratch: boolean;
+  date_created: string;
+  date_modified: string;
 }
 
 export class CodeSnippetEditor extends ReactWidget {
@@ -406,6 +408,7 @@ export class CodeSnippetEditor extends ReactWidget {
     this._codeSnippetEditorMetaData.name = name;
     this._codeSnippetEditorMetaData.description = description;
     this._codeSnippetEditorMetaData.language = language;
+    this._codeSnippetEditorMetaData.date_modified = new Date().toLocaleString();
 
     const newPath =
       'snippets/' + this._codeSnippetEditorMetaData.name + '.json';
@@ -461,7 +464,9 @@ export class CodeSnippetEditor extends ReactWidget {
         language: this._codeSnippetEditorMetaData.language,
         code: this._codeSnippetEditorMetaData.code,
         id: this._codeSnippetEditorMetaData.id,
-        tags: this._codeSnippetEditorMetaData.selectedTags
+        tags: this._codeSnippetEditorMetaData.selectedTags,
+        date_created: this._codeSnippetEditorMetaData.date_created,
+        date_modified: this._codeSnippetEditorMetaData.date_modified
       })
     });
 
