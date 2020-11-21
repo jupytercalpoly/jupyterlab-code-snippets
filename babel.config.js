@@ -7,6 +7,6 @@ module.exports = {
           node: 'current'
         }
       }
-    ]
+    ], '@babel/preset-react'
   ]
 };
