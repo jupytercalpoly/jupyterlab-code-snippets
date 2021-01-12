@@ -184,6 +184,7 @@ function activateCodeSnippet(
         //if user just right-clicks cell(s) to save
         const curr = document.getElementsByClassName('jp-Cell jp-mod-selected');
         const resultArray = [];
+        // changed i = 1 to i = 0.
         for (let i = 0; i < curr.length; i++) {
           //loop through each cell
           const text = curr[i] as HTMLElement;
