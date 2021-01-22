@@ -375,7 +375,7 @@
   padding: 0px;
 }
 
-@import url('~@jupyterlab/codeeditor/style/index.css');
+/* @import url('~@jupyterlab/codeeditor/style/index.css'); */
 
 /* Code Snippet Filter CSS */
 .jp-codeSnippet-searchbar {
@@ -496,7 +496,7 @@ mark.jp-codeSnippet-search-bolding {
 }
 
 /* Cell tag styling */
-@import url('~@jupyterlab/celltags/style/base.css');
+/* @import url('~@jupyterlab/celltags/style/base.css'); */
 
 .jp-codeSnippet-tags {
   margin-top: 8px;
