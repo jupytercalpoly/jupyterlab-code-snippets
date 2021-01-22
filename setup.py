@@ -13,26 +13,26 @@ import setuptools
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 # The name of the project
-name="metadata_code_snippets"
+# name="metadata_code_snippets"
 
 # Ensure a valid python version
 ensure_python(">=3.5")
 
 # Get our version
-version = get_version(os.path.join(name, "_version.py"))
+version = get_version("_version.py")
 
-lab_path = os.path.join(HERE, name, "labextension")
+# lab_path = os.path.join(HERE, name, "labextension")
 
 # Representative files that should exist after a successful build
-jstargets = [
-    os.path.join(HERE, "lib", "CodeSnippetService.js"),
-]
+# jstargets = [
+#     os.path.join(HERE, "lib", "CodeSnippetService.js"),
+# ]
 
-package_data_spec = {
-    name: [
-        "*"
-    ]
-}
+# package_data_spec = {
+#     name: [
+#         "*"
+#     ]
+# }
 
 data_files_spec = [
     ("share/jupyter/metadata/code-snippets", "share/jupyter/metadata/code-snippets", "*.json")
@@ -47,7 +47,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup_args = dict(
-    name=name,
+    name='code_snippet',
     version=version,
     url="https://github.com/jupytercalpoly/project2.git",
     author="Jay Ahn, Kiran Pinnipati",
@@ -56,8 +56,7 @@ setup_args = dict(
     long_description_content_type="text/markdown",
     cmdclass=cmdclass,
     install_requires=[
-        "jupyterlab~=2.0",
-        "elyra==1.0.0b1"
+        "jupyterlab~=3.0"
     ],
     zip_safe=False,
     include_package_data=True,
