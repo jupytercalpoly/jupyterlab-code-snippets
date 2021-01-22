@@ -89,7 +89,12 @@
   "jupyterlab": {
     "extension": true,
     "schemaDir": "schema",
-    "outputDir": "code_snippet/labextension"
+    "outputDir": "code_snippet/labextension",
+    "_build": {
+      "load": "static/remoteEntry.11378e5cdb89337016e1.js",
+      "extension": "./extension",
+      "style": "./style"
+    }
   },
   "husky": {
     "hooks": {
@@ -97,10 +102,10 @@
     }
   },
   "lint-staged": {
-    "src/*.{js,jsx,ts,tsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "eslint --cache --fix"
     ],
-    "src/*.js": "eslint --cache --fix"
+    "*.js": "eslint --cache --fix"
   },
   "styleModule": "style/index.js"
 }

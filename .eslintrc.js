@@ -11,7 +11,7 @@ module.exports = {
     project: 'tsconfig.json',
     sourceType: 'module'
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'react'],
   rules: {
     '@typescript-eslint/interface-name-prefix': [
       'error',
@@ -31,5 +31,6 @@ module.exports = {
     curly: ['error', 'all'],
     eqeqeq: 'error',
     'prefer-arrow-callback': 'error'
-  }
+  },
+  ignorePatterns: ['.eslintrc.js']
 };
