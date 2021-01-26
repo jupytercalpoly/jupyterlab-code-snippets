@@ -97,10 +97,10 @@
     }
   },
   "lint-staged": {
-    "src/*.{js,jsx,ts,tsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "eslint --cache --fix"
     ],
-    "src/*.js": "eslint --cache --fix"
+    "*.js": "eslint --cache --fix"
   },
   "styleModule": "style/index.js"
 }

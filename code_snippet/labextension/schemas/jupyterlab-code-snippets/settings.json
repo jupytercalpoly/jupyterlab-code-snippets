@@ -1,0 +1,15 @@
+{
+  "jupyter.lab.shortcuts": [
+    {
+      "command": "codeSnippet:save-as-snippet",
+      "keys": ["Accel Shift A"],
+      "selector": ".jp-Notebook"
+    },
+    {
+      "command": "codeSnippet:save-as-snippet",
+      "keys": ["Accel Shift A"],
+      "selector": ".jp-FileEditor"
+    }
+  ],
+  "type": "object"
+}
