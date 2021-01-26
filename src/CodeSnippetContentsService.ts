@@ -1,3 +1,6 @@
+// Copyright (c) 2020, jupytercalpoly
+// Distributed under the terms of the BSD-3 Clause License.
+
 import { ContentsManager, Drive, Contents } from '@jupyterlab/services';
 
 export interface ICodeSnippet {
