@@ -462,7 +462,7 @@ export class CodeSnippetDisplay extends React.Component<
     target.addEventListener('mousemove', this.handleDragMove, true);
 
     // since a browser has its own drag'n'drop support for images and some other elements.
-    target.ondragstart = () => false;
+    target.ondragstart = (): boolean => false;
 
     event.preventDefault();
   }

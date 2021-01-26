@@ -41,7 +41,7 @@ export class FilterTools extends React.Component<
     this.filterSnippets = this.filterSnippets.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.setState({
       show: false,
       selectedTags: [],
@@ -49,7 +49,7 @@ export class FilterTools extends React.Component<
     });
   }
 
-  componentDidUpdate(prevProps: IFilterSnippetProps) {
+  componentDidUpdate(prevProps: IFilterSnippetProps): void {
     if (prevProps !== this.props) {
       this.setState(state => ({
         selectedTags: state.selectedTags
