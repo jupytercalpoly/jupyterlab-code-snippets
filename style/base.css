@@ -298,7 +298,6 @@
 .jp-codeSnippet-editor-tag {
   margin-left: 3px;
   margin-right: 3px;
-  height: 5px;
 }
 
 .jp-codeSnippet-editor-tag button {
@@ -502,11 +501,11 @@ mark.jp-codeSnippet-search-bolding {
   margin-top: 8px;
 }
 
-.jp-codeSnippet-tag,
+/* .jp-codeSnippet-tag,
 .jp-codeSnippet-inputTag,
 .jp-codeSnippet-filter-tag {
   height: 5px;
-}
+} */
 
 /* USER Input Form Style */
 .jp-codeSnippet-form {
