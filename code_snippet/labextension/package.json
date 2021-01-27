@@ -91,7 +91,7 @@
     "schemaDir": "schema",
     "outputDir": "code_snippet/labextension",
     "_build": {
-      "load": "static/remoteEntry.11378e5cdb89337016e1.js",
+      "load": "static/remoteEntry.363d7e65ebaaf51fc031.js",
       "extension": "./extension",
       "style": "./style"
     }
@@ -102,10 +102,10 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "src/*.{js,jsx,ts,tsx}": [
       "eslint --cache --fix"
     ],
-    "*.js": "eslint --cache --fix"
+    "src/*.js": "eslint --cache --fix"
   },
   "styleModule": "style/index.js"
 }
