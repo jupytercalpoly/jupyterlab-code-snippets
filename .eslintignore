@@ -2,5 +2,5 @@ node_modules
 dist
 coverage
 **/*.d.ts
-tests
+test
 _temp_extension
