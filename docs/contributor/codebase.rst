@@ -18,6 +18,10 @@ allows the repository to be tested on `mybinder.org`_. This
 specification is developer focused. For a more user-focused binder see
 the `JupyterLab demo`_
 
+Test: ``test/``
+^^^^^^^^^^^^^^^
+This contains test scripts that test our codebase using jest.
+
 Design: ``design/``
 ^^^^^^^^^^^^^^^^^^^
 A directory contains gifs or images that show the design perspective of
@@ -49,13 +53,13 @@ Description of each file in ``src/``
    as a container of code snippets.
 -  CodeSnippetWidgetModel.ts: this contains a code snippet model that
    keeps track of a list of code snippets being used in the extension.
--  ConfirmMessage.tsx: this contains a luminio widget that creates
+-  ConfirmMessage.ts: this contains a luminio widget that creates
    confirmation dialog as a modal window after snippet creation.
 -  FilterTools.tsx: this contains a react component that renders a
    search bar and filter box.
--  MoreOptions.tsx: this contains a lumino widget that creates dropdown
+-  MoreOptions.ts: this contains a lumino widget that creates dropdown
    dialog when three dots icon is clicked.
--  PreviewSnippet.tsx: this contains a lumino widget used to create
+-  PreviewSnippet.ts: this contains a lumino widget used to create
    preview minimap.
 -  index.ts: this contains the activation of our extension.
 

@@ -6,6 +6,8 @@ Overview
 JupyterLab Code Snippets empowers you to write code more rapidly
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. image:: ../../Design/overview.gif
+
 Do you find yourself typing in the same code blocks over and over again?
 Are you tired of clicking through tabs online for starter code or
 browsing old notebook files to find the right import statements? Save,

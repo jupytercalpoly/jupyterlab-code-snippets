@@ -42,12 +42,22 @@ export class CodeSnippetContentsService {
     path: string,
     type: Contents.ContentType
   ): Promise<Contents.IModel> {
-    const data = await this.contentsManager.get(path, {
-      type: type,
-      //   format: 'text',
-      content: true
-    });
-    return data;
+    try {
+      const data = await this.contentsManager.get(path, {
+        type: type,
+        //   format: 'text',
+        content: true
+      });
+      return data;
+    } catch (error) {
+      return error;
+    }
+    // const data = await this.contentsManager.get(path, {
+    //   type: type,
+    //   //   format: 'text',
+    //   content: true
+    // });
+    // return data;
   }
 
   /**
@@ -61,8 +71,12 @@ export class CodeSnippetContentsService {
     path: string,
     options?: Partial<Contents.IModel>
   ): Promise<Contents.IModel> {
-    const changedModel = await this.contentsManager.save(path, options);
-    return changedModel;
+    try {
+      const changedModel = await this.contentsManager.save(path, options);
+      return changedModel;
+    } catch (error) {
+      return error;
+    }
   }
 
   /**
@@ -77,8 +91,14 @@ export class CodeSnippetContentsService {
    * @param newPath change to
    */
   async rename(oldPath: string, newPath: string): Promise<Contents.IModel> {
-    const changedModel = await this.contentsManager.rename(oldPath, newPath);
-    return changedModel;
+    try {
+      const changedModel = await this.contentsManager.rename(oldPath, newPath);
+      return changedModel;
+    } catch (error) {
+      return error;
+    }
+    // const changedModel = await this.contentsManager.rename(oldPath, newPath);
+    // return changedModel;
   }
 
   /**
@@ -86,7 +106,11 @@ export class CodeSnippetContentsService {
    * @param path path to a file/directory
    */
   async delete(path: string): Promise<void> {
-    await this.contentsManager.delete(path);
+    try {
+      await this.contentsManager.delete(path);
+    } catch (error) {
+      return;
+    }
   }
 
   // async renameAndSave(

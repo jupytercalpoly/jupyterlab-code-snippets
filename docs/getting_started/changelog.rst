@@ -2,6 +2,19 @@
 
 Changelog
 ---------
+
+v1.1.0
+^^^^^^
+* Fixed the issue with the keyboard shortcut by making it user-configurable.
+* Fixed broken behavior of drag and drop.
+* Made the UI more consistent.
+* Added a new feature to rename the code snippet in the code snippet panel easily by double-clicking its name.
+* Improved the search feature with fuzzy search.
+* Added a function to save the entire cell as a code snippet.
+* Added multi-cell saving by right clicking and saving as a code snippet.
+* Changed preview height to match the height of code snippet box at the maximum.
+
+
 v1.0.4
 ^^^^^^
 * Fixed the issue with deleting a snippet while searching or filtering
