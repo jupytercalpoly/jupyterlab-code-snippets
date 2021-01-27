@@ -41,6 +41,11 @@
 # # initially list installed extensions to determine if there are any surprises
 # _("jupyter", "labextension", "list")
 
+pip install -e .
 
-# print("JupyterLab with code_snippet is ready to run with:\n")
-# print("\tjupyter lab\n")
+jlpm
+
+jlpm build
+
+print("JupyterLab with code_snippet is ready to run with:\n")
+print("\tjupyter lab\n")
