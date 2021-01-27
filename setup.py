@@ -13,11 +13,13 @@ import setuptools
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 # The name of the project
+
 name="code_snippet"
 
 # Get our version
 with open(os.path.join(HERE, 'package.json')) as f:
     version = json.load(f)['version']
+
 
 lab_path = os.path.join(HERE, name, "labextension")
 
