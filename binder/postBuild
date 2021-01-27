@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path.cwd()
 
-print(ROOT)
+print("Current Working dir:", ROOT)
 
 def _(*args, **kwargs):
     """ Run a command, echoing the args
@@ -47,22 +47,22 @@ print("JupyterLab with code_snippet is ready to run with:\n")
 print("\tjupyter lab\n")
 
 # remove unnecessary directories when using the binder
-rm -rf src
-rm -rf style
-rm -rf _temp_extension
-rm -rf Design
-rm -rf binder
-rm -rf docs
-rm -rf code_snippet
-rm -rf code_snippet.egg-info
-rm -rf schema
-rm -rf node_modules
-rm install.json
-rm package.json
-rm PROGRESS.md
-rm setup.py
-rm pyproject.toml
-rm tsconfig.json
-rm tsconfig.tsbuildinfo
-rm yarn.lock
-rm MANIFEST.in
+rm -rf ./src
+rm -rf ./style
+rm -rf ./_temp_extension
+rm -rf ./Design
+rm -rf ./binder
+rm -rf ./docs
+rm -rf ./code_snippet
+rm -rf ./code_snippet.egg-info
+rm -rf ./schema
+rm -rf ./node_modules
+rm ./install.json
+rm ./package.json
+rm ./PROGRESS.md
+rm ./setup.py
+rm ./pyproject.toml
+rm ./tsconfig.json
+rm ./tsconfig.tsbuildinfo
+rm ./yarn.lock
+rm ./MANIFEST.in
