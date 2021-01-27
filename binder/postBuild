@@ -47,22 +47,44 @@ print("JupyterLab with code_snippet is ready to run with:\n")
 print("\tjupyter lab\n")
 
 # remove unnecessary directories when using the binder
-rm -rf ./src
-rm -rf ./style
-rm -rf ./_temp_extension
-rm -rf ./Design
-rm -rf ./binder
-rm -rf ./docs
-rm -rf ./code_snippet
-rm -rf ./code_snippet.egg-info
-rm -rf ./schema
-rm -rf ./node_modules
-rm ./install.json
-rm ./package.json
-rm ./PROGRESS.md
-rm ./setup.py
-rm ./pyproject.toml
-rm ./tsconfig.json
-rm ./tsconfig.tsbuildinfo
-rm ./yarn.lock
-rm ./MANIFEST.in
+_('rm', '-rf', './src')
+_('rm', '-rf', './style')
+_('rm', '-rf', './_temp_extension')
+_('rm', '-rf', './Design')
+_('rm', '-rf', './binder')
+_('rm', '-rf', './docs')
+_('rm', '-rf', './code_snippet')
+_('rm', '-rf', './code_snippet.egg-info')
+_('rm', '-rf', './schema')
+_('rm', '-rf', './node_modules')
+_('rm', './install.json')
+_('rm', './package.json')
+_('rm', './PROGRESS.md')
+_('rm', './setup.py')
+_('rm', './pyproject.toml')
+_('rm', './tsconfig.json')
+_('rm', './tsconfig.tsbuildinfo')
+_('rm', './yarn.lock')
+_('rm', './MANIFEST.in')
+
+
+
+
+# rm -rf ./style
+# rm -rf ./_temp_extension
+# rm -rf ./Design
+# rm -rf ./binder
+# rm -rf ./docs
+# rm -rf ./code_snippet
+# rm -rf ./code_snippet.egg-info
+# rm -rf ./schema
+# rm -rf ./node_modules
+# rm ./install.json
+# rm ./package.json
+# rm ./PROGRESS.md
+# rm ./setup.py
+# rm ./pyproject.toml
+# rm ./tsconfig.json
+# rm ./tsconfig.tsbuildinfo
+# rm ./yarn.lock
+# rm ./MANIFEST.in
