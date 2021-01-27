@@ -1,2 +1,1 @@
 jupyterlab>=3.0
-jupyter-telemetry>=0.1.0
