@@ -15,6 +15,8 @@ from pathlib import Path
 
 ROOT = Path.cwd()
 
+print("Current Working dir:", ROOT)
+
 def _(*args, **kwargs):
     """ Run a command, echoing the args
 
@@ -27,20 +29,41 @@ def _(*args, **kwargs):
         sys.exit(return_code)
 
 # verify the environment is self-consistent before even starting
-_(sys.executable, "-m", "pip", "check")
+# _(sys.executable, "-m", "pip", "check")
 
 # install the labextension
 _(sys.executable, "-m", "pip", "install", "-e", ".")
 
 # verify the environment the extension didn't break anything
-_(sys.executable, "-m", "pip", "check")
+# _(sys.executable, "-m", "pip", "check")
 
 # list the extensions
-_("jupyter", "server", "extension", "list")
+# _("jupyter", "server", "extension", "list")
 
 # initially list installed extensions to determine if there are any surprises
-_("jupyter", "labextension", "list")
-
+# _("jupyter", "labextension", "list")
 
 print("JupyterLab with code_snippet is ready to run with:\n")
 print("\tjupyter lab\n")
+
+# remove unnecessary directories when using the binder
+_('rm', '-rf', './lib')
+_('rm', '-rf', './src')
+_('rm', '-rf', './style')
+_('rm', '-rf', './_temp_extension')
+_('rm', '-rf', './Design')
+_('rm', '-rf', './binder')
+_('rm', '-rf', './docs')
+_('rm', '-rf', './code_snippet')
+_('rm', '-rf', './code_snippet.egg-info')
+_('rm', '-rf', './schema')
+_('rm', '-rf', './node_modules')
+_('rm', './install.json')
+_('rm', './package.json')
+_('rm', './PROGRESS.md')
+_('rm', './setup.py')
+_('rm', './pyproject.toml')
+_('rm', './tsconfig.json')
+_('rm', './tsconfig.tsbuildinfo')
+_('rm', './yarn.lock')
+_('rm', './MANIFEST.in')
