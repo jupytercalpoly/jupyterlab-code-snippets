@@ -4,3 +4,5 @@ coverage
 **/*.d.ts
 test
 _temp_extension
+babel.config.ts
+jest.config.ts
