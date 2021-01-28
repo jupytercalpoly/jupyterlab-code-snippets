@@ -357,7 +357,7 @@ class Private {
 
     const addTagElem = document.createElement('ul');
     addTagElem.className = `${CODE_SNIPPET_INPUT_TAG} tag unapplied-tag`;
-    const newTagName = document.createElement('span');
+    const newTagName = document.createElement('button');
     newTagName.innerText = 'Add Tag';
     newTagName.style.cursor = 'pointer';
     addTagElem.appendChild(newTagName);
@@ -468,7 +468,7 @@ class Private {
     });
 
     // change input to span
-    const newTagName = document.createElement('span');
+    const newTagName = document.createElement('button');
     newTagName.innerText = 'Add Tag';
     newTagName.style.cursor = 'pointer';
     inputElement.parentElement.replaceChild(newTagName, inputElement);

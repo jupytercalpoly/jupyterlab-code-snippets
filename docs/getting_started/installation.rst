@@ -5,7 +5,7 @@ Installation
 
 Requirements
 ~~~~~~~~~~~~
-JupyterLab >= 2.2
+JupyterLab >= 3.0
 
 Install
 ~~~~~~~
