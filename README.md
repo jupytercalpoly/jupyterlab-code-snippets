@@ -20,9 +20,13 @@ for the frontend extension.
 - JupyterLab >= 3.0
 
 ## Install
-
+Install using jupyter:
 ```bash
 jupyter labextension install jupyterlab-code-snippets
+```
+Install using pip:
+```bash
+pip install jupyterlab-code-snippets
 ```
 
 ## Troubleshoot
@@ -73,4 +77,8 @@ Now every change will be built locally and bundled into JupyterLab. Be sure to r
 
 ```bash
 jupyter labextension uninstall jupyterlab-code-snippets
+```
+OR
+```bash
+pip uninstall jupyterlab-code-snippets
 ```
