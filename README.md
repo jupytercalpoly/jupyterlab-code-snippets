@@ -20,9 +20,13 @@ for the frontend extension.
 - JupyterLab >= 3.0
 
 ## Install
-
+Install using jupyter:
 ```bash
 jupyter labextension install jupyterlab-code-snippets
+```
+Install using pip:
+```bash
+pip install jupyterlab-code-snippets
 ```
 
 ## Troubleshoot
