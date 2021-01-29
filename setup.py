@@ -14,7 +14,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 # The name of the project
 
-name="code_snippet"
+name="jupyterlab-code-snippets"
 
 # Get our version
 with open(os.path.join(HERE, 'package.json')) as f:
