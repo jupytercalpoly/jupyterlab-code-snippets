@@ -78,3 +78,7 @@ Now every change will be built locally and bundled into JupyterLab. Be sure to r
 ```bash
 jupyter labextension uninstall jupyterlab-code-snippets
 ```
+OR
+```bash
+pip uninstall jupyterlab-code-snippets
+```
