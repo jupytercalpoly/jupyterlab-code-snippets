@@ -113,7 +113,7 @@
   "jupyterlab": {
     "extension": true,
     "schemaDir": "schema",
-    "outputDir": "code_snippet/labextension"
+    "outputDir": "jupyterlab-code-snippets/labextension"
   },
   "husky": {
     "hooks": {

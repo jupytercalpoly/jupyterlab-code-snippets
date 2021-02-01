@@ -31,6 +31,7 @@ eggs/
 lib/
 lib64/
 parts/
+dist/
 sdist/
 var/
 wheels/
@@ -112,4 +113,8 @@ dmypy.json
 
 # End of https://www.gitignore.io/api/python
 
-snippets/
+
+# Jupyter Stuff
+jupyterlab-code-snippets/
+_temp_extension/
+yarn.lock
