@@ -8,6 +8,8 @@ Add snippet
 * Drag code cell(s) to panel.
 * Highlight code and save as snippet.
 * Click plus button on panel to create a custom snippet.
+* Select cell(s) and use context menu to save all code within selection as snippet.
+* Select cell(s) and use keyboard shortcut (cmd-shift-A or ctrl-shift-A) to save all code within selection as snippet.
 
 Find snippet
 ^^^^^^^^^^^^
