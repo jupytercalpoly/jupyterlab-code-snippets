@@ -15,12 +15,12 @@
 - [x] Filters on snippet panel
 - [x] Code snippet editor
 - [x] Plus button to create new snippet
+- [x] Multi-cell Saving
 
 ## Future development
 - [ ] Tab completion
 - [ ] Templated Fields
 - [ ] Color Code Tags
-- [ ] Multi-cell Saving
 
 ## Demo 3 (Aug 25)
 - Design review
