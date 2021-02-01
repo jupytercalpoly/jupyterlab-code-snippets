@@ -24,8 +24,12 @@ This contains test scripts that test our codebase using jest.
 
 Design: ``design/``
 ^^^^^^^^^^^^^^^^^^^
-A directory contains gifs or images that show the design perspective of
+This directory contains gifs or images that show the design perspective of
 our extension.
+
+Style: ``style/``
+^^^^^^^^^^^^^^^^^^^
+This directory contains all of the CSS styling used in the extension.
 
 Documentation: ``docs/``
 ^^^^^^^^^^^^^^^^^^^^^^^^
