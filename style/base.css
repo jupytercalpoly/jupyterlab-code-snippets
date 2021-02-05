@@ -382,7 +382,8 @@
 }
 
 .jp-codeSnippet-filterTools {
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
+  /* border-bottom: var(--jp-border-width) solid var(--jp-border-color1); */
+  flex: 1;
 }
 
 mark.jp-codeSnippet-search-bolding {
@@ -645,4 +646,53 @@ mark.jp-codeSnippet-search-bolding {
 .jp-dropdown-cancel-button {
   outline: 1px solid var(--jp-brand-color1);
   outline-offset: 4px;
+}
+
+/*Sort Feature Elements*/
+.jp-codeSnippet-header-class {
+  display: flex;
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
+  width: 100%;
+}
+
+.jp-codeSnippet-sort-tool {
+  height: 20px;
+  width: 16px;
+  float: right;
+  margin-right: 6px;
+  margin-top: 5px;
+}
+
+.jp-codeSnippet-sort-icon-inactive {
+  background-image: url(./icon/jupyter_sort_inactive.svg);
+  background-repeat: no-repeat;
+  height: 20px;
+  width: 16px;
+  float: right;
+  cursor: pointer;
+}
+
+.jp-codeSnippet-sort-icon-active {
+  background-image: url(./icon/jupyter_sort_active.svg);
+  background-repeat: no-repeat;
+  height: 20px;
+  width: 16px;
+  float: right;
+  cursor: pointer;
+}
+
+.jp-codeSnippet-sort-content {
+  width: 158px;
+}
+
+.jp-codeSnippet-sort-sortby {
+  white-space: pre;
+  border-bottom: 1px var(--jp-layout-color3) solid;
+  padding-bottom: 2px;
+}
+
+.jp-codeSnippet-sort-option {
+  padding-top: 2px;
+  white-space: pre;
+  cursor: pointer;
 }
