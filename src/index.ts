@@ -39,6 +39,8 @@ import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
+import { ServerConnection } from '@jupyterlab/services';
+import { URLExt } from '@jupyterlab/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -75,11 +77,23 @@ function activateCodeSnippet(
   restorer: ILayoutRestorer,
   editorServices: IEditorServices
 ): void {
-  console.log('JupyterLab extension code-snippets is activated!');
+  console.log('JupyterLab extension code-snippets!');
 
   const getCurrentWidget = (): Widget => {
     return app.shell.currentWidget;
   };
+
+  const setting: ServerConnection.ISettings = ServerConnection.makeSettings();
+  const base = setting.baseUrl + setting.appUrl;
+  const url = URLExt.join(base, '/api/settings', 'snippets');
+
+  ServerConnection.makeRequest(
+    url,
+    { body: JSON.stringify({ code: 'hello world' }), method: 'PUT' },
+    setting
+  ).then(value => console.log(value));
+  console.log(setting);
+  // ServerConnection.makeRequest('/api/settings')
 
   const codeSnippetWidget = new CodeSnippetWidget(
     getCurrentWidget,

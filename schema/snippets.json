@@ -1,0 +1,9 @@
+{
+    "properties": {
+        "snippet": {
+            "type": "number",
+            "default": 1
+        }
+    },
+    "type": "object"
+}
