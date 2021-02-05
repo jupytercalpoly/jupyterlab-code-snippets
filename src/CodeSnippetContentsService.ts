@@ -50,7 +50,8 @@ export class CodeSnippetContentsService {
       });
       return data;
     } catch (error) {
-      return error;
+      console.log(error);
+      throw error;
     }
     // const data = await this.contentsManager.get(path, {
     //   type: type,
