@@ -223,10 +223,10 @@ export function validateForm(
     message += 'Wrong format of the name\n';
     status = false;
   }
-  if (description === '') {
-    message += 'Description must be filled out\n';
-    status = false;
-  }
+  // if (description === '') {
+  //   message += 'Description must be filled out\n';
+  //   status = false;
+  // }
   if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
     message += 'Wrong format of the description\n';
     status = false;
@@ -319,10 +319,10 @@ class Private {
     name.onblur = Private.handleOnBlur;
 
     const descriptionTitle = document.createElement('label');
-    descriptionTitle.textContent = 'Description (required)';
+    descriptionTitle.textContent = 'Description (optional)';
     const description = document.createElement('input');
     description.className = CODE_SNIPPET_DIALOG_INPUT;
-    description.required = true;
+    // description.required = true;
     description.pattern = '[a-zA-Z0-9_ ,.?!]+';
     description.onblur = Private.handleOnBlur;
 
