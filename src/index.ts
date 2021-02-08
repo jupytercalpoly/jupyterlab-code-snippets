@@ -39,7 +39,7 @@ import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
-import { ServerConnection } from '@jupyterlab/services';
+import { ServerConnection, SettingManager } from '@jupyterlab/services';
 import { URLExt } from '@jupyterlab/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
@@ -77,23 +77,58 @@ function activateCodeSnippet(
   restorer: ILayoutRestorer,
   editorServices: IEditorServices
 ): void {
-  console.log('JupyterLab extension code-snippets!');
+  console.log('JupyterLab extension code-snippets is activated!');
 
   const getCurrentWidget = (): Widget => {
     return app.shell.currentWidget;
   };
 
+  const settingManager = new SettingManager({});
+
+  settingManager.list().then(value => console.log(value));
+
   const setting: ServerConnection.ISettings = ServerConnection.makeSettings();
   const base = setting.baseUrl + setting.appUrl;
-  const url = URLExt.join(base, '/api/settings', 'snippets');
+  const url = URLExt.join(
+    base,
+    '/api/settings/',
+    'jupyterlab-code-snippets:snippets'
+  );
 
-  ServerConnection.makeRequest(
-    url,
-    { body: JSON.stringify({ code: 'hello world' }), method: 'PUT' },
+  const response = ServerConnection.makeRequest(url, {}, setting);
+  console.log(response);
+
+  const new_url = URLExt.join(
+    base,
+    '/api/settings/',
+    'jupyterlab-code-snippets:new'
+  );
+
+  const response2 = ServerConnection.makeRequest(
+    new_url,
+    {
+      body: JSON.stringify({
+        raw: JSON.stringify({
+          raw: 'hello',
+          properties: {
+            snippet: {
+              type: 'number',
+              default: 1
+            }
+          },
+          type: 'object'
+        })
+      }),
+      method: 'PUT'
+    },
     setting
-  ).then(value => console.log(value));
+  );
+  console.log(response2);
   console.log(setting);
+
+  // adding through settingsRegistry??
   // ServerConnection.makeRequest('/api/settings')
+  // state database on elike the layout restorer
 
   const codeSnippetWidget = new CodeSnippetWidget(
     getCurrentWidget,
