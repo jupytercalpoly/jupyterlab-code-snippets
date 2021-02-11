@@ -39,6 +39,13 @@ import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
+// import {
+//   SettingManager,
+//   ServerConnection,
+//   ServiceManager
+// } from '@jupyterlab/services';
+// import { URLExt } from '@jupyterlab/coreutils';
+// import { BaseManager } from '@jupyterlab/services/lib/basemanager';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -73,7 +80,8 @@ function activateCodeSnippet(
   app: JupyterFrontEnd,
   palette: ICommandPalette,
   restorer: ILayoutRestorer,
-  editorServices: IEditorServices
+  editorServices: IEditorServices,
+  settingRegistry: ISettingRegistry
 ): void {
   console.log('JupyterLab extension code-snippets is activated!');
 

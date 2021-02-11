@@ -400,7 +400,7 @@ mark.jp-codeSnippet-search-bolding {
 }
 
 .jp-codeSnippet-filter .jp-codeSnippet-filter-btn {
-  align-self: flex-end;
+  align-self: flex-start;
   padding: 0px;
   padding-bottom: 10px;
   border: none;
@@ -420,8 +420,8 @@ mark.jp-codeSnippet-search-bolding {
   border: var(--jp-border-width) solid var(--jp-border-color1);
   border-width: 0 var(--jp-border-width) var(--jp-border-width) 0;
   padding: 4px;
-  margin-right: 38px;
-  align-self: flex-end;
+  margin-left: 30px;
+  align-self: flex-start;
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
   background-color: var(--jp-layout-color0);
@@ -687,12 +687,27 @@ mark.jp-codeSnippet-search-bolding {
 
 .jp-codeSnippet-sort-sortby {
   white-space: pre;
-  border-bottom: 1px var(--jp-layout-color3) solid;
   padding-bottom: 2px;
+  margin-left: 18px;
 }
 
-.jp-codeSnippet-sort-option {
+.jp-codeSnippet-sort-option-unselected {
   padding-top: 2px;
   white-space: pre;
   cursor: pointer;
+  margin-left: 18px;
+}
+.jp-codeSnippet-sort-option-selected {
+  padding-top: 2px;
+  white-space: pre;
+  cursor: pointer;
+  display: flex;
+}
+
+.jp-codeSnippet-sort-option-unselected:hover {
+  background: var(--jp-layout-color2);
+}
+
+.jp-codeSnippet-sort-line {
+  border-bottom: 1px var(--jp-layout-color3) solid;
 }
