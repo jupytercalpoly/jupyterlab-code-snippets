@@ -695,7 +695,7 @@ mark.jp-codeSnippet-search-bolding {
   padding-top: 2px;
   white-space: pre;
   cursor: pointer;
-  margin-left: 18px;
+  padding-left: 18px;
 }
 .jp-codeSnippet-sort-option-selected {
   padding-top: 2px;

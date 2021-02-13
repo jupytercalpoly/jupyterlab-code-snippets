@@ -1,8 +1,8 @@
 import React from 'react';
 import { Widget } from '@lumino/widgets';
 import { showMoreOptions } from './MoreOptions';
-import { checkIcon } from '@jupyterlab/ui-components';
-import ReactDOMServer from 'react-dom/server';
+
+import ReactDOM from 'react-dom';
 import SortOption from './SortOption';
 
 interface ISortSnippetProps {}
@@ -20,9 +20,8 @@ const CODE_SNIPPET_SORT_LINE = 'jp-codeSnippet-sort-line';
 /* Add innerHTML for the checkmark when something is clicked. When its clicked again remove the checkmark. */
 
 interface ISortSnippetState {
-  optionSelected: Boolean;
-  optionName: String;
-  currSelected: String;
+  optionName: string;
+  currSelected: string;
 }
 
 class OptionsHandler extends Widget {
@@ -30,6 +29,61 @@ class OptionsHandler extends Widget {
     super({ node: display.createOptionsNode() });
   }
 }
+interface ISortMultiState {
+  currSelected: string;
+}
+
+interface ISortMultiProps {
+  currSelected: string;
+  handleOptionClick: (name: string) => void;
+}
+
+// New component that holds  gets re-rendered whenever anything is changed/clicked.
+export class SortMultiOption extends React.Component<
+  ISortMultiProps,
+  ISortMultiState
+> {
+  constructor(props: ISortMultiProps) {
+    super(props);
+    this.state = {
+      currSelected: this.props.currSelected
+    };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(selectedOption: string) {
+    this.props.handleOptionClick(selectedOption);
+    this.setState({ currSelected: selectedOption });
+  }
+
+  render(): JSX.Element {
+    return (
+      <div className={CODE_SNIPPET_SORT_CONTENT} id={CODE_SNIPPET_SORT_CONTENT}>
+        <div className={CODE_SNIPPET_SORT_SORTBY}>Sort by:</div>
+        <div className={CODE_SNIPPET_SORT_LINE}></div>
+        <SortOption
+          optionSelected={this.state.currSelected === 'Last Modified'}
+          optionName={'Last Modified'}
+          onSelectMulti={this.handleClick}
+          onSelectParent={this.props.handleOptionClick}
+        ></SortOption>
+        <SortOption
+          optionSelected={this.state.currSelected === 'Date Created: Newest'}
+          optionName={'Date Created: Newest'}
+          onSelectMulti={this.handleClick}
+          onSelectParent={this.props.handleOptionClick}
+        ></SortOption>
+        <SortOption
+          optionSelected={this.state.currSelected === 'Date Created: Oldest'}
+          optionName={'Date Created: Oldest'}
+          onSelectMulti={this.handleClick}
+          onSelectParent={this.props.handleOptionClick}
+        ></SortOption>
+      </div>
+    );
+  }
+}
+
 export class SortTools extends React.Component<
   ISortSnippetProps,
   ISortSnippetState
@@ -37,11 +91,11 @@ export class SortTools extends React.Component<
   constructor(props: ISortSnippetProps) {
     super(props);
     this.state = {
-      optionSelected: false,
       optionName: '',
       currSelected: ''
     };
     this.handleClick = this.handleClick.bind(this);
+    this.handleOptionClick = this.handleOptionClick.bind(this);
   }
 
   private _setSortToolPosition(
@@ -65,80 +119,44 @@ export class SortTools extends React.Component<
   public createOptionsNode(): HTMLElement {
     const body = document.createElement('div');
     body.className = 'jp-codeSnippet-sort-test-container';
-    body.innerHTML = ReactDOMServer.renderToStaticMarkup(
-      this.createOptionsNodeHelper()
-    ); //new
-    // optionsContainer.className = CODE_SNIPPET_SORT_CONTENT;
-    // const sortBy = document.createElement('div');
-    // sortBy.className = CODE_SNIPPET_SORT_SORTBY;
-    // sortBy.textContent = 'Sort by:';
-
-    // const divider = document.createElement('div');
-    // divider.className = CODE_SNIPPET_SORT_LINE;
-
-    // let lastMod = document.createElement('div');
-    // lastMod.className = CODE_SNIPPET_SORT_OPTION;
-    // lastMod.textContent = 'Last Modified';
-    // lastMod.onclick = (event): void => {
-    //   lastMod.innerHTML = this.simple(event, optionsContainer);
-    // };
-    // const createNew = document.createElement('div');
-    // createNew.className = CODE_SNIPPET_SORT_OPTION;
-    // createNew.textContent = 'Date Created: Newest';
-    // const createOld = document.createElement('div');
-    // createOld.className = CODE_SNIPPET_SORT_OPTION;
-    // createOld.textContent = 'Date Created: Oldest';
-
-    // optionsContainer.appendChild(sortBy);
-    // optionsContainer.appendChild(divider);
-    // optionsContainer.appendChild(lastMod);
-    // optionsContainer.appendChild(createNew);
-    // optionsContainer.appendChild(createOld);
-    // body.append(optionsContainer);
+    ReactDOM.render(
+      <SortMultiOption
+        currSelected={this.state.currSelected}
+        handleOptionClick={this.handleOptionClick}
+      />,
+      body
+    );
     return body;
   }
 
-  public createOptionsNodeHelper() {
-    return (
-      <div className={CODE_SNIPPET_SORT_CONTENT} id={CODE_SNIPPET_SORT_CONTENT}>
-        <div className={CODE_SNIPPET_SORT_SORTBY}>Sort by:</div>
-        <div className={CODE_SNIPPET_SORT_LINE}></div>
-        <SortOption
-          optionSelected={this.state.currSelected == 'Last Modified'}
-          optionName={'Last Modified'}
-        ></SortOption>
-        <SortOption
-          optionSelected={false}
-          optionName={'Date Created: Newest'}
-        ></SortOption>
-        <SortOption
-          optionSelected={false}
-          optionName={'Date Created: Oldest'}
-        ></SortOption>
-      </div>
-    );
-  }
+  // Converge the three sortoptions into a classful component that gets re-rendered when
+  // an option gets clicked.
+  // public createOptionsNodeHelper(): JSX.Element {
+  //   return (
+  //     <div className={CODE_SNIPPET_SORT_CONTENT} id={CODE_SNIPPET_SORT_CONTENT}>
+  //       <div className={CODE_SNIPPET_SORT_SORTBY}>Sort by:</div>
+  //       <div className={CODE_SNIPPET_SORT_LINE}></div>
+  //       <SortOption
+  //         optionSelected={this.state.currSelected === 'Last Modified'}
+  //         optionName={'Last Modified'}
+  //         onSelect={this.handleOptionClick}
+  //       ></SortOption>
+  //       <SortOption
+  //         optionSelected={this.state.currSelected === 'Date Created : Newest'}
+  //         optionName={'Date Created: Newest'}
+  //         onSelect={this.handleOptionClick}
+  //       ></SortOption>
+  //       <SortOption
+  //         optionSelected={this.state.currSelected === 'Date Created: Oldest'}
+  //         optionName={'Date Created: Oldest'}
+  //         onSelect={this.handleOptionClick}
+  //       ></SortOption>
+  //     </div>
+  //   );
+  // }
 
-  simple(event: MouseEvent, container: HTMLDivElement) {
-    console.log(event);
-    const target = event.target as HTMLElement;
-    return this.createCheck(target.innerText);
-  }
-
-  createCheck(option: String) {
-    //inner div, display flex
-    return ReactDOMServer.renderToStaticMarkup(
-      <div>
-        <checkIcon.react
-          className="jupyterlab-CodeSnippets-sort-selected"
-          elementPosition="center"
-          height="16px"
-          width="16px"
-          marginLeft="2px"
-        />
-        {option}
-      </div>
-    );
+  handleOptionClick(selectedOption: string) {
+    this.setState({ currSelected: selectedOption });
   }
 
   handleClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
