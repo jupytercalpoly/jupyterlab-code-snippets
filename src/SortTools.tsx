@@ -5,8 +5,6 @@ import { showMoreOptions } from './MoreOptions';
 import ReactDOM from 'react-dom';
 import SortOption from './SortOption';
 
-interface ISortSnippetProps {}
-
 const SORT_TOOL = 'jp-codeSnippet-sort-tool';
 const SORT_ICON_INACTIVE = 'jp-codeSnippet-sort-icon-inactive';
 const SORT_ICON_ACTIVE = 'jp-codeSnippet-sort-icon-active';
@@ -51,7 +49,7 @@ export class SortMultiOption extends React.Component<
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(selectedOption: string) {
+  handleClick(selectedOption: string): void {
     this.props.handleOptionClick(selectedOption);
     this.setState({ currSelected: selectedOption });
   }
@@ -84,11 +82,8 @@ export class SortMultiOption extends React.Component<
   }
 }
 
-export class SortTools extends React.Component<
-  ISortSnippetProps,
-  ISortSnippetState
-> {
-  constructor(props: ISortSnippetProps) {
+export class SortTools extends React.Component<{}, ISortSnippetState> {
+  constructor(props: {}) {
     super(props);
     this.state = {
       optionName: '',
@@ -155,7 +150,7 @@ export class SortTools extends React.Component<
   //   );
   // }
 
-  handleOptionClick(selectedOption: string) {
+  handleOptionClick(selectedOption: string): void {
     this.setState({ currSelected: selectedOption });
   }
 

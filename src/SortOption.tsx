@@ -22,7 +22,7 @@ const SortOption = ({
     return (
       <div
         className={CODE_SNIPPET_SORT_OPTION_SELECT}
-        onClick={() => {
+        onClick={(): void => {
           onSelectMulti('');
         }}
       >
@@ -40,7 +40,7 @@ const SortOption = ({
     return (
       <div
         className={CODE_SNIPPET_SORT_OPTION_UNSELECT}
-        onClick={() => {
+        onClick={(): void => {
           onSelectMulti(optionName);
         }}
       >
