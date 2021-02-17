@@ -74,10 +74,24 @@ export function CodeSnippetInputDialog(
     }
   }
 
+  const body: InputHandler = new InputHandler(tags);
+
+  return showInputDialog(tags, idx, codeSnippetWidget, code, body);
+}
+
+/**
+ * This function creates the actual input form and processes the inputs given.
+ */
+export function showInputDialog(
+  tags: string[],
+  idx: number,
+  codeSnippetWidget: CodeSnippetWidget,
+  code: string[],
+  body: InputHandler
+): Promise<Contents.IModel | null> {
   return showCodeSnippetForm({
     title: 'Save Code Snippet',
-    body: new InputHandler(tags),
-    // focusNodeSelector: 'input',
+    body: body,
     buttons: [
       CodeSnippetForm.cancelButton(),
       CodeSnippetForm.okButton({ label: 'Save' })
@@ -88,7 +102,7 @@ export function CodeSnippetInputDialog(
     }
 
     if (validateForm(result) === false) {
-      return CodeSnippetInputDialog(codeSnippetWidget, code, idx); // This works but it wipes out all the data they entered previously...
+      showInputDialog(tags, idx, codeSnippetWidget, code, body);
     } else {
       if (idx === -1) {
         idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
@@ -232,7 +246,7 @@ export function validateForm(
     status = false;
   }
   if (language === '') {
-    message += 'Language must be filled out';
+    message += 'Language must be filled out\n';
     status = false;
   }
   if (!SUPPORTED_LANGUAGES.includes(language)) {
@@ -319,7 +333,7 @@ class Private {
     name.onblur = Private.handleOnBlur;
 
     const descriptionTitle = document.createElement('label');
-    descriptionTitle.textContent = 'Description (required)';
+    descriptionTitle.textContent = 'Description';
     const description = document.createElement('input');
     description.className = CODE_SNIPPET_DIALOG_INPUT;
     description.required = true;
