@@ -203,6 +203,7 @@ export class CodeSnippetDisplay extends React.Component<
     this.handleDragMove = this.handleDragMove.bind(this);
     this._evtMouseUp = this._evtMouseUp.bind(this);
     this.handleRenameSnippet = this.handleRenameSnippet.bind(this);
+    this.setSearchOptions = this.setSearchOptions.bind(this);
   }
 
   // Handle code snippet insert into a notebook or document
@@ -1618,6 +1619,12 @@ export class CodeSnippetDisplay extends React.Component<
     optionsContainer.appendChild(deleteSnip);
     body.append(optionsContainer);
     return body;
+  }
+
+  setSearchOptions(selectedOptions: string[]): void {
+    this.setState({
+      searchOptions: selectedOptions
+    });
   }
 
   render(): React.ReactElement {

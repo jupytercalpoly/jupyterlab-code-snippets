@@ -24,6 +24,7 @@ interface ISearchSnippetState {
 
 interface ISearchSnippetProps {
   selectedSearchOptions: string[];
+  setSearchOptions: (options: string[]) => void;
 }
 
 class OptionsHandler extends Widget {
@@ -54,26 +55,35 @@ export class SearchMultiOption extends React.Component<
   }
 
   // duplicate code between this and parent clickhandler, potentially combine
-  // STATUS: state updates are a bit weird, when unchecked, adding to state. When checked removing.
+  // STATUS: state updates are a bit weird, when unchecked, adding to state. When checked removing. Delay in update.
   handleClick(selectedOption: string, selected: boolean): void {
     if (selected) {
       // select option
-      this.setState(state => ({
-        currSelected: [...state.currSelected, selectedOption]
-      }));
+      this.setState(
+        state => ({
+          currSelected: [...state.currSelected, selectedOption]
+        }),
+        () => {
+          //callback
+          this.props.handleOptionClick(this.state.currSelected);
+        }
+      );
     } else {
       // unselect option
       const array = [...this.state.currSelected];
       const index = array.indexOf(selectedOption);
       if (index !== -1) {
         array.splice(index, 1);
-        this.setState({
-          currSelected: array
-        });
+        this.setState(
+          {
+            currSelected: array
+          },
+          () => {
+            this.props.handleOptionClick(this.state.currSelected);
+          }
+        );
       }
     }
-    this.props.handleOptionClick(this.state.currSelected);
-    console.log(this.state);
   }
 
   render(): JSX.Element {
@@ -150,6 +160,7 @@ export class SearchTools extends React.Component<
     this.setState({
       currSelected: selectedOptions
     });
+    this.props.setSearchOptions(selectedOptions);
   }
 
   handleClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
