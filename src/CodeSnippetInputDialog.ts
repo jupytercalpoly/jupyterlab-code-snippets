@@ -110,7 +110,7 @@ export function showInputDialog(
 
       const tags = result.value.slice(3);
       const newSnippet: ICodeSnippet = {
-        name: result.value[0].replace(' ', '').toLowerCase(),
+        name: result.value[0].replace(' ', ''),
         description: result.value[1],
         language: result.value[2],
         code: code,
@@ -120,13 +120,13 @@ export function showInputDialog(
       const contentsService = CodeSnippetContentsService.getInstance();
       const currSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
       for (const snippet of currSnippets) {
-        if (snippet.name === newSnippet.name) {
+        if (snippet.name.toLowerCase() === newSnippet.name.toLowerCase()) {
           const result = saveOverWriteFile(
             codeSnippetWidget.codeSnippetWidgetModel,
             snippet,
             newSnippet
           );
-
+          console.log('uh reached here');
           result
             .then(newSnippets => {
               codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
@@ -156,7 +156,7 @@ function createNewSnippet(
       content: JSON.stringify(newSnippet)
     }
   );
-
+  console.log(newSnippet.name);
   request.then(_ => {
     // add the new snippet to the snippet model
     codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
@@ -178,7 +178,7 @@ async function saveOverWriteFile(
   oldSnippet: ICodeSnippet,
   newSnippet: ICodeSnippet
 ): Promise<ICodeSnippet[] | null> {
-  const newPath = 'snippets/' + newSnippet.name + '.json';
+  const newPath = 'snippets/' + oldSnippet.name + '.json';
 
   return await shouldOverwrite(newPath).then(value => {
     if (value) {
@@ -233,15 +233,13 @@ export function validateForm(
     message += 'Name must be filled out\n';
     status = false;
   }
-  if (name.match(/[^a-z0-9_]+/)) {
+  if (name.match(/[^a-zA-Z0-9_]+/)) {
+    //allow lowercase, uppercase, alphanumeric, and underscore
     message += 'Wrong format of the name\n';
     status = false;
   }
-  if (description === '') {
-    message += 'Description must be filled out\n';
-    status = false;
-  }
   if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
+    //alphanumeric but can include space or punctuation
     message += 'Wrong format of the description\n';
     status = false;
   }
@@ -333,10 +331,9 @@ class Private {
     name.onblur = Private.handleOnBlur;
 
     const descriptionTitle = document.createElement('label');
-    descriptionTitle.textContent = 'Description';
+    descriptionTitle.textContent = 'Description (optional)';
     const description = document.createElement('input');
     description.className = CODE_SNIPPET_DIALOG_INPUT;
-    description.required = true;
     description.pattern = '[a-zA-Z0-9_ ,.?!]+';
     description.onblur = Private.handleOnBlur;
 

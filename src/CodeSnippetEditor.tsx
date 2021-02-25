@@ -370,10 +370,10 @@ export class CodeSnippetEditor extends ReactWidget {
       message += 'Wrong format of the name\n';
       status = false;
     }
-    if (description === '') {
-      message += 'Description must be filled out\n';
-      status = false;
-    }
+    // if (description === '') {
+    //   message += 'Description must be filled out\n';
+    //   status = false;
+    // }
     if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
       message += 'Wrong format of the description\n';
       status = false;
@@ -589,14 +589,13 @@ export class CodeSnippetEditor extends ReactWidget {
             }
           </p>
           <label className={CODE_SNIPPET_EDITOR_LABEL}>
-            Description (required)
+            Description (optional)
           </label>
           <input
             className={CODE_SNIPPET_EDITOR_DESC_INPUT}
             defaultValue={this._codeSnippetEditorMetaData.description}
             placeholder={'Description'}
             type="text"
-            required
             pattern={'[a-zA-Z0-9_ ,.?!]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
