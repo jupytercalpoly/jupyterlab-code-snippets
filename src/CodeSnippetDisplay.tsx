@@ -1304,6 +1304,36 @@ export class CodeSnippetDisplay extends React.Component<
     return null;
   }
 
+  // This function will be called to process user input for a narrowed search
+  // using various options. The user will enter a single search term which will
+  // searched across multiple options (name, lang, code).
+  filterSnippetsHelper = (searchValue: string, options: string[]) => {
+    const matchResults: StringExt.IMatchResult[] = [];
+    const filteredSnippets = this.props.codeSnippets;
+    //let language: boolean = false;
+    //let code: boolean = false;
+    const filteredSnippetsScore: {
+      score: number;
+      snippet: ICodeSnippet;
+    }[] = [];
+    if (searchValue !== '') {
+      filteredSnippets.forEach(snippet => {
+        const matchResult = StringExt.matchSumOfSquares(
+          (snippet.language + snippet.name).toLowerCase(),
+          searchValue.replace(' ', '').toLowerCase()
+        );
+
+        if (matchResult) {
+          matchResults.push(matchResult);
+          filteredSnippetsScore.push({
+            score: matchResult.score,
+            snippet: snippet
+          });
+        }
+      });
+    }
+  };
+
   filterSnippets = (searchValue: string, filterTags: string[]): void => {
     // filter with search
     let matchIndices: number[][] = [];
