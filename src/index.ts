@@ -21,7 +21,7 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { ISettingRegistry, Settings } from '@jupyterlab/settingregistry';
 
 import { IEditorServices } from '@jupyterlab/codeeditor';
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -34,22 +34,23 @@ import codeSnippetIconSVGstr from '../style/icon/jupyter_snippeticon.svg';
 
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+// import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
-import { ServerConnection, SettingManager } from '@jupyterlab/services';
-import { URLExt } from '@jupyterlab/coreutils';
+import { CodeSnippetService } from './CodeSnippetService';
+// import { ServerConnection, SettingManager } from '@jupyterlab/services';
+// import { URLExt } from '@jupyterlab/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
-const CODE_SNIPPET_SETTING_ID = 'jupyterlab-code-snippets:settings';
+const CODE_SNIPPET_SETTING_ID = 'jupyterlab-code-snippets:snippets';
 /**
  * Snippet Editor Icon
  */
 const editorIcon = new LabIcon({
-  name: 'custom-ui-compnents:codeSnippetEditorIcon',
+  name: 'custom-ui-components:codeSnippetEditorIcon',
   svgstr: editorIconSVGstr
 });
 
@@ -57,7 +58,7 @@ const editorIcon = new LabIcon({
  * Snippet Icon
  */
 const codeSnippetIcon = new LabIcon({
-  name: 'custom-ui-compnents:codeSnippetIcon',
+  name: 'custom-ui-components:codeSnippetIcon',
   svgstr: codeSnippetIconSVGstr
 });
 
@@ -67,7 +68,12 @@ const codeSnippetIcon = new LabIcon({
 const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   id: CODE_SNIPPET_EXTENSION_ID,
   autoStart: true,
-  requires: [ICommandPalette, ILayoutRestorer, IEditorServices],
+  requires: [
+    ICommandPalette,
+    ILayoutRestorer,
+    IEditorServices,
+    ISettingRegistry
+  ],
   activate: activateCodeSnippet
 };
 
@@ -83,53 +89,6 @@ function activateCodeSnippet(
     return app.shell.currentWidget;
   };
 
-  const settingManager = new SettingManager({});
-
-  settingManager.list().then(value => console.log(value));
-
-  const setting: ServerConnection.ISettings = ServerConnection.makeSettings();
-  const base = setting.baseUrl + setting.appUrl;
-  const url = URLExt.join(
-    base,
-    '/api/settings/',
-    'jupyterlab-code-snippets:snippets'
-  );
-
-  const response = ServerConnection.makeRequest(url, {}, setting);
-  console.log(response);
-
-  const new_url = URLExt.join(
-    base,
-    '/api/settings/',
-    'jupyterlab-code-snippets:new'
-  );
-
-  const response2 = ServerConnection.makeRequest(
-    new_url,
-    {
-      body: JSON.stringify({
-        raw: JSON.stringify({
-          raw: 'hello',
-          properties: {
-            snippet: {
-              type: 'number',
-              default: 1
-            }
-          },
-          type: 'object'
-        })
-      }),
-      method: 'PUT'
-    },
-    setting
-  );
-  console.log(response2);
-  console.log(setting);
-
-  // adding through settingsRegistry??
-  // ServerConnection.makeRequest('/api/settings')
-  // state database on elike the layout restorer
-
   const codeSnippetWidget = new CodeSnippetWidget(
     getCurrentWidget,
     app,
@@ -138,9 +97,6 @@ function activateCodeSnippet(
   codeSnippetWidget.id = CODE_SNIPPET_EXTENSION_ID;
   codeSnippetWidget.title.icon = codeSnippetIcon;
   codeSnippetWidget.title.caption = 'Code Snippet Explorer';
-
-  const contentsService = CodeSnippetContentsService.getInstance();
-  contentsService.save('snippets', { type: 'directory' });
 
   restorer.add(codeSnippetWidget, CODE_SNIPPET_EXTENSION_ID);
 
@@ -165,7 +121,6 @@ function activateCodeSnippet(
     }
 
     const codeSnippetEditor = new CodeSnippetEditor(
-      contentsService,
       editorServices,
       tracker,
       codeSnippetWidget,
@@ -249,12 +204,12 @@ function activateCodeSnippet(
             resultArray.push(indexedInput[i]); //push cell code lines into result
           }
         }
-        CodeSnippetInputDialog(codeSnippetWidget, resultArray, -1);
+        CodeSnippetInputDialog(codeSnippetWidget, resultArray, 0);
       } else {
         CodeSnippetInputDialog(
           codeSnippetWidget,
           highlightedCode.split('\n'),
-          -1
+          0
         );
       }
       // if highlightedCode is empty, check the code of the entire cell.
@@ -278,9 +233,6 @@ function activateCodeSnippet(
     namespace: 'codeSnippetEditor'
   });
 
-  /**
-   * Check the name and go to args. Why does it get restored twice ???
-   */
   restorer.restore(tracker, {
     command: editorCommand,
     args: widget => {
@@ -306,9 +258,22 @@ const codeSnippetExtensionSetting: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   requires: [ISettingRegistry],
   activate: (app: JupyterFrontEnd, settingRegistry: ISettingRegistry) => {
+    // settingRegistry
+    //   .get(CODE_SNIPPET_SETTING_ID, 'snippets')
+    //   .then(value => console.log(value));
     void settingRegistry
       .load(CODE_SNIPPET_SETTING_ID)
-      .then(_ => console.log('settingRegistry successfully loaded!'))
+      .then(settings => {
+        CodeSnippetService.init(settings as Settings);
+
+        console.log('JupyterLab extension code-snippets setting is activated!');
+
+        // Remove below after testing
+        const codeSnippetService = CodeSnippetService.getCodeSnippetService();
+        console.log(codeSnippetService);
+
+        // console.log(code)
+      })
       .catch(e => console.log(e));
   }
 };

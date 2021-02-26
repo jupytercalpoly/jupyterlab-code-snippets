@@ -45,14 +45,14 @@ import { MimeData } from '@lumino/coreutils';
 
 import React from 'react';
 
-import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
+import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { FilterTools } from './FilterTools';
 import { showPreview } from './PreviewSnippet';
 import { showMoreOptions } from './MoreOptions';
-import {
-  ICodeSnippet,
-  CodeSnippetContentsService
-} from './CodeSnippetContentsService';
+// import {
+//   ICodeSnippet,
+//   CodeSnippetContentsService
+// } from './CodeSnippetContentsService';
 
 import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
 import {
@@ -149,12 +149,11 @@ const moreOptionsIcon = new LabIcon({
  */
 interface ICodeSnippetDisplayProps {
   codeSnippets: ICodeSnippet[];
+  codeSnippetManager: CodeSnippetService;
   app: JupyterFrontEnd;
   getCurrentWidget: () => Widget;
   openCodeSnippetEditor: (args: any) => void;
   editorServices: IEditorServices;
-  _codeSnippetWidgetModel: CodeSnippetWidgetModel;
-  updateCodeSnippets: () => void;
 }
 
 /**
@@ -162,6 +161,7 @@ interface ICodeSnippetDisplayProps {
  */
 interface ICodeSnippetDisplayState {
   codeSnippets: ICodeSnippet[];
+  // do we really need this property ??
   matchIndices: number[][];
   searchValue: string;
   filterTags: string[];
@@ -381,9 +381,8 @@ export class CodeSnippetDisplay extends React.Component<
   private async handleRenameSnippet(
     event: React.MouseEvent<HTMLSpanElement, MouseEvent>
   ): Promise<void> {
-    const contentsService = CodeSnippetContentsService.getInstance();
     const target = event.target as HTMLElement;
-    const oldPath = 'snippets/' + target.innerHTML + '.json';
+    const oldName = target.innerHTML;
 
     const new_element = document.createElement('input');
     new_element.setAttribute('type', 'text');
@@ -398,23 +397,21 @@ export class CodeSnippetDisplay extends React.Component<
 
     new_element.onblur = async (): Promise<void> => {
       if (target.innerHTML !== new_element.value) {
-        const newPath = 'snippets/' + new_element.value + '.json';
+        const newName = new_element.value;
         try {
-          await contentsService.rename(oldPath, newPath);
+          await this.props.codeSnippetManager.renameSnippet(oldName, newName);
         } catch (error) {
-          new_element.replaceWith(target);
+          if (error.message === 'Duplicate Name of Code Snippet'){
+            new_element.replaceWith(target);
 
-          await showDialog({
-            title: 'Duplicate Name of Code Snippet',
-            body: <p> {`"${newPath}" already exists.`} </p>,
-            buttons: [Dialog.okButton({ label: 'Dismiss' })]
-          });
-          return;
+            await showDialog({
+              title: 'Duplicate Name of Code Snippet',
+              body: <p> {`"${newName}" already exists.`} </p>,
+              buttons: [Dialog.okButton({ label: 'Dismiss' })]
+            });
+            return;
+          }
         }
-        this.props._codeSnippetWidgetModel.renameSnippet(
-          target.innerHTML,
-          new_element.value
-        );
         target.innerHTML = new_element.value;
       }
       new_element.replaceWith(target);
@@ -1340,7 +1337,6 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   private deleteCommand(codeSnippet: ICodeSnippet): void {
-    const contentsService = CodeSnippetContentsService.getInstance();
     showDialog({
       title: 'Delete snippet?',
       body: 'Are you sure you want to delete "' + codeSnippet.name + '"? ',
@@ -1360,24 +1356,39 @@ export class CodeSnippetDisplay extends React.Component<
             return widget.id === widgetId;
           }
         );
+
         if (editor) {
           editor.dispose();
         }
 
         // deleting snippets when there is one snippet active
-        contentsService.delete('snippets/' + codeSnippet.name + '.json');
-        this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
-        this.props._codeSnippetWidgetModel.reorderSnippet();
-        this.props._codeSnippetWidgetModel.updateSnippetContents();
+        this.props.codeSnippetManager.deleteSnippet(codeSnippet.id).then(snippets => {
+
+          console.log('delete');
+          console.log(snippets);
+          console.log(this.props.codeSnippetManager.snippets);
+
+          // active tags after delete
+          const activeTags = this.getActiveTags();
+
+          // filterTags: only the tags that are still being used
+          this.setState(state => ({
+            codeSnippets: snippets,
+            filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
+          }), () => console.log(this.state));
+        });
+        // this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
+        // this.props._codeSnippetWidgetModel.reorderSnippet();
+        // this.props._codeSnippetWidgetModel.updateSnippetContents();
 
         // active tags after delete
-        const activeTags = this.getActiveTags();
+        // const activeTags = this.getActiveTags();
 
-        // filterTags: only the tags that are still being used
-        this.setState(state => ({
-          codeSnippets: this.props._codeSnippetWidgetModel.snippets,
-          filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
-        }));
+        // // filterTags: only the tags that are still being used
+        // this.setState(state => ({
+        //   codeSnippets: this.props.codeSnippetManager.snippets,
+        //   filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
+        // }));
       }
     });
   }

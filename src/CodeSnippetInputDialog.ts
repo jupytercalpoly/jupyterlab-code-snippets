@@ -8,13 +8,9 @@ import { Contents } from '@jupyterlab/services';
 import { Widget } from '@lumino/widgets';
 import { JSONObject } from '@lumino/coreutils';
 
-import {
-  ICodeSnippet,
-  CodeSnippetContentsService
-} from './CodeSnippetContentsService';
+import { ICodeSnippet, CodeSnippetService } from './CodeSnippetService';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { showMessage } from './ConfirmMessage';
 import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
@@ -62,7 +58,8 @@ export function CodeSnippetInputDialog(
   idx: number
 ): Promise<Contents.IModel | null> {
   const tags: string[] = [];
-  const snippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
+  const codeSnippetManager = CodeSnippetService.getCodeSnippetService();
+  const snippets = codeSnippetManager.snippets;
 
   for (const snippet of snippets) {
     if (snippet.tags) {
@@ -90,9 +87,9 @@ export function CodeSnippetInputDialog(
     if (validateForm(result) === false) {
       return CodeSnippetInputDialog(codeSnippetWidget, code, idx); // This works but it wipes out all the data they entered previously...
     } else {
-      if (idx === -1) {
-        idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
-      }
+      // if (idx === -1) {
+      // idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
+      // }
 
       const tags = result.value.slice(3);
       const newSnippet: ICodeSnippet = {
@@ -103,12 +100,10 @@ export function CodeSnippetInputDialog(
         id: idx,
         tags: tags
       };
-      const contentsService = CodeSnippetContentsService.getInstance();
-      const currSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
-      for (const snippet of currSnippets) {
+      for (const snippet of snippets) {
         if (snippet.name === newSnippet.name) {
           const result = saveOverWriteFile(
-            codeSnippetWidget.codeSnippetWidgetModel,
+            codeSnippetManager,
             snippet,
             newSnippet
           );
@@ -124,56 +119,63 @@ export function CodeSnippetInputDialog(
         }
       }
 
-      createNewSnippet(codeSnippetWidget, newSnippet, contentsService);
+      createNewSnippet(codeSnippetWidget, newSnippet, codeSnippetManager);
     }
   });
 }
 
 function createNewSnippet(
-  codeSnippet: CodeSnippetWidget,
+  codeSnippetWidget: CodeSnippetWidget,
   newSnippet: ICodeSnippet,
-  contentsService: CodeSnippetContentsService
+  codeSnippetManager: CodeSnippetService
 ): void {
-  const request = contentsService.save(
-    'snippets/' + newSnippet.name + '.json',
-    {
-      type: 'file',
-      format: 'text',
-      content: JSON.stringify(newSnippet)
-    }
-  );
+  codeSnippetManager.addSnippet(newSnippet);
 
-  request.then(_ => {
-    // add the new snippet to the snippet model
-    codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
-    codeSnippet.codeSnippetWidgetModel.updateSnippetContents();
-    const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-    codeSnippet.codeSnippets = newSnippets;
-    codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
-    showMessage({
-      body: new MessageHandler()
-    });
+  console.log('add');
+  console.log(codeSnippetManager.snippets);
+  // const request = contentsService.save(
+  //   'snippets/' + newSnippet.name + '.json',
+  //   {
+  //     type: 'file',
+  //     format: 'text',
+  //     content: JSON.stringify(newSnippet)
+  //   }
+  // );
+
+  codeSnippetWidget.renderCodeSnippetsSignal.emit(codeSnippetManager.snippets);
+  showMessage({
+    body: new MessageHandler()
   });
+  // request.then(_ => {
+  //   // add the new snippet to the snippet model
+  //   // codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
+  //   // codeSnippet.codeSnippetWidgetModel.updateSnippetContents();
+  //   // const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+  //   // codeSnippet.codeSnippets = newSnippets;
+  //   // codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+  //   // showMessage({
+  //   //   body: new MessageHandler()
+  //   // });
+  // });
 }
 
 /**
- * Rename a file, asking for confirmation if it is overwriting another.
+ * Rename a file, warning for overwriting another.
  */
 async function saveOverWriteFile(
-  codeSnippetWidgetModel: CodeSnippetWidgetModel,
+  codeSnippetManager: CodeSnippetService,
   oldSnippet: ICodeSnippet,
   newSnippet: ICodeSnippet
 ): Promise<ICodeSnippet[] | null> {
-  const newPath = 'snippets/' + newSnippet.name + '.json';
+  const newName = newSnippet.name;
 
-  return await shouldOverwrite(newPath).then(value => {
+  return await shouldOverwrite(newName).then(value => {
     if (value) {
       newSnippet.id = oldSnippet.id;
 
-      codeSnippetWidgetModel.deleteSnippet(oldSnippet.id);
-      codeSnippetWidgetModel.addSnippet(newSnippet, oldSnippet.id);
-      codeSnippetWidgetModel.updateSnippetContents();
-      return codeSnippetWidgetModel.snippets;
+      codeSnippetManager.deleteSnippet(oldSnippet.id);
+      codeSnippetManager.addSnippet(newSnippet);
+      return codeSnippetManager.snippets;
     }
     return Promise.reject('File not renamed');
   });
@@ -182,10 +184,10 @@ async function saveOverWriteFile(
 /**
  * Ask the user whether to overwrite a file.
  */
-async function shouldOverwrite(path: string): Promise<boolean> {
+async function shouldOverwrite(newName: string): Promise<boolean> {
   const options = {
     title: 'Overwrite code snippet?',
-    body: `"${path}" already exists, overwrite?`,
+    body: `"${newName}" already exists, overwrite?`,
     buttons: [Dialog.cancelButton(), Dialog.warnButton({ label: 'Overwrite' })]
   };
   return showDialog(options).then(result => {

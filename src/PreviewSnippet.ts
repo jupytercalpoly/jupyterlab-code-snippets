@@ -9,7 +9,7 @@ import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
 
-import { ICodeSnippet } from './CodeSnippetContentsService';
+import { ICodeSnippet } from './CodeSnippetService';
 
 /**
  * The class name for preview box
