@@ -3,16 +3,6 @@
 
 import { ContentsManager, Drive, Contents } from '@jupyterlab/services';
 
-export interface ICodeSnippet {
-  name: string;
-  description: string;
-  language: string;
-  // code separated by new line
-  code: string[];
-  id: number;
-  tags?: string[];
-}
-
 /**
  * Singleton contentsService class
  */
@@ -35,32 +25,6 @@ export class CodeSnippetContentsService {
   }
 
   /**
-   * Get the metadata information in the given path
-   * @param path path to a file/directory
-   */
-  async getData(
-    path: string,
-    type: Contents.ContentType
-  ): Promise<Contents.IModel> {
-    try {
-      const data = await this.contentsManager.get(path, {
-        type: type,
-        //   format: 'text',
-        content: true
-      });
-      return data;
-    } catch (error) {
-      return error;
-    }
-    // const data = await this.contentsManager.get(path, {
-    //   type: type,
-    //   //   format: 'text',
-    //   content: true
-    // });
-    // return data;
-  }
-
-  /**
    * Create a file/directory if it does not exist. Otherwise, save the change in a file/directory in the given path
    * @param path path to a file/directory
    * @param options options that specify if it's a file or directory and additial information
@@ -78,46 +42,4 @@ export class CodeSnippetContentsService {
       return error;
     }
   }
-
-  /**
-   * Change the order of snippets
-   * @param oldPath
-   * @param newPath
-   */
-
-  /**
-   * Rename the file or directory (not case sensitive)
-   * @param oldPath change from
-   * @param newPath change to
-   */
-  async rename(oldPath: string, newPath: string): Promise<Contents.IModel> {
-    try {
-      const changedModel = await this.contentsManager.rename(oldPath, newPath);
-      return changedModel;
-    } catch (error) {
-      return error;
-    }
-    // const changedModel = await this.contentsManager.rename(oldPath, newPath);
-    // return changedModel;
-  }
-
-  /**
-   * Delete the file/directory in the given path
-   * @param path path to a file/directory
-   */
-  async delete(path: string): Promise<void> {
-    try {
-      await this.contentsManager.delete(path);
-    } catch (error) {
-      return;
-    }
-  }
-
-  // async renameAndSave(
-  //   oldPath: string,
-  //   newPath: string
-  // ): Promise<Contents.IModel> {
-  //   this.rename(oldPath, newPath);
-  //   this.save(newPath);
-  // }
 }
