@@ -1,4 +1,5 @@
-import { ISettingRegistry, Settings } from '@jupyterlab/settingregistry';
+import { Settings } from '@jupyterlab/settingregistry';
+import { JSONArray, PartialJSONValue } from '@lumino/coreutils';
 
 export interface ICodeSnippet {
   name: string;
@@ -15,47 +16,68 @@ export class CodeSnippetService {
   private static codeSnippetService: CodeSnippetService;
   private codeSnippetList: ICodeSnippet[];
 
-  private constructor(
-    settingRegistry: ISettingRegistry,
-    settings: ISettingRegistry.ISettings
-  ) {
-    const settingManager = new Settings({
-      plugin: settings.plugin,
-      registry: settingRegistry
-    });
-    this.settingManager = settingManager;
+  private constructor(settings: Settings) {
+    this.settingManager = settings;
 
+    // just in case when user changes the snippets using settingsEditor
     this.settingManager.changed.connect(plugin => {
-      const newCodeSnippetList = plugin.get('snippets').user.toString();
-      this.codeSnippetList = JSON.parse(newCodeSnippetList);
-      // in case of id's of snippets are mixed
-      this.orderSnippets();
-      this.settingManager.set('snippets', this.codeSnippetList.toString());
+      console.log('changed');
+      const newCodeSnippetList = plugin.get('snippets').user;
+      console.log(newCodeSnippetList);
+      this.codeSnippetList = this.convertToICodeSnippetList(
+        newCodeSnippetList as JSONArray
+      );
     });
 
-    this.codeSnippetList = JSON.parse(
-      this.settingManager.default('snippets').toString()
+    const defaultSnippets = this.convertToICodeSnippetList(
+      this.settingManager.default('snippets') as JSONArray
     );
+    const userSnippets = this.convertToICodeSnippetList(
+      this.settingManager.get('snippets').user as JSONArray
+    );
+
+    console.log(userSnippets.length);
+    if (userSnippets.length !== 0) {
+      this.codeSnippetList = userSnippets;
+    } else {
+      this.codeSnippetList = defaultSnippets;
+    }
+
+    // set the user setting + default in the beginning
+    this.settingManager.set(
+      'snippets',
+      (this.codeSnippetList as unknown) as PartialJSONValue
+    );
+
+    console.log(this.codeSnippetList);
   }
 
-  static init(
-    settingRegistry: ISettingRegistry,
-    settings: ISettingRegistry.ISettings
-  ): void {
+  private convertToICodeSnippetList(snippets: JSONArray) {
+    const snippetList: ICodeSnippet[] = [];
+
+    snippets.forEach(snippet => {
+      snippetList.push((snippet as unknown) as ICodeSnippet);
+    });
+    return snippetList;
+  }
+
+  static init(settings: Settings): void {
     if (!this.codeSnippetService) {
-      this.codeSnippetService = new CodeSnippetService(
-        settingRegistry,
-        settings
-      );
+      this.codeSnippetService = new CodeSnippetService(settings);
     }
   }
 
   static getCodeSnippetService(): CodeSnippetService {
+    console.log(this.codeSnippetService);
     return this.codeSnippetService;
   }
 
   get snippets(): ICodeSnippet[] {
     return this.codeSnippetList;
+  }
+
+  getSnippet(snippetName: string): ICodeSnippet[] {
+    return this.codeSnippetList.filter(snippet => snippet.name == snippetName);
   }
 
   // isValidSnippet(): boolean {
@@ -64,7 +86,7 @@ export class CodeSnippetService {
 
   // }
 
-  addSnippet(snippet: ICodeSnippet): void {
+  async addSnippet(snippet: ICodeSnippet): Promise<void> {
     const numSnippets = this.codeSnippetList.length;
     const id = snippet.id;
     this.codeSnippetList.splice(id, 0, snippet);
@@ -74,11 +96,17 @@ export class CodeSnippetService {
       this.codeSnippetList[i].id += 1;
     }
 
-    this.settingManager.set('snippets', this.codeSnippetList.toString());
+    console.log(this.codeSnippetList);
+    await this.settingManager
+      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .catch(e => {
+        throw e;
+      });
   }
 
-  deleteSnippet(id: number): void {
-    const numSnippets = this.codeSnippetList.length;
+  async deleteSnippet(id: number): Promise<ICodeSnippet[]> {
+    let numSnippets = this.codeSnippetList.length;
+
     // should never satisfy this condition
     if (id >= numSnippets) {
       console.log('error in codeSnippetService');
@@ -88,24 +116,70 @@ export class CodeSnippetService {
       this.codeSnippetList.pop();
     } else {
       this.codeSnippetList.splice(id, 1);
+
+      numSnippets = this.codeSnippetList.length;
       let i = id;
       for (; i < numSnippets; i++) {
         this.codeSnippetList[i].id -= 1;
       }
     }
+
+    await this.settingManager
+      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .catch(e => {
+        throw e;
+      });
+
+    return this.codeSnippetList;
   }
 
-  renameSnippet(oldName: string, newName: string): void {
+  async renameSnippet(oldName: string, newName: string): Promise<void> {
+    try {
+      this.duplicateNameExists(newName);
+    } catch (e) {
+      throw e;
+    }
+
     for (const snippet of this.codeSnippetList) {
       if (snippet.name == oldName) {
         snippet.name = newName;
         break;
       }
     }
-    this.settingManager.set('snippets', this.codeSnippetList.toString());
+    await this.settingManager
+      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .catch(e => {
+        throw e;
+      });
   }
 
-  moveSnippet(fromIdx: number, toIdx: number): void {
+  duplicateNameExists(newName: string): void {
+    for (const snippet of this.codeSnippetList) {
+      if (snippet.name == newName) {
+        throw Error('Duplicate Name of Code Snippet');
+      }
+    }
+  }
+
+  async modifyExistingSnippet(
+    oldName: string,
+    newSnippet: ICodeSnippet
+  ): Promise<void> {
+    for (let snippet of this.codeSnippetList) {
+      if (snippet.name == oldName) {
+        snippet = newSnippet;
+        break;
+      }
+    }
+
+    await this.settingManager
+      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .catch(e => {
+        throw e;
+      });
+  }
+
+  async moveSnippet(fromIdx: number, toIdx: number): Promise<void> {
     if (toIdx > fromIdx) {
       toIdx = toIdx - 1;
     }
@@ -113,15 +187,27 @@ export class CodeSnippetService {
     if (toIdx == fromIdx) {
       return;
     }
+
+    await this.settingManager
+      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .catch(e => {
+        throw e;
+      });
   }
 
-  sortSnippets(): void {
+  private sortSnippets(): void {
     this.codeSnippetList.sort((a, b) => a.id - b.id);
   }
 
   // order snippets just in case when it gets shared between users
-  orderSnippets(): void {
+  async orderSnippets(): Promise<void> {
     this.sortSnippets();
     this.codeSnippetList.forEach((snippet, i) => (snippet.id = i));
+
+    await this.settingManager
+      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .catch(e => {
+        throw e;
+      });
   }
 }
