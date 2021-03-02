@@ -29,10 +29,14 @@ import { Message } from '@lumino/messaging';
 
 import React from 'react';
 
-import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+import {
+  CodeSnippetContentsService,
+  ICodeSnippet
+} from './CodeSnippetContentsService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
+import { saveOverWriteFile } from './CodeSnippetInputDialog';
 
 /**
  * CSS style classes
@@ -366,7 +370,7 @@ export class CodeSnippetEditor extends ReactWidget {
       message += 'Name must be filled out\n';
       status = false;
     }
-    if (name.match(/[^a-z0-9_]+/)) {
+    if (name.match(/[^a-zA-Z0-9_]+/)) {
       message += 'Wrong format of the name\n';
       status = false;
     }
@@ -410,6 +414,8 @@ export class CodeSnippetEditor extends ReactWidget {
     const newPath =
       'snippets/' + this._codeSnippetEditorMetaData.name + '.json';
 
+    //const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
+
     if (!this._codeSnippetEditorMetaData.fromScratch) {
       const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
 
@@ -418,6 +424,7 @@ export class CodeSnippetEditor extends ReactWidget {
         try {
           await this.contentsService.rename(oldPath, newPath);
         } catch (error) {
+          console.log('tffff');
           await showDialog({
             title: 'Duplicate Name of Code Snippet',
             body: <p> {`"${newPath}" already exists.`} </p>,
@@ -425,7 +432,7 @@ export class CodeSnippetEditor extends ReactWidget {
           });
           return false;
         }
-
+        console.log('huhhh');
         // set new name as an old name
         this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
       }
@@ -435,17 +442,48 @@ export class CodeSnippetEditor extends ReactWidget {
         .getData(newPath, 'file')
         .then(async (value: Contents.IModel) => {
           if (value.name) {
-            await showDialog({
-              title: 'Duplicate Name of Code Snippet',
-              body: <p> {`"${newPath}" already exists.`} </p>,
-              buttons: [Dialog.okButton({ label: 'Dismiss' })]
-            });
+            console.log(
+              this.codeSnippetWidget.codeSnippetWidgetModel.snippets[37]
+            );
+            const oldSnippet: ICodeSnippet = JSON.parse(value.content);
+            const newSnippet: ICodeSnippet = {
+              name: this._codeSnippetEditorMetaData.name,
+              description: this._codeSnippetEditorMetaData.description,
+              language: this._codeSnippetEditorMetaData.language,
+              code: this._codeSnippetEditorMetaData.code,
+              id: this._codeSnippetEditorMetaData.id,
+              tags: this._codeSnippetEditorMetaData.selectedTags
+            };
+            console.log(oldSnippet.id);
+            // await showDialog({
+            //   title: 'Duplicate Name of Code Snippet',
+            //   body: <p> {`"${newPath}" already exists.`} </p>,
+            //   buttons: [Dialog.okButton({ label: 'Dismiss' })]
+            // });
+            const result = saveOverWriteFile(
+              this.codeSnippetWidget.codeSnippetWidgetModel,
+              oldSnippet,
+              newSnippet
+            );
+            result
+              .then(newSnippets => {
+                this.codeSnippetWidget.renderCodeSnippetsSignal.emit(
+                  newSnippets
+                );
+              })
+              .catch(_ => {
+                console.log('cancelling overwrite!');
+                return false;
+              });
           }
+          return true;
         })
         .catch(() => {
           nameCheck = true;
+          console.log('hi');
         });
       if (!nameCheck) {
+        console.log('gdi');
         return false;
       }
     }
@@ -585,7 +623,7 @@ export class CodeSnippetEditor extends ReactWidget {
           ></input>
           <p className={CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY}>
             {
-              'Name of the code snippet MUST be lowercased, alphanumeric or composed of underscore(_)'
+              'Name of the code snippet MUST be alphanumeric or composed of underscore(_)'
             }
           </p>
           <label className={CODE_SNIPPET_EDITOR_LABEL}>

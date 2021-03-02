@@ -173,7 +173,7 @@ function createNewSnippet(
 /**
  * Rename a file, asking for confirmation if it is overwriting another.
  */
-async function saveOverWriteFile(
+export async function saveOverWriteFile(
   codeSnippetWidgetModel: CodeSnippetWidgetModel,
   oldSnippet: ICodeSnippet,
   newSnippet: ICodeSnippet
@@ -196,7 +196,7 @@ async function saveOverWriteFile(
 /**
  * Ask the user whether to overwrite a file.
  */
-async function shouldOverwrite(path: string): Promise<boolean> {
+export async function shouldOverwrite(path: string): Promise<boolean> {
   const options = {
     title: 'Overwrite code snippet?',
     body: `"${path}" already exists, overwrite?`,
@@ -314,7 +314,7 @@ class Private {
     const body = document.createElement('form');
     const nameValidity = document.createElement('p');
     nameValidity.textContent =
-      'Name of the code snippet MUST be lowercased, alphanumeric, or composed of underscore(_)';
+      'Name of the code snippet MUST be alphanumeric, or composed of underscore(_)';
     nameValidity.className = CODE_SNIPPET_INPUTNAME_VALIDITY;
 
     const descriptionValidity = document.createElement('p');
