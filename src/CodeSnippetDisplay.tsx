@@ -154,6 +154,7 @@ interface ICodeSnippetDisplayProps {
   getCurrentWidget: () => Widget;
   openCodeSnippetEditor: (args: any) => void;
   editorServices: IEditorServices;
+  updateCodeSnippetWidget: () => void;
 }
 
 /**
@@ -179,7 +180,7 @@ export class CodeSnippetDisplay extends React.Component<
   constructor(props: ICodeSnippetDisplayProps) {
     super(props);
     this.state = {
-      codeSnippets: this.props.codeSnippets,
+      codeSnippets: props.codeSnippets,
       matchIndices: [],
       searchValue: '',
       filterTags: []
@@ -398,10 +399,13 @@ export class CodeSnippetDisplay extends React.Component<
     new_element.onblur = async (): Promise<void> => {
       if (target.innerHTML !== new_element.value) {
         const newName = new_element.value;
-        try {
-          await this.props.codeSnippetManager.renameSnippet(oldName, newName);
-        } catch (error) {
-          if (error.message === 'Duplicate Name of Code Snippet'){
+        this.props.codeSnippetManager.renameSnippet(oldName, newName).then(async (res:boolean) => {
+          if (res){
+            console.log(target);
+            console.log(new_element);
+            target.innerHTML = new_element.value;
+          }
+          else{
             new_element.replaceWith(target);
 
             await showDialog({
@@ -411,8 +415,7 @@ export class CodeSnippetDisplay extends React.Component<
             });
             return;
           }
-        }
-        target.innerHTML = new_element.value;
+        });
       }
       new_element.replaceWith(target);
     };
@@ -1217,19 +1220,24 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   static getDerivedStateFromProps(
-    props: ICodeSnippetDisplayProps,
-    state: ICodeSnippetDisplayState
+    nextProps: ICodeSnippetDisplayProps,
+    prevState: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    if (state.searchValue === '' && state.filterTags.length === 0) {
+    console.log('getDerivedStateFromProps');
+    console.log(prevState);
+    console.log(nextProps);
+
+    // this is why state doesn't change
+    if (prevState.searchValue === '' && prevState.filterTags.length === 0) {
       return {
-        codeSnippets: props.codeSnippets,
+        codeSnippets: nextProps.codeSnippetManager.snippets,
         matchIndices: [],
         searchValue: '',
         filterTags: []
       };
     }
 
-    if (state.searchValue !== '' || state.filterTags.length !== 0) {
+    if (prevState.searchValue !== '' || prevState.filterTags.length !== 0) {
       // const newSnippets = props.codeSnippets.filter(codeSnippet => {
       //   return (
       //     state.matchIndices[codeSnippet.id] !== null ||
@@ -1242,10 +1250,10 @@ export class CodeSnippetDisplay extends React.Component<
       //   );
       // });
       return {
-        codeSnippets: state.codeSnippets,
-        matchIndices: state.matchIndices,
-        searchValue: state.searchValue,
-        filterTags: state.filterTags
+        codeSnippets: prevState.codeSnippets,
+        matchIndices: prevState.matchIndices,
+        searchValue: prevState.searchValue,
+        filterTags: prevState.filterTags
       };
     }
     return null;
@@ -1360,22 +1368,24 @@ export class CodeSnippetDisplay extends React.Component<
         if (editor) {
           editor.dispose();
         }
-
         // deleting snippets when there is one snippet active
-        this.props.codeSnippetManager.deleteSnippet(codeSnippet.id).then(snippets => {
-
-          console.log('delete');
-          console.log(snippets);
-          console.log(this.props.codeSnippetManager.snippets);
+        this.props.codeSnippetManager.deleteSnippet(codeSnippet.id).then((result: boolean) => {
+          if (result){
+            this.props.updateCodeSnippetWidget();
+          }
+          else{
+            console.log('Error in deleting the snippet');
+            return;
+          }
 
           // active tags after delete
-          const activeTags = this.getActiveTags();
+          // const activeTags = this.getActiveTags();
 
           // filterTags: only the tags that are still being used
-          this.setState(state => ({
-            codeSnippets: snippets,
-            filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
-          }), () => console.log(this.state));
+          // this.setState(state => ({
+          //   codeSnippets: snippets,
+          //   filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
+          // }), () => console.log(this.state));
         });
         // this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
         // this.props._codeSnippetWidgetModel.reorderSnippet();
@@ -1467,7 +1477,7 @@ export class CodeSnippetDisplay extends React.Component<
                 description: '',
                 language: 'Python',
                 code: [],
-                id: -1,
+                id: 0,
                 allTags: this.getActiveTags(),
                 fromScratch: true
               });

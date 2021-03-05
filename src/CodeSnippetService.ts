@@ -86,25 +86,33 @@ export class CodeSnippetService {
 
   // }
 
-  async addSnippet(snippet: ICodeSnippet): Promise<void> {
-    const numSnippets = this.codeSnippetList.length;
+  async addSnippet(snippet: ICodeSnippet): Promise<boolean> {
     const id = snippet.id;
+    console.log(id);
     this.codeSnippetList.splice(id, 0, snippet);
 
-    let i = id;
+    console.log(this.codeSnippetList);
+
+    const numSnippets = this.codeSnippetList.length;
+
+    // update id's of snippets.
+    let i = id + 1;
     for (; i < numSnippets; i++) {
       this.codeSnippetList[i].id += 1;
     }
 
     console.log(this.codeSnippetList);
+
+    console.log(this.codeSnippetList);
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(e => {
-        throw e;
+      .catch(_ => {
+        return false;
       });
+    return true;
   }
 
-  async deleteSnippet(id: number): Promise<ICodeSnippet[]> {
+  async deleteSnippet(id: number): Promise<boolean> {
     let numSnippets = this.codeSnippetList.length;
 
     // should never satisfy this condition
@@ -126,18 +134,19 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(e => {
-        throw e;
+      .catch(_ => {
+        return false;
       });
 
-    return this.codeSnippetList;
+    return true;
   }
 
-  async renameSnippet(oldName: string, newName: string): Promise<void> {
+  async renameSnippet(oldName: string, newName: string): Promise<boolean> {
+    console.log('renaming');
     try {
       this.duplicateNameExists(newName);
     } catch (e) {
-      throw e;
+      return false;
     }
 
     for (const snippet of this.codeSnippetList) {
@@ -148,9 +157,10 @@ export class CodeSnippetService {
     }
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(e => {
-        throw e;
+      .catch(_ => {
+        return false;
       });
+    return true;
   }
 
   duplicateNameExists(newName: string): void {
@@ -164,22 +174,28 @@ export class CodeSnippetService {
   async modifyExistingSnippet(
     oldName: string,
     newSnippet: ICodeSnippet
-  ): Promise<void> {
+  ): Promise<boolean> {
+    console.log(this.codeSnippetList);
     for (let snippet of this.codeSnippetList) {
       if (snippet.name == oldName) {
-        snippet = newSnippet;
+        this.codeSnippetList.splice(snippet.id, 1, newSnippet);
         break;
       }
     }
 
+    console.log(this.codeSnippetList);
+
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(e => {
-        throw e;
+      .catch(_ => {
+        return false;
       });
+    return true;
   }
 
-  async moveSnippet(fromIdx: number, toIdx: number): Promise<void> {
+  async moveSnippet(fromIdx: number, toIdx: number): Promise<boolean> {
+    console.log(fromIdx);
+    console.log(toIdx);
     if (toIdx > fromIdx) {
       toIdx = toIdx - 1;
     }
@@ -188,11 +204,27 @@ export class CodeSnippetService {
       return;
     }
 
+    const snippetToMove = this.codeSnippetList[fromIdx];
+    this.deleteSnippet(fromIdx).then((res: boolean) => {
+      if (!res) {
+        console.log('Error in moving snippet(delete)');
+        return false;
+      }
+    });
+    snippetToMove.id = toIdx;
+    this.addSnippet(snippetToMove).then((res: boolean) => {
+      if (!res) {
+        console.log('Error in moving snippet(add)');
+        return false;
+      }
+    });
+
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(e => {
-        throw e;
+      .catch(_ => {
+        return false;
       });
+    return true;
   }
 
   private sortSnippets(): void {
@@ -200,14 +232,15 @@ export class CodeSnippetService {
   }
 
   // order snippets just in case when it gets shared between users
-  async orderSnippets(): Promise<void> {
+  async orderSnippets(): Promise<boolean> {
     this.sortSnippets();
     this.codeSnippetList.forEach((snippet, i) => (snippet.id = i));
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(e => {
-        throw e;
+      .catch(_ => {
+        return false;
       });
+    return true;
   }
 }

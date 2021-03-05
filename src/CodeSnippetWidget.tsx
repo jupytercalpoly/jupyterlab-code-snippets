@@ -77,10 +77,12 @@ export class CodeSnippetWidget extends ReactWidget {
     this.getCurrentWidget = getCurrentWidget;
     // this._codeSnippetWidgetModel = new CodeSnippetWidgetModel([]);
     this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
-    this.moveCodeSnippet.bind(this);
-    this.openCodeSnippetEditor.bind(this);
-    this.updateCodeSnippetWidget.bind(this);
     this.codeSnippetManager = CodeSnippetService.getCodeSnippetService();
+
+    this.moveCodeSnippet = this.moveCodeSnippet.bind(this);
+    this.openCodeSnippetEditor = this.openCodeSnippetEditor.bind(this);
+    this.updateCodeSnippetWidget = this.updateCodeSnippetWidget.bind(this);
+
     this.node.setAttribute('data-lm-dragscroll', 'true');
   }
 
@@ -146,11 +148,17 @@ export class CodeSnippetWidget extends ReactWidget {
   // }
 
   updateCodeSnippetWidget(): void {
+    console.log('updating code snippets');
     const newSnippets = this.codeSnippetManager.snippets;
+    console.log(newSnippets);
+    console.log(this instanceof CodeSnippetWidget);
+    console.log(this);
+    console.log(this.renderCodeSnippetsSignal);
     this.renderCodeSnippetsSignal.emit(newSnippets);
   }
 
   onAfterShow(msg: Message): void {
+    console.log("onAfterShow");
     this.updateCodeSnippetWidget();
   }
 
@@ -372,13 +380,25 @@ export class CodeSnippetWidget extends ReactWidget {
     }
 
     // Reorder snippet just to make sure id's are in order.
-    this.codeSnippetManager.orderSnippets();
+    this.codeSnippetManager.orderSnippets().then((res: boolean) => {
+      if(!res){
+        console.log("Error in ordering snippets");
+        return;
+      }
+    });
   }
 
   // move code snippet within code snippet explorer
   private moveCodeSnippet(srcIdx: number, targetIdx: number): void {
-    this.codeSnippetManager.moveSnippet(srcIdx, targetIdx);
+    console.log('move snippet');
+    this.codeSnippetManager.moveSnippet(srcIdx, targetIdx).then((res: boolean) => {
+      if(!res) {
+        console.log("Error in moving snippet");
+        return;
+      }
+    });
     const newSnippets = this.codeSnippetManager.snippets;
+    console.log(newSnippets);
     this.renderCodeSnippetsSignal.emit(newSnippets);
   }
 
@@ -394,6 +414,7 @@ export class CodeSnippetWidget extends ReactWidget {
               getCurrentWidget={this.getCurrentWidget}
               openCodeSnippetEditor={this.openCodeSnippetEditor.bind(this)}
               editorServices={this.editorServices}
+              updateCodeSnippetWidget={this.updateCodeSnippetWidget}
             />
           </div>
         )}

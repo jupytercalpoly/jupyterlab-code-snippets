@@ -84,6 +84,8 @@ export function CodeSnippetInputDialog(
       return null;
     }
 
+    console.log(idx);
+
     if (validateForm(result) === false) {
       return CodeSnippetInputDialog(codeSnippetWidget, code, idx); // This works but it wipes out all the data they entered previously...
     } else {
@@ -129,7 +131,12 @@ function createNewSnippet(
   newSnippet: ICodeSnippet,
   codeSnippetManager: CodeSnippetService
 ): void {
-  codeSnippetManager.addSnippet(newSnippet);
+  codeSnippetManager.addSnippet(newSnippet).then((res: boolean) => {
+    if (!res) {
+      console.log('Error in adding snippet');
+      return;
+    }
+  });
 
   console.log('add');
   console.log(codeSnippetManager.snippets);
@@ -173,11 +180,21 @@ async function saveOverWriteFile(
     if (value) {
       newSnippet.id = oldSnippet.id;
 
-      codeSnippetManager.deleteSnippet(oldSnippet.id);
-      codeSnippetManager.addSnippet(newSnippet);
+      codeSnippetManager.deleteSnippet(oldSnippet.id).then((res: boolean) => {
+        if (!res) {
+          console.log('Error in overwriting a snippet (delete)');
+          return;
+        }
+      });
+      codeSnippetManager.addSnippet(newSnippet).then((res: boolean) => {
+        if (!res) {
+          console.log('Error in overwriting a snippet (add)');
+          return;
+        }
+      });
       return codeSnippetManager.snippets;
     }
-    return Promise.reject('File not renamed');
+    return null;
   });
 }
 

@@ -436,11 +436,24 @@ export class CodeSnippetEditor extends ReactWidget {
 
     // add new snippet
     if(this._codeSnippetEditorMetaData.fromScratch){
-      await this.contentsService.addSnippet(newSnippet);
+      this.contentsService.addSnippet(newSnippet).then((res: boolean) => {
+        if (!res){
+          console.log("Error in adding snippet");
+          return false;
+        }
+      });
     }
     // modify existing snippet
     else{
-      await this.contentsService.modifyExistingSnippet(oldName, newSnippet);
+      console.log('modify existing snippet');
+      console.log(oldName);
+      console.log(newSnippet);
+      this.contentsService.modifyExistingSnippet(oldName, newSnippet).then((res: boolean) => {
+        if (!res){
+          console.log("Error in modifying snippet");
+          return false;
+        }
+      });
     }
 
     this.saved = true;
