@@ -414,7 +414,7 @@ export class CodeSnippetEditor extends ReactWidget {
     const newPath =
       'snippets/' + this._codeSnippetEditorMetaData.name + '.json';
 
-    //const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
+    let nameCheck = false;
 
     if (!this._codeSnippetEditorMetaData.fromScratch) {
       const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
@@ -424,7 +424,6 @@ export class CodeSnippetEditor extends ReactWidget {
         try {
           await this.contentsService.rename(oldPath, newPath);
         } catch (error) {
-          console.log('tffff');
           await showDialog({
             title: 'Duplicate Name of Code Snippet',
             body: <p> {`"${newPath}" already exists.`} </p>,
@@ -432,19 +431,14 @@ export class CodeSnippetEditor extends ReactWidget {
           });
           return false;
         }
-        console.log('huhhh');
         // set new name as an old name
         this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
       }
     } else {
-      let nameCheck = false;
       await this.contentsService
         .getData(newPath, 'file')
         .then(async (value: Contents.IModel) => {
           if (value.name) {
-            console.log(
-              this.codeSnippetWidget.codeSnippetWidgetModel.snippets[37]
-            );
             const oldSnippet: ICodeSnippet = JSON.parse(value.content);
             const newSnippet: ICodeSnippet = {
               name: this._codeSnippetEditorMetaData.name,
@@ -454,18 +448,12 @@ export class CodeSnippetEditor extends ReactWidget {
               id: this._codeSnippetEditorMetaData.id,
               tags: this._codeSnippetEditorMetaData.selectedTags
             };
-            console.log(oldSnippet.id);
-            // await showDialog({
-            //   title: 'Duplicate Name of Code Snippet',
-            //   body: <p> {`"${newPath}" already exists.`} </p>,
-            //   buttons: [Dialog.okButton({ label: 'Dismiss' })]
-            // });
             const result = saveOverWriteFile(
               this.codeSnippetWidget.codeSnippetWidgetModel,
               oldSnippet,
               newSnippet
             );
-            result
+            await result
               .then(newSnippets => {
                 this.codeSnippetWidget.renderCodeSnippetsSignal.emit(
                   newSnippets
@@ -480,28 +468,25 @@ export class CodeSnippetEditor extends ReactWidget {
         })
         .catch(() => {
           nameCheck = true;
-          console.log('hi');
         });
-      if (!nameCheck) {
-        console.log('gdi');
-        return false;
-      }
     }
 
     this.saved = true;
 
-    await this.contentsService.save(newPath, {
-      type: 'file',
-      format: 'text',
-      content: JSON.stringify({
-        name: this._codeSnippetEditorMetaData.name,
-        description: this._codeSnippetEditorMetaData.description,
-        language: this._codeSnippetEditorMetaData.language,
-        code: this._codeSnippetEditorMetaData.code,
-        id: this._codeSnippetEditorMetaData.id,
-        tags: this._codeSnippetEditorMetaData.selectedTags
-      })
-    });
+    if (nameCheck) {
+      await this.contentsService.save(newPath, {
+        type: 'file',
+        format: 'text',
+        content: JSON.stringify({
+          name: this._codeSnippetEditorMetaData.name,
+          description: this._codeSnippetEditorMetaData.description,
+          language: this._codeSnippetEditorMetaData.language,
+          code: this._codeSnippetEditorMetaData.code,
+          id: this._codeSnippetEditorMetaData.id,
+          tags: this._codeSnippetEditorMetaData.selectedTags
+        })
+      });
+    }
 
     // remove the dirty state
     this.title.className = this.title.className.replace(
