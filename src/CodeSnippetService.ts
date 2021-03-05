@@ -150,7 +150,7 @@ export class CodeSnippetService {
     }
 
     for (const snippet of this.codeSnippetList) {
-      if (snippet.name == oldName) {
+      if (snippet.name === oldName) {
         snippet.name = newName;
         break;
       }
@@ -165,7 +165,7 @@ export class CodeSnippetService {
 
   duplicateNameExists(newName: string): void {
     for (const snippet of this.codeSnippetList) {
-      if (snippet.name == newName) {
+      if (snippet.name === newName) {
         throw Error('Duplicate Name of Code Snippet');
       }
     }
@@ -177,7 +177,7 @@ export class CodeSnippetService {
   ): Promise<boolean> {
     console.log(this.codeSnippetList);
     for (let snippet of this.codeSnippetList) {
-      if (snippet.name == oldName) {
+      if (snippet.name === oldName) {
         this.codeSnippetList.splice(snippet.id, 1, newSnippet);
         break;
       }
@@ -200,7 +200,7 @@ export class CodeSnippetService {
       toIdx = toIdx - 1;
     }
 
-    if (toIdx == fromIdx) {
+    if (toIdx === fromIdx) {
       return;
     }
 
