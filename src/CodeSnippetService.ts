@@ -165,7 +165,7 @@ export class CodeSnippetService {
 
   duplicateNameExists(newName: string): void {
     for (const snippet of this.codeSnippetList) {
-      if (snippet.name === newName) {
+      if (snippet.name.toLowerCase() === newName.toLowerCase()) {
         throw Error('Duplicate Name of Code Snippet');
       }
     }
