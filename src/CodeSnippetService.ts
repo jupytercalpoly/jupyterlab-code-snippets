@@ -52,7 +52,7 @@ export class CodeSnippetService {
     console.log(this.codeSnippetList);
   }
 
-  private convertToICodeSnippetList(snippets: JSONArray) {
+  private convertToICodeSnippetList(snippets: JSONArray): ICodeSnippet[] {
     const snippetList: ICodeSnippet[] = [];
 
     snippets.forEach(snippet => {
@@ -77,7 +77,7 @@ export class CodeSnippetService {
   }
 
   getSnippet(snippetName: string): ICodeSnippet[] {
-    return this.codeSnippetList.filter(snippet => snippet.name == snippetName);
+    return this.codeSnippetList.filter(snippet => snippet.name === snippetName);
   }
 
   // isValidSnippet(): boolean {
@@ -120,7 +120,7 @@ export class CodeSnippetService {
       console.log('error in codeSnippetService');
     }
 
-    if (id == numSnippets - 1) {
+    if (id === numSnippets - 1) {
       this.codeSnippetList.pop();
     } else {
       this.codeSnippetList.splice(id, 1);
@@ -176,7 +176,7 @@ export class CodeSnippetService {
     newSnippet: ICodeSnippet
   ): Promise<boolean> {
     console.log(this.codeSnippetList);
-    for (let snippet of this.codeSnippetList) {
+    for (const snippet of this.codeSnippetList) {
       if (snippet.name === oldName) {
         this.codeSnippetList.splice(snippet.id, 1, newSnippet);
         break;

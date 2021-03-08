@@ -25,10 +25,7 @@ import { Signal } from '@lumino/signaling';
 import { IDragEvent } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
 
-import {
-  CodeSnippetService,
-  ICodeSnippet
-} from './CodeSnippetService';
+import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 // import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
@@ -86,67 +83,6 @@ export class CodeSnippetWidget extends ReactWidget {
     this.node.setAttribute('data-lm-dragscroll', 'true');
   }
 
-  // Request code snippets from contents service
-  // async fetchData(): Promise<ICodeSnippet[]> {
-  //   // const fileModels: Contents.IModel[] = [];
-  //   // const paths: string[] = [];
-
-  //   const codeSnippets = this.codeSnippetManager.snippets;
-  //   return codeSnippets;
-
-    // // Clear the current snippets
-    // this._codeSnippetWidgetModel.clearSnippets();
-
-    // await this.codeSnippetManager
-    //   .getData('snippets', 'directory')
-    //   .then(model => {
-    //     fileModels.push(...model.content);
-    //   });
-
-    // fileModels.forEach(fileModel => paths.push(fileModel.path));
-
-    // let newSnippet: ICodeSnippet = {
-    //   name: '',
-    //   description: '',
-    //   language: '',
-    //   code: [],
-    //   id: -1
-    // };
-
-    // const codeSnippetList: ICodeSnippet[] = [];
-    // for (let i = 0; i < paths.length; i++) {
-    //   await this.codeSnippetManager.getData(paths[i], 'file').then(model => {
-    //     const codeSnippet: ICodeSnippet = JSON.parse(model.content);
-
-    //     // append a new snippet created from scratch to the end
-    //     if (codeSnippet.id === -1) {
-    //       codeSnippet.id = paths.length - 1;
-    //       newSnippet = codeSnippet;
-    //     }
-
-    //     codeSnippetList.push(codeSnippet);
-    //   });
-    // }
-
-    // // new list of snippets
-    // this._codeSnippetWidgetModel.snippets = codeSnippetList;
-
-    // // sort codeSnippetList by ID
-    // this._codeSnippetWidgetModel.sortSnippets();
-
-    // // update the content of the new snippet
-    // if (newSnippet.name !== '') {
-    //   this.codeSnippetManager.save('snippets/' + newSnippet.name + '.json', {
-    //     type: 'file',
-    //     format: 'text',
-    //     content: JSON.stringify(newSnippet)
-    //   });
-    // }
-
-    // this._codeSnippets = this._codeSnippetWidgetModel.snippets;
-    // return this._codeSnippetWidgetModel.snippets;
-  // }
-
   updateCodeSnippetWidget(): void {
     console.log('updating code snippets');
     const newSnippets = this.codeSnippetManager.snippets;
@@ -158,7 +94,7 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   onAfterShow(msg: Message): void {
-    console.log("onAfterShow");
+    console.log('onAfterShow');
     this.updateCodeSnippetWidget();
   }
 
@@ -344,8 +280,7 @@ export class CodeSnippetWidget extends ReactWidget {
     let idx;
     if (snippet !== undefined) {
       idx = parseInt(snippet.id);
-    }
-    else{
+    } else {
       idx = this.codeSnippetManager.snippets.length;
     }
 
@@ -366,11 +301,6 @@ export class CodeSnippetWidget extends ReactWidget {
       event.dropAction = 'move';
       if (event.mimeData.hasData('snippet/id')) {
         const srcIdx = event.mimeData.getData('snippet/id') as number;
-        // if (idx === -1) {
-        //   this.fetchData().then(codeSnippets => {
-        //     idx = codeSnippets.length;
-        //   });
-        // }
         this.moveCodeSnippet(srcIdx, idx);
       }
     } else {
@@ -381,8 +311,8 @@ export class CodeSnippetWidget extends ReactWidget {
 
     // Reorder snippet just to make sure id's are in order.
     this.codeSnippetManager.orderSnippets().then((res: boolean) => {
-      if(!res){
-        console.log("Error in ordering snippets");
+      if (!res) {
+        console.log('Error in ordering snippets');
         return;
       }
     });
@@ -391,12 +321,14 @@ export class CodeSnippetWidget extends ReactWidget {
   // move code snippet within code snippet explorer
   private moveCodeSnippet(srcIdx: number, targetIdx: number): void {
     console.log('move snippet');
-    this.codeSnippetManager.moveSnippet(srcIdx, targetIdx).then((res: boolean) => {
-      if(!res) {
-        console.log("Error in moving snippet");
-        return;
-      }
-    });
+    this.codeSnippetManager
+      .moveSnippet(srcIdx, targetIdx)
+      .then((res: boolean) => {
+        if (!res) {
+          console.log('Error in moving snippet');
+          return;
+        }
+      });
     const newSnippets = this.codeSnippetManager.snippets;
     console.log(newSnippets);
     this.renderCodeSnippetsSignal.emit(newSnippets);

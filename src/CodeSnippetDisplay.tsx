@@ -399,23 +399,24 @@ export class CodeSnippetDisplay extends React.Component<
     new_element.onblur = async (): Promise<void> => {
       if (target.innerHTML !== new_element.value) {
         const newName = new_element.value;
-        this.props.codeSnippetManager.renameSnippet(oldName, newName).then(async (res:boolean) => {
-          if (res){
-            console.log(target);
-            console.log(new_element);
-            target.innerHTML = new_element.value;
-          }
-          else{
-            new_element.replaceWith(target);
+        this.props.codeSnippetManager
+          .renameSnippet(oldName, newName)
+          .then(async (res: boolean) => {
+            if (res) {
+              console.log(target);
+              console.log(new_element);
+              target.innerHTML = new_element.value;
+            } else {
+              new_element.replaceWith(target);
 
-            await showDialog({
-              title: 'Duplicate Name of Code Snippet',
-              body: <p> {`"${newName}" already exists.`} </p>,
-              buttons: [Dialog.okButton({ label: 'Dismiss' })]
-            });
-            return;
-          }
-        });
+              await showDialog({
+                title: 'Duplicate Name of Code Snippet',
+                body: <p> {`"${newName}" already exists.`} </p>,
+                buttons: [Dialog.okButton({ label: 'Dismiss' })]
+              });
+              return;
+            }
+          });
       }
       new_element.replaceWith(target);
     };
@@ -1369,24 +1370,25 @@ export class CodeSnippetDisplay extends React.Component<
           editor.dispose();
         }
         // deleting snippets when there is one snippet active
-        this.props.codeSnippetManager.deleteSnippet(codeSnippet.id).then((result: boolean) => {
-          if (result){
-            this.props.updateCodeSnippetWidget();
-          }
-          else{
-            console.log('Error in deleting the snippet');
-            return;
-          }
+        this.props.codeSnippetManager
+          .deleteSnippet(codeSnippet.id)
+          .then((result: boolean) => {
+            if (result) {
+              this.props.updateCodeSnippetWidget();
+            } else {
+              console.log('Error in deleting the snippet');
+              return;
+            }
 
-          // active tags after delete
-          // const activeTags = this.getActiveTags();
+            // active tags after delete
+            // const activeTags = this.getActiveTags();
 
-          // filterTags: only the tags that are still being used
-          // this.setState(state => ({
-          //   codeSnippets: snippets,
-          //   filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
-          // }), () => console.log(this.state));
-        });
+            // filterTags: only the tags that are still being used
+            // this.setState(state => ({
+            //   codeSnippets: snippets,
+            //   filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
+            // }), () => console.log(this.state));
+          });
         // this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
         // this.props._codeSnippetWidgetModel.reorderSnippet();
         // this.props._codeSnippetWidgetModel.updateSnippetContents();

@@ -416,12 +416,11 @@ export class CodeSnippetEditor extends ReactWidget {
       id: this._codeSnippetEditorMetaData.id,
       tags: this._codeSnippetEditorMetaData.selectedTags
     };
-      
-    if (newName !== oldName){
-      try{
+
+    if (newName !== oldName) {
+      try {
         this.contentsService.duplicateNameExists(newName);
-      }
-      catch(e) {
+      } catch (e) {
         await showDialog({
           title: e.message,
           body: <p> {`"${newName}" already exists.`} </p>,
@@ -435,25 +434,27 @@ export class CodeSnippetEditor extends ReactWidget {
     this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
 
     // add new snippet
-    if(this._codeSnippetEditorMetaData.fromScratch){
+    if (this._codeSnippetEditorMetaData.fromScratch) {
       this.contentsService.addSnippet(newSnippet).then((res: boolean) => {
-        if (!res){
-          console.log("Error in adding snippet");
+        if (!res) {
+          console.log('Error in adding snippet');
           return false;
         }
       });
     }
     // modify existing snippet
-    else{
+    else {
       console.log('modify existing snippet');
       console.log(oldName);
       console.log(newSnippet);
-      this.contentsService.modifyExistingSnippet(oldName, newSnippet).then((res: boolean) => {
-        if (!res){
-          console.log("Error in modifying snippet");
-          return false;
-        }
-      });
+      this.contentsService
+        .modifyExistingSnippet(oldName, newSnippet)
+        .then((res: boolean) => {
+          if (!res) {
+            console.log('Error in modifying snippet');
+            return false;
+          }
+        });
     }
 
     this.saved = true;
