@@ -73,16 +73,24 @@ export function CodeSnippetInputDialog(
 
   const body: InputHandler = new InputHandler(tags);
 
-  return showInputDialog(tags, idx, codeSnippetWidget, code, body);
+  return showInputDialog(
+    codeSnippetWidget,
+    tags,
+    idx,
+    codeSnippetManager,
+    code,
+    body
+  );
 }
 
 /**
  * This function creates the actual input form and processes the inputs given.
  */
 export function showInputDialog(
+  codeSnippetWidget: CodeSnippetWidget,
   tags: string[],
   idx: number,
-  codeSnippetWidget: CodeSnippetWidget,
+  codeSnippetManager: CodeSnippetService,
   code: string[],
   body: InputHandler
 ): Promise<Contents.IModel | null> {
@@ -101,7 +109,14 @@ export function showInputDialog(
     console.log(idx);
 
     if (validateForm(result) === false) {
-      showInputDialog(tags, idx, codeSnippetWidget, code, body);
+      showInputDialog(
+        codeSnippetWidget,
+        tags,
+        idx,
+        codeSnippetManager,
+        code,
+        body
+      );
     } else {
       // if (idx === -1) {
       // idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
@@ -116,21 +131,26 @@ export function showInputDialog(
         id: idx,
         tags: tags
       };
-      for (const snippet of snippets) {
+
+      for (const snippet of codeSnippetManager.snippets) {
         if (snippet.name === newSnippet.name) {
-          const result = saveOverWriteFile(
-            codeSnippetManager,
-            snippet,
-            newSnippet
+          saveOverWriteFile(codeSnippetManager, snippet, newSnippet).then(
+            (res: boolean) => {
+              if (res) {
+                codeSnippetWidget.renderCodeSnippetsSignal.emit(
+                  codeSnippetManager.snippets
+                );
+              }
+            }
           );
-          console.log('uh reached here');
-          result
-            .then(newSnippets => {
-              codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
-            })
-            .catch(_ => {
-              console.log('cancelling overwrite!');
-            });
+          // console.log('uh reached here');
+          // result
+          //   .then(newSnippets => {
+          //     codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
+          //   })
+          //   .catch(_ => {
+          //     console.log('cancelling overwrite!');
+          //   });
           return;
         }
       }
@@ -183,33 +203,33 @@ function createNewSnippet(
 /**
  * Rename a file, warning for overwriting another.
  */
-async function saveOverWriteFile(
+export async function saveOverWriteFile(
   codeSnippetManager: CodeSnippetService,
   oldSnippet: ICodeSnippet,
   newSnippet: ICodeSnippet
-): Promise<ICodeSnippet[] | null> {
+): Promise<boolean> {
   const newName = newSnippet.name;
 
-  return await shouldOverwrite(newName).then(value => {
-    if (value) {
+  await shouldOverwrite(newName).then(res => {
+    if (res) {
       newSnippet.id = oldSnippet.id;
 
       codeSnippetManager.deleteSnippet(oldSnippet.id).then((res: boolean) => {
         if (!res) {
           console.log('Error in overwriting a snippet (delete)');
-          return;
+          return false;
         }
       });
       codeSnippetManager.addSnippet(newSnippet).then((res: boolean) => {
         if (!res) {
           console.log('Error in overwriting a snippet (add)');
-          return;
+          return false;
         }
       });
-      return codeSnippetManager.snippets;
+      return true;
     }
-    return null;
   });
+  return false;
 }
 
 /**

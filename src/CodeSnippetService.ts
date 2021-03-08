@@ -77,7 +77,9 @@ export class CodeSnippetService {
   }
 
   getSnippet(snippetName: string): ICodeSnippet[] {
-    return this.codeSnippetList.filter(snippet => snippet.name === snippetName);
+    return this.codeSnippetList.filter(
+      snippet => snippet.name.toLowerCase() === snippetName.toLowerCase()
+    );
   }
 
   // isValidSnippet(): boolean {
@@ -177,7 +179,7 @@ export class CodeSnippetService {
   ): Promise<boolean> {
     console.log(this.codeSnippetList);
     for (const snippet of this.codeSnippetList) {
-      if (snippet.name === oldName) {
+      if (snippet.name.toLowerCase() === oldName.toLowerCase()) {
         this.codeSnippetList.splice(snippet.id, 1, newSnippet);
         break;
       }

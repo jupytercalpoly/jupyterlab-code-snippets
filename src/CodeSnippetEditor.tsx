@@ -448,14 +448,23 @@ export class CodeSnippetEditor extends ReactWidget {
       console.log('modify existing snippet');
       console.log(oldName);
       console.log(newSnippet);
-      this.contentsService
-        .modifyExistingSnippet(oldName, newSnippet)
-        .then((res: boolean) => {
-          if (!res) {
-            console.log('Error in modifying snippet');
-            return false;
+
+      if (oldName.toLowerCase() === newSnippet.name.toLowerCase()) {
+
+        const oldSnippet = this.contentsService.getSnippet(oldName)[0];
+        saveOverWriteFile(this.contentsService, oldSnippet, newSnippet).then((res: boolean) => {
+          if (res) {
+            this.contentsService
+            .modifyExistingSnippet(oldName, newSnippet)
+            .then((res: boolean) => {
+              if (!res) {
+                console.log('Error in modifying snippet');
+                return false;
+              }
+            });
           }
-        });
+        })
+      }
     }
 
     this.saved = true;
