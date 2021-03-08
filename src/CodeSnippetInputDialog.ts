@@ -71,10 +71,24 @@ export function CodeSnippetInputDialog(
     }
   }
 
+  const body: InputHandler = new InputHandler(tags);
+
+  return showInputDialog(tags, idx, codeSnippetWidget, code, body);
+}
+
+/**
+ * This function creates the actual input form and processes the inputs given.
+ */
+export function showInputDialog(
+  tags: string[],
+  idx: number,
+  codeSnippetWidget: CodeSnippetWidget,
+  code: string[],
+  body: InputHandler
+): Promise<Contents.IModel | null> {
   return showCodeSnippetForm({
     title: 'Save Code Snippet',
-    body: new InputHandler(tags),
-    // focusNodeSelector: 'input',
+    body: body,
     buttons: [
       CodeSnippetForm.cancelButton(),
       CodeSnippetForm.okButton({ label: 'Save' })
@@ -87,7 +101,7 @@ export function CodeSnippetInputDialog(
     console.log(idx);
 
     if (validateForm(result) === false) {
-      return CodeSnippetInputDialog(codeSnippetWidget, code, idx); // This works but it wipes out all the data they entered previously...
+      showInputDialog(tags, idx, codeSnippetWidget, code, body);
     } else {
       // if (idx === -1) {
       // idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
@@ -95,7 +109,7 @@ export function CodeSnippetInputDialog(
 
       const tags = result.value.slice(3);
       const newSnippet: ICodeSnippet = {
-        name: result.value[0].replace(' ', '').toLowerCase(),
+        name: result.value[0].replace(' ', ''),
         description: result.value[1],
         language: result.value[2],
         code: code,
@@ -109,7 +123,7 @@ export function CodeSnippetInputDialog(
             snippet,
             newSnippet
           );
-
+          console.log('uh reached here');
           result
             .then(newSnippets => {
               codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
@@ -238,20 +252,18 @@ export function validateForm(
     message += 'Name must be filled out\n';
     status = false;
   }
-  if (name.match(/[^a-z0-9_]+/)) {
+  if (name.match(/[^a-zA-Z0-9_]+/)) {
+    //allow lowercase, uppercase, alphanumeric, and underscore
     message += 'Wrong format of the name\n';
     status = false;
   }
-  if (description === '') {
-    message += 'Description must be filled out\n';
-    status = false;
-  }
   if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
+    //alphanumeric but can include space or punctuation
     message += 'Wrong format of the description\n';
     status = false;
   }
   if (language === '') {
-    message += 'Language must be filled out';
+    message += 'Language must be filled out\n';
     status = false;
   }
   if (!SUPPORTED_LANGUAGES.includes(language)) {
@@ -321,7 +333,7 @@ class Private {
     const body = document.createElement('form');
     const nameValidity = document.createElement('p');
     nameValidity.textContent =
-      'Name of the code snippet MUST be lowercased, alphanumeric, or composed of underscore(_)';
+      'Name of the code snippet MUST be alphanumeric, or composed of underscore(_)';
     nameValidity.className = CODE_SNIPPET_INPUTNAME_VALIDITY;
 
     const descriptionValidity = document.createElement('p');
@@ -338,10 +350,9 @@ class Private {
     name.onblur = Private.handleOnBlur;
 
     const descriptionTitle = document.createElement('label');
-    descriptionTitle.textContent = 'Description (required)';
+    descriptionTitle.textContent = 'Description (optional)';
     const description = document.createElement('input');
     description.className = CODE_SNIPPET_DIALOG_INPUT;
-    description.required = true;
     description.pattern = '[a-zA-Z0-9_ ,.?!]+';
     description.onblur = Private.handleOnBlur;
 

@@ -32,6 +32,7 @@ import { CodeSnippetService } from './CodeSnippetService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
+import { saveOverWriteFile } from './CodeSnippetInputDialog';
 
 /**
  * CSS style classes
@@ -364,14 +365,14 @@ export class CodeSnippetEditor extends ReactWidget {
       message += 'Name must be filled out\n';
       status = false;
     }
-    if (name.match(/[^a-z0-9_]+/)) {
+    if (name.match(/[^a-zA-Z0-9_]+/)) {
       message += 'Wrong format of the name\n';
       status = false;
     }
-    if (description === '') {
-      message += 'Description must be filled out\n';
-      status = false;
-    }
+    // if (description === '') {
+    //   message += 'Description must be filled out\n';
+    //   status = false;
+    // }
     if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
       message += 'Wrong format of the description\n';
       status = false;
@@ -579,18 +580,17 @@ export class CodeSnippetEditor extends ReactWidget {
           ></input>
           <p className={CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY}>
             {
-              'Name of the code snippet MUST be lowercased, alphanumeric or composed of underscore(_)'
+              'Name of the code snippet MUST be alphanumeric or composed of underscore(_)'
             }
           </p>
           <label className={CODE_SNIPPET_EDITOR_LABEL}>
-            Description (required)
+            Description (optional)
           </label>
           <input
             className={CODE_SNIPPET_EDITOR_DESC_INPUT}
             defaultValue={this._codeSnippetEditorMetaData.description}
             placeholder={'Description'}
             type="text"
-            required
             pattern={'[a-zA-Z0-9_ ,.?!]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>

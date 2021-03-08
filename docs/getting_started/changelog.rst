@@ -2,6 +2,11 @@
 
 Changelog
 ---------
+
+v2.0.1
+^^^^^^
+* Fixed the issue with creating the snippet from scratch or editing the snippet in the editor.
+
 v2.0.0
 ^^^^^^
 * Fixed the issue with the keyboard shortcut by making it user-configurable.
