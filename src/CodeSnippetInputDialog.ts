@@ -74,10 +74,24 @@ export function CodeSnippetInputDialog(
     }
   }
 
+  const body: InputHandler = new InputHandler(tags);
+
+  return showInputDialog(tags, idx, codeSnippetWidget, code, body);
+}
+
+/**
+ * This function creates the actual input form and processes the inputs given.
+ */
+export function showInputDialog(
+  tags: string[],
+  idx: number,
+  codeSnippetWidget: CodeSnippetWidget,
+  code: string[],
+  body: InputHandler
+): Promise<Contents.IModel | null> {
   return showCodeSnippetForm({
     title: 'Save Code Snippet',
-    body: new InputHandler(tags),
-    // focusNodeSelector: 'input',
+    body: body,
     buttons: [
       CodeSnippetForm.cancelButton(),
       CodeSnippetForm.okButton({ label: 'Save' })
@@ -88,7 +102,7 @@ export function CodeSnippetInputDialog(
     }
 
     if (validateForm(result) === false) {
-      return CodeSnippetInputDialog(codeSnippetWidget, code, idx); // This works but it wipes out all the data they entered previously...
+      showInputDialog(tags, idx, codeSnippetWidget, code, body);
     } else {
       if (idx === -1) {
         idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
@@ -96,7 +110,7 @@ export function CodeSnippetInputDialog(
 
       const tags = result.value.slice(3);
       const newSnippet: ICodeSnippet = {
-        name: result.value[0].replace(' ', '').toLowerCase(),
+        name: result.value[0].replace(' ', ''),
         description: result.value[1],
         language: result.value[2],
         code: code,
@@ -106,13 +120,13 @@ export function CodeSnippetInputDialog(
       const contentsService = CodeSnippetContentsService.getInstance();
       const currSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
       for (const snippet of currSnippets) {
-        if (snippet.name === newSnippet.name) {
+        if (snippet.name.toLowerCase() === newSnippet.name.toLowerCase()) {
           const result = saveOverWriteFile(
             codeSnippetWidget.codeSnippetWidgetModel,
             snippet,
             newSnippet
           );
-
+          console.log('uh reached here');
           result
             .then(newSnippets => {
               codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
@@ -142,7 +156,7 @@ function createNewSnippet(
       content: JSON.stringify(newSnippet)
     }
   );
-
+  console.log(newSnippet.name);
   request.then(_ => {
     // add the new snippet to the snippet model
     codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
@@ -159,12 +173,12 @@ function createNewSnippet(
 /**
  * Rename a file, asking for confirmation if it is overwriting another.
  */
-async function saveOverWriteFile(
+export async function saveOverWriteFile(
   codeSnippetWidgetModel: CodeSnippetWidgetModel,
   oldSnippet: ICodeSnippet,
   newSnippet: ICodeSnippet
 ): Promise<ICodeSnippet[] | null> {
-  const newPath = 'snippets/' + newSnippet.name + '.json';
+  const newPath = 'snippets/' + oldSnippet.name + '.json';
 
   return await shouldOverwrite(newPath).then(value => {
     if (value) {
@@ -182,7 +196,7 @@ async function saveOverWriteFile(
 /**
  * Ask the user whether to overwrite a file.
  */
-async function shouldOverwrite(path: string): Promise<boolean> {
+export async function shouldOverwrite(path: string): Promise<boolean> {
   const options = {
     title: 'Overwrite code snippet?',
     body: `"${path}" already exists, overwrite?`,
@@ -219,20 +233,18 @@ export function validateForm(
     message += 'Name must be filled out\n';
     status = false;
   }
-  if (name.match(/[^a-z0-9_]+/)) {
+  if (name.match(/[^a-zA-Z0-9_]+/)) {
+    //allow lowercase, uppercase, alphanumeric, and underscore
     message += 'Wrong format of the name\n';
     status = false;
   }
-  if (description === '') {
-    message += 'Description must be filled out\n';
-    status = false;
-  }
   if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
+    //alphanumeric but can include space or punctuation
     message += 'Wrong format of the description\n';
     status = false;
   }
   if (language === '') {
-    message += 'Language must be filled out';
+    message += 'Language must be filled out\n';
     status = false;
   }
   if (!SUPPORTED_LANGUAGES.includes(language)) {
@@ -302,7 +314,7 @@ class Private {
     const body = document.createElement('form');
     const nameValidity = document.createElement('p');
     nameValidity.textContent =
-      'Name of the code snippet MUST be lowercased, alphanumeric, or composed of underscore(_)';
+      'Name of the code snippet MUST be alphanumeric, or composed of underscore(_)';
     nameValidity.className = CODE_SNIPPET_INPUTNAME_VALIDITY;
 
     const descriptionValidity = document.createElement('p');
@@ -319,10 +331,9 @@ class Private {
     name.onblur = Private.handleOnBlur;
 
     const descriptionTitle = document.createElement('label');
-    descriptionTitle.textContent = 'Description (required)';
+    descriptionTitle.textContent = 'Description (optional)';
     const description = document.createElement('input');
     description.className = CODE_SNIPPET_DIALOG_INPUT;
-    description.required = true;
     description.pattern = '[a-zA-Z0-9_ ,.?!]+';
     description.onblur = Private.handleOnBlur;
 

@@ -29,10 +29,14 @@ import { Message } from '@lumino/messaging';
 
 import React from 'react';
 
-import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+import {
+  CodeSnippetContentsService,
+  ICodeSnippet
+} from './CodeSnippetContentsService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
+import { saveOverWriteFile } from './CodeSnippetInputDialog';
 
 /**
  * CSS style classes
@@ -366,14 +370,14 @@ export class CodeSnippetEditor extends ReactWidget {
       message += 'Name must be filled out\n';
       status = false;
     }
-    if (name.match(/[^a-z0-9_]+/)) {
+    if (name.match(/[^a-zA-Z0-9_]+/)) {
       message += 'Wrong format of the name\n';
       status = false;
     }
-    if (description === '') {
-      message += 'Description must be filled out\n';
-      status = false;
-    }
+    // if (description === '') {
+    //   message += 'Description must be filled out\n';
+    //   status = false;
+    // }
     if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
       message += 'Wrong format of the description\n';
       status = false;
@@ -410,6 +414,8 @@ export class CodeSnippetEditor extends ReactWidget {
     const newPath =
       'snippets/' + this._codeSnippetEditorMetaData.name + '.json';
 
+    let nameCheck = false;
+
     if (!this._codeSnippetEditorMetaData.fromScratch) {
       const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
 
@@ -425,45 +431,62 @@ export class CodeSnippetEditor extends ReactWidget {
           });
           return false;
         }
-
         // set new name as an old name
         this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
       }
     } else {
-      let nameCheck = false;
       await this.contentsService
         .getData(newPath, 'file')
         .then(async (value: Contents.IModel) => {
           if (value.name) {
-            await showDialog({
-              title: 'Duplicate Name of Code Snippet',
-              body: <p> {`"${newPath}" already exists.`} </p>,
-              buttons: [Dialog.okButton({ label: 'Dismiss' })]
-            });
+            const oldSnippet: ICodeSnippet = JSON.parse(value.content);
+            const newSnippet: ICodeSnippet = {
+              name: this._codeSnippetEditorMetaData.name,
+              description: this._codeSnippetEditorMetaData.description,
+              language: this._codeSnippetEditorMetaData.language,
+              code: this._codeSnippetEditorMetaData.code,
+              id: this._codeSnippetEditorMetaData.id,
+              tags: this._codeSnippetEditorMetaData.selectedTags
+            };
+            const result = saveOverWriteFile(
+              this.codeSnippetWidget.codeSnippetWidgetModel,
+              oldSnippet,
+              newSnippet
+            );
+            await result
+              .then(newSnippets => {
+                this.codeSnippetWidget.renderCodeSnippetsSignal.emit(
+                  newSnippets
+                );
+              })
+              .catch(_ => {
+                console.log('cancelling overwrite!');
+                return false;
+              });
           }
+          return true;
         })
         .catch(() => {
           nameCheck = true;
         });
-      if (!nameCheck) {
-        return false;
-      }
     }
 
     this.saved = true;
 
-    await this.contentsService.save(newPath, {
-      type: 'file',
-      format: 'text',
-      content: JSON.stringify({
-        name: this._codeSnippetEditorMetaData.name,
-        description: this._codeSnippetEditorMetaData.description,
-        language: this._codeSnippetEditorMetaData.language,
-        code: this._codeSnippetEditorMetaData.code,
-        id: this._codeSnippetEditorMetaData.id,
-        tags: this._codeSnippetEditorMetaData.selectedTags
-      })
-    });
+    if (nameCheck) {
+      await this.contentsService.save(newPath, {
+        type: 'file',
+        format: 'text',
+        content: JSON.stringify({
+          name: this._codeSnippetEditorMetaData.name,
+          description: this._codeSnippetEditorMetaData.description,
+          language: this._codeSnippetEditorMetaData.language,
+          code: this._codeSnippetEditorMetaData.code,
+          id: this._codeSnippetEditorMetaData.id,
+          tags: this._codeSnippetEditorMetaData.selectedTags
+        })
+      });
+    }
 
     // remove the dirty state
     this.title.className = this.title.className.replace(
@@ -585,18 +608,17 @@ export class CodeSnippetEditor extends ReactWidget {
           ></input>
           <p className={CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY}>
             {
-              'Name of the code snippet MUST be lowercased, alphanumeric or composed of underscore(_)'
+              'Name of the code snippet MUST be alphanumeric or composed of underscore(_)'
             }
           </p>
           <label className={CODE_SNIPPET_EDITOR_LABEL}>
-            Description (required)
+            Description (optional)
           </label>
           <input
             className={CODE_SNIPPET_EDITOR_DESC_INPUT}
             defaultValue={this._codeSnippetEditorMetaData.description}
             placeholder={'Description'}
             type="text"
-            required
             pattern={'[a-zA-Z0-9_ ,.?!]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>

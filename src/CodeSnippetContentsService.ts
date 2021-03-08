@@ -5,7 +5,7 @@ import { ContentsManager, Drive, Contents } from '@jupyterlab/services';
 
 export interface ICodeSnippet {
   name: string;
-  description: string;
+  description?: string;
   language: string;
   // code separated by new line
   code: string[];
