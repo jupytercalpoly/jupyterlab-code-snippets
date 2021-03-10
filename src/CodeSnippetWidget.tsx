@@ -49,7 +49,7 @@ const DROP_TARGET_CLASS = 'jp-codeSnippet-dropTarget';
 const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
 
 const commands = {
-  OPEN_CODE_SNIPPET_EDITOR: `${CODE_SNIPPET_EDITOR}:open`
+  OPEN_CODE_SNIPPET_EDITOR: `${CODE_SNIPPET_EDITOR}:open`,
 };
 
 /**

@@ -20,7 +20,7 @@ import {
   ReactWidget,
   showDialog,
   Dialog,
-  WidgetTracker
+  WidgetTracker,
 } from '@jupyterlab/apputils';
 import { Button } from '@jupyterlab/ui-components';
 
@@ -192,9 +192,9 @@ export class CodeSnippetEditor extends ReactWidget {
           value: this._codeSnippetEditorMetaData.code.join('\n'),
           mimeType: getMimeTypeByLanguage({
             name: this._codeSnippetEditorMetaData.language,
-            codemirror_mode: this._codeSnippetEditorMetaData.language
-          })
-        })
+            codemirror_mode: this._codeSnippetEditorMetaData.language,
+          }),
+        }),
       });
       this.editor.model.value.changed.connect((args: any) => {
         this._codeSnippetEditorMetaData.code = args.text.split('\n');
@@ -218,7 +218,7 @@ export class CodeSnippetEditor extends ReactWidget {
       this.update();
     }
 
-    window.addEventListener('beforeunload', e => {
+    window.addEventListener('beforeunload', (e) => {
       if (!this.saved) {
         e.preventDefault();
         e.returnValue = '';
@@ -253,8 +253,8 @@ export class CodeSnippetEditor extends ReactWidget {
         buttons: [
           Dialog.cancelButton(),
           Dialog.warnButton({ label: 'Discard' }),
-          Dialog.okButton({ label: 'Save' })
-        ]
+          Dialog.okButton({ label: 'Save' }),
+        ],
       }).then((response: any): void => {
         console.log(response.button);
         if (response.button.accept) {
@@ -274,7 +274,7 @@ export class CodeSnippetEditor extends ReactWidget {
 
             const validity = this.validateInputs(name, description, language);
             if (validity) {
-              this.updateSnippet().then(value => {
+              this.updateSnippet().then((value) => {
                 if (value) {
                   this.dispose();
                   super.onCloseRequest(msg);
@@ -415,7 +415,7 @@ export class CodeSnippetEditor extends ReactWidget {
       language: this._codeSnippetEditorMetaData.language,
       code: this._codeSnippetEditorMetaData.code,
       id: this._codeSnippetEditorMetaData.id,
-      tags: this._codeSnippetEditorMetaData.selectedTags
+      tags: this._codeSnippetEditorMetaData.selectedTags,
     };
 
     if (newName !== oldName) {
@@ -425,7 +425,7 @@ export class CodeSnippetEditor extends ReactWidget {
         await showDialog({
           title: e.message,
           body: <p> {`"${newName}" already exists.`} </p>,
-          buttons: [Dialog.okButton({ label: 'Dismiss' })]
+          buttons: [Dialog.okButton({ label: 'Dismiss' })],
         });
         return false;
       }
@@ -547,7 +547,7 @@ export class CodeSnippetEditor extends ReactWidget {
           required
         />
         <datalist id="languages">
-          {SUPPORTED_LANGUAGES.map(lang => this.renderLanguageOptions(lang))}
+          {SUPPORTED_LANGUAGES.map((lang) => this.renderLanguageOptions(lang))}
         </datalist>
       </div>
     );

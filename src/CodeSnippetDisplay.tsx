@@ -25,7 +25,7 @@ import {
   addIcon,
   pythonIcon,
   fileIcon,
-  rKernelIcon
+  rKernelIcon,
 } from '@jupyterlab/ui-components';
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 import * as nbformat from '@jupyterlab/nbformat';
@@ -35,7 +35,7 @@ import {
   CodeCellModel,
   ICodeCellModel,
   MarkdownCell,
-  CodeCell
+  CodeCell,
 } from '@jupyterlab/cells';
 
 import { Widget } from '@lumino/widgets';
@@ -92,7 +92,7 @@ import {
   sbtIcon,
   rustIcon,
   qsharpIcon,
-  sasIcon
+  sasIcon,
 } from './CodeSnippetLanguages';
 
 /**
@@ -141,7 +141,7 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  */
 const moreOptionsIcon = new LabIcon({
   name: 'custom-ui-components:moreOptions',
-  svgstr: moreSVGstr
+  svgstr: moreSVGstr,
 });
 
 /**
@@ -183,7 +183,7 @@ export class CodeSnippetDisplay extends React.Component<
       codeSnippets: props.codeSnippets,
       matchIndices: [],
       searchValue: '',
-      filterTags: []
+      filterTags: [],
     };
     this._drag = null;
     this._dragData = null;
@@ -278,7 +278,7 @@ export class CodeSnippetDisplay extends React.Component<
         '" is incompatible with ' +
         editorLanguage +
         '. Continue?',
-      buttons: [Dialog.cancelButton(), Dialog.okButton()]
+      buttons: [Dialog.cancelButton(), Dialog.okButton()],
     });
   };
 
@@ -287,7 +287,7 @@ export class CodeSnippetDisplay extends React.Component<
     return showDialog({
       title: 'Error',
       body: errMsg,
-      buttons: [Dialog.okButton()]
+      buttons: [Dialog.okButton()],
     });
   };
 
@@ -412,7 +412,7 @@ export class CodeSnippetDisplay extends React.Component<
               await showDialog({
                 title: 'Duplicate Name of Code Snippet',
                 body: <p> {`"${newName}" already exists.`} </p>,
-                buttons: [Dialog.okButton({ label: 'Dismiss' })]
+                buttons: [Dialog.okButton({ label: 'Dismiss' })],
               });
               return;
             }
@@ -464,7 +464,7 @@ export class CodeSnippetDisplay extends React.Component<
     this._dragData = {
       pressX: event.clientX,
       pressY: event.clientY,
-      dragImage: target.nextSibling.firstChild.cloneNode(true) as HTMLElement
+      dragImage: target.nextSibling.firstChild.cloneNode(true) as HTMLElement,
     };
 
     const dragImageTextColor = getComputedStyle(document.body).getPropertyValue(
@@ -563,7 +563,7 @@ export class CodeSnippetDisplay extends React.Component<
       dragImage: dragImage,
       supportedActions: 'copy-move',
       proposedAction: 'copy',
-      source: this
+      source: this,
     });
 
     this._drag.mimeData.setData(JUPYTER_CELL_MIME, selected);
@@ -1142,8 +1142,8 @@ export class CodeSnippetDisplay extends React.Component<
         ): void => {
           showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
           this._setOptionsPosition(event);
-        }
-      }
+        },
+      },
     ];
     return (
       <div
@@ -1173,7 +1173,7 @@ export class CodeSnippetDisplay extends React.Component<
                 id: id,
                 title: displayName,
                 body: new PreviewHandler(),
-                codeSnippet: codeSnippet
+                codeSnippet: codeSnippet,
               },
               this.props.editorServices
             );
@@ -1189,7 +1189,7 @@ export class CodeSnippetDisplay extends React.Component<
               {this.boldNameOnSearch(id, language, name)}
             </div>
             <div className={ACTION_BUTTONS_WRAPPER_CLASS} id={id.toString()}>
-              {actionButtons.map(btn => {
+              {actionButtons.map((btn) => {
                 return (
                   <button
                     key={btn.title}
@@ -1234,7 +1234,7 @@ export class CodeSnippetDisplay extends React.Component<
         codeSnippets: nextProps.codeSnippetManager.snippets,
         matchIndices: [],
         searchValue: '',
-        filterTags: []
+        filterTags: [],
       };
     }
 
@@ -1254,7 +1254,7 @@ export class CodeSnippetDisplay extends React.Component<
         codeSnippets: prevState.codeSnippets,
         matchIndices: prevState.matchIndices,
         searchValue: prevState.searchValue,
-        filterTags: prevState.filterTags
+        filterTags: prevState.filterTags,
       };
     }
     return null;
@@ -1270,7 +1270,7 @@ export class CodeSnippetDisplay extends React.Component<
       snippet: ICodeSnippet;
     }[] = [];
     if (searchValue !== '') {
-      filteredSnippets.forEach(snippet => {
+      filteredSnippets.forEach((snippet) => {
         const matchResult = StringExt.matchSumOfSquares(
           (snippet.language + snippet.name).toLowerCase(),
           searchValue.replace(' ', '').toLowerCase()
@@ -1280,7 +1280,7 @@ export class CodeSnippetDisplay extends React.Component<
           matchResults.push(matchResult);
           filteredSnippetsScore.push({
             score: matchResult.score,
-            snippet: snippet
+            snippet: snippet,
           });
         }
       });
@@ -1288,21 +1288,21 @@ export class CodeSnippetDisplay extends React.Component<
       // sort snippets by its score
       filteredSnippetsScore.sort((a, b) => a.score - b.score);
       const newFilteredSnippets: ICodeSnippet[] = [];
-      filteredSnippetsScore.forEach(snippetScore =>
+      filteredSnippetsScore.forEach((snippetScore) =>
         newFilteredSnippets.push(snippetScore.snippet)
       );
       filteredSnippets = newFilteredSnippets;
 
       // sort the matchResults by its score
       matchResults.sort((a, b) => a.score - b.score);
-      matchResults.forEach(res => matchIndices.push(res.indices));
+      matchResults.forEach((res) => matchIndices.push(res.indices));
     }
 
     // filter with tags
     if (filterTags.length !== 0) {
       const newMatchIndices = matchIndices.slice();
       filteredSnippets = filteredSnippets.filter((codeSnippet, id) => {
-        return filterTags.some(tag => {
+        return filterTags.some((tag) => {
           if (codeSnippet.tags) {
             if (codeSnippet.tags.includes(tag)) {
               return true;
@@ -1323,7 +1323,7 @@ export class CodeSnippetDisplay extends React.Component<
         codeSnippets: filteredSnippets,
         matchIndices: matchIndices,
         searchValue: searchValue,
-        filterTags: filterTags
+        filterTags: filterTags,
       },
       () => {
         console.log('snippets filtered');
@@ -1352,10 +1352,10 @@ export class CodeSnippetDisplay extends React.Component<
       buttons: [
         Dialog.okButton({
           label: 'Delete',
-          displayType: 'warn'
+          displayType: 'warn',
         }),
-        Dialog.cancelButton()
-      ]
+        Dialog.cancelButton(),
+      ],
     }).then((response: any): void => {
       if (response.button.accept) {
         const widgetId = `${CODE_SNIPPET_EDITOR}-${codeSnippet.id}`;
@@ -1447,7 +1447,7 @@ export class CodeSnippetDisplay extends React.Component<
         id: codeSnippet.id,
         selectedTags: codeSnippet.tags,
         allTags: allTags,
-        fromScratch: false
+        fromScratch: false,
       });
       this.removeOptionsNode();
     };
@@ -1481,7 +1481,7 @@ export class CodeSnippetDisplay extends React.Component<
                 code: [],
                 id: 0,
                 allTags: this.getActiveTags(),
-                fromScratch: true
+                fromScratch: true,
               });
             }}
           >

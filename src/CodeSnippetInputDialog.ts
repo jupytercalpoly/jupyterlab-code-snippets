@@ -99,8 +99,8 @@ export function showInputDialog(
     body: body,
     buttons: [
       CodeSnippetForm.cancelButton(),
-      CodeSnippetForm.okButton({ label: 'Save' })
-    ]
+      CodeSnippetForm.okButton({ label: 'Save' }),
+    ],
   }).then((result: CodeSnippetForm.IResult<string[]>) => {
     if (!result.value) {
       return null;
@@ -129,7 +129,7 @@ export function showInputDialog(
         language: result.value[2],
         code: code,
         id: idx,
-        tags: tags
+        tags: tags,
       };
 
       for (const snippet of codeSnippetManager.snippets) {
@@ -185,7 +185,7 @@ function createNewSnippet(
 
   codeSnippetWidget.renderCodeSnippetsSignal.emit(codeSnippetManager.snippets);
   showMessage({
-    body: new MessageHandler()
+    body: new MessageHandler(),
   });
   // request.then(_ => {
   //   // add the new snippet to the snippet model
@@ -210,7 +210,7 @@ export async function saveOverWriteFile(
 ): Promise<boolean> {
   const newName = newSnippet.name;
 
-  await shouldOverwrite(newName).then(res => {
+  await shouldOverwrite(newName).then((res) => {
     if (res) {
       newSnippet.id = oldSnippet.id;
 
@@ -239,9 +239,9 @@ async function shouldOverwrite(newName: string): Promise<boolean> {
   const options = {
     title: 'Overwrite code snippet?',
     body: `"${newName}" already exists, overwrite?`,
-    buttons: [Dialog.cancelButton(), Dialog.warnButton({ label: 'Overwrite' })]
+    buttons: [Dialog.cancelButton(), Dialog.warnButton({ label: 'Overwrite' })],
   };
-  return showDialog(options).then(result => {
+  return showDialog(options).then((result) => {
     return Promise.resolve(result.button.accept);
   });
 }
@@ -417,7 +417,7 @@ class Private {
       elementPosition: 'center',
       height: '16px',
       width: '16px',
-      marginLeft: '2px'
+      marginLeft: '2px',
     });
 
     newTagName.onclick = Private.addTag;
@@ -486,7 +486,7 @@ class Private {
         height: '18px',
         width: '18px',
         marginLeft: '5px',
-        marginRight: '-3px'
+        marginRight: '-3px',
       });
       const color = getComputedStyle(document.documentElement).getPropertyValue(
         '--jp-ui-font-color1'
@@ -514,7 +514,7 @@ class Private {
       elementPosition: 'center',
       height: '16px',
       width: '16px',
-      marginLeft: '2px'
+      marginLeft: '2px',
     });
 
     // change input to span
@@ -541,7 +541,7 @@ class Private {
         height: '18px',
         width: '18px',
         marginLeft: '5px',
-        marginRight: '-3px'
+        marginRight: '-3px',
       });
       const color = getComputedStyle(document.documentElement).getPropertyValue(
         '--jp-ui-font-color1'

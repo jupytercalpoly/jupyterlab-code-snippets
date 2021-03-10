@@ -20,7 +20,7 @@ export class CodeSnippetService {
     this.settingManager = settings;
 
     // just in case when user changes the snippets using settingsEditor
-    this.settingManager.changed.connect(plugin => {
+    this.settingManager.changed.connect((plugin) => {
       console.log('changed');
       const newCodeSnippetList = plugin.get('snippets').user;
       console.log(newCodeSnippetList);
@@ -55,7 +55,7 @@ export class CodeSnippetService {
   private convertToICodeSnippetList(snippets: JSONArray): ICodeSnippet[] {
     const snippetList: ICodeSnippet[] = [];
 
-    snippets.forEach(snippet => {
+    snippets.forEach((snippet) => {
       snippetList.push((snippet as unknown) as ICodeSnippet);
     });
     return snippetList;
@@ -78,7 +78,7 @@ export class CodeSnippetService {
 
   getSnippet(snippetName: string): ICodeSnippet[] {
     return this.codeSnippetList.filter(
-      snippet => snippet.name.toLowerCase() === snippetName.toLowerCase()
+      (snippet) => snippet.name.toLowerCase() === snippetName.toLowerCase()
     );
   }
 
@@ -108,7 +108,7 @@ export class CodeSnippetService {
     console.log(this.codeSnippetList);
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;
@@ -136,7 +136,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
 
@@ -159,7 +159,7 @@ export class CodeSnippetService {
     }
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;
@@ -189,7 +189,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;
@@ -223,7 +223,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;
@@ -240,7 +240,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;

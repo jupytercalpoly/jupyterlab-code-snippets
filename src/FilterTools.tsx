@@ -48,16 +48,16 @@ export class FilterTools extends React.Component<
     this.setState({
       show: false,
       selectedTags: [],
-      searchValue: ''
+      searchValue: '',
     });
   }
 
   componentDidUpdate(prevProps: IFilterSnippetProps): void {
     if (prevProps !== this.props) {
-      this.setState(state => ({
+      this.setState((state) => ({
         selectedTags: state.selectedTags
-          .filter(tag => this.props.tags.includes(tag))
-          .sort()
+          .filter((tag) => this.props.tags.includes(tag))
+          .sort(),
       }));
     }
   }
@@ -124,12 +124,12 @@ export class FilterTools extends React.Component<
     const parent = target.parentElement;
 
     this.setState(
-      state => ({
+      (state) => ({
         selectedTags: this.handleClickHelper(
           parent,
           state.selectedTags,
           clickedTag
-        )
+        ),
       }),
       this.filterSnippets
     );
