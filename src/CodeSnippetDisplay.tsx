@@ -1231,7 +1231,8 @@ export class CodeSnippetDisplay extends React.Component<
     // this is why state doesn't change
     if (prevState.searchValue === '' && prevState.filterTags.length === 0) {
       return {
-        codeSnippets: nextProps.codeSnippetManager.snippets,
+        // codeSnippets: nextProps.codeSnippetManager.snippets,
+        codeSnippets: nextProps.codeSnippets,
         matchIndices: [],
         searchValue: '',
         filterTags: [],

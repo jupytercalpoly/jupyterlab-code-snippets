@@ -68,12 +68,7 @@ const codeSnippetIcon = new LabIcon({
 const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   id: CODE_SNIPPET_EXTENSION_ID,
   autoStart: true,
-  requires: [
-    ICommandPalette,
-    ILayoutRestorer,
-    IEditorServices,
-    ISettingRegistry,
-  ],
+  requires: [ICommandPalette, ILayoutRestorer, IEditorServices],
   activate: activateCodeSnippet,
 };
 
@@ -258,9 +253,6 @@ const codeSnippetExtensionSetting: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   requires: [ISettingRegistry],
   activate: (app: JupyterFrontEnd, settingRegistry: ISettingRegistry) => {
-    // settingRegistry
-    //   .get(CODE_SNIPPET_SETTING_ID, 'snippets')
-    //   .then(value => console.log(value));
     void settingRegistry
       .load(CODE_SNIPPET_SETTING_ID)
       .then((settings) => {

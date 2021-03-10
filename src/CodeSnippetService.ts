@@ -21,9 +21,7 @@ export class CodeSnippetService {
 
     // just in case when user changes the snippets using settingsEditor
     this.settingManager.changed.connect((plugin) => {
-      console.log('changed');
       const newCodeSnippetList = plugin.get('snippets').user;
-      console.log(newCodeSnippetList);
       this.codeSnippetList = this.convertToICodeSnippetList(
         newCodeSnippetList as JSONArray
       );

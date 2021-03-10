@@ -330,7 +330,6 @@ export class CodeSnippetWidget extends ReactWidget {
         }
       });
     const newSnippets = this.codeSnippetManager.snippets;
-    console.log(newSnippets);
     this.renderCodeSnippetsSignal.emit(newSnippets);
   }
 

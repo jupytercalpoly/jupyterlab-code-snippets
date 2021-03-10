@@ -59,6 +59,7 @@ export function CodeSnippetInputDialog(
 ): Promise<Contents.IModel | null> {
   const tags: string[] = [];
   const codeSnippetManager = CodeSnippetService.getCodeSnippetService();
+
   const snippets = codeSnippetManager.snippets;
 
   for (const snippet of snippets) {
@@ -143,14 +144,6 @@ export function showInputDialog(
               }
             }
           );
-          // console.log('uh reached here');
-          // result
-          //   .then(newSnippets => {
-          //     codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
-          //   })
-          //   .catch(_ => {
-          //     console.log('cancelling overwrite!');
-          //   });
           return;
         }
       }
