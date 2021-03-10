@@ -44,6 +44,7 @@ describe('Test Code Snippet Manipulation', () => {
         // checking the snippet
         cy.get('.jp-codeSnippetsContainer').find('.jp-codeSnippet-item').should('have.length', 3);
     })
+    
     it('Renaming a snippet', () => {
         cy.wait(500)
         // rename snippet
