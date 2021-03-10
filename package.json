@@ -122,11 +122,6 @@
     "schemaDir": "schema",
     "outputDir": "jupyterlab-code-snippets/labextension"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "src/*.{js,jsx,ts,tsx}": [
       "eslint --cache --fix"
