@@ -321,6 +321,11 @@
   font-size: var(--jp-ui-font-size1);
 }
 
+.jp-codeSnippet-editor-tag input {
+  border: none;
+  background: transparent;
+}
+
 .jp-codeSnippet-editor-tag.applied-tag button {
   color: var(--jp-ui-font-color1);
 }
