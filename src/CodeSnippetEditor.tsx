@@ -256,7 +256,6 @@ export class CodeSnippetEditor extends ReactWidget {
           Dialog.okButton({ label: 'Save' }),
         ],
       }).then((response: any): void => {
-        console.log(response.button);
         if (response.button.accept) {
           if (response.button.label === 'Discard') {
             this.dispose();
@@ -418,54 +417,58 @@ export class CodeSnippetEditor extends ReactWidget {
       tags: this._codeSnippetEditorMetaData.selectedTags,
     };
 
-    if (newName !== oldName) {
-      try {
-        this.contentsService.duplicateNameExists(newName);
-      } catch (e) {
-        await showDialog({
-          title: e.message,
-          body: <p> {`"${newName}" already exists.`} </p>,
-          buttons: [Dialog.okButton({ label: 'Dismiss' })],
-        });
-        return false;
-      }
-    }
+    const isDuplicatName = this.contentsService.duplicateNameExists(newName);
 
     // set new name as an old name
     this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
 
     // add new snippet
     if (this._codeSnippetEditorMetaData.fromScratch) {
-      this.contentsService.addSnippet(newSnippet).then((res: boolean) => {
-        if (!res) {
-          console.log('Error in adding snippet');
-          return false;
-        }
-      });
+      if (isDuplicatName) {
+        const oldSnippet = this.contentsService.getSnippet(newName)[0];
+        await saveOverWriteFile(this.contentsService, oldSnippet, newSnippet);
+      } else {
+        this.contentsService.addSnippet(newSnippet).then((res: boolean) => {
+          if (!res) {
+            console.log('Error in adding snippet');
+            return false;
+          }
+        });
+      }
     }
     // modify existing snippet
     else {
-      console.log('modify existing snippet');
-      console.log(oldName);
-      console.log(newSnippet);
-
-      if (oldName.toLowerCase() === newSnippet.name.toLowerCase()) {
-        const oldSnippet = this.contentsService.getSnippet(oldName)[0];
-        saveOverWriteFile(this.contentsService, oldSnippet, newSnippet).then(
-          (res: boolean) => {
+      if (newName !== oldName) {
+        if (isDuplicatName) {
+          // overwrite
+          const oldSnippet = this.contentsService.getSnippet(newName)[0];
+          await saveOverWriteFile(
+            this.contentsService,
+            oldSnippet,
+            newSnippet
+          ).then((res: boolean) => {
             if (res) {
-              this.contentsService
-                .modifyExistingSnippet(oldName, newSnippet)
-                .then((res: boolean) => {
-                  if (!res) {
-                    console.log('Error in modifying snippet');
-                    return false;
-                  }
-                });
+              // get the id of snippet you are editting
+              const removedSnippet = this.contentsService.getSnippet(
+                oldName
+              )[0];
+
+              // delete the one you are editting
+              this.contentsService.deleteSnippet(removedSnippet.id);
+            } else {
+              return false;
             }
-          }
-        );
+          });
+        }
       }
+      this.contentsService
+        .modifyExistingSnippet(oldName, newSnippet)
+        .then((res: boolean) => {
+          if (!res) {
+            console.log('Error in modifying snippet');
+            return false;
+          }
+        });
     }
 
     this.saved = true;
