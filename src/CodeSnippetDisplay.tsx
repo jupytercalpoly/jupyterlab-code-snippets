@@ -120,6 +120,7 @@ const CODE_SNIPPET_MORE_OTPIONS_INSERT = 'jp-codeSnippet-more-options-insert';
 const CODE_SNIPPET_MORE_OTPIONS_EDIT = 'jp-codeSnippet-more-options-edit';
 const CODE_SNIPPET_MORE_OTPIONS_DELETE = 'jp-codeSnippet-more-options-delete';
 const CODE_SNIPPET_CREATE_NEW_BTN = 'jp-createSnippetBtn';
+const CODE_SNIPPET_NAME = 'jp-codeSnippet-name';
 
 /**
  * The threshold in pixels to start a drag event.
@@ -374,11 +375,18 @@ export class CodeSnippetDisplay extends React.Component<
         return <span>{elements}</span>;
       }
     }
-    return <span onDoubleClick={this.handleRenameSnippet}>{name}</span>;
+    return (
+      <span
+        title={'Double click to rename'}
+        className={CODE_SNIPPET_NAME}
+        onDoubleClick={this.handleRenameSnippet}
+      >
+        {name}
+      </span>
+    );
   };
 
   // rename snippet on double click
-  // TODO: duplicate name check!
   private async handleRenameSnippet(
     event: React.MouseEvent<HTMLSpanElement, MouseEvent>
   ): Promise<void> {
@@ -399,30 +407,39 @@ export class CodeSnippetDisplay extends React.Component<
     new_element.onblur = async (): Promise<void> => {
       if (target.innerHTML !== new_element.value) {
         const newName = new_element.value;
-        this.props.codeSnippetManager
-          .renameSnippet(oldName, newName)
-          .then(async (res: boolean) => {
-            if (res) {
-              console.log(target);
-              console.log(new_element);
-              target.innerHTML = new_element.value;
-            } else {
-              new_element.replaceWith(target);
 
-              await showDialog({
-                title: 'Duplicate Name of Code Snippet',
-                body: <p> {`"${newName}" already exists.`} </p>,
-                buttons: [Dialog.okButton({ label: 'Dismiss' })],
-              });
-              return;
-            }
+        const isDuplicateName = this.props.codeSnippetManager.duplicateNameExists(
+          newName
+        );
+
+        if (isDuplicateName) {
+          await showDialog({
+            title: 'Duplicate Name of Code Snippet',
+            body: <p> {`"${newName}" already exists.`} </p>,
+            buttons: [Dialog.okButton({ label: 'Dismiss' })],
           });
+        } else {
+          this.props.codeSnippetManager
+            .renameSnippet(oldName, newName)
+            .then(async (res: boolean) => {
+              if (res) {
+                target.innerHTML = new_element.value;
+              } else {
+                console.log('Error in renaming snippet!');
+              }
+            });
+        }
       }
       new_element.replaceWith(target);
     };
     new_element.onkeydown = (event: KeyboardEvent): void => {
       switch (event.code) {
-        case 'Enter' || 'NumpadEnter': // Enter
+        case 'Enter': // Enter
+          event.stopPropagation();
+          event.preventDefault();
+          new_element.blur();
+          break;
+        case 'NumpadEnter': // Enter
           event.stopPropagation();
           event.preventDefault();
           new_element.blur();
@@ -604,9 +621,6 @@ export class CodeSnippetDisplay extends React.Component<
       '--preview-max-height',
       heightPreview
     );
-    // if (realTarget.getBoundingClientRect().top > window.screen.height / 2) {
-    //   distDown = distDown - 66; //this is bumping it up further if it's close to the end of the screen
-    // }
     const final = distDown.toString(10) + 'px';
     document.documentElement.style.setProperty('--preview-distance', final);
   }
@@ -1184,7 +1198,7 @@ export class CodeSnippetDisplay extends React.Component<
           }}
         >
           <div key={displayName} className={TITLE_CLASS} id={id.toString()}>
-            <div id={id.toString()} title={name} className={DISPLAY_NAME_CLASS}>
+            <div id={id.toString()} className={DISPLAY_NAME_CLASS}>
               {this.renderLanguageIcon(language)}
               {this.boldNameOnSearch(id, language, name)}
             </div>
@@ -1212,26 +1226,31 @@ export class CodeSnippetDisplay extends React.Component<
               })}
             </div>
           </div>
-          <div className={CODE_SNIPPET_DESC} id={id.toString()}>
-            <p id={id.toString()}>{`${codeSnippet.description}`}</p>
-          </div>
+          {this.renderDescription(codeSnippet, id)}
         </div>
       </div>
     );
   };
 
+  renderDescription(codeSnippet: ICodeSnippet, id: number): JSX.Element {
+    if (codeSnippet.description.length !== 0) {
+      return (
+        <div className={CODE_SNIPPET_DESC} id={id.toString()}>
+          <p id={id.toString()}>{`${codeSnippet.description}`}</p>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
   static getDerivedStateFromProps(
     nextProps: ICodeSnippetDisplayProps,
     prevState: ICodeSnippetDisplayState
   ): ICodeSnippetDisplayState {
-    console.log('getDerivedStateFromProps');
-    console.log(prevState);
-    console.log(nextProps);
-
     // this is why state doesn't change
     if (prevState.searchValue === '' && prevState.filterTags.length === 0) {
       return {
-        // codeSnippets: nextProps.codeSnippetManager.snippets,
         codeSnippets: nextProps.codeSnippets,
         matchIndices: [],
         searchValue: '',
@@ -1240,17 +1259,6 @@ export class CodeSnippetDisplay extends React.Component<
     }
 
     if (prevState.searchValue !== '' || prevState.filterTags.length !== 0) {
-      // const newSnippets = props.codeSnippets.filter(codeSnippet => {
-      //   return (
-      //     state.matchIndices[codeSnippet.id] !== null ||
-      //     // (state.searchValue !== '' &&
-      //     //   codeSnippet.name.toLowerCase().includes(state.searchValue)) ||
-      //     // (state.searchValue !== '' &&
-      //     //   codeSnippet.language.toLowerCase().includes(state.searchValue)) ||
-      //     (codeSnippet.tags &&
-      //       codeSnippet.tags.some(tag => state.filterTags.includes(tag)))
-      //   );
-      // });
       return {
         codeSnippets: prevState.codeSnippets,
         matchIndices: prevState.matchIndices,
@@ -1380,28 +1388,7 @@ export class CodeSnippetDisplay extends React.Component<
               console.log('Error in deleting the snippet');
               return;
             }
-
-            // active tags after delete
-            // const activeTags = this.getActiveTags();
-
-            // filterTags: only the tags that are still being used
-            // this.setState(state => ({
-            //   codeSnippets: snippets,
-            //   filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
-            // }), () => console.log(this.state));
           });
-        // this.props._codeSnippetWidgetModel.deleteSnippet(codeSnippet.id);
-        // this.props._codeSnippetWidgetModel.reorderSnippet();
-        // this.props._codeSnippetWidgetModel.updateSnippetContents();
-
-        // active tags after delete
-        // const activeTags = this.getActiveTags();
-
-        // // filterTags: only the tags that are still being used
-        // this.setState(state => ({
-        //   codeSnippets: this.props.codeSnippetManager.snippets,
-        //   filterTags: state.filterTags.filter(tag => activeTags.includes(tag))
-        // }));
       }
     });
   }
