@@ -257,14 +257,7 @@ const codeSnippetExtensionSetting: JupyterFrontEndPlugin<void> = {
       .load(CODE_SNIPPET_SETTING_ID)
       .then((settings) => {
         CodeSnippetService.init(settings as Settings);
-
         console.log('JupyterLab extension code-snippets setting is activated!');
-
-        // Remove below after testing
-        const codeSnippetService = CodeSnippetService.getCodeSnippetService();
-        console.log(codeSnippetService);
-
-        // console.log(code)
       })
       .catch((e) => console.log(e));
   },

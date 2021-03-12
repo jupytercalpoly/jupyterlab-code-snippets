@@ -34,7 +34,6 @@ export class CodeSnippetService {
       this.settingManager.get('snippets').user as JSONArray
     );
 
-    console.log(userSnippets.length);
     if (userSnippets.length !== 0) {
       this.codeSnippetList = userSnippets;
     } else {
@@ -46,8 +45,6 @@ export class CodeSnippetService {
       'snippets',
       (this.codeSnippetList as unknown) as PartialJSONValue
     );
-
-    console.log(this.codeSnippetList);
   }
 
   private convertToICodeSnippetList(snippets: JSONArray): ICodeSnippet[] {
@@ -66,7 +63,6 @@ export class CodeSnippetService {
   }
 
   static getCodeSnippetService(): CodeSnippetService {
-    console.log(this.codeSnippetService);
     return this.codeSnippetService;
   }
 
@@ -80,18 +76,9 @@ export class CodeSnippetService {
     );
   }
 
-  // isValidSnippet(): boolean {
-  //   // check duplicate name
-  //   // check required fields
-
-  // }
-
   async addSnippet(snippet: ICodeSnippet): Promise<boolean> {
     const id = snippet.id;
-    console.log(id);
     this.codeSnippetList.splice(id, 0, snippet);
-
-    console.log(this.codeSnippetList);
 
     const numSnippets = this.codeSnippetList.length;
 
@@ -101,9 +88,6 @@ export class CodeSnippetService {
       this.codeSnippetList[i].id += 1;
     }
 
-    console.log(this.codeSnippetList);
-
-    console.log(this.codeSnippetList);
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
       .catch((_) => {
@@ -142,13 +126,6 @@ export class CodeSnippetService {
   }
 
   async renameSnippet(oldName: string, newName: string): Promise<boolean> {
-    console.log('renaming');
-    try {
-      this.duplicateNameExists(newName);
-    } catch (e) {
-      return false;
-    }
-
     for (const snippet of this.codeSnippetList) {
       if (snippet.name === oldName) {
         snippet.name = newName;
@@ -163,27 +140,25 @@ export class CodeSnippetService {
     return true;
   }
 
-  duplicateNameExists(newName: string): void {
+  duplicateNameExists(newName: string): boolean {
     for (const snippet of this.codeSnippetList) {
       if (snippet.name.toLowerCase() === newName.toLowerCase()) {
-        throw Error('Duplicate Name of Code Snippet');
+        return true;
       }
     }
+    return false;
   }
 
   async modifyExistingSnippet(
     oldName: string,
     newSnippet: ICodeSnippet
   ): Promise<boolean> {
-    console.log(this.codeSnippetList);
     for (const snippet of this.codeSnippetList) {
       if (snippet.name.toLowerCase() === oldName.toLowerCase()) {
         this.codeSnippetList.splice(snippet.id, 1, newSnippet);
         break;
       }
     }
-
-    console.log(this.codeSnippetList);
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
@@ -194,8 +169,6 @@ export class CodeSnippetService {
   }
 
   async moveSnippet(fromIdx: number, toIdx: number): Promise<boolean> {
-    console.log(fromIdx);
-    console.log(toIdx);
     if (toIdx > fromIdx) {
       toIdx = toIdx - 1;
     }

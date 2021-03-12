@@ -84,17 +84,11 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   updateCodeSnippetWidget(): void {
-    console.log('updating code snippets');
     const newSnippets = this.codeSnippetManager.snippets;
-    console.log(newSnippets);
-    console.log(this instanceof CodeSnippetWidget);
-    console.log(this);
-    console.log(this.renderCodeSnippetsSignal);
     this.renderCodeSnippetsSignal.emit(newSnippets);
   }
 
   onAfterShow(msg: Message): void {
-    console.log('onAfterShow');
     this.updateCodeSnippetWidget();
   }
 
@@ -320,7 +314,6 @@ export class CodeSnippetWidget extends ReactWidget {
 
   // move code snippet within code snippet explorer
   private moveCodeSnippet(srcIdx: number, targetIdx: number): void {
-    console.log('move snippet');
     this.codeSnippetManager
       .moveSnippet(srcIdx, targetIdx)
       .then((res: boolean) => {
