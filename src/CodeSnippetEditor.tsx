@@ -20,19 +20,15 @@ import {
   ReactWidget,
   showDialog,
   Dialog,
-  WidgetTracker
+  WidgetTracker,
 } from '@jupyterlab/apputils';
 import { Button } from '@jupyterlab/ui-components';
-import { Contents } from '@jupyterlab/services';
 
 import { Message } from '@lumino/messaging';
 
 import React from 'react';
 
-import {
-  CodeSnippetContentsService,
-  ICodeSnippet
-} from './CodeSnippetContentsService';
+import { CodeSnippetService } from './CodeSnippetService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
@@ -78,12 +74,11 @@ export class CodeSnippetEditor extends ReactWidget {
   private oldCodeSnippetName: string;
   private _codeSnippetEditorMetaData: ICodeSnippetEditorMetadata;
   private _hasRefreshedSinceAttach: boolean;
-  contentsService: CodeSnippetContentsService;
+  contentsService: CodeSnippetService;
   codeSnippetWidget: CodeSnippetWidget;
   tracker: WidgetTracker;
 
   constructor(
-    contentsService: CodeSnippetContentsService,
     editorServices: IEditorServices,
     tracker: WidgetTracker,
     codeSnippetWidget: CodeSnippetWidget,
@@ -92,7 +87,7 @@ export class CodeSnippetEditor extends ReactWidget {
     super();
 
     this.addClass(CODE_SNIPPET_EDITOR);
-    this.contentsService = contentsService;
+    this.contentsService = CodeSnippetService.getCodeSnippetService();
     this.editorServices = editorServices;
     this.tracker = tracker;
 
@@ -197,9 +192,9 @@ export class CodeSnippetEditor extends ReactWidget {
           value: this._codeSnippetEditorMetaData.code.join('\n'),
           mimeType: getMimeTypeByLanguage({
             name: this._codeSnippetEditorMetaData.language,
-            codemirror_mode: this._codeSnippetEditorMetaData.language
-          })
-        })
+            codemirror_mode: this._codeSnippetEditorMetaData.language,
+          }),
+        }),
       });
       this.editor.model.value.changed.connect((args: any) => {
         this._codeSnippetEditorMetaData.code = args.text.split('\n');
@@ -223,7 +218,7 @@ export class CodeSnippetEditor extends ReactWidget {
       this.update();
     }
 
-    window.addEventListener('beforeunload', e => {
+    window.addEventListener('beforeunload', (e) => {
       if (!this.saved) {
         e.preventDefault();
         e.returnValue = '';
@@ -258,10 +253,9 @@ export class CodeSnippetEditor extends ReactWidget {
         buttons: [
           Dialog.cancelButton(),
           Dialog.warnButton({ label: 'Discard' }),
-          Dialog.okButton({ label: 'Save' })
-        ]
+          Dialog.okButton({ label: 'Save' }),
+        ],
       }).then((response: any): void => {
-        console.log(response.button);
         if (response.button.accept) {
           if (response.button.label === 'Discard') {
             this.dispose();
@@ -279,7 +273,7 @@ export class CodeSnippetEditor extends ReactWidget {
 
             const validity = this.validateInputs(name, description, language);
             if (validity) {
-              this.updateSnippet().then(value => {
+              this.updateSnippet().then((value) => {
                 if (value) {
                   this.dispose();
                   super.onCloseRequest(msg);
@@ -411,82 +405,73 @@ export class CodeSnippetEditor extends ReactWidget {
     this._codeSnippetEditorMetaData.description = description;
     this._codeSnippetEditorMetaData.language = language;
 
-    const newPath =
-      'snippets/' + this._codeSnippetEditorMetaData.name + '.json';
+    const newName = this._codeSnippetEditorMetaData.name;
+    const oldName = this.oldCodeSnippetName;
 
-    let nameCheck = false;
+    const newSnippet = {
+      name: this._codeSnippetEditorMetaData.name,
+      description: this._codeSnippetEditorMetaData.description,
+      language: this._codeSnippetEditorMetaData.language,
+      code: this._codeSnippetEditorMetaData.code,
+      id: this._codeSnippetEditorMetaData.id,
+      tags: this._codeSnippetEditorMetaData.selectedTags,
+    };
 
-    if (!this._codeSnippetEditorMetaData.fromScratch) {
-      const oldPath = 'snippets/' + this.oldCodeSnippetName + '.json';
+    const isDuplicatName = this.contentsService.duplicateNameExists(newName);
 
-      if (newPath !== oldPath) {
-        // renaming code snippet
-        try {
-          await this.contentsService.rename(oldPath, newPath);
-        } catch (error) {
-          await showDialog({
-            title: 'Duplicate Name of Code Snippet',
-            body: <p> {`"${newPath}" already exists.`} </p>,
-            buttons: [Dialog.okButton({ label: 'Dismiss' })]
-          });
-          return false;
-        }
-        // set new name as an old name
-        this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
-      }
-    } else {
-      await this.contentsService
-        .getData(newPath, 'file')
-        .then(async (value: Contents.IModel) => {
-          if (value.name) {
-            const oldSnippet: ICodeSnippet = JSON.parse(value.content);
-            const newSnippet: ICodeSnippet = {
-              name: this._codeSnippetEditorMetaData.name,
-              description: this._codeSnippetEditorMetaData.description,
-              language: this._codeSnippetEditorMetaData.language,
-              code: this._codeSnippetEditorMetaData.code,
-              id: this._codeSnippetEditorMetaData.id,
-              tags: this._codeSnippetEditorMetaData.selectedTags
-            };
-            const result = saveOverWriteFile(
-              this.codeSnippetWidget.codeSnippetWidgetModel,
-              oldSnippet,
-              newSnippet
-            );
-            await result
-              .then(newSnippets => {
-                this.codeSnippetWidget.renderCodeSnippetsSignal.emit(
-                  newSnippets
-                );
-              })
-              .catch(_ => {
-                console.log('cancelling overwrite!');
-                return false;
-              });
+    // set new name as an old name
+    this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
+
+    // add new snippet
+    if (this._codeSnippetEditorMetaData.fromScratch) {
+      if (isDuplicatName) {
+        const oldSnippet = this.contentsService.getSnippet(newName)[0];
+        await saveOverWriteFile(this.contentsService, oldSnippet, newSnippet);
+      } else {
+        this.contentsService.addSnippet(newSnippet).then((res: boolean) => {
+          if (!res) {
+            console.log('Error in adding snippet');
+            return false;
           }
-          return true;
-        })
-        .catch(() => {
-          nameCheck = true;
+        });
+      }
+    }
+    // modify existing snippet
+    else {
+      if (newName !== oldName) {
+        if (isDuplicatName) {
+          // overwrite
+          const oldSnippet = this.contentsService.getSnippet(newName)[0];
+          await saveOverWriteFile(
+            this.contentsService,
+            oldSnippet,
+            newSnippet
+          ).then((res: boolean) => {
+            if (res) {
+              // get the id of snippet you are editting
+              const removedSnippet = this.contentsService.getSnippet(
+                oldName
+              )[0];
+
+              // delete the one you are editting
+              this.contentsService.deleteSnippet(removedSnippet.id);
+            } else {
+              return false;
+            }
+          });
+        }
+      }
+      this.contentsService
+        .modifyExistingSnippet(oldName, newSnippet)
+        .then((res: boolean) => {
+          if (!res) {
+            console.log('Error in modifying snippet');
+            return false;
+          }
         });
     }
 
     this.saved = true;
-
-    if (nameCheck) {
-      await this.contentsService.save(newPath, {
-        type: 'file',
-        format: 'text',
-        content: JSON.stringify({
-          name: this._codeSnippetEditorMetaData.name,
-          description: this._codeSnippetEditorMetaData.description,
-          language: this._codeSnippetEditorMetaData.language,
-          code: this._codeSnippetEditorMetaData.code,
-          id: this._codeSnippetEditorMetaData.id,
-          tags: this._codeSnippetEditorMetaData.selectedTags
-        })
-      });
-    }
 
     // remove the dirty state
     this.title.className = this.title.className.replace(
@@ -507,7 +492,7 @@ export class CodeSnippetEditor extends ReactWidget {
     }
 
     // update the display in code snippet explorer
-    this.codeSnippetWidget.updateCodeSnippets();
+    this.codeSnippetWidget.updateCodeSnippetWidget();
 
     // close editor if it's from scratch
     if (this._codeSnippetEditorMetaData.fromScratch) {
@@ -565,7 +550,7 @@ export class CodeSnippetEditor extends ReactWidget {
           required
         />
         <datalist id="languages">
-          {SUPPORTED_LANGUAGES.map(lang => this.renderLanguageOptions(lang))}
+          {SUPPORTED_LANGUAGES.map((lang) => this.renderLanguageOptions(lang))}
         </datalist>
       </div>
     );

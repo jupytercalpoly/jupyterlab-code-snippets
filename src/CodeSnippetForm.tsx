@@ -45,7 +45,7 @@ export class CodeSnippetForm<T> extends Widget {
     this._defaultButton = normalized.defaultButton;
     this._buttons = normalized.buttons;
     this._buttonNodes = toArray(
-      map(this._buttons, button => {
+      map(this._buttons, (button) => {
         return renderer.createButtonNode(button);
       })
     );
@@ -502,7 +502,7 @@ export namespace CodeSnippetForm {
       className: value.className || '',
       accept: value.accept,
       actions: value.actions || [],
-      displayType: value.displayType || 'default'
+      displayType: value.displayType || 'default',
     };
   }
 
@@ -542,7 +542,7 @@ export namespace CodeSnippetForm {
    * may be discarded.
    */
   export function flush(): void {
-    tracker.forEach(form => {
+    tracker.forEach((form) => {
       form.dispose();
     });
   }
@@ -647,7 +647,7 @@ export namespace CodeSnippetForm {
     createFooter(buttons: ReadonlyArray<HTMLElement>): Widget {
       const footer = new Widget();
       footer.addClass('jp-Dialog-footer');
-      each(buttons, button => {
+      each(buttons, (button) => {
         footer.node.appendChild(button);
       });
       Styling.styleNode(footer.node);
@@ -752,7 +752,7 @@ export namespace CodeSnippetForm {
    * The code snippet form widget tracker.
    */
   export const tracker = new WidgetTracker<CodeSnippetForm<any>>({
-    namespace: '@jupyterlab/apputils:CodeSnippetForm'
+    namespace: '@jupyterlab/apputils:CodeSnippetForm',
   });
 }
 
@@ -779,7 +779,7 @@ namespace Private {
   ): CodeSnippetForm.IOptions<T> {
     const buttons = options.buttons || [
       CodeSnippetForm.cancelButton(),
-      CodeSnippetForm.okButton()
+      CodeSnippetForm.okButton(),
     ];
     let defaultButton = buttons.length - 1;
     if (options.defaultButton !== undefined) {
@@ -793,7 +793,7 @@ namespace Private {
       defaultButton,
       renderer: options.renderer || CodeSnippetForm.defaultRenderer,
       focusNodeSelector: options.focusNodeSelector || '',
-      hasClose: options.hasClose || false
+      hasClose: options.hasClose || false,
     };
   }
 
@@ -807,7 +807,7 @@ namespace Private {
       'a[href]',
       'textarea',
       'button',
-      '[tabindex]'
+      '[tabindex]',
     ].join(',');
     return node.querySelectorAll(candidateSelectors)[0] as HTMLElement;
   }

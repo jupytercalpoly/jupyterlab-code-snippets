@@ -35,7 +35,7 @@ export class CodeSnippetEditorTags extends React.Component<
       selectedTags: [],
       tags: [],
       plusIconShouldHide: false,
-      addingNewTag: false
+      addingNewTag: false,
     };
     this.renderTags = this.renderTags.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -46,7 +46,7 @@ export class CodeSnippetEditorTags extends React.Component<
       selectedTags: this.props.selectedTags ? this.props.selectedTags : [],
       tags: this.props.tags ? this.props.tags : [],
       plusIconShouldHide: false,
-      addingNewTag: false
+      addingNewTag: false,
     });
   }
 
@@ -54,7 +54,7 @@ export class CodeSnippetEditorTags extends React.Component<
     if (prevProps !== this.props) {
       this.setState({
         selectedTags: this.props.selectedTags ? this.props.selectedTags : [],
-        tags: this.props.tags ? this.props.tags : []
+        tags: this.props.tags ? this.props.tags : [],
       });
     }
   }
@@ -65,12 +65,12 @@ export class CodeSnippetEditorTags extends React.Component<
     const parent = target.parentElement;
 
     this.setState(
-      state => ({
+      (state) => ({
         selectedTags: this.handleClickHelper(
           parent,
           state.selectedTags ? state.selectedTags : [],
           clickedTag
-        )
+        ),
       }),
       this.handleOnChange
     );
@@ -121,11 +121,11 @@ export class CodeSnippetEditorTags extends React.Component<
 
       // update state all tag and selected tag
       this.setState(
-        state => ({
+        (state) => ({
           selectedTags: [...state.selectedTags, newTag],
           tags: [...state.tags, newTag],
           plusIconShouldHide: false,
-          addingNewTag: false
+          addingNewTag: false,
         }),
         this.handleOnChange
       );

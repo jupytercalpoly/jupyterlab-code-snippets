@@ -57,31 +57,6 @@ test('test get instance', () => {
   expect(codeSnippetContentsService).toBeInstanceOf(CodeSnippetContentsService);
 });
 
-describe('test get', () => {
-  it('test getData', async () => {
-    handleRequest(
-      codeSnippetContentsService.contentsManager,
-      200,
-      DEFAULT_FILE
-    );
-    const model = await codeSnippetContentsService.getData('/foo', 'file');
-
-    expect(model.content).toBe(DEFAULT_FILE.content);
-  });
-
-  it('test getDataError', async () => {
-    handleRequest(
-      codeSnippetContentsService.contentsManager,
-      201,
-      DEFAULT_FILE
-    );
-
-    const model = await codeSnippetContentsService.getData('/foo', 'file');
-
-    expect(model.content).toBe(undefined);
-  });
-});
-
 test('test save', async () => {
   handleRequest(codeSnippetContentsService.contentsManager, 200, DEFAULT_FILE);
 
@@ -92,41 +67,4 @@ test('test save', async () => {
 
   expect(saved.content).toBe('hello, world!');
   expect(saved.path).toBe('foo/bar');
-});
-
-describe('test rename', () => {
-  it('test rename', async () => {
-    handleRequest(
-      codeSnippetContentsService.contentsManager,
-      200,
-      DEFAULT_FILE
-    );
-
-    const oldPath = 'foo/test';
-    const newPath = 'foo/test2';
-    const renamed = await codeSnippetContentsService.rename(oldPath, newPath);
-
-    expect(renamed.path).toBe('foo/test2');
-  });
-
-  it('test rename error', async () => {
-    handleRequest(
-      codeSnippetContentsService.contentsManager,
-      201,
-      DEFAULT_FILE
-    );
-
-    const oldPath = 'foo/test';
-    const newPath = 'foo/test2';
-    const renamed = await codeSnippetContentsService.rename(oldPath, newPath);
-
-    expect(renamed.content).toBe(undefined);
-  });
-});
-
-test('test delete', async () => {
-  handleRequest(codeSnippetContentsService.contentsManager, 200, DEFAULT_FILE);
-
-  const path = 'foo/test';
-  await codeSnippetContentsService.delete(path);
 });

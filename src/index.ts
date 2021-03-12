@@ -18,10 +18,10 @@
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
-  ILayoutRestorer
+  ILayoutRestorer,
 } from '@jupyterlab/application';
 import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { ISettingRegistry, Settings } from '@jupyterlab/settingregistry';
 
 import { IEditorServices } from '@jupyterlab/codeeditor';
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -34,29 +34,32 @@ import codeSnippetIconSVGstr from '../style/icon/jupyter_snippeticon.svg';
 
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-import { CodeSnippetContentsService } from './CodeSnippetContentsService';
+// import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import {
   CodeSnippetEditor,
-  ICodeSnippetEditorMetadata
+  ICodeSnippetEditorMetadata,
 } from './CodeSnippetEditor';
+import { CodeSnippetService } from './CodeSnippetService';
+// import { ServerConnection, SettingManager } from '@jupyterlab/services';
+// import { URLExt } from '@jupyterlab/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
-const CODE_SNIPPET_SETTING_ID = 'jupyterlab-code-snippets:settings';
+const CODE_SNIPPET_SETTING_ID = 'jupyterlab-code-snippets:snippets';
 /**
  * Snippet Editor Icon
  */
 const editorIcon = new LabIcon({
-  name: 'custom-ui-compnents:codeSnippetEditorIcon',
-  svgstr: editorIconSVGstr
+  name: 'custom-ui-components:codeSnippetEditorIcon',
+  svgstr: editorIconSVGstr,
 });
 
 /**
  * Snippet Icon
  */
 const codeSnippetIcon = new LabIcon({
-  name: 'custom-ui-compnents:codeSnippetIcon',
-  svgstr: codeSnippetIconSVGstr
+  name: 'custom-ui-components:codeSnippetIcon',
+  svgstr: codeSnippetIconSVGstr,
 });
 
 /**
@@ -66,7 +69,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   id: CODE_SNIPPET_EXTENSION_ID,
   autoStart: true,
   requires: [ICommandPalette, ILayoutRestorer, IEditorServices],
-  activate: activateCodeSnippet
+  activate: activateCodeSnippet,
 };
 
 function activateCodeSnippet(
@@ -89,9 +92,6 @@ function activateCodeSnippet(
   codeSnippetWidget.id = CODE_SNIPPET_EXTENSION_ID;
   codeSnippetWidget.title.icon = codeSnippetIcon;
   codeSnippetWidget.title.caption = 'Code Snippet Explorer';
-
-  const contentsService = CodeSnippetContentsService.getInstance();
-  contentsService.save('snippets', { type: 'directory' });
 
   restorer.add(codeSnippetWidget, CODE_SNIPPET_EXTENSION_ID);
 
@@ -116,7 +116,6 @@ function activateCodeSnippet(
     }
 
     const codeSnippetEditor = new CodeSnippetEditor(
-      contentsService,
       editorServices,
       tracker,
       codeSnippetWidget,
@@ -138,7 +137,7 @@ function activateCodeSnippet(
 
     if (!codeSnippetEditor.isAttached) {
       app.shell.add(codeSnippetEditor, 'main', {
-        mode: 'tab-after'
+        mode: 'tab-after',
       });
     }
 
@@ -151,7 +150,7 @@ function activateCodeSnippet(
     execute: () => {
       const editor = tracker.currentWidget;
       editor.updateSnippet();
-    }
+    },
   });
 
   // Add keybinding to save
@@ -159,14 +158,14 @@ function activateCodeSnippet(
     command: editorSaveCommand,
     args: {},
     keys: ['Accel S'],
-    selector: '.jp-codeSnippet-editor'
+    selector: '.jp-codeSnippet-editor',
   });
 
   const editorCommand = 'jp-codeSnippet-editor:open';
   app.commands.addCommand(editorCommand, {
     execute: (args: any) => {
       openCodeSnippetEditor(args);
-    }
+    },
   });
 
   //Add an application command
@@ -200,41 +199,38 @@ function activateCodeSnippet(
             resultArray.push(indexedInput[i]); //push cell code lines into result
           }
         }
-        CodeSnippetInputDialog(codeSnippetWidget, resultArray, -1);
+        CodeSnippetInputDialog(codeSnippetWidget, resultArray, 0);
       } else {
         CodeSnippetInputDialog(
           codeSnippetWidget,
           highlightedCode.split('\n'),
-          -1
+          0
         );
       }
       // if highlightedCode is empty, check the code of the entire cell.
-    }
+    },
   });
 
   // Put the saveCommand above in context menu
   app.contextMenu.addItem({
     command: saveCommand,
-    selector: '.jp-Cell'
+    selector: '.jp-Cell',
   });
 
   // Put the saveCommand in non-notebook file context menu
   app.contextMenu.addItem({
     command: saveCommand,
-    selector: '.jp-FileEditor'
+    selector: '.jp-FileEditor',
   });
 
   // Track and restore the widget state
   const tracker = new WidgetTracker<CodeSnippetEditor>({
-    namespace: 'codeSnippetEditor'
+    namespace: 'codeSnippetEditor',
   });
 
-  /**
-   * Check the name and go to args. Why does it get restored twice ???
-   */
   restorer.restore(tracker, {
     command: editorCommand,
-    args: widget => {
+    args: (widget) => {
       const editorMetadata = widget.codeSnippetEditorMetadata;
       return {
         name: editorMetadata.name,
@@ -243,12 +239,12 @@ function activateCodeSnippet(
         code: editorMetadata.code,
         id: editorMetadata.id,
         selectedTags: editorMetadata.selectedTags,
-        allTags: editorMetadata.allTags
+        allTags: editorMetadata.allTags,
       };
     },
-    name: widget => {
+    name: (widget) => {
       return widget.id;
-    }
+    },
   });
 }
 
@@ -259,9 +255,12 @@ const codeSnippetExtensionSetting: JupyterFrontEndPlugin<void> = {
   activate: (app: JupyterFrontEnd, settingRegistry: ISettingRegistry) => {
     void settingRegistry
       .load(CODE_SNIPPET_SETTING_ID)
-      .then(_ => console.log('settingRegistry successfully loaded!'))
-      .catch(e => console.log(e));
-  }
+      .then((settings) => {
+        CodeSnippetService.init(settings as Settings);
+        console.log('JupyterLab extension code-snippets setting is activated!');
+      })
+      .catch((e) => console.log(e));
+  },
 };
 
 function getSelectedText(): string {

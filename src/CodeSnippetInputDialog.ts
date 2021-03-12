@@ -8,13 +8,9 @@ import { Contents } from '@jupyterlab/services';
 import { Widget } from '@lumino/widgets';
 import { JSONObject } from '@lumino/coreutils';
 
-import {
-  ICodeSnippet,
-  CodeSnippetContentsService
-} from './CodeSnippetContentsService';
+import { ICodeSnippet, CodeSnippetService } from './CodeSnippetService';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { showMessage } from './ConfirmMessage';
 import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
@@ -62,7 +58,9 @@ export function CodeSnippetInputDialog(
   idx: number
 ): Promise<Contents.IModel | null> {
   const tags: string[] = [];
-  const snippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
+  const codeSnippetManager = CodeSnippetService.getCodeSnippetService();
+
+  const snippets = codeSnippetManager.snippets;
 
   for (const snippet of snippets) {
     if (snippet.tags) {
@@ -76,16 +74,24 @@ export function CodeSnippetInputDialog(
 
   const body: InputHandler = new InputHandler(tags);
 
-  return showInputDialog(tags, idx, codeSnippetWidget, code, body);
+  return showInputDialog(
+    codeSnippetWidget,
+    tags,
+    idx,
+    codeSnippetManager,
+    code,
+    body
+  );
 }
 
 /**
  * This function creates the actual input form and processes the inputs given.
  */
 export function showInputDialog(
+  codeSnippetWidget: CodeSnippetWidget,
   tags: string[],
   idx: number,
-  codeSnippetWidget: CodeSnippetWidget,
+  codeSnippetManager: CodeSnippetService,
   code: string[],
   body: InputHandler
 ): Promise<Contents.IModel | null> {
@@ -94,19 +100,28 @@ export function showInputDialog(
     body: body,
     buttons: [
       CodeSnippetForm.cancelButton(),
-      CodeSnippetForm.okButton({ label: 'Save' })
-    ]
+      CodeSnippetForm.okButton({ label: 'Save' }),
+    ],
   }).then((result: CodeSnippetForm.IResult<string[]>) => {
     if (!result.value) {
       return null;
     }
 
+    console.log(idx);
+
     if (validateForm(result) === false) {
-      showInputDialog(tags, idx, codeSnippetWidget, code, body);
+      showInputDialog(
+        codeSnippetWidget,
+        tags,
+        idx,
+        codeSnippetManager,
+        code,
+        body
+      );
     } else {
-      if (idx === -1) {
-        idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
-      }
+      // if (idx === -1) {
+      // idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
+      // }
 
       const tags = result.value.slice(3);
       const newSnippet: ICodeSnippet = {
@@ -115,94 +130,111 @@ export function showInputDialog(
         language: result.value[2],
         code: code,
         id: idx,
-        tags: tags
+        tags: tags,
       };
-      const contentsService = CodeSnippetContentsService.getInstance();
-      const currSnippets = codeSnippetWidget.codeSnippetWidgetModel.snippets;
-      for (const snippet of currSnippets) {
-        if (snippet.name.toLowerCase() === newSnippet.name.toLowerCase()) {
-          const result = saveOverWriteFile(
-            codeSnippetWidget.codeSnippetWidgetModel,
-            snippet,
-            newSnippet
+
+      for (const snippet of codeSnippetManager.snippets) {
+        if (snippet.name === newSnippet.name) {
+          saveOverWriteFile(codeSnippetManager, snippet, newSnippet).then(
+            (res: boolean) => {
+              if (res) {
+                codeSnippetWidget.renderCodeSnippetsSignal.emit(
+                  codeSnippetManager.snippets
+                );
+              }
+            }
           );
-          console.log('uh reached here');
-          result
-            .then(newSnippets => {
-              codeSnippetWidget.renderCodeSnippetsSignal.emit(newSnippets);
-            })
-            .catch(_ => {
-              console.log('cancelling overwrite!');
-            });
           return;
         }
       }
 
-      createNewSnippet(codeSnippetWidget, newSnippet, contentsService);
+      createNewSnippet(codeSnippetWidget, newSnippet, codeSnippetManager);
     }
   });
 }
 
 function createNewSnippet(
-  codeSnippet: CodeSnippetWidget,
+  codeSnippetWidget: CodeSnippetWidget,
   newSnippet: ICodeSnippet,
-  contentsService: CodeSnippetContentsService
+  codeSnippetManager: CodeSnippetService
 ): void {
-  const request = contentsService.save(
-    'snippets/' + newSnippet.name + '.json',
-    {
-      type: 'file',
-      format: 'text',
-      content: JSON.stringify(newSnippet)
+  codeSnippetManager.addSnippet(newSnippet).then((res: boolean) => {
+    if (!res) {
+      console.log('Error in adding snippet');
+      return;
     }
-  );
-  console.log(newSnippet.name);
-  request.then(_ => {
-    // add the new snippet to the snippet model
-    codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
-    codeSnippet.codeSnippetWidgetModel.updateSnippetContents();
-    const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-    codeSnippet.codeSnippets = newSnippets;
-    codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
-    showMessage({
-      body: new MessageHandler()
-    });
   });
+
+  console.log('add');
+  console.log(codeSnippetManager.snippets);
+  // const request = contentsService.save(
+  //   'snippets/' + newSnippet.name + '.json',
+  //   {
+  //     type: 'file',
+  //     format: 'text',
+  //     content: JSON.stringify(newSnippet)
+  //   }
+  // );
+
+  codeSnippetWidget.renderCodeSnippetsSignal.emit(codeSnippetManager.snippets);
+  showMessage({
+    body: new MessageHandler(),
+  });
+  // request.then(_ => {
+  //   // add the new snippet to the snippet model
+  //   // codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
+  //   // codeSnippet.codeSnippetWidgetModel.updateSnippetContents();
+  //   // const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
+  //   // codeSnippet.codeSnippets = newSnippets;
+  //   // codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
+  //   // showMessage({
+  //   //   body: new MessageHandler()
+  //   // });
+  // });
 }
 
 /**
- * Rename a file, asking for confirmation if it is overwriting another.
+ * Rename a file, warning for overwriting another.
  */
 export async function saveOverWriteFile(
-  codeSnippetWidgetModel: CodeSnippetWidgetModel,
+  codeSnippetManager: CodeSnippetService,
   oldSnippet: ICodeSnippet,
   newSnippet: ICodeSnippet
-): Promise<ICodeSnippet[] | null> {
-  const newPath = 'snippets/' + oldSnippet.name + '.json';
+): Promise<boolean> {
+  const newName = newSnippet.name;
 
-  return await shouldOverwrite(newPath).then(value => {
-    if (value) {
+  await shouldOverwrite(newName).then((res) => {
+    if (res) {
       newSnippet.id = oldSnippet.id;
 
-      codeSnippetWidgetModel.deleteSnippet(oldSnippet.id);
-      codeSnippetWidgetModel.addSnippet(newSnippet, oldSnippet.id);
-      codeSnippetWidgetModel.updateSnippetContents();
-      return codeSnippetWidgetModel.snippets;
+      codeSnippetManager.deleteSnippet(oldSnippet.id).then((res: boolean) => {
+        if (!res) {
+          console.log('Error in overwriting a snippet (delete)');
+          return false;
+        }
+      });
+      codeSnippetManager.addSnippet(newSnippet).then((res: boolean) => {
+        if (!res) {
+          console.log('Error in overwriting a snippet (add)');
+          return false;
+        }
+      });
+      return true;
     }
-    return Promise.reject('File not renamed');
   });
+  return false;
 }
 
 /**
  * Ask the user whether to overwrite a file.
  */
-export async function shouldOverwrite(path: string): Promise<boolean> {
+async function shouldOverwrite(newName: string): Promise<boolean> {
   const options = {
     title: 'Overwrite code snippet?',
-    body: `"${path}" already exists, overwrite?`,
-    buttons: [Dialog.cancelButton(), Dialog.warnButton({ label: 'Overwrite' })]
+    body: `"${newName}" already exists, overwrite?`,
+    buttons: [Dialog.cancelButton(), Dialog.warnButton({ label: 'Overwrite' })],
   };
-  return showDialog(options).then(result => {
+  return showDialog(options).then((result) => {
     return Promise.resolve(result.button.accept);
   });
 }
@@ -378,7 +410,7 @@ class Private {
       elementPosition: 'center',
       height: '16px',
       width: '16px',
-      marginLeft: '2px'
+      marginLeft: '2px',
     });
 
     newTagName.onclick = Private.addTag;
@@ -447,7 +479,7 @@ class Private {
         height: '18px',
         width: '18px',
         marginLeft: '5px',
-        marginRight: '-3px'
+        marginRight: '-3px',
       });
       const color = getComputedStyle(document.documentElement).getPropertyValue(
         '--jp-ui-font-color1'
@@ -475,7 +507,7 @@ class Private {
       elementPosition: 'center',
       height: '16px',
       width: '16px',
-      marginLeft: '2px'
+      marginLeft: '2px',
     });
 
     // change input to span
@@ -502,7 +534,7 @@ class Private {
         height: '18px',
         width: '18px',
         marginLeft: '5px',
-        marginRight: '-3px'
+        marginRight: '-3px',
       });
       const color = getComputedStyle(document.documentElement).getPropertyValue(
         '--jp-ui-font-color1'

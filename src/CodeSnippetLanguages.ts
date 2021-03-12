@@ -106,7 +106,7 @@ export const SUPPORTED_LANGUAGES = [
   'HiveQL',
   'Rust',
   'Rascal',
-  'Q#'
+  'Q#',
 ];
 
 /**
@@ -114,184 +114,184 @@ export const SUPPORTED_LANGUAGES = [
  */
 export const babelIcon = new LabIcon({
   name: 'custom-ui-components:babel',
-  svgstr: babelSVGstr
+  svgstr: babelSVGstr,
 });
 
 export const javaIcon = new LabIcon({
   name: 'custom-ui-components:java',
-  svgstr: javaSVGstr
+  svgstr: javaSVGstr,
 });
 
 export const juliaIcon = new LabIcon({
   name: 'custom-ui-components:julia',
-  svgstr: juliaSVGstr
+  svgstr: juliaSVGstr,
 });
 
 export const matlabIcon = new LabIcon({
   name: 'custom-ui-components:matlab',
-  svgstr: matlabSVGstr
+  svgstr: matlabSVGstr,
 });
 
 export const schemeIcon = new LabIcon({
   name: 'custom-ui-components:scheme',
-  svgstr: schemeSVGstr
+  svgstr: schemeSVGstr,
 });
 
 export const processingIcon = new LabIcon({
   name: 'custom-ui-components:processing',
-  svgstr: processingSVGstr
+  svgstr: processingSVGstr,
 });
 
 export const scalaIcon = new LabIcon({
   name: 'custom-ui-components:scala',
-  svgstr: scalaSVGstr
+  svgstr: scalaSVGstr,
 });
 
 export const groovyIcon = new LabIcon({
   name: 'custom-ui-components:groovy',
-  svgstr: groovySVGstr
+  svgstr: groovySVGstr,
 });
 
 export const fortranIcon = new LabIcon({
   name: 'custom-ui-components:fortran',
-  svgstr: fortranSVGstr
+  svgstr: fortranSVGstr,
 });
 
 export const haskellIcon = new LabIcon({
   name: 'custom-ui-components:haskell',
-  svgstr: haskellSVGstr
+  svgstr: haskellSVGstr,
 });
 
 export const rubyIcon = new LabIcon({
   name: 'custom-ui-components:ruby',
-  svgstr: rubySVGstr
+  svgstr: rubySVGstr,
 });
 
 export const typescriptIcon = new LabIcon({
   name: 'custom-ui-components:typescript',
-  svgstr: typescriptSVGstr
+  svgstr: typescriptSVGstr,
 });
 
 export const javascriptIcon = new LabIcon({
   name: 'custom-ui-components:javascript',
-  svgstr: javascriptSVGstr
+  svgstr: javascriptSVGstr,
 });
 
 export const coffeescriptIcon = new LabIcon({
   name: 'custom-ui-components:coffeescript',
-  svgstr: coffeescriptSVGstr
+  svgstr: coffeescriptSVGstr,
 });
 
 export const livescriptIcon = new LabIcon({
   name: 'custom-ui-components:livescript',
-  svgstr: livescriptSVGstr
+  svgstr: livescriptSVGstr,
 });
 export const csharpIcon = new LabIcon({
   name: 'custom-ui-components:csharp',
-  svgstr: csharpSVGstr
+  svgstr: csharpSVGstr,
 });
 
 export const fsharpIcon = new LabIcon({
   name: 'custom-ui-components:fsharp',
-  svgstr: fsharpSVGstr
+  svgstr: fsharpSVGstr,
 });
 
 export const goIcon = new LabIcon({
   name: 'custom-ui-components:go',
-  svgstr: goSVGstr
+  svgstr: goSVGstr,
 });
 
 export const erlangIcon = new LabIcon({
   name: 'custom-ui-components:erlang',
-  svgstr: erlangSVGstr
+  svgstr: erlangSVGstr,
 });
 
 export const ocamlIcon = new LabIcon({
   name: 'custom-ui-components:ocaml',
-  svgstr: ocamlSVGstr
+  svgstr: ocamlSVGstr,
 });
 
 export const forthIcon = new LabIcon({
   name: 'custom-ui-components:forth',
-  svgstr: forthSVGstr
+  svgstr: forthSVGstr,
 });
 
 export const perlIcon = new LabIcon({
   name: 'custom-ui-components:perl',
-  svgstr: perlSVGstr
+  svgstr: perlSVGstr,
 });
 
 export const phpIcon = new LabIcon({
   name: 'custom-ui-components:php',
-  svgstr: phpSVGstr
+  svgstr: phpSVGstr,
 });
 
 export const clojureIcon = new LabIcon({
   name: 'custom-ui-components:clojure',
-  svgstr: clojureSVGstr
+  svgstr: clojureSVGstr,
 });
 
 export const luaIcon = new LabIcon({
   name: 'custom-ui-components:lua',
-  svgstr: luaSVGstr
+  svgstr: luaSVGstr,
 });
 
 export const purescriptIcon = new LabIcon({
   name: 'custom-ui-components:purescript',
-  svgstr: purescriptSVGstr
+  svgstr: purescriptSVGstr,
 });
 
 export const cppIcon = new LabIcon({
   name: 'custom-ui-components:cpp',
-  svgstr: cppSVGstr
+  svgstr: cppSVGstr,
 });
 
 export const prologIcon = new LabIcon({
   name: 'custom-ui-components:prolog',
-  svgstr: prologSVGstr
+  svgstr: prologSVGstr,
 });
 
 export const lispIcon = new LabIcon({
   name: 'custom-ui-components:lisp',
-  svgstr: lispSVGstr
+  svgstr: lispSVGstr,
 });
 
 export const cIcon = new LabIcon({
   name: 'custom-ui-components:c',
-  svgstr: cSVGstr
+  svgstr: cSVGstr,
 });
 
 export const kotlinIcon = new LabIcon({
   name: 'custom-ui-components:kotlin',
-  svgstr: kotlinSVGstr
+  svgstr: kotlinSVGstr,
 });
 
 export const nodejsIcon = new LabIcon({
   name: 'custom-ui-components:nodejs',
-  svgstr: nodejsSVGstr
+  svgstr: nodejsSVGstr,
 });
 
 export const sasIcon = new LabIcon({
   name: 'custom-ui-components:sas',
-  svgstr: sasSVGstr
+  svgstr: sasSVGstr,
 });
 
 export const coconutIcon = new LabIcon({
   name: 'custom-ui-components:coconut',
-  svgstr: coconutSVGstr
+  svgstr: coconutSVGstr,
 });
 
 export const sbtIcon = new LabIcon({
   name: 'custom-ui-components:sbt',
-  svgstr: sbtSVGstr
+  svgstr: sbtSVGstr,
 });
 
 export const rustIcon = new LabIcon({
   name: 'custom-ui-components:rust',
-  svgstr: rustSVGstr
+  svgstr: rustSVGstr,
 });
 
 export const qsharpIcon = new LabIcon({
   name: 'custom-ui-components:qsharp',
-  svgstr: qsharpSVGstr
+  svgstr: qsharpSVGstr,
 });

@@ -251,7 +251,7 @@ export namespace OptionsMessage {
    * The code snippet options widget tracker.
    */
   export const tracker = new WidgetTracker<OptionsMessage<any>>({
-    namespace: '@jupyterlab/code_snippet:OptionsWidget'
+    namespace: '@jupyterlab/code_snippet:OptionsWidget',
   });
 }
 
