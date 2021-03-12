@@ -107,8 +107,6 @@ export function showInputDialog(
       return null;
     }
 
-    console.log(idx);
-
     if (validateForm(result) === false) {
       showInputDialog(
         codeSnippetWidget,
@@ -119,10 +117,6 @@ export function showInputDialog(
         body
       );
     } else {
-      // if (idx === -1) {
-      // idx = codeSnippetWidget.codeSnippetWidgetModel.snippets.length;
-      // }
-
       const tags = result.value.slice(3);
       const newSnippet: ICodeSnippet = {
         name: result.value[0].replace(' ', ''),
@@ -165,32 +159,10 @@ function createNewSnippet(
     }
   });
 
-  console.log('add');
-  console.log(codeSnippetManager.snippets);
-  // const request = contentsService.save(
-  //   'snippets/' + newSnippet.name + '.json',
-  //   {
-  //     type: 'file',
-  //     format: 'text',
-  //     content: JSON.stringify(newSnippet)
-  //   }
-  // );
-
   codeSnippetWidget.renderCodeSnippetsSignal.emit(codeSnippetManager.snippets);
   showMessage({
     body: new MessageHandler(),
   });
-  // request.then(_ => {
-  //   // add the new snippet to the snippet model
-  //   // codeSnippet.codeSnippetWidgetModel.addSnippet(newSnippet, newSnippet.id);
-  //   // codeSnippet.codeSnippetWidgetModel.updateSnippetContents();
-  //   // const newSnippets = codeSnippet.codeSnippetWidgetModel.snippets;
-  //   // codeSnippet.codeSnippets = newSnippets;
-  //   // codeSnippet.renderCodeSnippetsSignal.emit(newSnippets);
-  //   // showMessage({
-  //   //   body: new MessageHandler()
-  //   // });
-  // });
 }
 
 /**
@@ -203,7 +175,7 @@ export async function saveOverWriteFile(
 ): Promise<boolean> {
   const newName = newSnippet.name;
 
-  await shouldOverwrite(newName).then((res) => {
+  return await shouldOverwrite(newName).then((res) => {
     if (res) {
       newSnippet.id = oldSnippet.id;
 
@@ -222,7 +194,6 @@ export async function saveOverWriteFile(
       return true;
     }
   });
-  return false;
 }
 
 /**
@@ -235,7 +206,7 @@ async function shouldOverwrite(newName: string): Promise<boolean> {
     buttons: [Dialog.cancelButton(), Dialog.warnButton({ label: 'Overwrite' })],
   };
   return showDialog(options).then((result) => {
-    return Promise.resolve(result.button.accept);
+    return result.button.accept;
   });
 }
 
