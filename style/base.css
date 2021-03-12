@@ -321,11 +321,6 @@
   font-size: var(--jp-ui-font-size1);
 }
 
-.jp-codeSnippet-editor-tag input {
-  border: none;
-  background: transparent;
-}
-
 .jp-codeSnippet-editor-tag.applied-tag button {
   color: var(--jp-ui-font-color1);
 }
@@ -336,6 +331,7 @@
 
 .jp-codeSnippet-editor-tag.tag.unapplied-tag input {
   border: none;
+  background: transparent;
 }
 
 .jp-codeSnippet-editor-active {
