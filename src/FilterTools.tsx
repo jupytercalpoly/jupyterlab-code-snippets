@@ -24,7 +24,7 @@ const FILTER_CHECK = 'jp-codeSnippet-filter-check';
 const FILTER_TITLE = 'jp-codeSnippet-filter-title';
 const FILTER_TOOLS = 'jp-codeSnippet-filterTools';
 const FILTER_SEARCHBAR = 'jp-codeSnippet-searchbar';
-const FILTER_SEARCHWRAPPER = 'jp-codesnippet-searchwrapper';
+const FILTER_SEARCHWRAPPER = 'jp-codeSnippet-searchwrapper';
 const FILTER_CLASS = 'jp-codeSnippet-filter';
 const FILTER_BUTTON = 'jp-codeSnippet-filter-btn';
 
@@ -181,7 +181,7 @@ export class FilterTools extends React.Component<
             type="text"
             placeholder="SEARCH SNIPPETS"
             onChange={this.handleSearch}
-            rightIcon="search"
+            rightIcon="ui-components:search"
             value={this.state.searchValue}
           />
         </div>
