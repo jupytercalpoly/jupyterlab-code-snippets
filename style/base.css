@@ -40,10 +40,21 @@
   font-size: var(--jp-ui-font-size1);
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   color: var(--jp-ui-font-color0);
   display: flex;
   align-items: center;
+  width: 100%;
+}
+
+.jp-codeSnippetsContainer-name span:nth-child(2) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 19px;
+}
+
+.jp-codeSnippet-name:hover {
+  cursor: pointer;
 }
 
 .jp-codeSnippetsContainer-button {
@@ -86,6 +97,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  overflow: hidden;
 }
 
 .jp-codeSnippet-description p {
@@ -309,6 +321,11 @@
   font-size: var(--jp-ui-font-size1);
 }
 
+.jp-codeSnippet-editor-tag input {
+  border: none;
+  background: transparent;
+}
+
 .jp-codeSnippet-editor-tag.applied-tag button {
   color: var(--jp-ui-font-color1);
 }
@@ -319,6 +336,7 @@
 
 .jp-codeSnippet-editor-tag.tag.unapplied-tag input {
   border: none;
+  background: transparent;
 }
 
 .jp-codeSnippet-editor-active {
