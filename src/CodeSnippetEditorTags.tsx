@@ -182,6 +182,7 @@ export class CodeSnippetEditorTags extends React.Component<
         {hasTags
           ? this.state.tags.map((tag: string, index: number) =>
               ((): JSX.Element => {
+                console.log(this.state.tags);
                 if (!this.state.selectedTags) {
                   return (
                     <ul

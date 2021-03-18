@@ -4,10 +4,16 @@
 import { InputGroup, checkIcon } from '@jupyterlab/ui-components';
 
 import React from 'react';
+//import { filter } from '@lumino/algorithm';
 
 interface IFilterSnippetProps {
+  languages: string[];
   tags: string[];
-  onFilter: (searchValue: string, filterTags: string[]) => void;
+  onFilter: (
+    searchValue: string,
+    filterTags: string[],
+    languageTags: string[]
+  ) => void;
 }
 
 interface IFilterSnippetState {
@@ -71,10 +77,10 @@ export class FilterTools extends React.Component<
     filterOption.classList.toggle('idle');
   }
 
-  renderTags(): JSX.Element {
+  renderTags(tags: string[]): JSX.Element {
     return (
       <div className={FILTER_TAGS}>
-        {this.props.tags.sort().map((tag: string, index: number) => {
+        {tags.sort().map((tag: string, index: number) => {
           if (this.state.selectedTags.includes(tag)) {
             return this.renderAppliedTag(tag, index.toString());
           } else {
@@ -122,7 +128,7 @@ export class FilterTools extends React.Component<
     const target = event.target as HTMLElement;
     const clickedTag = target.innerText;
     const parent = target.parentElement;
-
+    console.log('ok');
     this.setState(
       (state) => ({
         selectedTags: this.handleClickHelper(
@@ -150,6 +156,7 @@ export class FilterTools extends React.Component<
       const idx = currentTags.indexOf(clickedTag);
       currentTags.splice(idx, 1);
     }
+    console.log(currentTags);
     return currentTags.sort();
   }
 
@@ -158,16 +165,25 @@ export class FilterTools extends React.Component<
   };
 
   filterSnippets(): void {
-    this.props.onFilter(this.state.searchValue, this.state.selectedTags);
+    this.props.onFilter(this.state.searchValue, this.state.selectedTags, [
+      'Scala'
+    ]); // hmmmmm selected Lang tags?
   }
 
   renderFilterOption(): JSX.Element {
+    //make lang tags/cell tags a dropdown
     return (
       <div className={`${FILTER_OPTION} idle`}>
         <div className={FILTER_TITLE}>
-          <span>cell tags</span>
+          <span>language tags</span>
         </div>
-        {this.renderTags()}
+        {this.renderTags(this.props.languages)}
+        <div className={FILTER_TITLE}>
+          <span>snippet tags</span>
+        </div>
+        {this.renderTags(
+          this.props.tags.filter(tag => !this.props.languages.includes(tag))
+        )}
       </div>
     );
   }

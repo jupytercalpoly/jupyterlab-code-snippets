@@ -121,6 +121,7 @@ export function showInputDialog(
       );
     } else {
       const tags = result.value.slice(3);
+      //tags.push(result.value[2]);
       const newSnippet: ICodeSnippet = {
         name: result.value[0].replace(' ', ''),
         description: result.value[1],
