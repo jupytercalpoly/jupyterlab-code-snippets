@@ -85,8 +85,17 @@ export class OptionsMessage<T> extends Widget {
    * not be called directly by user code.
    */
   handleEvent(event: Event): void {
+    // if (event.type == 'click') {
+    //   console.log('click');
+    // } else {
+    //   console.log('default');
+    //   console.log(event.type);
+    // }
     switch (event.type) {
       case 'click':
+        this._evtClick(event as MouseEvent);
+        break;
+      case 'contextmenu':
         this._evtClick(event as MouseEvent);
         break;
       default:
@@ -107,7 +116,6 @@ export class OptionsMessage<T> extends Widget {
       event.stopPropagation();
       event.preventDefault();
       this.reject();
-      return;
     }
   }
 
@@ -159,6 +167,7 @@ export class OptionsMessage<T> extends Widget {
   protected onAfterAttach(msg: Message): void {
     const node = this.node;
     node.addEventListener('click', this, true);
+    node.addEventListener('contextmenu', this, true);
   }
 
   /**
@@ -167,6 +176,7 @@ export class OptionsMessage<T> extends Widget {
   protected onAfterDetach(msg: Message): void {
     const node = this.node;
     node.removeEventListener('click', this, true);
+    node.removeEventListener('contextmenu', this, true);
   }
 
   private _promise: PromiseDelegate<void> | null;
