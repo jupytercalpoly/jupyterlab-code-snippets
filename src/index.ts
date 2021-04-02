@@ -213,14 +213,40 @@ function activateCodeSnippet(
 
   // Put the saveCommand above in context menu
   app.contextMenu.addItem({
+    type: 'separator',
+    selector: '.jp-Notebook',
+    rank: 13,
+  });
+
+  app.contextMenu.addItem({
     command: saveCommand,
-    selector: '.jp-Cell',
+    selector: '.jp-Notebook',
+    rank: 14,
+  });
+
+  app.contextMenu.addItem({
+    type: 'separator',
+    selector: '.jp-Notebook',
+    rank: 15,
   });
 
   // Put the saveCommand in non-notebook file context menu
   app.contextMenu.addItem({
+    type: 'separator',
+    selector: '.jp-FileEditor',
+    rank: 7,
+  });
+
+  app.contextMenu.addItem({
     command: saveCommand,
     selector: '.jp-FileEditor',
+    rank: 8,
+  });
+
+  app.contextMenu.addItem({
+    type: 'separator',
+    selector: '.jp-FileEditor',
+    rank: 9,
   });
 
   // Track and restore the widget state
