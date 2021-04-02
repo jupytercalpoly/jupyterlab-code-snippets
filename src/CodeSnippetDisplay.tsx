@@ -48,7 +48,7 @@ import React from 'react';
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { FilterTools } from './FilterTools';
 import { showPreview } from './PreviewSnippet';
-import { showMoreOptions } from './MoreOptions';
+import { showMoreOptions } from './CodeSnippetMenu';
 // import {
 //   ICodeSnippet,
 //   CodeSnippetContentsService
@@ -627,10 +627,11 @@ export class CodeSnippetDisplay extends React.Component<
 
   //Set the position of the option to be under to the three dots on snippet.
   private _setOptionsPosition(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    event: React.MouseEvent<HTMLElement, MouseEvent>
   ): void {
     const target = event.target as HTMLElement;
     let top: number;
+    console.log(target.tagName);
     if (target.tagName === 'path') {
       top = target.getBoundingClientRect().top + 10;
     } else {
@@ -640,8 +641,10 @@ export class CodeSnippetDisplay extends React.Component<
       top -= 120;
     }
     const leftAsString =
-      target.getBoundingClientRect().left.toString(10) + 'px';
+      (target.parentElement.style.left + event.pageX).toString() + 'px';
+
     const topAsString = top.toString(10) + 'px';
+
     document.documentElement.style.setProperty(
       '--more-options-top',
       topAsString
@@ -1151,9 +1154,7 @@ export class CodeSnippetDisplay extends React.Component<
       {
         title: 'Insert, copy, edit, and delete',
         icon: moreOptionsIcon,
-        onClick: (
-          event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-        ): void => {
+        onClick: (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
           showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
           this._setOptionsPosition(event);
         },
@@ -1164,11 +1165,19 @@ export class CodeSnippetDisplay extends React.Component<
         key={codeSnippet.name}
         className={CODE_SNIPPET_ITEM}
         id={id.toString()}
+        title={'Right click for more options'}
         onMouseOver={(): void => {
           this.dragHoverStyle(id);
         }}
         onMouseOut={(): void => {
           this.dragHoverStyleRemove(id);
+        }}
+        onContextMenu={(
+          event: React.MouseEvent<HTMLElement, MouseEvent>
+        ): void => {
+          event.preventDefault();
+          showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
+          this._setOptionsPosition(event);
         }}
       >
         <div
