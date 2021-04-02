@@ -631,6 +631,7 @@ export class CodeSnippetDisplay extends React.Component<
   ): void {
     const target = event.target as HTMLElement;
     let top: number;
+    console.log(target.tagName);
     if (target.tagName === 'path') {
       top = target.getBoundingClientRect().top + 10;
     } else {
@@ -640,8 +641,10 @@ export class CodeSnippetDisplay extends React.Component<
       top -= 120;
     }
     const leftAsString =
-      target.getBoundingClientRect().left.toString(10) + 'px';
+      (target.parentElement.style.left + event.pageX).toString() + 'px';
+
     const topAsString = top.toString(10) + 'px';
+
     document.documentElement.style.setProperty(
       '--more-options-top',
       topAsString
