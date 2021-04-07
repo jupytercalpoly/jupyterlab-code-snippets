@@ -49,11 +49,6 @@ const CODE_SNIPPET_EDITOR_MIRROR = 'jp-codeSnippetInput-editor';
 const CODE_SNIPPET_EDITOR_INPUTAREA = 'jp-codeSnippetInputArea';
 const CODE_SNIPPET_EDITOR_INPUTAREA_MIRROR = 'jp-codeSnippetInputArea-editor';
 
-const CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY =
-  'jp-codeSnippet-inputName-validity';
-const CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY =
-  'jp-codeSnippet-inputDesc-validity';
-
 const EDITOR_DIRTY_CLASS = 'jp-mod-dirty';
 
 export interface ICodeSnippetEditorMetadata {
@@ -85,7 +80,6 @@ export class CodeSnippetEditor extends ReactWidget {
     args: ICodeSnippetEditorMetadata
   ) {
     super();
-
     this.addClass(CODE_SNIPPET_EDITOR);
     this.contentsService = CodeSnippetService.getCodeSnippetService();
     this.editorServices = editorServices;
@@ -364,18 +358,6 @@ export class CodeSnippetEditor extends ReactWidget {
       message += 'Name must be filled out\n';
       status = false;
     }
-    if (name.match(/[^a-zA-Z0-9_]+/)) {
-      message += 'Wrong format of the name\n';
-      status = false;
-    }
-    // if (description === '') {
-    //   message += 'Description must be filled out\n';
-    //   status = false;
-    // }
-    if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
-      message += 'Wrong format of the description\n';
-      status = false;
-    }
     if (language === '') {
       message += 'Language must be filled out';
       status = false;
@@ -579,10 +561,9 @@ export class CodeSnippetEditor extends ReactWidget {
           <input
             className={CODE_SNIPPET_EDITOR_NAME_INPUT}
             defaultValue={this._codeSnippetEditorMetaData.name}
-            placeholder={'Ex. starter_code'}
+            placeholder={'Ex. starter code'}
             type="text"
             required
-            pattern={'[a-zA-Z0-9_]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
@@ -591,11 +572,6 @@ export class CodeSnippetEditor extends ReactWidget {
             }}
             onBlur={this.handleOnBlur}
           ></input>
-          <p className={CODE_SNIPPET_EDITOR_INPUTNAME_VALIDITY}>
-            {
-              'Name of the code snippet MUST be alphanumeric or composed of underscore(_)'
-            }
-          </p>
           <label className={CODE_SNIPPET_EDITOR_LABEL}>
             Description (optional)
           </label>
@@ -604,7 +580,6 @@ export class CodeSnippetEditor extends ReactWidget {
             defaultValue={this._codeSnippetEditorMetaData.description}
             placeholder={'Description'}
             type="text"
-            pattern={'[a-zA-Z0-9_ ,.?!]+'}
             onMouseDown={(
               event: React.MouseEvent<HTMLInputElement, MouseEvent>
             ): void => this.activeFieldState(event)}
@@ -613,11 +588,6 @@ export class CodeSnippetEditor extends ReactWidget {
             }}
             onBlur={this.handleOnBlur}
           ></input>
-          <p className={CODE_SNIPPET_EDITOR_INPUTDESC_VALIDITY}>
-            {
-              'Description of the code snippet MUST be alphanumeric but can include space or punctuation'
-            }
-          </p>
           <label className={CODE_SNIPPET_EDITOR_LABEL}>
             Language (required)
           </label>

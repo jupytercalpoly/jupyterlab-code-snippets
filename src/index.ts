@@ -40,8 +40,6 @@ import {
   ICodeSnippetEditorMetadata,
 } from './CodeSnippetEditor';
 import { CodeSnippetService } from './CodeSnippetService';
-// import { ServerConnection, SettingManager } from '@jupyterlab/services';
-// import { URLExt } from '@jupyterlab/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -104,12 +102,14 @@ function activateCodeSnippet(
     // codeSnippetEditors are in the main area
     const widgetId = `jp-codeSnippet-editor-${args.id}`;
 
+    // when the editor is already open
     const openEditor = find(
       app.shell.widgets('main'),
       (widget: Widget, _: number) => {
         return widget.id === widgetId;
       }
     );
+
     if (openEditor) {
       app.shell.activateById(widgetId);
       return;
@@ -199,15 +199,18 @@ function activateCodeSnippet(
             resultArray.push(indexedInput[i]); //push cell code lines into result
           }
         }
-        CodeSnippetInputDialog(codeSnippetWidget, resultArray, 0);
+        CodeSnippetInputDialog(
+          codeSnippetWidget,
+          resultArray,
+          codeSnippetWidget.codeSnippetManager.snippets.length
+        );
       } else {
         CodeSnippetInputDialog(
           codeSnippetWidget,
           highlightedCode.split('\n'),
-          0
+          codeSnippetWidget.codeSnippetManager.snippets.length
         );
       }
-      // if highlightedCode is empty, check the code of the entire cell.
     },
   });
 
@@ -266,6 +269,7 @@ function activateCodeSnippet(
         id: editorMetadata.id,
         selectedTags: editorMetadata.selectedTags,
         allTags: editorMetadata.allTags,
+        fromScratch: editorMetadata.fromScratch,
       };
     },
     name: (widget) => {
