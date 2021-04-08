@@ -71,7 +71,7 @@
 }
 
 .jp-codeSnippet-item {
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color2);
   display: flex;
   margin: 0;
   padding: 0;
@@ -401,7 +401,7 @@
 }
 
 .jp-codeSnippet-filterTools {
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color2);
 }
 
 mark.jp-codeSnippet-search-bolding {
@@ -435,7 +435,7 @@ mark.jp-codeSnippet-search-bolding {
 .jp-codeSnippet-filter-arrow-up {
   position: absolute;
   margin-top: 20px;
-  border: var(--jp-border-width) solid var(--jp-border-color1);
+  border: var(--jp-border-width) solid var(--jp-border-color2);
   border-width: 0 var(--jp-border-width) var(--jp-border-width) 0;
   padding: 4px;
   margin-right: 38px;
@@ -446,7 +446,7 @@ mark.jp-codeSnippet-search-bolding {
 }
 
 .jp-codeSnippet-filter-option {
-  border: var(--jp-border-width) solid var(--jp-border-color1);
+  border: var(--jp-border-width) solid var(--jp-border-color2);
   height: 140px;
   width: 100%;
   margin-bottom: 10px;
@@ -481,7 +481,7 @@ mark.jp-codeSnippet-search-bolding {
 }
 
 .jp-codeSnippet-tools {
-  border-bottom: var(--jp-border-width) solid var(--jp-border-color1);
+  border-bottom: var(--jp-border-width) solid var(--jp-border-color2);
 }
 
 /* Code Snippet Tags in InputDialog */
