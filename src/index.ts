@@ -40,6 +40,11 @@ import {
   ICodeSnippetEditorMetadata,
 } from './CodeSnippetEditor';
 import { CodeSnippetService } from './CodeSnippetService';
+import { NotebookPanel } from '@jupyterlab/notebook';
+import { DocumentWidget } from '@jupyterlab/docregistry';
+// import { NotebookPanel } from '@jupyterlab/notebook';
+// import { ServerConnection, SettingManager } from '@jupyterlab/services';
+// import { URLExt } from '@jupyterlab/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -178,6 +183,16 @@ function activateCodeSnippet(
     isToggled: () => toggled,
     iconClass: 'some-css-icon-class',
     execute: () => {
+      let language = '';
+      // get the language of document or notebook
+      if (app.shell.currentWidget instanceof NotebookPanel) {
+        language = (app.shell.currentWidget as NotebookPanel).sessionContext
+          .kernelPreference.language;
+      } else if (app.shell.currentWidget instanceof DocumentWidget) {
+        language = (app.shell.currentWidget as DocumentWidget).context.model
+          .defaultKernelLanguage;
+      }
+
       const highlightedCode = getSelectedText();
       if (highlightedCode === '') {
         //if user just right-clicks cell(s) to save
@@ -202,12 +217,14 @@ function activateCodeSnippet(
         CodeSnippetInputDialog(
           codeSnippetWidget,
           resultArray,
+          language,
           codeSnippetWidget.codeSnippetManager.snippets.length
         );
       } else {
         CodeSnippetInputDialog(
           codeSnippetWidget,
           highlightedCode.split('\n'),
+          language,
           codeSnippetWidget.codeSnippetManager.snippets.length
         );
       }

@@ -26,6 +26,7 @@ import {
   pythonIcon,
   fileIcon,
   rKernelIcon,
+  markdownIcon,
 } from '@jupyterlab/ui-components';
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 import * as nbformat from '@jupyterlab/nbformat';
@@ -660,6 +661,18 @@ export class CodeSnippetDisplay extends React.Component<
       case 'Python': {
         return (
           <pythonIcon.react
+            tag="span"
+            height="16px"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
+      }
+      case 'Gfm': {
+        return (
+          <markdownIcon.react
             tag="span"
             height="16px"
             width="16px"
