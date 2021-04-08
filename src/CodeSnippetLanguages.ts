@@ -67,6 +67,7 @@ export const SUPPORTED_LANGUAGES = [
   'F#',
   'Go',
   'Galileo',
+  'Gfm',
   'Erlang',
   'PARI/GP',
   'Aldor',
