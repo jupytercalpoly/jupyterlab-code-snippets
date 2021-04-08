@@ -224,7 +224,7 @@ function activateCodeSnippet(
         CodeSnippetInputDialog(
           codeSnippetWidget,
           highlightedCode.split('\n'),
-          language
+          language,
           codeSnippetWidget.codeSnippetManager.snippets.length
         );
       }
