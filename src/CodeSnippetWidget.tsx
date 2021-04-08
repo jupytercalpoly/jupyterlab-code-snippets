@@ -31,6 +31,7 @@ import { CodeSnippetDisplay } from './CodeSnippetDisplay';
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 
 import React from 'react';
+import { Notebook } from '@jupyterlab/notebook';
 
 /**
  * A class used to indicate a snippet item.
@@ -245,6 +246,13 @@ export class CodeSnippetWidget extends ReactWidget {
    * Handle the `'lm-drop'` event for the widget.
    */
   private async _evtDrop(event: IDragEvent): Promise<void> {
+    // TODO: get language from kernel
+    const notebook: Notebook = event.mimeData.getData('internal:cells')[0]
+      .parent;
+
+    const language = notebook.model.defaultKernelLanguage;
+    console.log(language);
+
     const data = this.findCellData(event.mimeData);
     if (data === undefined) {
       return;
@@ -300,7 +308,8 @@ export class CodeSnippetWidget extends ReactWidget {
     } else {
       // Handle the case where we are copying cells
       event.dropAction = 'copy';
-      CodeSnippetInputDialog(this, data, idx);
+
+      CodeSnippetInputDialog(this, data, language, idx);
     }
 
     // Reorder snippet just to make sure id's are in order.
