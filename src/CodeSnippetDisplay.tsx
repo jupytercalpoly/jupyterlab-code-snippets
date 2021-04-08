@@ -94,6 +94,7 @@ import {
   qsharpIcon,
   sasIcon,
 } from './CodeSnippetLanguages';
+import { ICodeSnippetEditorMetadata } from './CodeSnippetEditor';
 
 /**
  * The CSS class added to code snippet widget.
@@ -153,7 +154,7 @@ interface ICodeSnippetDisplayProps {
   codeSnippetManager: CodeSnippetService;
   app: JupyterFrontEnd;
   getCurrentWidget: () => Widget;
-  openCodeSnippetEditor: (args: any) => void;
+  openCodeSnippetEditor: (args: ICodeSnippetEditorMetadata) => void;
   editorServices: IEditorServices;
   updateCodeSnippetWidget: () => void;
 }
@@ -631,7 +632,6 @@ export class CodeSnippetDisplay extends React.Component<
   ): void {
     const target = event.target as HTMLElement;
     let top: number;
-    console.log(target.tagName);
     if (target.tagName === 'path') {
       top = target.getBoundingClientRect().top + 10;
     } else {
@@ -1476,7 +1476,8 @@ export class CodeSnippetDisplay extends React.Component<
                 description: '',
                 language: 'Python',
                 code: [],
-                id: 0,
+                id: this.state.codeSnippets.length,
+                selectedTags: [],
                 allTags: this.getActiveTags(),
                 fromScratch: true,
               });

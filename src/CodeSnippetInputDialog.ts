@@ -27,8 +27,6 @@ const FILE_DIALOG_CLASS = 'jp-codeSnippet-fileDialog';
  */
 const CODE_SNIPPET_DIALOG_INPUT = 'jp-codeSnippet-dialog-input';
 const CODE_SNIPPET_INPUTTAG_PLUS_ICON = 'jp-codeSnippet-inputTag-plusIcon';
-const CODE_SNIPPET_INPUTNAME_VALIDITY = 'jp-codeSnippet-inputName-validity';
-const CODE_SNIPPET_INPUTDESC_VALIDITY = 'jp-codeSnippet-inputDesc-validity';
 const CODE_SNIPPET_INPUTTAG_LIST = 'jp-codeSnippet-inputTagList';
 const CODE_SNIPPET_INPUT_TAG = 'jp-codeSnippet-inputTag';
 const CODE_SNIPPET_INPUT_TAG_CHECK = 'jp-codeSnippet-inputTag-check';
@@ -229,21 +227,10 @@ export function validateForm(
   let status = true;
   let message = '';
   const name = input.value[0];
-  const description = input.value[1];
   const language = input.value[2];
 
   if (name === '') {
     message += 'Name must be filled out\n';
-    status = false;
-  }
-  if (name.match(/[^a-zA-Z0-9_]+/)) {
-    //allow lowercase, uppercase, alphanumeric, and underscore
-    message += 'Wrong format of the name\n';
-    status = false;
-  }
-  if (description.match(/[^a-zA-Z0-9_ ,.?!]+/)) {
-    //alphanumeric but can include space or punctuation
-    message += 'Wrong format of the description\n';
     status = false;
   }
   if (language === '') {
@@ -254,6 +241,7 @@ export function validateForm(
     message += 'Language must be one of the options';
     status = false;
   }
+  // TODO: change it to a better UI
   if (status === false) {
     alert(message);
   }
@@ -315,29 +303,20 @@ class Private {
   static createInputNode(tags: string[]): HTMLElement {
     Private.allTags = tags;
     const body = document.createElement('form');
-    const nameValidity = document.createElement('p');
-    nameValidity.textContent =
-      'Name of the code snippet MUST be alphanumeric, or composed of underscore(_)';
-    nameValidity.className = CODE_SNIPPET_INPUTNAME_VALIDITY;
-
-    const descriptionValidity = document.createElement('p');
-    descriptionValidity.textContent =
-      'Description of the code snippet MUST be alphanumeric but can include space or punctuation';
-    descriptionValidity.className = CODE_SNIPPET_INPUTDESC_VALIDITY;
 
     const nameTitle = document.createElement('label');
     nameTitle.textContent = 'Snippet Name (required)';
     const name = document.createElement('input');
     name.className = CODE_SNIPPET_DIALOG_INPUT;
     name.required = true;
-    name.pattern = '[a-zA-Z0-9_]+';
+    name.placeholder = 'Ex. starter code';
     name.onblur = Private.handleOnBlur;
 
     const descriptionTitle = document.createElement('label');
     descriptionTitle.textContent = 'Description (optional)';
     const description = document.createElement('input');
     description.className = CODE_SNIPPET_DIALOG_INPUT;
-    description.pattern = '[a-zA-Z0-9_ ,.?!]+';
+    description.placeholder = 'Description';
     description.onblur = Private.handleOnBlur;
 
     const languageTitle = document.createElement('label');
@@ -391,10 +370,8 @@ class Private {
 
     body.appendChild(nameTitle);
     body.appendChild(name);
-    body.appendChild(nameValidity);
     body.appendChild(descriptionTitle);
     body.appendChild(description);
-    body.appendChild(descriptionValidity);
     body.appendChild(languageTitle);
     body.appendChild(languageInput);
     body.appendChild(languageOption);

@@ -245,7 +245,7 @@
   margin-left: 2%;
   margin-bottom: 5px;
   font-size: var(--jp-ui-font-size1);
-  color: var(--jp-ui-font-color2);
+  color: var(--jp-ui-font-color0);
 }
 
 .jp-codeSnippet-editor-name,
@@ -270,6 +270,7 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   margin-top: 5px;
+  margin-bottom: 15px;
 }
 
 .jp-codeSnippet-editor-language {
@@ -376,7 +377,7 @@
 }
 
 .jp-codeSnippetInputArea .saveBtn {
-  width: 8%;
+  width: 10%;
   background: var(--jp-brand-color1);
   color: var(--jp-ui-inverse-font-color0);
   align-self: flex-end;
@@ -513,9 +514,6 @@ mark.jp-codeSnippet-search-bolding {
   width: 50px;
 }
 
-/* Cell tag styling */
-/* @import url('~@jupyterlab/celltags/style/base.css'); */
-
 .jp-codeSnippet-tags {
   margin-top: 8px;
 }
@@ -553,6 +551,11 @@ mark.jp-codeSnippet-search-bolding {
 .jp-codeSnippet-editor-description.touched:invalid,
 .jp-codeSnippet-editor-language.touched:invalid {
   border: var(--jp-border-width) solid var(--jp-error-color1);
+}
+
+.jp-codeSnippet-dialog-input.jp-mod-styled {
+  margin-bottom: 10px;
+  font-size: var(--jp-ui-font-size1);
 }
 
 .jp-codeSnippet-inputName-validity,
