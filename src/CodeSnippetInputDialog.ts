@@ -53,6 +53,7 @@ export interface IFileContainer extends JSONObject {
 export function CodeSnippetInputDialog(
   codeSnippetWidget: CodeSnippetWidget,
   code: string[],
+  language: string,
   idx: number
 ): Promise<Contents.IModel | null> {
   const tags: string[] = [];
@@ -60,6 +61,7 @@ export function CodeSnippetInputDialog(
 
   const snippets = codeSnippetManager.snippets;
 
+  // get all active tags
   for (const snippet of snippets) {
     if (snippet.tags) {
       for (const tag of snippet.tags) {
@@ -70,7 +72,7 @@ export function CodeSnippetInputDialog(
     }
   }
 
-  const body: InputHandler = new InputHandler(tags);
+  const body: InputHandler = new InputHandler(tags, language);
 
   return showInputDialog(
     codeSnippetWidget,
@@ -78,6 +80,7 @@ export function CodeSnippetInputDialog(
     idx,
     codeSnippetManager,
     code,
+    language,
     body
   );
 }
@@ -91,6 +94,7 @@ export function showInputDialog(
   idx: number,
   codeSnippetManager: CodeSnippetService,
   code: string[],
+  language: string,
   body: InputHandler
 ): Promise<Contents.IModel | null> {
   return showCodeSnippetForm({
@@ -112,6 +116,7 @@ export function showInputDialog(
         idx,
         codeSnippetManager,
         code,
+        language,
         body
       );
     } else {
@@ -255,8 +260,8 @@ class InputHandler extends Widget {
    * Construct a new "code snippet" dialog.
    * readonly inputNode: HTMLInputElement; <--- in Widget class
    */
-  constructor(tags: string[]) {
-    super({ node: Private.createInputNode(tags) });
+  constructor(tags: string[], language: string) {
+    super({ node: Private.createInputNode(tags, language) });
     this.addClass(FILE_DIALOG_CLASS);
   }
 
@@ -300,7 +305,7 @@ class Private {
   /**
    * Create the node for a code snippet form handler. This is what's creating all of the elements to be displayed.
    */
-  static createInputNode(tags: string[]): HTMLElement {
+  static createInputNode(tags: string[], language: string): HTMLElement {
     Private.allTags = tags;
     const body = document.createElement('form');
 
@@ -324,15 +329,17 @@ class Private {
     const languageInput = document.createElement('input');
     languageInput.className = CODE_SNIPPET_DIALOG_INPUT;
     languageInput.setAttribute('list', 'languages');
+    // capitalize the first character
+    languageInput.value = language[0].toUpperCase() + language.slice(1);
     languageInput.required = true;
     const languageOption = document.createElement('datalist');
     languageOption.id = 'languages';
     languageOption.onblur = Private.handleOnBlur;
 
     SUPPORTED_LANGUAGES.sort();
-    for (const language of SUPPORTED_LANGUAGES) {
+    for (const supportedLanguage of SUPPORTED_LANGUAGES) {
       const option = document.createElement('option');
-      option.value = language;
+      option.value = supportedLanguage;
       languageOption.appendChild(option);
     }
 
