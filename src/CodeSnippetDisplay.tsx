@@ -1304,22 +1304,24 @@ export class CodeSnippetDisplay extends React.Component<
     return null;
   }
 
-  // This function will be called to process user input for a narrowed search
-  // using various options. The user will enter a single search term which will
-  // searched across multiple options (name, lang, code).
-  filterSnippetsHelper = (searchValue: string, options: string[]) => {
+  filterSnippets = (searchValue: string, filterTags: string[]): void => {
+    // filter with search
+    let matchIndices: number[][] = [];
     const matchResults: StringExt.IMatchResult[] = [];
-    const filteredSnippets = this.props.codeSnippets;
-    //let language: boolean = false;
-    //let code: boolean = false;
+    let filteredSnippets = this.props.codeSnippets;
     const filteredSnippetsScore: {
       score: number;
       snippet: ICodeSnippet;
     }[] = [];
     if (searchValue !== '') {
+      // language, title, code
       filteredSnippets.forEach(snippet => {
         const matchResult = StringExt.matchSumOfSquares(
-          (snippet.language + snippet.name).toLowerCase(),
+          (
+            snippet.language +
+            snippet.name +
+            snippet.code.join('\n')
+          ).toLowerCase(),
           searchValue.replace(' ', '').toLowerCase()
         );
 
@@ -1331,131 +1333,6 @@ export class CodeSnippetDisplay extends React.Component<
           });
         }
       });
-    }
-  };
-
-  filterSnippets = (
-    searchValue: string,
-    filterTags: string[],
-    languageTags: string[]
-  ): void => {
-    // filter with search
-    let matchIndices: number[][] = [];
-    const matchResults: StringExt.IMatchResult[] = [];
-    let filteredSnippets = this.props.codeSnippets;
-    let name = false;
-    //let language: boolean = false;
-    //let code: boolean = false;
-    const filteredSnippetsScore: {
-      score: number;
-      snippet: ICodeSnippet;
-    }[] = [];
-    // if (searchValue !== '') {
-    //   filteredSnippets.forEach(snippet => {
-    //     const matchResult = StringExt.matchSumOfSquares(
-    //       (snippet.language + snippet.name).toLowerCase(),
-    //       searchValue.replace(' ', '').toLowerCase()
-    //     );
-
-    //     if (matchResult) {
-    //       matchResults.push(matchResult);
-    //       filteredSnippetsScore.push({
-    //         score: matchResult.score,
-    //         snippet: snippet
-    //       });
-    //     }
-    //   });
-    if (searchValue !== '') {
-      // title/code/language
-      if (searchValue.includes('/*')) {
-        const searchVals: string[] = searchValue.split('/*');
-        if (searchVals[0] !== undefined) {
-          name = true;
-          filteredSnippets.forEach(snippet => {
-            //search by name
-            const matchResult = StringExt.matchSumOfSquares(
-              snippet.name.toLowerCase(),
-              searchVals[0].replace(' ', '').toLowerCase()
-            );
-
-            if (matchResult) {
-              matchResults.push(matchResult);
-              filteredSnippetsScore.push({
-                score: matchResult.score,
-                snippet: snippet
-              });
-            }
-          });
-        }
-
-        if (searchVals[1] !== undefined) {
-          // THIS DOESNT WORK. Have to check a snippet language and remove.
-          //search by language
-          console.log('language');
-          let filtered: ICodeSnippet[] = filteredSnippets;
-          if (name) {
-            //if a name is entered, narrow by both name and language
-            filtered = [];
-            filteredSnippetsScore.forEach(snippetScore =>
-              filtered.push(snippetScore.snippet)
-            );
-          }
-          filtered.forEach(snippet => {
-            const matchResult2 = StringExt.matchSumOfSquares(
-              snippet.language.toLowerCase(),
-              searchVals[1].replace(' ', '').toLowerCase()
-            );
-
-            if (matchResult2) {
-              matchResults.push(matchResult2);
-              filteredSnippetsScore.push({
-                score: matchResult2.score,
-                snippet: snippet
-              });
-            }
-          });
-        }
-        // if (searchVals[2] !== undefined) {
-        //   // search for search term through the code lines
-        //   console.log(searchVals[2]);
-        //   filteredSnippets.forEach(snippet => {
-        //     for (let snippetLine in snippet.code) {
-        //       // go through each line of the code
-        //       let matchResult3 = StringExt.matchSumOfSquares(
-        //         snippetLine.toLowerCase(),
-        //         searchVals[2].toLowerCase()
-        //       );
-
-        //       if (matchResult3) {
-        //         matchResults.push(matchResult3);
-        //         filteredSnippetsScore.push({
-        //           score: matchResult3.score,
-        //           snippet: snippet
-        //         });
-        //       }
-        //     }
-        //   });
-        // }
-      } else {
-        filteredSnippets.forEach(snippet => {
-          const matchResult = StringExt.matchSumOfSquares(
-            (
-              snippet.language +
-              snippet.name +
-              snippet.code.join('\n')
-            ).toLowerCase(),
-            searchValue.replace(' ', '').toLowerCase()
-          );
-
-          if (matchResult) {
-            matchResults.push(matchResult);
-            filteredSnippetsScore.push({
-              score: matchResult.score,
-              snippet: snippet
-            });
-          }
-        });
-      }
 
       // sort snippets by its score
       filteredSnippetsScore.sort((a, b) => a.score - b.score);
@@ -1470,8 +1347,6 @@ export class CodeSnippetDisplay extends React.Component<
       matchResults.forEach(res => matchIndices.push(res.indices));
     }
 
-    // filter with tags --- create a helper function with this code and call on both tags & languages
-    // 2 if statements filter by cell tags then language tags
     if (filterTags.length !== 0) {
       const newMatchIndices = matchIndices.slice();
       filteredSnippets = filteredSnippets.filter((codeSnippet, id) => {
@@ -1489,20 +1364,7 @@ export class CodeSnippetDisplay extends React.Component<
           const indexToDelete = newMatchIndices.indexOf(matchedIndex);
           newMatchIndices.splice(indexToDelete, 1);
           return false;
-        }) /*||
-          languageTags.some(lang => {
-            if (codeSnippet.language) {
-              if (codeSnippet.language === lang) {
-                //if a snippet's language matches one of the selected ones
-                return true;
-              }
-            }
-            // if the snippet does not have the tag, remove its mathed index
-            const matchedIndex = matchIndices[id];
-            const indexToDelete = newMatchIndices.indexOf(matchedIndex);
-            newMatchIndices.splice(indexToDelete, 1);
-            return false;
-          })*/;
+        });
       });
       matchIndices = newMatchIndices;
     }
@@ -1521,8 +1383,6 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   getActiveTags(): [string[], string[]] {
-    //TODO: go through snippet languages and add those to a list & pass into FilterTools,
-    // in filterTools add a new language section and add list of lang tags there
     const tags: string[] = [];
     const languages: string[] = [];
     for (const codeSnippet of this.props.codeSnippets) {
@@ -1714,7 +1574,7 @@ export class CodeSnippetDisplay extends React.Component<
         <div className={CODE_SNIPPET_HEADER_BOX}>
           <FilterTools
             languages={this.getActiveTags()[1]}
-            tags={this.getActiveTags()[0]}
+            allTags={this.getActiveTags()}
             onFilter={this.filterSnippets}
           />
         </div>

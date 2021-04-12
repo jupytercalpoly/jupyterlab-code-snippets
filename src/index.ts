@@ -18,7 +18,7 @@
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
-  ILayoutRestorer,
+  ILayoutRestorer
 } from '@jupyterlab/application';
 import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
 import { ISettingRegistry, Settings } from '@jupyterlab/settingregistry';
@@ -36,7 +36,7 @@ import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import {
   CodeSnippetEditor,
-  ICodeSnippetEditorMetadata,
+  ICodeSnippetEditorMetadata
 } from './CodeSnippetEditor';
 import { CodeSnippetService } from './CodeSnippetService';
 import { NotebookPanel } from '@jupyterlab/notebook';
@@ -50,7 +50,7 @@ const CODE_SNIPPET_SETTING_ID = 'jupyterlab-code-snippets:snippets';
  */
 const editorIcon = new LabIcon({
   name: 'custom-ui-components:codeSnippetEditorIcon',
-  svgstr: editorIconSVGstr,
+  svgstr: editorIconSVGstr
 });
 
 /**
@@ -58,7 +58,7 @@ const editorIcon = new LabIcon({
  */
 const codeSnippetIcon = new LabIcon({
   name: 'custom-ui-components:codeSnippetIcon',
-  svgstr: codeSnippetIconSVGstr,
+  svgstr: codeSnippetIconSVGstr
 });
 
 /**
@@ -68,7 +68,7 @@ const code_snippet_extension: JupyterFrontEndPlugin<void> = {
   id: CODE_SNIPPET_EXTENSION_ID,
   autoStart: true,
   requires: [ICommandPalette, ILayoutRestorer, IEditorServices],
-  activate: activateCodeSnippet,
+  activate: activateCodeSnippet
 };
 
 function activateCodeSnippet(
@@ -138,7 +138,7 @@ function activateCodeSnippet(
 
     if (!codeSnippetEditor.isAttached) {
       app.shell.add(codeSnippetEditor, 'main', {
-        mode: 'tab-after',
+        mode: 'tab-after'
       });
     }
 
@@ -151,7 +151,7 @@ function activateCodeSnippet(
     execute: () => {
       const editor = tracker.currentWidget;
       editor.updateSnippet();
-    },
+    }
   });
 
   // Add keybinding to save
@@ -159,14 +159,14 @@ function activateCodeSnippet(
     command: editorSaveCommand,
     args: {},
     keys: ['Accel S'],
-    selector: '.jp-codeSnippet-editor',
+    selector: '.jp-codeSnippet-editor'
   });
 
   const editorCommand = 'jp-codeSnippet-editor:open';
   app.commands.addCommand(editorCommand, {
     execute: (args: any) => {
       openCodeSnippetEditor(args);
-    },
+    }
   });
 
   //Add an application command
@@ -224,55 +224,55 @@ function activateCodeSnippet(
           codeSnippetWidget.codeSnippetManager.snippets.length
         );
       }
-    },
+    }
   });
 
   // Put the saveCommand above in context menu
   app.contextMenu.addItem({
     type: 'separator',
     selector: '.jp-Notebook',
-    rank: 13,
+    rank: 13
   });
 
   app.contextMenu.addItem({
     command: saveCommand,
     selector: '.jp-Notebook',
-    rank: 14,
+    rank: 14
   });
 
   app.contextMenu.addItem({
     type: 'separator',
     selector: '.jp-Notebook',
-    rank: 15,
+    rank: 15
   });
 
   // Put the saveCommand in non-notebook file context menu
   app.contextMenu.addItem({
     type: 'separator',
     selector: '.jp-FileEditor',
-    rank: 7,
+    rank: 7
   });
 
   app.contextMenu.addItem({
     command: saveCommand,
     selector: '.jp-FileEditor',
-    rank: 8,
+    rank: 8
   });
 
   app.contextMenu.addItem({
     type: 'separator',
     selector: '.jp-FileEditor',
-    rank: 9,
+    rank: 9
   });
 
   // Track and restore the widget state
   const tracker = new WidgetTracker<CodeSnippetEditor>({
-    namespace: 'codeSnippetEditor',
+    namespace: 'codeSnippetEditor'
   });
 
   restorer.restore(tracker, {
     command: editorCommand,
-    args: (widget) => {
+    args: widget => {
       const editorMetadata = widget.codeSnippetEditorMetadata;
       return {
         name: editorMetadata.name,
@@ -282,12 +282,12 @@ function activateCodeSnippet(
         id: editorMetadata.id,
         selectedTags: editorMetadata.selectedTags,
         allTags: editorMetadata.allTags,
-        fromScratch: editorMetadata.fromScratch,
+        fromScratch: editorMetadata.fromScratch
       };
     },
-    name: (widget) => {
+    name: widget => {
       return widget.id;
-    },
+    }
   });
 }
 
@@ -302,8 +302,8 @@ const codeSnippetExtensionSetting: JupyterFrontEndPlugin<void> = {
         CodeSnippetService.init(settings as Settings, app);
         console.log('JupyterLab extension code-snippets setting is activated!');
       })
-      .catch((e) => console.log(e));
-  },
+      .catch(e => console.log(e));
+  }
 };
 
 function getSelectedText(): string {

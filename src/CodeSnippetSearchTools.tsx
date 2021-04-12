@@ -1,6 +1,6 @@
 import React from 'react';
 import { Widget } from '@lumino/widgets';
-import { showMoreOptions } from './MoreOptions';
+import { showMoreOptions } from './CodeSnippetMenu';
 
 import ReactDOM from 'react-dom';
 import SearchOption from './CodeSnippetSearchOption';

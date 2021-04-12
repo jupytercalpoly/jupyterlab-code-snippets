@@ -61,7 +61,7 @@ Description of each file in ``src/``
    confirmation dialog as a modal window after snippet creation.
 -  FilterTools.tsx: this contains a react component that renders a
    search bar and filter box.
--  MoreOptions.ts: this contains a lumino widget that creates dropdown
+-  CodeSnippetMenu.ts: this contains a lumino widget that creates dropdown
    dialog when three dots icon is clicked.
 -  PreviewSnippet.ts: this contains a lumino widget used to create
    preview minimap.
