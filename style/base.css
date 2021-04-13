@@ -524,7 +524,7 @@ mark.jp-codeSnippet-search-bolding {
   height: 5px;
 } */
 
-/* USER Input Form Style */
+/* USER Input Form Style
 .jp-codeSnippet-form {
   position: absolute;
   z-index: 10000;
@@ -539,7 +539,7 @@ mark.jp-codeSnippet-search-bolding {
   width: 100%;
   height: 100%;
   background: var(--jp-dialog-background);
-}
+} */
 
 /* .jp-codesnippet-editor-name:required {
     border-color: #808080;

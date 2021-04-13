@@ -13,7 +13,7 @@ import { ICodeSnippet, CodeSnippetService } from './CodeSnippetService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { showMessage } from './ConfirmMessage';
-import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
+// import { showCodeSnippetForm } from './CodeSnippetForm'; //CodeSnippetForm } from './CodeSnippetForm';
 
 import checkSVGstr from '../style/icon/jupyter_checkmark.svg';
 
@@ -97,14 +97,11 @@ export function showInputDialog(
   language: string,
   body: InputHandler
 ): Promise<Contents.IModel | null> {
-  return showCodeSnippetForm({
+  return showDialog({
     title: 'Save Code Snippet',
     body: body,
-    buttons: [
-      CodeSnippetForm.cancelButton(),
-      CodeSnippetForm.okButton({ label: 'Save' }),
-    ],
-  }).then((result: CodeSnippetForm.IResult<string[]>) => {
+    buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
+  }).then((result: Dialog.IResult<string[]>) => {
     if (!result.value) {
       return null;
     }
@@ -227,9 +224,7 @@ export function isValidFileName(name: string): boolean {
 /**
  * Test whether user typed in all required inputs.
  */
-export function validateForm(
-  input: CodeSnippetForm.IResult<string[]>
-): boolean {
+export function validateForm(input: Dialog.IResult<string[]>): boolean {
   let status = true;
   let message = '';
   const name = input.value[0];
