@@ -14,7 +14,7 @@ interface ISortSnippetOptionProps {
 const SearchOption = ({
   optionSelected,
   optionName,
-  onSelectMulti
+  onSelectMulti,
 }: ISortSnippetOptionProps): JSX.Element => {
   if (optionSelected) {
     return (

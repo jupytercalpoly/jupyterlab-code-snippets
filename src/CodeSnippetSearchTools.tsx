@@ -49,7 +49,7 @@ export class SearchMultiOption extends React.Component<
   constructor(props: ISearchMultiProps) {
     super(props);
     this.state = {
-      currSelected: this.props.currSelected
+      currSelected: this.props.currSelected,
     };
     this.handleClick = this.handleClick.bind(this);
   }
