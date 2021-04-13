@@ -50,21 +50,21 @@ export class FilterTools extends React.Component<
     this.setState({
       show: false,
       selectedTags: [],
-      searchValue: ''
+      searchValue: '',
     });
   }
 
   componentDidUpdate(prevProps: IFilterSnippetProps): void {
     if (prevProps !== this.props) {
       // get all the tags together in one list
-      let flattenTags = this.props.allTags.reduce(
+      const flattenTags = this.props.allTags.reduce(
         (accumulator, value) => accumulator.concat(value),
         []
       );
-      this.setState(state => ({
+      this.setState((state) => ({
         selectedTags: state.selectedTags
-          .filter(tag => flattenTags.includes(tag))
-          .sort()
+          .filter((tag) => flattenTags.includes(tag))
+          .sort(),
       }));
     }
   }
@@ -80,7 +80,7 @@ export class FilterTools extends React.Component<
 
   renderTags(tags: string[][], type: string): JSX.Element {
     // get all the tags together in one list
-    let flattenTags = tags.reduce(
+    const flattenTags = tags.reduce(
       (accumulator, value) => accumulator.concat(value),
       []
     );
@@ -148,12 +148,12 @@ export class FilterTools extends React.Component<
     const clickedTag = target.innerText;
     const parent = target.parentElement;
     this.setState(
-      state => ({
+      (state) => ({
         selectedTags: this.handleClickHelper(
           parent,
           state.selectedTags,
           clickedTag
-        )
+        ),
       }),
       this.filterSnippets
     );

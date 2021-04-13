@@ -76,7 +76,7 @@ export class CodeSnippetService {
   private convertToICodeSnippetList(snippets: JSONArray): ICodeSnippet[] {
     const snippetList: ICodeSnippet[] = [];
 
-    snippets.forEach(snippet => {
+    snippets.forEach((snippet) => {
       snippetList.push((snippet as unknown) as ICodeSnippet);
     });
     return snippetList;
@@ -98,7 +98,7 @@ export class CodeSnippetService {
 
   getSnippet(snippetName: string): ICodeSnippet[] {
     return this.codeSnippetList.filter(
-      snippet => snippet.name.toLowerCase() === snippetName.toLowerCase()
+      (snippet) => snippet.name.toLowerCase() === snippetName.toLowerCase()
     );
   }
 
@@ -116,7 +116,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;
@@ -144,7 +144,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
 
@@ -160,7 +160,7 @@ export class CodeSnippetService {
     }
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;
@@ -188,7 +188,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;
@@ -220,7 +220,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;
@@ -237,7 +237,7 @@ export class CodeSnippetService {
 
     await this.settingManager
       .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
-      .catch(_ => {
+      .catch((_) => {
         return false;
       });
     return true;

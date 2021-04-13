@@ -60,8 +60,8 @@ export class SearchMultiOption extends React.Component<
     if (selected) {
       // select option
       this.setState(
-        state => ({
-          currSelected: [...state.currSelected, selectedOption]
+        (state) => ({
+          currSelected: [...state.currSelected, selectedOption],
         }),
         () => {
           //callback
@@ -76,7 +76,7 @@ export class SearchMultiOption extends React.Component<
         array.splice(index, 1);
         this.setState(
           {
-            currSelected: array
+            currSelected: array,
           },
           () => {
             this.props.handleOptionClick(this.state.currSelected);
@@ -119,7 +119,7 @@ export class SearchTools extends React.Component<
     super(props);
     this.state = {
       optionName: '',
-      currSelected: this.props.selectedSearchOptions
+      currSelected: this.props.selectedSearchOptions,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleOptionClick = this.handleOptionClick.bind(this);
@@ -158,7 +158,7 @@ export class SearchTools extends React.Component<
 
   handleOptionClick(selectedOptions: string[]): void {
     this.setState({
-      currSelected: selectedOptions
+      currSelected: selectedOptions,
     });
     this.props.setSearchOptions(selectedOptions);
   }
