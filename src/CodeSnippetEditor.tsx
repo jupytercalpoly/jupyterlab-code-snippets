@@ -33,6 +33,7 @@ import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
 import { saveOverWriteFile } from './CodeSnippetInputDialog';
+import { validateInputs } from './CodeSnippetUtilities';
 
 /**
  * CSS style classes
@@ -266,7 +267,7 @@ export class CodeSnippetEditor extends ReactWidget {
               `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
             ) as HTMLSelectElement).value;
 
-            const validity = this.validateInputs(name, description, language);
+            const validity = validateInputs(name, description, language);
             if (validity) {
               this.updateSnippet().then((value) => {
                 if (value) {
@@ -342,35 +343,10 @@ export class CodeSnippetEditor extends ReactWidget {
       `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
     ) as HTMLSelectElement).value;
 
-    const validity = this.validateInputs(name, description, language);
+    const validity = validateInputs(name, description, language);
     if (validity) {
       this.updateSnippet();
     }
-  }
-
-  private validateInputs(
-    name: string,
-    description: string,
-    language: string
-  ): boolean {
-    let status = true;
-    let message = '';
-    if (name === '') {
-      message += 'Name must be filled out\n';
-      status = false;
-    }
-    if (language === '') {
-      message += 'Language must be filled out';
-      status = false;
-    }
-    if (!SUPPORTED_LANGUAGES.includes(language)) {
-      message += 'Language must be one of the options';
-      status = false;
-    }
-    if (status === false) {
-      alert(message);
-    }
-    return status;
   }
 
   async updateSnippet(): Promise<boolean> {

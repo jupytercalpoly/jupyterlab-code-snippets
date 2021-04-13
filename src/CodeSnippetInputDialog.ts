@@ -13,7 +13,7 @@ import { ICodeSnippet, CodeSnippetService } from './CodeSnippetService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { showMessage } from './ConfirmMessage';
-// import { showCodeSnippetForm } from './CodeSnippetForm'; //CodeSnippetForm } from './CodeSnippetForm';
+import { validateInputs } from './CodeSnippetUtilities';
 
 import checkSVGstr from '../style/icon/jupyter_checkmark.svg';
 
@@ -106,7 +106,10 @@ export function showInputDialog(
       return null;
     }
 
-    if (validateForm(result) === false) {
+    if (
+      validateInputs(result.value[0], result.value[1], result.value[2]) ===
+      false
+    ) {
       showInputDialog(
         codeSnippetWidget,
         tags,
@@ -219,34 +222,6 @@ async function shouldOverwrite(newName: string): Promise<boolean> {
 export function isValidFileName(name: string): boolean {
   const validNameExp = /[/\\:]/;
   return name.length > 0 && !validNameExp.test(name);
-}
-
-/**
- * Test whether user typed in all required inputs.
- */
-export function validateForm(input: Dialog.IResult<string[]>): boolean {
-  let status = true;
-  let message = '';
-  const name = input.value[0];
-  const language = input.value[2];
-
-  if (name === '') {
-    message += 'Name must be filled out\n';
-    status = false;
-  }
-  if (language === '') {
-    message += 'Language must be filled out\n';
-    status = false;
-  }
-  if (!SUPPORTED_LANGUAGES.includes(language)) {
-    message += 'Language must be one of the options';
-    status = false;
-  }
-  // TODO: change it to a better UI
-  if (status === false) {
-    alert(message);
-  }
-  return status;
 }
 
 /**
