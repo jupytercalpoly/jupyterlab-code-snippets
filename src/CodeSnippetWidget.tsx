@@ -26,7 +26,6 @@ import { IDragEvent } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
 
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
-// import { CodeSnippetWidgetModel } from './CodeSnippetWidgetModel';
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 
@@ -73,7 +72,6 @@ export class CodeSnippetWidget extends ReactWidget {
     this.app = app;
     this.editorServices = editorServices;
     this.getCurrentWidget = getCurrentWidget;
-    // this._codeSnippetWidgetModel = new CodeSnippetWidgetModel([]);
     this.renderCodeSnippetsSignal = new Signal<this, ICodeSnippet[]>(this);
     this.codeSnippetManager = CodeSnippetService.getCodeSnippetService();
 

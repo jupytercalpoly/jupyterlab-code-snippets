@@ -1,5 +1,8 @@
+import { JupyterFrontEnd } from '@jupyterlab/application';
 import { Settings } from '@jupyterlab/settingregistry';
-import { JSONArray, PartialJSONValue } from '@lumino/coreutils';
+import { JSONArray, JSONExt, PartialJSONValue } from '@lumino/coreutils';
+
+import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 export interface ICodeSnippet {
   name: string;
@@ -16,15 +19,34 @@ export class CodeSnippetService {
   private static codeSnippetService: CodeSnippetService;
   private codeSnippetList: ICodeSnippet[];
 
-  private constructor(settings: Settings) {
+  private constructor(settings: Settings, app: JupyterFrontEnd) {
     this.settingManager = settings;
 
     // just in case when user changes the snippets using settingsEditor
-    this.settingManager.changed.connect((plugin) => {
+    this.settingManager.changed.connect(async (plugin) => {
       const newCodeSnippetList = plugin.get('snippets').user;
-      this.codeSnippetList = this.convertToICodeSnippetList(
-        newCodeSnippetList as JSONArray
-      );
+
+      if (
+        !JSONExt.deepEqual(
+          newCodeSnippetList,
+          (this.codeSnippetList as unknown) as PartialJSONValue
+        )
+      ) {
+        this.codeSnippetList = this.convertToICodeSnippetList(
+          newCodeSnippetList as JSONArray
+        );
+
+        const leftWidgets = app.shell.widgets('left').iter();
+
+        let current = leftWidgets.next();
+        while (current) {
+          if (current instanceof CodeSnippetWidget) {
+            current.updateCodeSnippetWidget();
+            break;
+          }
+          current = leftWidgets.next();
+        }
+      }
     });
 
     const defaultSnippets = this.convertToICodeSnippetList(
@@ -56,9 +78,9 @@ export class CodeSnippetService {
     return snippetList;
   }
 
-  static init(settings: Settings): void {
+  static init(settings: Settings, app: JupyterFrontEnd): void {
     if (!this.codeSnippetService) {
-      this.codeSnippetService = new CodeSnippetService(settings);
+      this.codeSnippetService = new CodeSnippetService(settings, app);
     }
   }
 
