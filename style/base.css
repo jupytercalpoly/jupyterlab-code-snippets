@@ -661,6 +661,7 @@ mark.jp-codeSnippet-search-bolding {
 }
 
 .jp-codeSnippet-more-options-download {
+  color: var(--jp-brand-color0);
   padding-bottom: 5px;
   cursor: pointer;
 }
