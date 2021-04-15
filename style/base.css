@@ -660,6 +660,17 @@ mark.jp-codeSnippet-search-bolding {
   cursor: pointer;
 }
 
+.jp-codeSnippet-more-options-download {
+  color: var(--jp-brand-color0);
+  padding-bottom: 5px;
+  cursor: pointer;
+}
+
+.jp-codeSnippet-more-options-download:hover {
+  background-color: var(--jp-layout-color2);
+  cursor: pointer;
+}
+
 .jp-dropdown-delete-button {
   border: none;
 }

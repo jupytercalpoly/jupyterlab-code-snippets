@@ -252,6 +252,7 @@ export function validateForm(
   }
   return status;
 }
+
 /**
  * A widget used to get input data.
  */

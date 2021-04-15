@@ -15,7 +15,12 @@
  * See the License for the specific language governing permissions a* limitations under the License.
  */
 
-import { Clipboard, Dialog, showDialog } from '@jupyterlab/apputils';
+import {
+  Clipboard,
+  Dialog,
+  InputDialog,
+  showDialog,
+} from '@jupyterlab/apputils';
 import { PathExt } from '@jupyterlab/coreutils';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { FileEditor } from '@jupyterlab/fileeditor';
@@ -50,10 +55,9 @@ import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { FilterTools } from './FilterTools';
 import { showPreview } from './PreviewSnippet';
 import { showMoreOptions } from './CodeSnippetMenu';
-// import {
-//   ICodeSnippet,
-//   CodeSnippetContentsService
-// } from './CodeSnippetContentsService';
+// import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
+
+import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 
 import moreSVGstr from '../style/icon/jupyter_moreicon.svg';
 import {
@@ -96,6 +100,7 @@ import {
   sasIcon,
 } from './CodeSnippetLanguages';
 import { ICodeSnippetEditorMetadata } from './CodeSnippetEditor';
+// import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 
 /**
  * The CSS class added to code snippet widget.
@@ -121,6 +126,8 @@ const CODE_SNIPPET_MORE_OTPIONS_COPY = 'jp-codeSnippet-more-options-copy';
 const CODE_SNIPPET_MORE_OTPIONS_INSERT = 'jp-codeSnippet-more-options-insert';
 const CODE_SNIPPET_MORE_OTPIONS_EDIT = 'jp-codeSnippet-more-options-edit';
 const CODE_SNIPPET_MORE_OTPIONS_DELETE = 'jp-codeSnippet-more-options-delete';
+const CODE_SNIPPET_MORE_OTPIONS_DOWNLOAD =
+  'jp-codeSnippet-more-options-download';
 const CODE_SNIPPET_CREATE_NEW_BTN = 'jp-createSnippetBtn';
 const CODE_SNIPPET_NAME = 'jp-codeSnippet-name';
 
@@ -195,7 +202,7 @@ export class CodeSnippetDisplay extends React.Component<
     this.handleRenameSnippet = this.handleRenameSnippet.bind(this);
   }
 
-  // Handle code snippet insert into an editor
+  // Handle code snippet insert into a notebook or document
   private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
     const widget: Widget = this.props.getCurrentWidget();
     const snippetStr: string = snippet.code.join('\n');
@@ -1415,6 +1422,38 @@ export class CodeSnippetDisplay extends React.Component<
     });
   }
 
+  private downloadCommand(codeSnippet: ICodeSnippet): void {
+    // Request a text
+    InputDialog.getText({
+      title: 'Download Snippet?',
+      label: 'Directory to Download: ',
+      placeholder: 'share/snippet',
+      okLabel: 'Download',
+    }).then((value: Dialog.IResult<string>) => {
+      if (value.button.accept) {
+        const dirs = value.value.split('/');
+
+        const codeSnippetDownloader = CodeSnippetContentsService.getInstance();
+
+        let path = '';
+        for (let i = 0; i < dirs.length; i++) {
+          path += dirs[i] + '/';
+          codeSnippetDownloader.save(path, { type: 'directory' }).catch((_) => {
+            alert('Path should be a relative path');
+          });
+        }
+
+        path += codeSnippet.name + '.json';
+
+        codeSnippetDownloader.save(path, {
+          type: 'file',
+          format: 'text',
+          content: JSON.stringify(codeSnippet),
+        });
+      }
+    });
+  }
+
   // remove dropdown menu
   private removeOptionsNode(): void {
     const temp = document.getElementsByClassName(CODE_SNIPPET_MORE_OPTIONS)[0];
@@ -1468,9 +1507,19 @@ export class CodeSnippetDisplay extends React.Component<
       this.deleteCommand(codeSnippet);
       this.removeOptionsNode();
     };
+
+    const downloadSnip = document.createElement('div');
+    downloadSnip.className = CODE_SNIPPET_MORE_OTPIONS_DOWNLOAD;
+    downloadSnip.textContent = 'Download snippet';
+    downloadSnip.onclick = (): void => {
+      this.downloadCommand(codeSnippet);
+      this.removeOptionsNode();
+    };
+
     optionsContainer.appendChild(insertSnip);
     optionsContainer.appendChild(copySnip);
     optionsContainer.appendChild(editSnip);
+    optionsContainer.appendChild(downloadSnip);
     optionsContainer.appendChild(deleteSnip);
     body.append(optionsContainer);
     return body;
