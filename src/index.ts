@@ -281,7 +281,8 @@ function activateCodeSnippet(
         code: editorMetadata.code,
         id: editorMetadata.id,
         selectedTags: editorMetadata.selectedTags,
-        allTags: editorMetadata.allTags,
+        allSnippetTags: editorMetadata.allSnippetTags,
+        allLangTags: editorMetadata.allLangTags,
         fromScratch: editorMetadata.fromScratch,
       };
     },

@@ -1504,15 +1504,17 @@ export class CodeSnippetDisplay extends React.Component<
     editSnip.className = CODE_SNIPPET_MORE_OTPIONS_EDIT;
     editSnip.textContent = 'Edit snippet';
     editSnip.onclick = (): void => {
-      const allTags = this.getActiveTags()[0];
+      const allSnippetTags = this.getActiveTags()[0]; // snippet tags only
+      const allLangTags = this.getActiveTags()[1];
       this.props.openCodeSnippetEditor({
         name: codeSnippet.name,
         description: codeSnippet.description,
         language: codeSnippet.language,
         code: codeSnippet.code,
         id: codeSnippet.id,
-        selectedTags: codeSnippet.tags,
-        allTags: allTags,
+        selectedTags: codeSnippet.tags, // snippet tags
+        allSnippetTags: allSnippetTags,
+        allLangTags: allLangTags,
         fromScratch: false,
       });
       this.removeOptionsNode();
@@ -1563,7 +1565,8 @@ export class CodeSnippetDisplay extends React.Component<
                 code: [],
                 id: this.state.codeSnippets.length,
                 selectedTags: [],
-                allTags: this.getActiveTags()[0],
+                allSnippetTags: this.getActiveTags()[0],
+                allLangTags: this.getActiveTags()[1],
                 fromScratch: true,
               });
             }}

@@ -8,7 +8,7 @@ import React from 'react';
 
 interface IFilterSnippetProps {
   languages: string[];
-  allTags: string[][]; // change to [[snip], lang]]
+  allTags: string[][]; // change to [[snip], [lang]]
   onFilter: (searchValue: string, filterTags: string[]) => void;
 }
 

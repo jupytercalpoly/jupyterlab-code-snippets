@@ -58,7 +58,8 @@ export interface ICodeSnippetEditorMetadata {
   code: string[];
   id: number;
   selectedTags: string[];
-  allTags: string[];
+  allSnippetTags: string[];
+  allLangTags: string[];
   fromScratch: boolean;
 }
 
@@ -489,7 +490,7 @@ export class CodeSnippetEditor extends ReactWidget {
     }
 
     this._codeSnippetEditorMetaData.selectedTags = selectedTags;
-    this._codeSnippetEditorMetaData.allTags = allTags;
+    this._codeSnippetEditorMetaData.allSnippetTags = allTags;
 
     this.saved = false;
   }
@@ -595,7 +596,8 @@ export class CodeSnippetEditor extends ReactWidget {
           <label className={CODE_SNIPPET_EDITOR_LABEL}>Tags</label>
           <CodeSnippetEditorTags
             selectedTags={this.codeSnippetEditorMetadata.selectedTags}
-            tags={this.codeSnippetEditorMetadata.allTags}
+            snippetTags={this.codeSnippetEditorMetadata.allSnippetTags}
+            langTags={this.codeSnippetEditorMetadata.allLangTags}
             handleChange={this.handleChangeOnTag}
           />
         </section>
