@@ -34,7 +34,6 @@ import codeSnippetIconSVGstr from '../style/icon/jupyter_snippeticon.svg';
 
 import { CodeSnippetInputDialog } from './CodeSnippetInputDialog';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
-// import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 import {
   CodeSnippetEditor,
   ICodeSnippetEditorMetadata,
@@ -42,9 +41,6 @@ import {
 import { CodeSnippetService } from './CodeSnippetService';
 import { NotebookPanel } from '@jupyterlab/notebook';
 import { DocumentWidget } from '@jupyterlab/docregistry';
-// import { NotebookPanel } from '@jupyterlab/notebook';
-// import { ServerConnection, SettingManager } from '@jupyterlab/services';
-// import { URLExt } from '@jupyterlab/coreutils';
 
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
@@ -303,7 +299,7 @@ const codeSnippetExtensionSetting: JupyterFrontEndPlugin<void> = {
     void settingRegistry
       .load(CODE_SNIPPET_SETTING_ID)
       .then((settings) => {
-        CodeSnippetService.init(settings as Settings);
+        CodeSnippetService.init(settings as Settings, app);
         console.log('JupyterLab extension code-snippets setting is activated!');
       })
       .catch((e) => console.log(e));
