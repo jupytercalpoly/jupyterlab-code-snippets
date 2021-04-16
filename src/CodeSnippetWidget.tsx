@@ -246,13 +246,6 @@ export class CodeSnippetWidget extends ReactWidget {
    * Handle the `'lm-drop'` event for the widget.
    */
   private async _evtDrop(event: IDragEvent): Promise<void> {
-    // TODO: get language from kernel
-    const notebook: Notebook = event.mimeData.getData('internal:cells')[0]
-      .parent;
-
-    const language = notebook.model.defaultKernelLanguage;
-    console.log(language);
-
     const data = this.findCellData(event.mimeData);
     if (data === undefined) {
       return;
@@ -306,6 +299,11 @@ export class CodeSnippetWidget extends ReactWidget {
         this.moveCodeSnippet(srcIdx, idx);
       }
     } else {
+      // TODO: get language from kernel
+      const notebook: Notebook = event.mimeData.getData('internal:cells')[0]
+        .parent;
+
+      const language = notebook.model.defaultKernelLanguage;
       // Handle the case where we are copying cells
       event.dropAction = 'copy';
 
