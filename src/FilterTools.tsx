@@ -9,7 +9,11 @@ import React from 'react';
 interface IFilterSnippetProps {
   languages: string[];
   allTags: string[][]; // change to [[snip], [lang]]
-  onFilter: (searchValue: string, filterTags: string[]) => void;
+  onFilter: (
+    searchValue: string,
+    filterTags: string[],
+    selectedLangTags: string[]
+  ) => void;
 }
 
 interface IFilterSnippetState {
@@ -181,7 +185,13 @@ export class FilterTools extends React.Component<
   };
 
   filterSnippets(): void {
-    this.props.onFilter(this.state.searchValue, this.state.selectedTags);
+    this.props.onFilter(
+      this.state.searchValue,
+      this.state.selectedTags,
+      this.state.selectedTags.filter((tag) =>
+        this.props.languages.includes(tag)
+      )
+    );
   }
 
   renderFilterOption(): JSX.Element {
