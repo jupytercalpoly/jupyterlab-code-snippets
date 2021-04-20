@@ -7,8 +7,9 @@ import React from 'react';
 //import { filter } from '@lumino/algorithm';
 
 interface IFilterSnippetProps {
-  languages: string[];
-  allTags: string[][]; // change to [[snip], [lang]]
+  tagDictionary: Map<string, string[]>;
+  languageTags: string[]; // just lang tags
+  snippetTags: string[]; // just snippet tags
   onFilter: (
     searchValue: string,
     filterTags: string[],
@@ -61,13 +62,10 @@ export class FilterTools extends React.Component<
   componentDidUpdate(prevProps: IFilterSnippetProps): void {
     if (prevProps !== this.props) {
       // get all the tags together in one list
-      const flattenTags = this.props.allTags.reduce(
-        (accumulator, value) => accumulator.concat(value),
-        []
-      );
+      const concatTags = this.props.snippetTags.concat(this.props.languageTags);
       this.setState((state) => ({
         selectedTags: state.selectedTags
-          .filter((tag) => flattenTags.includes(tag))
+          .filter((tag) => concatTags.includes(tag))
           .sort(),
       }));
     }
@@ -82,17 +80,15 @@ export class FilterTools extends React.Component<
     filterOption.classList.toggle('idle');
   }
 
-  renderTags(tags: string[][], type: string): JSX.Element {
-    // get all the tags together in one list
-    const flattenTags = tags.reduce(
-      (accumulator, value) => accumulator.concat(value),
-      []
+  renderTags(tags: string[], type: string): JSX.Element {
+    const selectedLanguageTags = this.state.selectedTags.filter((tag) =>
+      this.props.languageTags.includes(tag)
     );
     return (
       <div className={FILTER_TAGS}>
-        {flattenTags.sort().map((tag: string, index: number) => {
+        {tags.sort().map((tag: string, index: number) => {
           // language tags
-          if (type === 'language' && this.props.languages.includes(tag)) {
+          if (type === 'language' && this.props.languageTags.includes(tag)) {
             if (this.state.selectedTags.includes(tag)) {
               return this.renderAppliedTag(tag, index.toString());
             } else {
@@ -101,12 +97,25 @@ export class FilterTools extends React.Component<
           } else if (
             // snippet tags
             type === 'snippet' &&
-            !this.props.languages.includes(tag)
+            !this.props.languageTags.includes(tag)
           ) {
-            if (this.state.selectedTags.includes(tag)) {
-              return this.renderAppliedTag(tag, index.toString());
+            if (selectedLanguageTags.length !== 0) {
+              const langsMatch = this.props.tagDictionary
+                .get(tag)
+                .some((r) => selectedLanguageTags.includes(r));
+              if (langsMatch) {
+                if (this.state.selectedTags.includes(tag)) {
+                  return this.renderAppliedTag(tag, index.toString());
+                } else {
+                  return this.renderUnappliedTag(tag, index.toString());
+                }
+              }
             } else {
-              return this.renderUnappliedTag(tag, index.toString());
+              if (this.state.selectedTags.includes(tag)) {
+                return this.renderAppliedTag(tag, index.toString());
+              } else {
+                return this.renderUnappliedTag(tag, index.toString());
+              }
             }
           }
         })}
@@ -189,23 +198,25 @@ export class FilterTools extends React.Component<
       this.state.searchValue,
       this.state.selectedTags,
       this.state.selectedTags.filter((tag) =>
-        this.props.languages.includes(tag)
+        this.props.languageTags.includes(tag)
       )
     );
   }
 
   renderFilterOption(): JSX.Element {
     //TODO: make lang tags/cell tags a dropdown
+    // get all the tags together in one list
+    const concatTags = this.props.snippetTags.concat(this.props.languageTags);
     return (
       <div className={`${FILTER_OPTION} idle`}>
         <div className={FILTER_TITLE}>
           <span>language tags</span>
         </div>
-        {this.renderTags(this.props.allTags, 'language')}
+        {this.renderTags(concatTags, 'language')}
         <div className={FILTER_TITLE}>
           <span>snippet tags</span>
         </div>
-        {this.renderTags(this.props.allTags, 'snippet')}
+        {this.renderTags(concatTags, 'snippet')}
       </div>
     );
   }

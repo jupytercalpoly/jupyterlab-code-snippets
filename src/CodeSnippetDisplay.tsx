@@ -1427,6 +1427,30 @@ export class CodeSnippetDisplay extends React.Component<
     return [tags, languages];
   }
 
+  getActiveTagsDictionary = (): Map<string, string[]> => {
+    const tagsAndLangs: Map<string, string[]> = new Map<string, string[]>();
+    for (const codeSnippet of this.props.codeSnippets) {
+      if (codeSnippet.tags) {
+        // check if tag is in dict, if it is add lang to value (if not already present)
+        // if tag not in dict add tag as key and lang as first val
+        for (const tag of codeSnippet.tags) {
+          if (tag !== codeSnippet.language) {
+            if (tagsAndLangs.has(tag)) {
+              const langs = tagsAndLangs.get(tag);
+              if (!langs.includes(codeSnippet.language)) {
+                langs.push(codeSnippet.language);
+              }
+              tagsAndLangs.set(tag, langs);
+            } else {
+              tagsAndLangs.set(tag, [codeSnippet.language]);
+            }
+          }
+        }
+      }
+    }
+    return tagsAndLangs;
+  };
+
   private deleteCommand(codeSnippet: ICodeSnippet): void {
     showDialog({
       title: 'Delete snippet?',
@@ -1603,8 +1627,9 @@ export class CodeSnippetDisplay extends React.Component<
         </header>
         <div className={CODE_SNIPPET_HEADER_BOX}>
           <FilterTools
-            languages={this.getActiveTags()[1]}
-            allTags={this.getActiveTags()}
+            tagDictionary={this.getActiveTagsDictionary()}
+            languageTags={this.getActiveTags()[1]}
+            snippetTags={this.getActiveTags()[0]}
             onFilter={this.filterSnippets}
           />
         </div>
