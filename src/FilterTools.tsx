@@ -4,10 +4,17 @@
 import { InputGroup, checkIcon } from '@jupyterlab/ui-components';
 
 import React from 'react';
+//import { filter } from '@lumino/algorithm';
 
 interface IFilterSnippetProps {
-  tags: string[];
-  onFilter: (searchValue: string, filterTags: string[]) => void;
+  tagDictionary: Map<string, string[]>;
+  languageTags: string[]; // just lang tags
+  snippetTags: string[]; // just snippet tags
+  onFilter: (
+    searchValue: string,
+    filterTags: string[],
+    selectedLangTags: string[]
+  ) => void;
 }
 
 interface IFilterSnippetState {
@@ -34,7 +41,7 @@ export class FilterTools extends React.Component<
 > {
   constructor(props: IFilterSnippetProps) {
     super(props);
-    this.state = { show: false, selectedTags: [], searchValue: '' };
+    this.state = { show: false, selectedTags: [], searchValue: '' }; //--> selectedTags & selectedLangTags
     this.createFilterBox = this.createFilterBox.bind(this);
     this.renderFilterOption = this.renderFilterOption.bind(this);
     this.renderTags = this.renderTags.bind(this);
@@ -54,9 +61,11 @@ export class FilterTools extends React.Component<
 
   componentDidUpdate(prevProps: IFilterSnippetProps): void {
     if (prevProps !== this.props) {
+      // get all the tags together in one list
+      const concatTags = this.props.snippetTags.concat(this.props.languageTags);
       this.setState((state) => ({
         selectedTags: state.selectedTags
-          .filter((tag) => this.props.tags.includes(tag))
+          .filter((tag) => concatTags.includes(tag))
           .sort(),
       }));
     }
@@ -71,14 +80,44 @@ export class FilterTools extends React.Component<
     filterOption.classList.toggle('idle');
   }
 
-  renderTags(): JSX.Element {
+  renderTags(tags: string[], type: string): JSX.Element {
+    const selectedLanguageTags = this.state.selectedTags.filter((tag) =>
+      this.props.languageTags.includes(tag)
+    );
     return (
       <div className={FILTER_TAGS}>
-        {this.props.tags.sort().map((tag: string, index: number) => {
-          if (this.state.selectedTags.includes(tag)) {
-            return this.renderAppliedTag(tag, index.toString());
-          } else {
-            return this.renderUnappliedTag(tag, index.toString());
+        {tags.sort().map((tag: string, index: number) => {
+          // language tags
+          if (type === 'language' && this.props.languageTags.includes(tag)) {
+            if (this.state.selectedTags.includes(tag)) {
+              return this.renderAppliedTag(tag, index.toString());
+            } else {
+              return this.renderUnappliedTag(tag, index.toString());
+            }
+          } else if (
+            // snippet tags
+            type === 'snippet' &&
+            !this.props.languageTags.includes(tag)
+          ) {
+            if (selectedLanguageTags.length !== 0) {
+              // if languages are selected, only display snippet tags that have snippets in those languages
+              const langsMatch = this.props.tagDictionary
+                .get(tag)
+                .some((r) => selectedLanguageTags.includes(r));
+              if (langsMatch) {
+                if (this.state.selectedTags.includes(tag)) {
+                  return this.renderAppliedTag(tag, index.toString());
+                } else {
+                  return this.renderUnappliedTag(tag, index.toString());
+                }
+              }
+            } else {
+              if (this.state.selectedTags.includes(tag)) {
+                return this.renderAppliedTag(tag, index.toString());
+              } else {
+                return this.renderUnappliedTag(tag, index.toString());
+              }
+            }
           }
         })}
       </div>
@@ -122,7 +161,6 @@ export class FilterTools extends React.Component<
     const target = event.target as HTMLElement;
     const clickedTag = target.innerText;
     const parent = target.parentElement;
-
     this.setState(
       (state) => ({
         selectedTags: this.handleClickHelper(
@@ -142,7 +180,6 @@ export class FilterTools extends React.Component<
   ): string[] {
     if (parent.classList.contains('unapplied-tag')) {
       parent.classList.replace('unapplied-tag', 'applied-tag');
-
       currentTags.splice(-1, 0, clickedTag);
     } else if (parent.classList.contains('applied-tag')) {
       parent.classList.replace('applied-tag', 'unapplied-tag');
@@ -158,16 +195,29 @@ export class FilterTools extends React.Component<
   };
 
   filterSnippets(): void {
-    this.props.onFilter(this.state.searchValue, this.state.selectedTags);
+    this.props.onFilter(
+      this.state.searchValue,
+      this.state.selectedTags,
+      this.state.selectedTags.filter((tag) =>
+        this.props.languageTags.includes(tag)
+      )
+    );
   }
 
   renderFilterOption(): JSX.Element {
+    //TODO: make lang tags/cell tags a dropdown
+    // get all the tags together in one list
+    const concatTags = this.props.snippetTags.concat(this.props.languageTags);
     return (
       <div className={`${FILTER_OPTION} idle`}>
         <div className={FILTER_TITLE}>
-          <span>cell tags</span>
+          <span>language tags</span>
         </div>
-        {this.renderTags()}
+        {this.renderTags(concatTags, 'language')}
+        <div className={FILTER_TITLE}>
+          <span>snippet tags</span>
+        </div>
+        {this.renderTags(concatTags, 'snippet')}
       </div>
     );
   }

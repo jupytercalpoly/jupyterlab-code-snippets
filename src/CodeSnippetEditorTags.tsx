@@ -6,8 +6,9 @@ import { checkIcon, addIcon } from '@jupyterlab/ui-components';
 import React from 'react';
 
 interface ICodeSnippetEditorTagProps {
-  selectedTags: string[];
-  tags: string[];
+  selectedTags: string[]; // selected snippet tags only
+  snippetTags: string[]; // snippet tags only
+  langTags: string[];
   handleChange: (selectedTags: string[], allTags: string[]) => void;
 }
 
@@ -44,7 +45,7 @@ export class CodeSnippetEditorTags extends React.Component<
   componentDidMount(): void {
     this.setState({
       selectedTags: this.props.selectedTags ? this.props.selectedTags : [],
-      tags: this.props.tags ? this.props.tags : [],
+      tags: this.props.snippetTags ? this.props.snippetTags : [],
       plusIconShouldHide: false,
       addingNewTag: false,
     });
@@ -54,7 +55,7 @@ export class CodeSnippetEditorTags extends React.Component<
     if (prevProps !== this.props) {
       this.setState({
         selectedTags: this.props.selectedTags ? this.props.selectedTags : [],
-        tags: this.props.tags ? this.props.tags : [],
+        tags: this.props.snippetTags ? this.props.snippetTags : [],
       });
     }
   }
@@ -114,6 +115,13 @@ export class CodeSnippetEditorTags extends React.Component<
     if (inputElement.value !== '' && event.keyCode === 13) {
       if (this.state.tags.includes(inputElement.value)) {
         alert('Duplicate Tag Name!');
+        return;
+      }
+
+      if (this.props.langTags.includes(inputElement.value)) {
+        alert(
+          'This tag already exists in language tags!\nIf you want to create this tag, lowercase the first letter.'
+        );
         return;
       }
 
@@ -182,6 +190,7 @@ export class CodeSnippetEditorTags extends React.Component<
         {hasTags
           ? this.state.tags.map((tag: string, index: number) =>
               ((): JSX.Element => {
+                console.log(this.state.tags);
                 if (!this.state.selectedTags) {
                   return (
                     <ul

@@ -176,6 +176,7 @@ interface ICodeSnippetDisplayState {
   matchIndices: number[][];
   searchValue: string;
   filterTags: string[];
+  searchOptions: string[];
 }
 
 /**
@@ -194,12 +195,14 @@ export class CodeSnippetDisplay extends React.Component<
       matchIndices: [],
       searchValue: '',
       filterTags: [],
+      searchOptions: [],
     };
     this._drag = null;
     this._dragData = null;
     this.handleDragMove = this.handleDragMove.bind(this);
     this._evtMouseUp = this._evtMouseUp.bind(this);
     this.handleRenameSnippet = this.handleRenameSnippet.bind(this);
+    this.setSearchOptions = this.setSearchOptions.bind(this);
   }
 
   // Handle code snippet insert into a notebook or document
@@ -1284,6 +1287,7 @@ export class CodeSnippetDisplay extends React.Component<
         matchIndices: [],
         searchValue: '',
         filterTags: [],
+        searchOptions: [],
       };
     }
 
@@ -1293,13 +1297,17 @@ export class CodeSnippetDisplay extends React.Component<
         matchIndices: prevState.matchIndices,
         searchValue: prevState.searchValue,
         filterTags: prevState.filterTags,
+        searchOptions: prevState.searchOptions,
       };
     }
     return null;
   }
 
-  filterSnippets = (searchValue: string, filterTags: string[]): void => {
-    // filter with search
+  filterSnippets = (
+    searchValue: string,
+    filterTags: string[],
+    selectedLangTags: string[]
+  ): void => {
     let matchIndices: number[][] = [];
     const matchResults: StringExt.IMatchResult[] = [];
     let filteredSnippets = this.props.codeSnippets;
@@ -1308,9 +1316,14 @@ export class CodeSnippetDisplay extends React.Component<
       snippet: ICodeSnippet;
     }[] = [];
     if (searchValue !== '') {
+      // language, title, code
       filteredSnippets.forEach((snippet) => {
         const matchResult = StringExt.matchSumOfSquares(
-          (snippet.language + snippet.name).toLowerCase(),
+          (
+            snippet.language +
+            snippet.name +
+            snippet.code.join('\n')
+          ).toLowerCase(),
           searchValue.replace(' ', '').toLowerCase()
         );
 
@@ -1336,14 +1349,35 @@ export class CodeSnippetDisplay extends React.Component<
       matchResults.forEach((res) => matchIndices.push(res.indices));
     }
 
-    // filter with tags
     if (filterTags.length !== 0) {
       const newMatchIndices = matchIndices.slice();
       filteredSnippets = filteredSnippets.filter((codeSnippet, id) => {
         return filterTags.some((tag) => {
           if (codeSnippet.tags) {
-            if (codeSnippet.tags.includes(tag)) {
-              return true;
+            if (selectedLangTags.length !== 0) {
+              // lang tags selected
+              console.log(selectedLangTags);
+              if (
+                codeSnippet.tags.includes(tag) &&
+                selectedLangTags.includes(codeSnippet.language)
+              ) {
+                return true;
+              } else if (
+                filterTags.length === selectedLangTags.length &&
+                filterTags.every((value) => selectedLangTags.includes(value))
+              ) {
+                //if only language tags are selected
+                console.log('hi');
+                if (selectedLangTags.includes(codeSnippet.language)) {
+                  return true;
+                }
+              }
+            } else {
+              // no lang tags selected
+              console.log('reached');
+              if (codeSnippet.tags.includes(tag)) {
+                return true;
+              }
             }
           }
           // if the snippet does not have the tag, remove its mathed index
@@ -1369,8 +1403,9 @@ export class CodeSnippetDisplay extends React.Component<
     );
   };
 
-  getActiveTags(): string[] {
+  getActiveTags(): string[][] {
     const tags: string[] = [];
+    const languages: string[] = [];
     for (const codeSnippet of this.props.codeSnippets) {
       if (codeSnippet.tags) {
         for (const tag of codeSnippet.tags) {
@@ -1379,9 +1414,36 @@ export class CodeSnippetDisplay extends React.Component<
           }
         }
       }
+      if (!languages.includes(codeSnippet.language)) {
+        languages.push(codeSnippet.language);
+      }
     }
-    return tags;
+    return [tags, languages];
   }
+
+  getActiveTagsDictionary = (): Map<string, string[]> => {
+    const tagsAndLangs: Map<string, string[]> = new Map<string, string[]>();
+    for (const codeSnippet of this.props.codeSnippets) {
+      if (codeSnippet.tags) {
+        // check if tag is in dict, if it is add lang to value (if not already present)
+        // if tag not in dict add tag as key and lang as first val
+        for (const tag of codeSnippet.tags) {
+          if (tag !== codeSnippet.language) {
+            if (tagsAndLangs.has(tag)) {
+              const langs = tagsAndLangs.get(tag);
+              if (!langs.includes(codeSnippet.language)) {
+                langs.push(codeSnippet.language);
+              }
+              tagsAndLangs.set(tag, langs);
+            } else {
+              tagsAndLangs.set(tag, [codeSnippet.language]);
+            }
+          }
+        }
+      }
+    }
+    return tagsAndLangs;
+  };
 
   private deleteCommand(codeSnippet: ICodeSnippet): void {
     showDialog({
@@ -1487,15 +1549,17 @@ export class CodeSnippetDisplay extends React.Component<
     editSnip.className = CODE_SNIPPET_MORE_OTPIONS_EDIT;
     editSnip.textContent = 'Edit snippet';
     editSnip.onclick = (): void => {
-      const allTags = this.getActiveTags();
+      const allSnippetTags = this.getActiveTags()[0]; // snippet tags only
+      const allLangTags = this.getActiveTags()[1];
       this.props.openCodeSnippetEditor({
         name: codeSnippet.name,
         description: codeSnippet.description,
         language: codeSnippet.language,
         code: codeSnippet.code,
         id: codeSnippet.id,
-        selectedTags: codeSnippet.tags,
-        allTags: allTags,
+        selectedTags: codeSnippet.tags, // snippet tags
+        allSnippetTags: allSnippetTags,
+        allLangTags: allLangTags,
         fromScratch: false,
       });
       this.removeOptionsNode();
@@ -1525,6 +1589,12 @@ export class CodeSnippetDisplay extends React.Component<
     return body;
   }
 
+  setSearchOptions(selectedOptions: string[]): void {
+    this.setState({
+      searchOptions: selectedOptions,
+    });
+  }
+
   render(): React.ReactElement {
     return (
       <div>
@@ -1540,7 +1610,8 @@ export class CodeSnippetDisplay extends React.Component<
                 code: [],
                 id: this.state.codeSnippets.length,
                 selectedTags: [],
-                allTags: this.getActiveTags(),
+                allSnippetTags: this.getActiveTags()[0],
+                allLangTags: this.getActiveTags()[1],
                 fromScratch: true,
               });
             }}
@@ -1549,7 +1620,9 @@ export class CodeSnippetDisplay extends React.Component<
           </button>
         </header>
         <FilterTools
-          tags={this.getActiveTags()}
+          tagDictionary={this.getActiveTagsDictionary()}
+          languageTags={this.getActiveTags()[1]}
+          snippetTags={this.getActiveTags()[0]}
           onFilter={this.filterSnippets}
         />
         <div className={CODE_SNIPPETS_CONTAINER}>

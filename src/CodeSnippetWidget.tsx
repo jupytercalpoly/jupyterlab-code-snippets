@@ -83,6 +83,7 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   updateCodeSnippetWidget(): void {
+    console.log(this);
     const newSnippets = this.codeSnippetManager.snippets;
     this.renderCodeSnippetsSignal.emit(newSnippets);
   }

@@ -49,24 +49,28 @@ export class CodeSnippetService {
       }
     });
 
+    console.log(this.settingManager.get('snippets'));
+
     const defaultSnippets = this.convertToICodeSnippetList(
       this.settingManager.default('snippets') as JSONArray
     );
-    const userSnippets = this.convertToICodeSnippetList(
-      this.settingManager.get('snippets').user as JSONArray
-    );
-
-    if (userSnippets.length !== 0) {
-      this.codeSnippetList = userSnippets;
+    if (this.settingManager.get('snippets').user === undefined) {
+      // set the user setting + default in the beginning
+      this.settingManager
+        .set('snippets', (defaultSnippets as unknown) as PartialJSONValue)
+        .then(() => {
+          const userSnippets = this.convertToICodeSnippetList(
+            this.settingManager.get('snippets').user as JSONArray
+          );
+          this.codeSnippetList = userSnippets;
+        });
     } else {
-      this.codeSnippetList = defaultSnippets;
-    }
+      const userSnippets = this.convertToICodeSnippetList(
+        this.settingManager.get('snippets').user as JSONArray
+      );
 
-    // set the user setting + default in the beginning
-    this.settingManager.set(
-      'snippets',
-      (this.codeSnippetList as unknown) as PartialJSONValue
-    );
+      this.codeSnippetList = userSnippets;
+    }
   }
 
   private convertToICodeSnippetList(snippets: JSONArray): ICodeSnippet[] {
