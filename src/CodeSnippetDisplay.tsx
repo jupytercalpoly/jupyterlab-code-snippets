@@ -1309,8 +1309,6 @@ export class CodeSnippetDisplay extends React.Component<
     filterTags: string[],
     selectedLangTags: string[]
   ): void => {
-    // TODO: when language tag is selected, only display tags that have that tag AND the snippet tags selected.
-    // filter with search
     let matchIndices: number[][] = [];
     const matchResults: StringExt.IMatchResult[] = [];
     let filteredSnippets = this.props.codeSnippets;
@@ -1356,9 +1354,6 @@ export class CodeSnippetDisplay extends React.Component<
       const newMatchIndices = matchIndices.slice();
       filteredSnippets = filteredSnippets.filter((codeSnippet, id) => {
         return filterTags.some((tag) => {
-          // check if filterTags has a language tag or pass in selectedLang tags
-          // then check if codeSnippet.language matches that lang. If it matches then
-          // filter by the rest of the selected snippet tags.
           if (codeSnippet.tags) {
             if (selectedLangTags.length !== 0) {
               // lang tags selected

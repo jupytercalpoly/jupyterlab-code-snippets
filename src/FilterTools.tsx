@@ -100,6 +100,7 @@ export class FilterTools extends React.Component<
             !this.props.languageTags.includes(tag)
           ) {
             if (selectedLanguageTags.length !== 0) {
+              // if languages are selected, only display snippet tags that have snippets in those languages
               const langsMatch = this.props.tagDictionary
                 .get(tag)
                 .some((r) => selectedLanguageTags.includes(r));
