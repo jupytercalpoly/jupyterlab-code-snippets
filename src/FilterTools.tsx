@@ -60,6 +60,7 @@ export class FilterTools extends React.Component<
   }
 
   componentDidUpdate(prevProps: IFilterSnippetProps): void {
+    console.log('Filter Update');
     if (prevProps !== this.props) {
       // get all the tags together in one list
       const concatTags = this.props.snippetTags.concat(this.props.languageTags);

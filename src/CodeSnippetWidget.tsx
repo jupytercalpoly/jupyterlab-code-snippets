@@ -268,12 +268,17 @@ export class CodeSnippetWidget extends ReactWidget {
       target = target.parentElement;
     }
 
+    console.log(target);
+    //************** */ TODO: Maybe find the snippet bavsed on its id ??? ******************
+    // Look at how it changes the id of the snippet
+
     const snippet = this._findSnippet(target);
+    console.log(snippet);
 
     // if target is CodeSnippetWidget, then snippet is undefined
     let idx;
     if (snippet !== undefined) {
-      idx = parseInt(snippet.id);
+      idx = parseInt(snippet.id.slice(CODE_SNIPPET_ITEM.length));
     } else {
       idx = this.codeSnippetManager.snippets.length;
     }
@@ -298,7 +303,7 @@ export class CodeSnippetWidget extends ReactWidget {
         this.moveCodeSnippet(srcIdx, idx);
       }
     } else {
-      // TODO: get language from kernel
+      console.log(idx);
       const notebook: Notebook = event.mimeData.getData('internal:cells')[0]
         .parent;
 
