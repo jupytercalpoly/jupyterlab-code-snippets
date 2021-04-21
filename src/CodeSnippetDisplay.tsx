@@ -130,7 +130,6 @@ const CODE_SNIPPET_MORE_OTPIONS_DOWNLOAD =
   'jp-codeSnippet-more-options-download';
 const CODE_SNIPPET_CREATE_NEW_BTN = 'jp-createSnippetBtn';
 const CODE_SNIPPET_NAME = 'jp-codeSnippet-name';
-const CODE_SNIPPET_HEADER_BOX = 'jp-codeSnippet-header-class';
 
 /**
  * The threshold in pixels to start a drag event.
@@ -1620,14 +1619,12 @@ export class CodeSnippetDisplay extends React.Component<
             <addIcon.react tag="span" right="7px" top="5px" />
           </button>
         </header>
-        <div className={CODE_SNIPPET_HEADER_BOX}>
-          <FilterTools
-            tagDictionary={this.getActiveTagsDictionary()}
-            languageTags={this.getActiveTags()[1]}
-            snippetTags={this.getActiveTags()[0]}
-            onFilter={this.filterSnippets}
-          />
-        </div>
+        <FilterTools
+          tagDictionary={this.getActiveTagsDictionary()}
+          languageTags={this.getActiveTags()[1]}
+          snippetTags={this.getActiveTags()[0]}
+          onFilter={this.filterSnippets}
+        />
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
             {this.state.codeSnippets.map((codeSnippet, id) =>
