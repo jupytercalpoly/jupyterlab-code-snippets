@@ -47,6 +47,7 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  */
 const DROP_TARGET_CLASS = 'jp-codeSnippet-dropTarget';
 const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
+const CODE_SNIPPET_DRAG_HOVER = 'jp-codeSnippet-drag-hover';
 
 const commands = {
   OPEN_CODE_SNIPPET_EDITOR: `${CODE_SNIPPET_EDITOR}:open`,
@@ -83,7 +84,6 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   updateCodeSnippetWidget(): void {
-    console.log(this);
     const newSnippets = this.codeSnippetManager.snippets;
     this.renderCodeSnippetsSignal.emit(newSnippets);
   }
@@ -183,7 +183,8 @@ export class CodeSnippetWidget extends ReactWidget {
     const target = event.target as HTMLElement;
 
     if (!event.mimeData.hasData('snippet/id')) {
-      event.mimeData.setData('snippet/id', parseInt(target.id));
+      const snippetId = target.id.slice(CODE_SNIPPET_DRAG_HOVER.length);
+      event.mimeData.setData('snippet/id', parseInt(snippetId));
     }
 
     const snippet = this._findSnippet(target);
@@ -245,13 +246,6 @@ export class CodeSnippetWidget extends ReactWidget {
    * Handle the `'lm-drop'` event for the widget.
    */
   private async _evtDrop(event: IDragEvent): Promise<void> {
-    // TODO: get language from kernel
-    const notebook: Notebook = event.mimeData.getData('internal:cells')[0]
-      .parent;
-
-    const language = notebook.model.defaultKernelLanguage;
-    console.log(language);
-
     const data = this.findCellData(event.mimeData);
     if (data === undefined) {
       return;
@@ -280,7 +274,7 @@ export class CodeSnippetWidget extends ReactWidget {
     // if target is CodeSnippetWidget, then snippet is undefined
     let idx;
     if (snippet !== undefined) {
-      idx = parseInt(snippet.id);
+      idx = parseInt(snippet.id.slice(CODE_SNIPPET_ITEM.length));
     } else {
       idx = this.codeSnippetManager.snippets.length;
     }
@@ -290,21 +284,16 @@ export class CodeSnippetWidget extends ReactWidget {
      */
     const source = event.source;
     if (source instanceof CodeSnippetDisplay) {
-      if (
-        source.state.searchValue !== '' ||
-        source.state.filterTags.length !== 0
-      ) {
-        alert(
-          "Sorry, in the current version, you can't move snippets within explorer while filtering or searching"
-        );
-        return;
-      }
       event.dropAction = 'move';
       if (event.mimeData.hasData('snippet/id')) {
         const srcIdx = event.mimeData.getData('snippet/id') as number;
         this.moveCodeSnippet(srcIdx, idx);
       }
     } else {
+      const notebook: Notebook = event.mimeData.getData('internal:cells')[0]
+        .parent;
+
+      const language = notebook.model.defaultKernelLanguage;
       // Handle the case where we are copying cells
       event.dropAction = 'copy';
 

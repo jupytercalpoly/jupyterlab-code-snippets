@@ -49,8 +49,6 @@ export class CodeSnippetService {
       }
     });
 
-    console.log(this.settingManager.get('snippets'));
-
     const defaultSnippets = this.convertToICodeSnippetList(
       this.settingManager.default('snippets') as JSONArray
     );
