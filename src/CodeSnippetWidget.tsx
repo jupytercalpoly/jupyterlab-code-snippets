@@ -47,6 +47,7 @@ const JUPYTER_CELL_MIME = 'application/vnd.jupyter.cells';
  */
 const DROP_TARGET_CLASS = 'jp-codeSnippet-dropTarget';
 const CODE_SNIPPET_EDITOR = 'jp-codeSnippet-editor';
+const CODE_SNIPPET_DRAG_HOVER = 'jp-codeSnippet-drag-hover';
 
 const commands = {
   OPEN_CODE_SNIPPET_EDITOR: `${CODE_SNIPPET_EDITOR}:open`,
@@ -83,7 +84,6 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   updateCodeSnippetWidget(): void {
-    console.log(this);
     const newSnippets = this.codeSnippetManager.snippets;
     this.renderCodeSnippetsSignal.emit(newSnippets);
   }
@@ -183,7 +183,8 @@ export class CodeSnippetWidget extends ReactWidget {
     const target = event.target as HTMLElement;
 
     if (!event.mimeData.hasData('snippet/id')) {
-      event.mimeData.setData('snippet/id', parseInt(target.id));
+      const snippetId = target.id.slice(CODE_SNIPPET_DRAG_HOVER.length);
+      event.mimeData.setData('snippet/id', parseInt(snippetId));
     }
 
     const snippet = this._findSnippet(target);
@@ -268,12 +269,7 @@ export class CodeSnippetWidget extends ReactWidget {
       target = target.parentElement;
     }
 
-    console.log(target);
-    //************** */ TODO: Maybe find the snippet bavsed on its id ??? ******************
-    // Look at how it changes the id of the snippet
-
     const snippet = this._findSnippet(target);
-    console.log(snippet);
 
     // if target is CodeSnippetWidget, then snippet is undefined
     let idx;
@@ -288,22 +284,12 @@ export class CodeSnippetWidget extends ReactWidget {
      */
     const source = event.source;
     if (source instanceof CodeSnippetDisplay) {
-      if (
-        source.state.searchValue !== '' ||
-        source.state.filterTags.length !== 0
-      ) {
-        alert(
-          "Sorry, in the current version, you can't move snippets within explorer while filtering or searching"
-        );
-        return;
-      }
       event.dropAction = 'move';
       if (event.mimeData.hasData('snippet/id')) {
         const srcIdx = event.mimeData.getData('snippet/id') as number;
         this.moveCodeSnippet(srcIdx, idx);
       }
     } else {
-      console.log(idx);
       const notebook: Notebook = event.mimeData.getData('internal:cells')[0]
         .parent;
 

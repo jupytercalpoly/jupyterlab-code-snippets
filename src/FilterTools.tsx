@@ -4,7 +4,6 @@
 import { InputGroup, checkIcon } from '@jupyterlab/ui-components';
 
 import React from 'react';
-//import { filter } from '@lumino/algorithm';
 
 interface IFilterSnippetProps {
   tagDictionary: Map<string, string[]>;
@@ -51,16 +50,7 @@ export class FilterTools extends React.Component<
     this.filterSnippets = this.filterSnippets.bind(this);
   }
 
-  componentDidMount(): void {
-    this.setState({
-      show: false,
-      selectedTags: [],
-      searchValue: '',
-    });
-  }
-
   componentDidUpdate(prevProps: IFilterSnippetProps): void {
-    console.log('Filter Update');
     if (prevProps !== this.props) {
       // get all the tags together in one list
       const concatTags = this.props.snippetTags.concat(this.props.languageTags);
@@ -162,6 +152,7 @@ export class FilterTools extends React.Component<
     const target = event.target as HTMLElement;
     const clickedTag = target.innerText;
     const parent = target.parentElement;
+
     this.setState(
       (state) => ({
         selectedTags: this.handleClickHelper(
@@ -206,7 +197,6 @@ export class FilterTools extends React.Component<
   }
 
   renderFilterOption(): JSX.Element {
-    //TODO: make lang tags/cell tags a dropdown
     // get all the tags together in one list
     const concatTags = this.props.snippetTags.concat(this.props.languageTags);
     return (

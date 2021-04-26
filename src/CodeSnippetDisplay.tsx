@@ -50,13 +50,10 @@ import { Drag } from '@lumino/dragdrop';
 import { MimeData } from '@lumino/coreutils';
 
 import React from 'react';
-import memoize from 'memoize-one';
-
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { FilterTools } from './FilterTools';
 import { showPreview } from './PreviewSnippet';
 import { showMoreOptions } from './CodeSnippetMenu';
-// import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
 
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
 
@@ -173,6 +170,7 @@ interface ICodeSnippetDisplayProps {
 interface ICodeSnippetDisplayState {
   searchValue: string;
   filterTags: string[];
+  selectedLangTags: string[];
   searchOptions: string[];
 }
 
@@ -190,6 +188,7 @@ export class CodeSnippetDisplay extends React.Component<
     this.state = {
       searchValue: '',
       filterTags: [],
+      selectedLangTags: [],
       searchOptions: [],
     };
     this._drag = null;
@@ -200,77 +199,116 @@ export class CodeSnippetDisplay extends React.Component<
     this.setSearchOptions = this.setSearchOptions.bind(this);
   }
 
-  filterSnippets = memoize(
-    (
-      codeSnippets: ICodeSnippet[],
-      searchValue: string,
-      filterTags: string[]
-    ): {
-      filteredCodeSnippets: ICodeSnippet[];
-      matchedIndices: { [id: number]: number[] };
-    } => {
-      // filter with search
-      let filteredSnippets = codeSnippets;
-      const matchedIndices: { [id: number]: number[] } = {};
+  filterSnippets = (
+    codeSnippets: ICodeSnippet[],
+    searchValue: string,
+    filterTags: string[],
+    selectedLangTags: string[]
+  ): {
+    filteredCodeSnippets: ICodeSnippet[];
+    matchedIndices: { [id: number]: number[] };
+  } => {
+    // filter with search
+    let filteredSnippets = codeSnippets.slice();
+    const matchedIndices: { [id: number]: number[] } = {};
 
-      if (searchValue !== '') {
-        const matchResults: StringExt.IMatchResult[] = [];
-        const filteredSnippetsScore: {
-          score: number;
-          snippet: ICodeSnippet;
-        }[] = [];
-        codeSnippets.forEach((snippet: ICodeSnippet) => {
-          const matchResult = StringExt.matchSumOfSquares(
-            (snippet.language + snippet.name).toLowerCase(),
-            searchValue.replace(' ', '').toLowerCase()
-          );
+    if (searchValue !== '') {
+      const matchResults: StringExt.IMatchResult[] = [];
+      const filteredSnippetsScore: {
+        score: number;
+        snippet: ICodeSnippet;
+      }[] = [];
 
-          if (matchResult) {
-            matchResults.push(matchResult);
-            filteredSnippetsScore.push({
-              score: matchResult.score,
-              snippet: snippet,
-            });
-          }
-        });
-
-        // sort snippets by its score
-        filteredSnippetsScore.sort((a, b) => a.score - b.score);
-        const newFilteredSnippets: ICodeSnippet[] = [];
-        filteredSnippetsScore.forEach((snippetScore) =>
-          newFilteredSnippets.push(snippetScore.snippet)
+      // language, title, code
+      filteredSnippets.forEach((snippet) => {
+        const matchResult = StringExt.matchSumOfSquares(
+          (
+            snippet.language +
+            snippet.name +
+            snippet.code.join('\n')
+          ).toLowerCase(),
+          searchValue.replace(' ', '').toLowerCase()
         );
-        filteredSnippets = newFilteredSnippets;
+        if (matchResult) {
+          matchResults.push(matchResult);
+          filteredSnippetsScore.push({
+            score: matchResult.score,
+            snippet: snippet,
+          });
+        }
+      });
 
-        // sort the matchResults by its score
-        matchResults.sort((a, b) => a.score - b.score);
-        matchResults.forEach((res, id) => {
-          matchedIndices[filteredSnippets[id].id] = res.indices;
-        });
-      }
+      // sort snippets by its score
+      filteredSnippetsScore.sort((a, b) => a.score - b.score);
+      const newFilteredSnippets: ICodeSnippet[] = [];
+      filteredSnippetsScore.forEach((snippetScore) =>
+        newFilteredSnippets.push(snippetScore.snippet)
+      );
+      filteredSnippets = newFilteredSnippets;
 
-      // filter with tags
-      if (filterTags.length !== 0) {
-        filteredSnippets = filteredSnippets.filter((codeSnippet) => {
-          return filterTags.some((tag) => {
-            if (codeSnippet.tags) {
+      // sort the matchResults by its score
+      matchResults.sort((a, b) => a.score - b.score);
+
+      matchResults.forEach((res, id) => {
+        matchedIndices[filteredSnippets[id].id] = res.indices;
+      });
+    }
+
+    // filter with tags
+    if (filterTags.length !== 0) {
+      filteredSnippets = filteredSnippets.filter((codeSnippet) => {
+        return filterTags.some((tag) => {
+          if (codeSnippet.tags) {
+            if (selectedLangTags.length !== 0) {
+              // lang tags selected
+              if (
+                codeSnippet.tags.includes(tag) &&
+                selectedLangTags.includes(codeSnippet.language)
+              ) {
+                return true;
+              }
+              //if only language tags are selected
+              else if (
+                filterTags.length === selectedLangTags.length &&
+                filterTags.every((value) => selectedLangTags.includes(value))
+              ) {
+                if (selectedLangTags.includes(codeSnippet.language)) {
+                  return true;
+                }
+              }
+            } else {
+              // no lang tags selected
               if (codeSnippet.tags.includes(tag)) {
                 return true;
               }
             }
-            // if the snippet does not have the tag, remove its mathed index
-            delete matchedIndices[codeSnippet.id];
-            return false;
-          });
+          }
+          return false;
         });
-      }
-
-      return {
-        filteredCodeSnippets: filteredSnippets,
-        matchedIndices: matchedIndices,
-      };
+      });
     }
-  );
+    // find id's that are not in filteredSnippets
+    const willBeRemovedIds = [];
+    for (const key in matchedIndices) {
+      let hasKey = false;
+      for (const codeSnippet of filteredSnippets) {
+        if (codeSnippet.id === parseInt(key)) {
+          hasKey = true;
+        }
+      }
+      if (hasKey === false) {
+        willBeRemovedIds.push(parseInt(key));
+      }
+    }
+
+    // if the snippet does not have the tag, remove its mathed index
+    willBeRemovedIds.forEach((id: number) => delete matchedIndices[id]);
+
+    return {
+      filteredCodeSnippets: filteredSnippets,
+      matchedIndices: matchedIndices,
+    };
+  };
 
   // Handle code snippet insert into a notebook or document
   private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
@@ -401,61 +439,62 @@ export class CodeSnippetDisplay extends React.Component<
     // check if the searchValue is not ''
     if (this.state.searchValue !== '') {
       const elements = [];
-
-      // get first match index in the name
-      let i = 0;
-      while (i < matchedIndices.length) {
-        if (matchedIndices[i] >= language.length) {
-          elements.push(
-            displayName.substring(language.length, matchedIndices[i])
-          );
-          break;
-        }
-        i++;
-      }
-
-      // when there is no match in name but language
-      if (i >= matchedIndices.length) {
-        return <span>{name}</span>;
-      } else {
-        // current and next indices are bold indices
-        let currIndex = matchedIndices[i];
-        let nextIndex;
-        // check if the match is the end of the name
-        if (i < matchedIndices.length - 1) {
+      if (matchedIndices) {
+        // get first match index in the name
+        let i = 0;
+        while (i < matchedIndices.length) {
+          if (matchedIndices[i] >= language.length) {
+            elements.push(
+              displayName.substring(language.length, matchedIndices[i])
+            );
+            break;
+          }
           i++;
-          nextIndex = matchedIndices[i];
-        } else {
-          nextIndex = null;
         }
-        while (nextIndex !== null) {
-          // make the current index bold
-          elements.push(
-            <mark key={id + '_' + currIndex} className={SEARCH_BOLD}>
-              {displayName.substring(currIndex, currIndex + 1)}
-            </mark>
-          );
-          // add the regular string until we reach the next bold index
-          elements.push(displayName.substring(currIndex + 1, nextIndex));
-          currIndex = nextIndex;
+
+        // when there is no match in name but language
+        if (i >= matchedIndices.length) {
+          return <span>{name}</span>;
+        } else {
+          // current and next indices are bold indices
+          let currIndex = matchedIndices[i];
+          let nextIndex;
+          // check if the match is the end of the name
           if (i < matchedIndices.length - 1) {
             i++;
             nextIndex = matchedIndices[i];
           } else {
             nextIndex = null;
           }
+          while (nextIndex !== null) {
+            // make the current index bold
+            elements.push(
+              <mark key={id + '_' + currIndex} className={SEARCH_BOLD}>
+                {displayName.substring(currIndex, currIndex + 1)}
+              </mark>
+            );
+            // add the regular string until we reach the next bold index
+            elements.push(displayName.substring(currIndex + 1, nextIndex));
+            currIndex = nextIndex;
+            if (i < matchedIndices.length - 1) {
+              i++;
+              nextIndex = matchedIndices[i];
+            } else {
+              nextIndex = null;
+            }
+          }
+          if (nextIndex === null) {
+            elements.push(
+              <mark key={id + '_' + currIndex} className={SEARCH_BOLD}>
+                {displayName.substring(currIndex, currIndex + 1)}
+              </mark>
+            );
+            elements.push(
+              displayName.substring(currIndex + 1, displayName.length)
+            );
+          }
+          return <span>{elements}</span>;
         }
-        if (nextIndex === null) {
-          elements.push(
-            <mark key={id + '_' + currIndex} className={SEARCH_BOLD}>
-              {displayName.substring(currIndex, currIndex + 1)}
-            </mark>
-          );
-          elements.push(
-            displayName.substring(currIndex + 1, displayName.length)
-          );
-        }
-        return <span>{elements}</span>;
       }
     }
     return (
@@ -1358,43 +1397,16 @@ export class CodeSnippetDisplay extends React.Component<
     }
   }
 
-  // static getDerivedStateFromProps(
-  //   nextProps: ICodeSnippetDisplayProps,
-  //   prevState: ICodeSnippetDisplayState
-  // ): ICodeSnippetDisplayState {
-  //   // this is why state doesn't change
-  //   if (prevState.searchValue === '' && prevState.filterTags.length === 0) {
-  //     return {
-  //       displayedCodeSnippets: nextProps.codeSnippets,
-  //       matchIndices: {},
-  //       searchValue: '',
-  //       filterTags: [],
-  //       isSnippetCreated: nextProps.isSnippetCreated,
-  //     };
-  //   }
-
-  //   if (prevState.searchValue !== '' || prevState.filterTags.length !== 0) {
-  //     return {
-  //       displayedCodeSnippets: prevState.displayedCodeSnippets,
-  //       matchIndices: prevState.matchIndices,
-  //       searchValue: prevState.searchValue,
-  //       filterTags: prevState.filterTags,
-  //       isSnippetCreated: prevState.isSnippetCreated,
-  //     };
-  //   }
-  //   return null;
-  // }
-
-  handleFilter = (searchValue: string, filterTags: string[]): void => {
-    this.setState(
-      {
-        searchValue: searchValue,
-        filterTags: filterTags,
-      },
-      () => {
-        console.log('snippets filtered');
-      }
-    );
+  handleFilter = (
+    searchValue: string,
+    filterTags: string[],
+    selectedLangTags: string[]
+  ): void => {
+    this.setState({
+      searchValue: searchValue,
+      filterTags: filterTags,
+      selectedLangTags: selectedLangTags,
+    });
   };
 
   getActiveTags(): string[][] {
@@ -1590,17 +1602,12 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   render(): React.ReactElement {
-    console.log('rendering');
     const { filteredCodeSnippets, matchedIndices } = this.filterSnippets(
       this.props.codeSnippets,
       this.state.searchValue,
-      this.state.filterTags
+      this.state.filterTags,
+      this.state.selectedLangTags
     );
-
-    console.log(this.props.codeSnippets);
-    console.log(this.state.searchValue);
-    console.log(matchedIndices);
-    console.log(filteredCodeSnippets);
 
     return (
       <div>
@@ -1633,10 +1640,6 @@ export class CodeSnippetDisplay extends React.Component<
         />
         <div className={CODE_SNIPPETS_CONTAINER}>
           <div>
-            {/* TODO: need to change this line! */}
-            {/* {this.state.codeSnippets.map((codeSnippet, id) =>
-              this.renderCodeSnippet(codeSnippet, id)
-            )} */}
             {filteredCodeSnippets.map((codeSnippet) =>
               this.renderCodeSnippet(
                 codeSnippet,
