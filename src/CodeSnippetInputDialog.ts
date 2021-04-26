@@ -57,6 +57,7 @@ export function CodeSnippetInputDialog(
   idx: number
 ): Promise<Contents.IModel | null> {
   const tags: string[] = [];
+  const langTags: string[] = [];
   const codeSnippetManager = CodeSnippetService.getCodeSnippetService();
 
   const snippets = codeSnippetManager.snippets;
@@ -70,9 +71,12 @@ export function CodeSnippetInputDialog(
         }
       }
     }
+    if (!langTags.includes(snippet.language)) {
+      langTags.push(snippet.language);
+    }
   }
 
-  const body: InputHandler = new InputHandler(tags, language);
+  const body: InputHandler = new InputHandler(tags, language, langTags);
 
   return showInputDialog(
     codeSnippetWidget,
@@ -262,8 +266,8 @@ class InputHandler extends Widget {
    * Construct a new "code snippet" dialog.
    * readonly inputNode: HTMLInputElement; <--- in Widget class
    */
-  constructor(tags: string[], language: string) {
-    super({ node: Private.createInputNode(tags, language) });
+  constructor(snippetTags: string[], language: string, langTags: string[]) {
+    super({ node: Private.createInputNode(snippetTags, language, langTags) });
     this.addClass(FILE_DIALOG_CLASS);
   }
 
@@ -295,7 +299,8 @@ class MessageHandler extends Widget {
  */
 class Private {
   static selectedTags: string[] = [];
-  static allTags: string[];
+  static allSnippetTags: string[];
+  static allLangTags: string[];
 
   static handleOnBlur(event: Event): void {
     const target = event.target as HTMLElement;
@@ -307,8 +312,13 @@ class Private {
   /**
    * Create the node for a code snippet form handler. This is what's creating all of the elements to be displayed.
    */
-  static createInputNode(tags: string[], language: string): HTMLElement {
-    Private.allTags = tags;
+  static createInputNode(
+    snippetTags: string[],
+    language: string,
+    langTags: string[]
+  ): HTMLElement {
+    Private.allSnippetTags = snippetTags;
+    Private.allLangTags = langTags;
     const body = document.createElement('form');
 
     const nameTitle = document.createElement('label');
@@ -347,7 +357,7 @@ class Private {
 
     const tagList = document.createElement('li');
     tagList.classList.add(CODE_SNIPPET_INPUTTAG_LIST);
-    for (const tag of tags) {
+    for (const tag of snippetTags) {
       const tagElem = document.createElement('ul');
       tagElem.className = `${CODE_SNIPPET_INPUT_TAG} tag unapplied-tag`;
       const tagBtn = document.createElement('button');
@@ -412,10 +422,18 @@ class Private {
 
     if (inputElement.value !== '' && event.keyCode === 13) {
       // duplicate tag
-      if (Private.allTags.includes(inputElement.value)) {
+      if (Private.allSnippetTags.includes(inputElement.value)) {
         alert('Duplicate Tag Name!');
         return;
       }
+
+      if (Private.allLangTags.includes(inputElement.value)) {
+        alert(
+          'This tag already exists in language tags!\nIf you want to create this tag, lowercase the first letter.'
+        );
+        return;
+      }
+
       event.preventDefault();
 
       // create new tag
@@ -446,7 +464,7 @@ class Private {
 
       // add it to the selected tags
       Private.selectedTags.push(tagBtn.innerText);
-      Private.allTags.push(tagBtn.innerText);
+      Private.allSnippetTags.push(tagBtn.innerText);
 
       // reset InputElement
       inputElement.blur();
