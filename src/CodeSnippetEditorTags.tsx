@@ -112,7 +112,7 @@ export class CodeSnippetEditorTags extends React.Component<
   addTagOnKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
     const inputElement = event.target as HTMLInputElement;
 
-    if (inputElement.value !== '' && event.keyCode === 13) {
+    if (inputElement.value !== '' && event.key === 'Enter') {
       if (this.state.tags.includes(inputElement.value)) {
         alert('Duplicate Tag Name!');
         return;
@@ -190,7 +190,6 @@ export class CodeSnippetEditorTags extends React.Component<
         {hasTags
           ? this.state.tags.map((tag: string, index: number) =>
               ((): JSX.Element => {
-                console.log(this.state.tags);
                 if (!this.state.selectedTags) {
                   return (
                     <ul

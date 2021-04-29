@@ -32,8 +32,8 @@ import { CodeSnippetService } from './CodeSnippetService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
-import { saveOverWriteFile } from './CodeSnippetInputDialog';
-import { validateInputs } from './CodeSnippetUtilities';
+import { showMessage } from './CodeSnippetConfirmMessage';
+import { validateInputs, saveOverWriteFile } from './CodeSnippetUtilities';
 
 /**
  * CSS style classes
@@ -393,6 +393,7 @@ export class CodeSnippetEditor extends ReactWidget {
             return false;
           }
         });
+        showMessage();
       }
     }
     // modify existing snippet
