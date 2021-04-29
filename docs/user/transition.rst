@@ -55,7 +55,10 @@ script to help with the transition:
     for snip in snippets:
         if not('tags' in snip):
             snip["tags"] = []
-        print(snip, end=",\n")
+        if snippets.index(snip) == len(snippets)-1:
+            print(snip)
+        else:
+            print(snip, end=",\n")
 
 
 This script will concatenate and print out all of the json objects in a /snippets folder
