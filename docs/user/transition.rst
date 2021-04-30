@@ -23,6 +23,32 @@ At the end of the existing list, paste the copied JSON object, make sure the id 
 sequential to what already is in the list. Save using the save icon in the top right corner.
 Snippet should appear in the snippets panel!
 
+Open JSON file of snippet to upload:
+
+.. image:: ../Design/open_JSON.png
+   :align: center
+
+Copy the JSON object:
+
+.. image:: ../Design/copy_JSON.png
+   :align: center
+
+Navigate to settings:
+
+.. image:: ../Design/go_to_settings.png
+   :align: center
+
+Paste JSON object into list of snippets:
+
+.. image:: ../Design/saveASingleSnippet.gif
+   :align: center
+
+
+After saving, new snippet should appear at the bottom of the snippets list in the snippet panel:
+
+.. image:: ../Design/snippet_added.png
+   :align: center
+
 
 Transferring Multiple Snippets
 ------------------------------
@@ -63,4 +89,4 @@ script to help with the transition:
 
 This script will concatenate and print out all of the json objects in a /snippets folder
 in a project. After running the script, copy the output and paste into the User Preferences
-panel in settings.
+panel in settings, similar to the single snippet upload.
