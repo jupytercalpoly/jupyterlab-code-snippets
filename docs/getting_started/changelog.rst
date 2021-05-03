@@ -3,6 +3,16 @@
 Changelog
 ---------
 
+v2.1.0
+^^^^^^
+* Made snippets globally accessible.
+* Improved search : can search for code, language, and name in search bar.
+* Expanded tags : now can filter by language tag and by snippet tag.
+* Added ability to download snippets to local directory.
+* Improved snippet creation process by making description optional and allowing uppercase
+and spaces in snippet names.
+* Made minor UI and bug fixes.
+
 v2.0.1
 ^^^^^^
 * Fixed the issue with creating the snippet from scratch or editing the snippet in the editor.
