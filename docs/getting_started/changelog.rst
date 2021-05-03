@@ -9,8 +9,7 @@ v2.1.0
 * Improved search : can search for code, language, and name in search bar.
 * Expanded tags : now can filter by language tag and by snippet tag.
 * Added ability to download snippets to local directory.
-* Improved snippet creation process by making description optional and allowing uppercase
-and spaces in snippet names.
+* Improved snippet creation process by making description optional and allowing uppercase and spaces in snippet names.
 * Made minor UI and bug fixes.
 
 v2.0.1
