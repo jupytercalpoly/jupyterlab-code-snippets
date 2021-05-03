@@ -143,12 +143,15 @@
 }
 
 .jp-codeSnippet-Message-content {
-  display: flex;
-  flex-direction: column;
   background: var(--jp-layout-color1);
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0px;
+  padding-left: 40px;
   border-top: 7px solid #388e3c;
   width: 250px;
+  min-width: 200px;
+  min-height: 50px;
   box-sizing: border-box;
   box-shadow: var(--jp-elevation-z20);
   word-wrap: break-word;
@@ -156,10 +159,20 @@
   font-size: var(--jp-ui-font-size1);
   color: var(--jp-ui-font-color1);
   margin: auto 6px 30px auto;
+  resize: none;
+}
+
+.jp-codeSnippet-Message-content .jp-Dialog-header {
+  padding: 0px;
+}
+
+.jp-codeSnippet-Message-content .jp-Dialog-footer {
+  padding: 0px;
 }
 
 .jp-codeSnippet-Message-body {
   display: flex;
+  flex-direction: row;
   align-items: center;
 }
 
@@ -546,14 +559,18 @@ mark.jp-codeSnippet-search-bolding {
     border-width: 3px;
   } */
 
-.jp-codeSnippet-dialog-input.touched:invalid,
+.jp-codeSnippet-dialog-name-input.touched:invalid,
+.jp-codeSnippet-dialog-desc-input.touched:invalid,
+.jp-codeSnippet-dialog-lang-input.touched:invalid,
 .jp-codeSnippet-editor-name.touched:invalid,
 .jp-codeSnippet-editor-description.touched:invalid,
 .jp-codeSnippet-editor-language.touched:invalid {
   border: var(--jp-border-width) solid var(--jp-error-color1);
 }
 
-.jp-codeSnippet-dialog-input.jp-mod-styled {
+.jp-codeSnippet-dialog-name-input.jp-mod-styled,
+.jp-codeSnippet-dialog-desc-input.jp-mod-styled,
+.jp-codeSnippet-dialog-lang-input.jp-mod-styled {
   margin-bottom: 10px;
   font-size: var(--jp-ui-font-size1);
 }

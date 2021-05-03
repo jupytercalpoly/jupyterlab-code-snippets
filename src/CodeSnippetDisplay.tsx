@@ -92,6 +92,7 @@ import {
   sasIcon,
 } from './CodeSnippetLanguages';
 import { ICodeSnippetEditorMetadata } from './CodeSnippetEditor';
+import { showMessage } from './CodeSnippetMessage';
 
 /**
  * The CSS class added to code snippet widget.
@@ -1289,10 +1290,8 @@ export class CodeSnippetDisplay extends React.Component<
         title: 'Insert, copy, edit, and delete',
         icon: moreOptionsIcon,
         onClick: (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
-          console.log('three dots clicked');
           showMoreOptions({
             body: new OptionsHandler(this, codeSnippet),
-            // buttons: [],
           });
           this._setOptionsPosition(event);
         },
@@ -1316,7 +1315,6 @@ export class CodeSnippetDisplay extends React.Component<
           event.preventDefault();
           showMoreOptions({
             body: new OptionsHandler(this, codeSnippet),
-            // buttons: [],
           });
           this._setOptionsPosition(event);
         }}
@@ -1518,6 +1516,7 @@ export class CodeSnippetDisplay extends React.Component<
           format: 'text',
           content: JSON.stringify(codeSnippet),
         });
+        showMessage('download');
       }
     });
   }
@@ -1549,7 +1548,7 @@ export class CodeSnippetDisplay extends React.Component<
     copySnip.textContent = 'Copy snippet to clipboard';
     copySnip.onclick = (): void => {
       Clipboard.copyToSystem(codeSnippet.code.join('\n'));
-      alert('saved to clipboard');
+      showMessage('copy');
       this.removeOptionsNode();
     };
     const editSnip = document.createElement('div');

@@ -85,12 +85,6 @@ export class OptionsMessage<T> extends Widget {
    * not be called directly by user code.
    */
   handleEvent(event: Event): void {
-    // if (event.type == 'click') {
-    //   console.log('click');
-    // } else {
-    //   console.log('default');
-    //   console.log(event.type);
-    // }
     switch (event.type) {
       case 'click':
         this._evtClick(event as MouseEvent);

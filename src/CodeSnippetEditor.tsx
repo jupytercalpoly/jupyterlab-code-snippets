@@ -32,7 +32,7 @@ import { CodeSnippetService } from './CodeSnippetService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
 import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
-import { showMessage } from './CodeSnippetConfirmMessage';
+import { showMessage } from './CodeSnippetMessage';
 import { validateInputs, saveOverWriteFile } from './CodeSnippetUtilities';
 
 /**
@@ -393,7 +393,7 @@ export class CodeSnippetEditor extends ReactWidget {
             return false;
           }
         });
-        showMessage();
+        showMessage('confirm');
       }
     }
     // modify existing snippet

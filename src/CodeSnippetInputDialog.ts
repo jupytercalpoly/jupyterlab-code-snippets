@@ -9,7 +9,7 @@ import { Widget } from '@lumino/widgets';
 import { Message } from '@lumino/messaging';
 
 import { ICodeSnippet, CodeSnippetService } from './CodeSnippetService';
-import { showMessage } from './CodeSnippetConfirmMessage';
+import { showMessage } from './CodeSnippetMessage';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
@@ -209,7 +209,7 @@ function createNewSnippet(
   });
 
   codeSnippetWidget.renderCodeSnippetsSignal.emit(codeSnippetManager.snippets);
-  showMessage();
+  showMessage('confirm');
 }
 
 /**
