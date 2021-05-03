@@ -248,7 +248,7 @@ export namespace Preview {
    * The preview widget tracker.
    */
   export const tracker = new WidgetTracker<Preview<any>>({
-    namespace: '@jupyterlab/code_snippet:ConfirmWidget',
+    namespace: '@jupyterlab/code_snippet:preview',
   });
 }
 

@@ -1,21 +1,19 @@
 // Copyright (c) 2020, jupytercalpoly
 // Distributed under the terms of the BSD-3 Clause License.
 
-import { showDialog, Dialog } from '@jupyterlab/apputils';
+import { Dialog } from '@jupyterlab/apputils';
 import { addIcon, checkIcon } from '@jupyterlab/ui-components';
 import { Contents } from '@jupyterlab/services';
 
 import { Widget } from '@lumino/widgets';
-import { JSONObject } from '@lumino/coreutils';
+import { Message } from '@lumino/messaging';
 
 import { ICodeSnippet, CodeSnippetService } from './CodeSnippetService';
+import { showMessage } from './CodeSnippetMessage';
 
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
-import { showMessage } from './ConfirmMessage';
-import { showCodeSnippetForm, CodeSnippetForm } from './CodeSnippetForm';
-
-import checkSVGstr from '../style/icon/jupyter_checkmark.svg';
+import { validateInputs, saveOverWriteFile } from './CodeSnippetUtilities';
 
 /**
  * The class name added to file dialogs.
@@ -25,25 +23,72 @@ const FILE_DIALOG_CLASS = 'jp-codeSnippet-fileDialog';
 /**
  * CSS STYLING
  */
-const CODE_SNIPPET_DIALOG_INPUT = 'jp-codeSnippet-dialog-input';
+// const CODE_SNIPPET_DIALOG_INPUT = 'jp-codeSnippet-dialog-input';
+const CODE_SNIPPET_DIALOG_NAME_INPUT = 'jp-codeSnippet-dialog-name-input';
+const CODE_SNIPPET_DIALOG_DESC_INPUT = 'jp-codeSnippet-dialog-desc-input';
+const CODE_SNIPPET_DIALOG_LANG_INPUT = 'jp-codeSnippet-dialog-lang-input';
 const CODE_SNIPPET_INPUTTAG_PLUS_ICON = 'jp-codeSnippet-inputTag-plusIcon';
 const CODE_SNIPPET_INPUTTAG_LIST = 'jp-codeSnippet-inputTagList';
 const CODE_SNIPPET_INPUT_TAG = 'jp-codeSnippet-inputTag';
 const CODE_SNIPPET_INPUT_TAG_CHECK = 'jp-codeSnippet-inputTag-check';
-const CODE_SNIPPET_CONFIRM_TEXT = 'jp-codeSnippet-confirm-text';
 
-/**
- * A stripped-down interface for a file container.
- */
-export interface IFileContainer extends JSONObject {
-  /**
-   * The list of item names in the current working directory.
-   */
-  items: string[];
-  /**
-   * The current working directory of the file container.
-   */
-  path: string;
+class CodeSnippetDialog extends Dialog<any> {
+  first: HTMLElement;
+  protected onAfterAttach(msg: Message): void {
+    const node = this.node;
+    node.addEventListener('keydown', this, false);
+    node.addEventListener('contextmenu', this, true);
+    node.addEventListener('click', this, true);
+    document.addEventListener('focus', this, true);
+
+    const body = this.node.querySelector('.jp-Dialog-body');
+    const el = body.querySelector(
+      `.${CODE_SNIPPET_DIALOG_NAME_INPUT}`
+    ) as HTMLElement;
+    this.first = el;
+    el.focus();
+  }
+
+  protected onAfterDetach(msg: Message): void {
+    const node = this.node;
+    node.removeEventListener('keydown', this, false);
+    node.removeEventListener('contextmenu', this, true);
+    node.removeEventListener('click', this, true);
+    document.removeEventListener('focus', this, true);
+  }
+
+  protected _evtKeydown(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'Escape':
+        event.stopPropagation();
+        event.preventDefault();
+        this.reject();
+        break;
+      case 'Tab': {
+        const last_button = document.querySelector('.jp-mod-accept');
+        if (document.activeElement === last_button && !event.shiftKey) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.first.focus();
+        }
+        break;
+      }
+      case 'Enter':
+        event.stopPropagation();
+        event.preventDefault();
+        this.resolve();
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+function showCodeSnippetDialog<T>(
+  options: Partial<Dialog.IOptions<T>> = {}
+): Promise<Dialog.IResult<T>> {
+  const dialog = new CodeSnippetDialog(options);
+  return dialog.launch();
 }
 
 /**
@@ -101,19 +146,19 @@ export function showInputDialog(
   language: string,
   body: InputHandler
 ): Promise<Contents.IModel | null> {
-  return showCodeSnippetForm({
+  return showCodeSnippetDialog({
     title: 'Save Code Snippet',
     body: body,
-    buttons: [
-      CodeSnippetForm.cancelButton(),
-      CodeSnippetForm.okButton({ label: 'Save' }),
-    ],
-  }).then((result: CodeSnippetForm.IResult<string[]>) => {
+    buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
+  }).then((result: Dialog.IResult<string[]>) => {
     if (!result.value) {
       return null;
     }
 
-    if (validateForm(result) === false) {
+    if (
+      validateInputs(result.value[0], result.value[1], result.value[2]) ===
+      false
+    ) {
       showInputDialog(
         codeSnippetWidget,
         tags,
@@ -168,54 +213,7 @@ function createNewSnippet(
   });
 
   codeSnippetWidget.renderCodeSnippetsSignal.emit(codeSnippetManager.snippets);
-  showMessage({
-    body: new MessageHandler(),
-  });
-}
-
-/**
- * Rename a file, warning for overwriting another.
- */
-export async function saveOverWriteFile(
-  codeSnippetManager: CodeSnippetService,
-  oldSnippet: ICodeSnippet,
-  newSnippet: ICodeSnippet
-): Promise<boolean> {
-  const newName = newSnippet.name;
-
-  return await shouldOverwrite(newName).then((res) => {
-    if (res) {
-      newSnippet.id = oldSnippet.id;
-
-      codeSnippetManager.deleteSnippet(oldSnippet.id).then((res: boolean) => {
-        if (!res) {
-          console.log('Error in overwriting a snippet (delete)');
-          return false;
-        }
-      });
-      codeSnippetManager.addSnippet(newSnippet).then((res: boolean) => {
-        if (!res) {
-          console.log('Error in overwriting a snippet (add)');
-          return false;
-        }
-      });
-      return true;
-    }
-  });
-}
-
-/**
- * Ask the user whether to overwrite a file.
- */
-async function shouldOverwrite(newName: string): Promise<boolean> {
-  const options = {
-    title: 'Overwrite code snippet?',
-    body: `"${newName}" already exists, overwrite?`,
-    buttons: [Dialog.cancelButton(), Dialog.warnButton({ label: 'Overwrite' })],
-  };
-  return showDialog(options).then((result) => {
-    return result.button.accept;
-  });
+  showMessage('confirm');
 }
 
 /**
@@ -226,36 +224,6 @@ async function shouldOverwrite(newName: string): Promise<boolean> {
 export function isValidFileName(name: string): boolean {
   const validNameExp = /[/\\:]/;
   return name.length > 0 && !validNameExp.test(name);
-}
-
-/**
- * Test whether user typed in all required inputs.
- */
-export function validateForm(
-  input: CodeSnippetForm.IResult<string[]>
-): boolean {
-  let status = true;
-  let message = '';
-  const name = input.value[0];
-  const language = input.value[2];
-
-  if (name === '') {
-    message += 'Name must be filled out\n';
-    status = false;
-  }
-  if (language === '') {
-    message += 'Language must be filled out\n';
-    status = false;
-  }
-  if (!SUPPORTED_LANGUAGES.includes(language)) {
-    message += 'Language must be one of the options';
-    status = false;
-  }
-  // TODO: change it to a better UI
-  if (status === false) {
-    alert(message);
-  }
-  return status;
 }
 
 /**
@@ -274,9 +242,15 @@ class InputHandler extends Widget {
   getValue(): string[] {
     const inputs = [];
     inputs.push(
-      (this.node.getElementsByTagName('input')[0] as HTMLInputElement).value,
-      (this.node.getElementsByTagName('input')[1] as HTMLInputElement).value,
-      (this.node.getElementsByTagName('input')[2] as HTMLInputElement).value
+      (this.node.querySelector(
+        `.${CODE_SNIPPET_DIALOG_NAME_INPUT}`
+      ) as HTMLInputElement).value,
+      (this.node.querySelector(
+        `.${CODE_SNIPPET_DIALOG_DESC_INPUT}`
+      ) as HTMLInputElement).value,
+      (this.node.querySelector(
+        `.${CODE_SNIPPET_DIALOG_LANG_INPUT}`
+      ) as HTMLInputElement).value
     );
 
     inputs.push(...Private.selectedTags);
@@ -285,12 +259,6 @@ class InputHandler extends Widget {
     Private.selectedTags = [];
 
     return inputs;
-  }
-}
-
-class MessageHandler extends Widget {
-  constructor() {
-    super({ node: Private.createConfirmMessageNode() });
   }
 }
 
@@ -324,7 +292,7 @@ class Private {
     const nameTitle = document.createElement('label');
     nameTitle.textContent = 'Snippet Name (required)';
     const name = document.createElement('input');
-    name.className = CODE_SNIPPET_DIALOG_INPUT;
+    name.className = CODE_SNIPPET_DIALOG_NAME_INPUT;
     name.required = true;
     name.placeholder = 'Ex. starter code';
     name.onblur = Private.handleOnBlur;
@@ -332,14 +300,14 @@ class Private {
     const descriptionTitle = document.createElement('label');
     descriptionTitle.textContent = 'Description (optional)';
     const description = document.createElement('input');
-    description.className = CODE_SNIPPET_DIALOG_INPUT;
+    description.className = CODE_SNIPPET_DIALOG_DESC_INPUT;
     description.placeholder = 'Description';
     description.onblur = Private.handleOnBlur;
 
     const languageTitle = document.createElement('label');
     languageTitle.textContent = 'Language (required)';
     const languageInput = document.createElement('input');
-    languageInput.className = CODE_SNIPPET_DIALOG_INPUT;
+    languageInput.className = CODE_SNIPPET_DIALOG_LANG_INPUT;
     languageInput.setAttribute('list', 'languages');
     // capitalize the first character
     languageInput.value = language[0].toUpperCase() + language.slice(1);
@@ -400,7 +368,6 @@ class Private {
 
   // replace the newTagName to input and delete plusIcon and insertbefore current tag on keydown or blur (refer to cell tags)
   static addTag(event: MouseEvent): boolean {
-    event.preventDefault();
     const target = event.target as HTMLElement;
 
     const plusIcon = document.querySelector(
@@ -420,7 +387,7 @@ class Private {
   static addTagOnKeyDown(event: KeyboardEvent): void {
     const inputElement = event.target as HTMLInputElement;
 
-    if (inputElement.value !== '' && event.keyCode === 13) {
+    if (inputElement.value !== '' && event.key === 'Enter') {
       // duplicate tag
       if (Private.allSnippetTags.includes(inputElement.value)) {
         alert('Duplicate Tag Name!');
@@ -467,6 +434,9 @@ class Private {
       Private.allSnippetTags.push(tagBtn.innerText);
 
       // reset InputElement
+      inputElement.blur();
+      event.stopPropagation();
+    } else if (event.key === 'Escape') {
       inputElement.blur();
       event.stopPropagation();
     }
@@ -534,19 +504,5 @@ class Private {
       }
     }
     return false;
-  }
-
-  // create a confirm message when new snippet is created successfully
-  static createConfirmMessageNode(): HTMLElement {
-    const body = document.createElement('div');
-    body.innerHTML = checkSVGstr;
-
-    const messageContainer = document.createElement('div');
-    messageContainer.className = CODE_SNIPPET_CONFIRM_TEXT;
-    const message = document.createElement('text');
-    message.textContent = 'Saved as Snippet!';
-    messageContainer.appendChild(message);
-    body.append(messageContainer);
-    return body;
   }
 }

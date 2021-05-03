@@ -36,13 +36,7 @@ import {
 import { CodeEditor, IEditorServices } from '@jupyterlab/codeeditor';
 import * as nbformat from '@jupyterlab/nbformat';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import {
-  Cell,
-  CodeCellModel,
-  ICodeCellModel,
-  MarkdownCell,
-  CodeCell,
-} from '@jupyterlab/cells';
+import { CodeCellModel, MarkdownCell, CodeCell } from '@jupyterlab/cells';
 
 import { Widget } from '@lumino/widgets';
 import { find, StringExt } from '@lumino/algorithm';
@@ -51,8 +45,8 @@ import { MimeData } from '@lumino/coreutils';
 
 import React from 'react';
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
-import { FilterTools } from './FilterTools';
-import { showPreview } from './PreviewSnippet';
+import { FilterTools } from './CodeSnippetFilterTools';
+import { showPreview } from './CodeSnippetPreview';
 import { showMoreOptions } from './CodeSnippetMenu';
 
 import { CodeSnippetContentsService } from './CodeSnippetContentsService';
@@ -98,6 +92,7 @@ import {
   sasIcon,
 } from './CodeSnippetLanguages';
 import { ICodeSnippetEditorMetadata } from './CodeSnippetEditor';
+import { showMessage } from './CodeSnippetMessage';
 
 /**
  * The CSS class added to code snippet widget.
@@ -127,6 +122,7 @@ const CODE_SNIPPET_MORE_OTPIONS_DOWNLOAD =
   'jp-codeSnippet-more-options-download';
 const CODE_SNIPPET_CREATE_NEW_BTN = 'jp-createSnippetBtn';
 const CODE_SNIPPET_NAME = 'jp-codeSnippet-name';
+const OPTIONS_BODY = 'jp-codeSnippet-options-body';
 
 /**
  * The threshold in pixels to start a drag event.
@@ -695,8 +691,7 @@ export class CodeSnippetDisplay extends React.Component<
   ): Promise<void> {
     const target = event.target as HTMLElement;
 
-    const modelFactory = new ModelFactory();
-    const model = modelFactory.createCodeCell({});
+    const model = new CodeCellModel({});
     model.value.text = codeSnippet.code.join('\n');
     model.metadata;
 
@@ -1295,7 +1290,9 @@ export class CodeSnippetDisplay extends React.Component<
         title: 'Insert, copy, edit, and delete',
         icon: moreOptionsIcon,
         onClick: (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
-          showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
+          showMoreOptions({
+            body: new OptionsHandler(this, codeSnippet),
+          });
           this._setOptionsPosition(event);
         },
       },
@@ -1316,7 +1313,9 @@ export class CodeSnippetDisplay extends React.Component<
           event: React.MouseEvent<HTMLElement, MouseEvent>
         ): void => {
           event.preventDefault();
-          showMoreOptions({ body: new OptionsHandler(this, codeSnippet) });
+          showMoreOptions({
+            body: new OptionsHandler(this, codeSnippet),
+          });
           this._setOptionsPosition(event);
         }}
       >
@@ -1456,11 +1455,10 @@ export class CodeSnippetDisplay extends React.Component<
       title: 'Delete snippet?',
       body: 'Are you sure you want to delete "' + codeSnippet.name + '"? ',
       buttons: [
-        Dialog.okButton({
-          label: 'Delete',
-          displayType: 'warn',
-        }),
         Dialog.cancelButton(),
+        Dialog.warnButton({
+          label: 'Delete',
+        }),
       ],
     }).then((response: any): void => {
       if (response.button.accept) {
@@ -1518,6 +1516,7 @@ export class CodeSnippetDisplay extends React.Component<
           format: 'text',
           content: JSON.stringify(codeSnippet),
         });
+        showMessage('download');
       }
     });
   }
@@ -1533,6 +1532,7 @@ export class CodeSnippetDisplay extends React.Component<
   // create dropdown menu
   public createOptionsNode(codeSnippet: ICodeSnippet): HTMLElement {
     const body = document.createElement('div');
+    body.className = OPTIONS_BODY;
 
     const optionsContainer = document.createElement('div');
     optionsContainer.className = CODE_SNIPPET_MORE_OTPIONS_CONTENT;
@@ -1548,7 +1548,7 @@ export class CodeSnippetDisplay extends React.Component<
     copySnip.textContent = 'Copy snippet to clipboard';
     copySnip.onclick = (): void => {
       Clipboard.copyToSystem(codeSnippet.code.join('\n'));
-      alert('saved to clipboard');
+      showMessage('copy');
       this.removeOptionsNode();
     };
     const editSnip = document.createElement('div');
@@ -1675,42 +1675,5 @@ class Private {
    */
   static createPreviewNode(): HTMLElement {
     return this.createPreviewContent();
-  }
-}
-
-/**
- * A content factory for console children.
- */
-export interface IContentFactory extends Cell.IContentFactory {
-  /**
-   * Create a new code cell widget.
-   */
-  createCodeCell(options: CodeCell.IOptions): CodeCell;
-}
-
-/**
- * The default implementation of an `IModelFactory`.
- */
-export class ModelFactory {
-  /**
-   * The factory for output area models.
-   */
-  readonly codeCellContentFactory: CodeCellModel.IContentFactory;
-
-  /**
-   * Create a new code cell.
-   *
-   * @param source - The data to use for the original source data.
-   *
-   * @returns A new code cell. If a source cell is provided, the
-   *   new cell will be initialized with the data from the source.
-   *   If the contentFactory is not provided, the instance
-   *   `codeCellContentFactory` will be used.
-   */
-  createCodeCell(options: CodeCellModel.IOptions): ICodeCellModel {
-    if (!options.contentFactory) {
-      options.contentFactory = this.codeCellContentFactory;
-    }
-    return new CodeCellModel(options);
   }
 }
