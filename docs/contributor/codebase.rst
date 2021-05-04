@@ -7,7 +7,7 @@ Directories
 Code Snippets: ``snippets/``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This comprises the predefined code snippets for the extension. Refer to
+This comprises the sample code snippets for the extension. Refer to
 `Code Snippet Metadata`_ to learn more about the content of each code
 snippet.
 
@@ -16,11 +16,11 @@ Binder setup: ``binder/``
 This contains an environment specification for ``repo2docker`` which
 allows the repository to be tested on `mybinder.org`_. This
 specification is developer focused. For a more user-focused binder see
-the `JupyterLab demo`_
+the `JupyterLab demo`_.
 
-Test: ``test/``
-^^^^^^^^^^^^^^^
-This contains test scripts that test our codebase using jest.
+Test: ``test/`` ``cypress/``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``test/`` contains unit test scripts using jest. And, ``cypress/`` contains integration test scripts using Cypress.
 
 Design: ``design/``
 ^^^^^^^^^^^^^^^^^^^
@@ -41,30 +41,25 @@ Description of each file in ``src/``
 
 -  CodeSnippetContentsService.ts: this contains a wrapper class that
    uses the functions defined in @jupyterlab/contentsSerivce.
--  CodeSnippetDisplay.tsx: this contains a React component that renders
+-  CodeSnippetDisplay.tsx: this contains a major React component that defines key code snippets UI and renders
    code snippets.
 -  CodeSnippetEditor.tsx : this contains a React component that creates
    an editor for each code snippet.
 -  CodeSnippetEditorTags.tsx: this contains a React component that
    renders code snippet tags in code snippet editor.
--  CodeSnippetForm.tsx: this contains a Lumino widget that creates a
-   input form to create a new code snippet as a modal window.
--  CodeSnippetInputDialog.ts: this contains a Lumino widget that defines
+-  CodeSnippetFilterTools.tsx: this contains a react component that renders a
+   search bar and filter box.
+-  CodeSnippetInputDialog.ts: this contains a class that defines
    the content of the custom code snippet form.
 -  CodeSnippetLanguages.ts: this contains a list of supported languages
    and their corresponding icons.
--  CodeSnippetWidget.tsx: this contains a Lumino react widget that acts
-   as a container of code snippets.
--  CodeSnippetWidgetModel.ts: this contains a code snippet model that
-   keeps track of a list of code snippets being used in the extension.
--  ConfirmMessage.ts: this contains a luminio widget that creates
-   confirmation dialog as a modal window after snippet creation.
--  FilterTools.tsx: this contains a react component that renders a
-   search bar and filter box.
 -  CodeSnippetMenu.ts: this contains a lumino widget that creates dropdown
    dialog when three dots icon is clicked.
--  PreviewSnippet.ts: this contains a lumino widget used to create
-   preview minimap.
+-  CodeSnippetMessage.ts: this contains a class that creates a message as a modal window after creating, copying, or downloading snippet.
+-  CodeSnippetPreview.ts: this contains a lumino widget that creates a preview minimap.
+-  CodeSnippetService.ts: this contains a wrapper class that handles the backend storage of the code snippets in JupyterLab Settings API.
+-  CodeSnippetUtilities.ts: this contains a few utility functions that are used across the codebase.
+-  CodeSnippetWidget.tsx: this contains a Lumino react widget that acts as a container of code snippets.
 -  index.ts: this contains the activation of our extension.
 
 .. _Code Snippet Metadata: https://jupyterlab-code-snippets-documentation.readthedocs.io/en/latest/contributor/snippet_metadata.html

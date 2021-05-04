@@ -9,8 +9,10 @@ v2.1.0
 * Improved search : can search for code, language, and name in search bar.
 * Expanded tags : now can filter by language tag and by snippet tag.
 * Added ability to download snippets to local directory.
-* Improved snippet creation process by making description optional and allowing uppercase
-and spaces in snippet names.
+* Made right click to open the code snippet contextMenu possible anywhere on code snippet in addition to the three dots.
+* Made possible to create or move a snippet while snippets are filtered.
+* Set the language of a new snippet as the kernel language by default.
+* Improved snippet creation process by making description optional and allowing uppercase and spaces in snippet names.
 * Made minor UI and bug fixes.
 
 v2.0.1
