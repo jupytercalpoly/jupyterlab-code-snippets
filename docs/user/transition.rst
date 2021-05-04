@@ -27,28 +27,28 @@ Snippet should appear in the snippets panel!
 
 Open JSON file of snippet to upload:
 
-.. image:: ../Design/open_JSON.png
+.. image:: ../../Design/open_JSON.png
    :align: center
 
 Copy the JSON object:
 
-.. image:: ../Design/copy_JSON.png
+.. image:: ../../Design/copy_JSON.png
    :align: center
 
 Navigate to settings:
 
-.. image:: ../Design/go_to_settings.png
+.. image:: ../../Design/go_to_settings.png
    :align: center
 
 Paste JSON object into list of snippets:
 
-.. image:: ../Design/saveASingleSnippet.gif
+.. image:: ../../Design/saveASingleSnippet.gif
    :align: center
 
 
 After saving, new snippet should appear at the bottom of the snippets list in the snippet panel:
 
-.. image:: ../Design/snippet_added.png
+.. image:: ../../Design/snippet_added.png
    :align: center
 
 
@@ -98,24 +98,29 @@ panel in settings, similar to the single snippet upload.
 
 Search and Tag Update
 ---------------------
-.. image:: ../Design/unselectedTags.png
+
+.. image:: ../../Design/unselectedTags.png
    :align: center
 
 NOTE: Snippet tags function on an OR basis, as in when the "data analytics" tag and the "import statements" tag are selected together, 
 the panel displays any tags that are tagged as import statements OR tagged as "data analytics."
 ex) Snippet tags selected together:
-.. image:: ../Design/snippetTagsSelected.png
+
+.. image:: ../../Design/snippetTagsSelected.png
    :align: center
 
 ex) Language tags selected together:
-.. image:: ../Design/languageTagsSelected.png
+
+.. image:: ../../Design/languageTagsSelected.png
    :align: center
 
 NOTE 2: Language tags and snippets tags have an AND relationship. As in when the "Python" tag and the "data analytics" tags are selected together, 
 only snippets that are both in the language Python AND tagged as data analytics will appear.
-.. image:: ../Design/langAndSnippetTag.png
+
+.. image:: ../../Design/langAndSnippetTag.png
    :align: center
 
 NOTE 3: When language tags are selected, only snippet tags in that language will appear for ease of selection.
-.. image:: ../Design/pythonTagOnly.png
+
+.. image:: ../../Design/pythonTagOnly.png
    :align: center

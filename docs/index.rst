@@ -26,6 +26,7 @@ JupyterLab Code Snippets empowers you to write code more rapidly. `Try it on Bin
    
    user/ux
    user/features
+   user/transition
 
 .. toctree::
    :maxdepth: 1
