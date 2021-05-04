@@ -27,7 +27,7 @@ Snippet should appear in the snippets panel!
 
 Open JSON file of snippet to upload:
 
-.. image:: ../../Design/open_JSON.png
+.. image:: ../../Design/smallOpenJSON.png
    :align: center
 
 Copy the JSON object:
