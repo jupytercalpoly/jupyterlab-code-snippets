@@ -19,7 +19,7 @@ Find snippet
 
 Edit snippet
 ^^^^^^^^^^^^
-* Click 3 dots and select "Edit snippet" in dropdown.
+* Click 3 dots (or right click) and select "Edit snippet" in dropdown.
 
 Use snippet
 ^^^^^^^^^^^
@@ -27,9 +27,14 @@ Use snippet
 
    *  Will put snippet code into a cell upon insertion.
    
-* Click 3 dots and select "Insert snippet" to insert snippet where cursor was on notebook.
-* Click 3 dots and select "Copy to clipboard" to copy snippet and paste it wherever desired.
+* Click 3 dots (or right click) and select "Insert snippet" to insert snippet where cursor was on notebook.
+* Click 3 dots (or right click) and select "Copy to clipboard" to copy snippet and paste it wherever desired.
+
+Download snippet
+^^^^^^^^^^^^^^^^
+* Click 3 dots (or right click) and select "Download snippet" and input the relative path to download. If the path is not given, it downloads it to the current directory.
+* Easy way to share snippets with others.
 
 Delete snippet
 ^^^^^^^^^^^^^^
-* Click 3 dots and select "Delete snippet" and confirm delete in dialog.
+* Click 3 dots (or right click) and select "Delete snippet" and confirm delete in dialog.
