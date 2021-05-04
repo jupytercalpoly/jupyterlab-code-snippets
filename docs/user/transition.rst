@@ -95,6 +95,51 @@ This script will concatenate and print out all of the json objects in a /snippet
 in a project. After running the script, copy the output and paste into the User Preferences
 panel in settings, similar to the single snippet upload.
 
+NOTE: If adding objects to existing list of snippets in user preferences, change counter variable
+ to n+1 where n is the ID of the last snippet stored in user preferences.
+
+This script will print something like : 
+
+.. code::
+   {"snippets": [
+
+   {
+      "code": [
+         "print(\"hello\")"
+      ],
+      "description": "",
+      "id": 0,
+      "language": "Python",
+      "name": "new_snippet_3",
+      "tags": [
+         "import statements"
+      ]
+   },
+   {
+      "code": [
+         "def most_frequent(list):",
+         "    return max(set(list), key = list.count)",
+         "  ",
+         "",
+         "numbers = [1,2,1,2,3,2,1,4,2]",
+         "most_frequent(numbers)  "
+      ],
+      "description": "This method returns the most frequent element that appears in a list.",
+      "id": 1,
+      "language": "Python",
+      "name": "most_frequent",
+      "tags": []
+   }
+   ]
+   }
+
+After generating this dictionary, one can simply delete the current contents of user preferences 
+(Advanced Settings > Code Snippet Manager > User Preferences) and paste this dictionary instead.
+This will delete the current snippets at the endpoint (will be default snippets if extension freshly updated)
+and replace them with the old snippets.
+
+NOTE: If adding objects onto an existing list of objects, make sure the ID numbers are all in sequential,
+ascending order.
 
 Search and Tag Update
 ---------------------
@@ -124,3 +169,7 @@ NOTE 3: When language tags are selected, only snippet tags in that language will
 
 .. image:: ../../Design/smallPythonTagOnly.png
    :align: center
+
+NOTE 4: If 2 of the same language tags appear in the Language Tags section this indicates that one of the snippets
+contains a snippet tag that matches the language name. To get rid of the duplicate tag, filter through snippets and
+untag any snippets that have that Language in their snippet tags.
