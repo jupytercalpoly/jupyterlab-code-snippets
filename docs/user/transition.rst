@@ -151,6 +151,7 @@ Search and Tag Update
 
 **NOTE 1**: Snippet tags function on an OR basis, as in when the "data analytics" tag and the "import statements" tag are selected together, 
 the panel displays any tags that are tagged as import statements OR tagged as "data analytics."
+
 ex) Snippet tags selected together:
 
 .. image:: ../../Design/smallSnippetTagsSelected.png
