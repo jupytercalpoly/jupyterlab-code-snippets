@@ -101,6 +101,8 @@ to n+1 where n is the ID of the last snippet stored in user preferences.
 This script will print something like : 
 
 .. code::
+
+
    {"snippets": [
 
    {
