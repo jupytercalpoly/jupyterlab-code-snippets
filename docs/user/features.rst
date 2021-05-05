@@ -22,12 +22,12 @@ There are several ways to create a new snippet.
     Then, clicking the option will open the dialog as below where you can input name, description, language, tags, and codes of a snippet.
 
     .. image:: ../../Design/code_snippet_input_dialog.png
-        :align:center
+        :align: center
 
 2. More easily, just drag notebook cell(s) to the code snippet explorer on the left to create a new snippet. It will also open the dialog as above for your inputs.
 
     .. image:: ../../Design/create_from_scratch.png
-        :align:center
+        :align: center
 
 3. Hit the plus button next to the search bar (refer to `Search of Code Snippets`_) to create a new snippet if you want to create a snippet not from the notebook cell.
 
@@ -37,7 +37,7 @@ Use of Code Snippets
 Click the three dots or right click anywhere on the snippet you want to use. It will open code snippet menu as below to insert, copy, edit, download, or delete the snippet.
 
 .. image:: ../../Design/CodeSnippetMenu.png
-    :align:center
+    :align: center
 
 Insert
 ^^^^^^
@@ -49,28 +49,28 @@ Copy
 Click the copy option to copy. It will create a message on the bottom right corner as below.
 
 .. image:: ../../Design/copy_snippet.png
-    :align:center
+    :align: center
 
 Edit
 ^^^^
 Edit the saved snippets by clicking the edit option. It will open a code snippet editor as below.
 
 .. image:: ../../Design/code_snippet_edit.png
-    :align:center
+    :align: center
 
 Download
 ^^^^^^^^
 Download snippets and share them with others by clicking the download option. It will open a box as below to input **relative path** to download the snippets.
 
 .. image:: ../../Design/download_snippets_box.png
-    :align:center
+    :align: center
 
 Delete
 ^^^^^^
 Delete snippets by clicking delete option. It will open a warning box as below.
 
 .. image:: ../../Design/delete_snippet.png
-    :align:center
+    :align: center
 
 Search of Code Snippets
 -----------------------
@@ -78,9 +78,9 @@ Search of Code Snippets
 With the filter box as below, **search** snippets with name, language, and code with search bar or **filter** them with language/filter tags!  
 
 .. image:: ../../Design/code_snippet_filter_box.png
-    :align:center
+    :align: center
 
 Furthermore, hover over snippets to see the preview of each snippet.
 
 .. image:: ../../Design/code_snippet_preview.png
-    :align:center
+    :align: center
