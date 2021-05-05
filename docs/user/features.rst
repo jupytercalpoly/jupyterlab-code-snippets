@@ -1,41 +1,73 @@
 Features
 ========
 
+Code Snippet Explorer
+---------------------
+
+On the left side bar of the JupyterLab, you can click the snippet icon (</>) to open/close the code snippet explorer that contains all the saved snippets as below.
+You can scroll/resize code snippet explorer, order the snippets with drag and drop, and manage and search the snippets efficiently.
+.. image:: ../../Design/Code Snippet Extension Panel.png
+    :align: center
+
 Creation of a New Snippet
 -------------------------
 
+There are several ways to create a new snippet. 
+1. Highlight lines of code and right click (or use keyboard shortcut (cmd-shift-A or ctrl-shift-A)) to save the code as a snippet. Or, you can select cell(s) and right click (or use keyboard shortcut (cmd-shift-A or ctrl-shift-A)) to save content as a snippet. Then, you will see the "Save As Code Snippet" option in JupyterLab context menu as below:
 .. image:: ../../Design/right_click.png
+    :align: center
+Then, clicking the option will open the dialog as below where you can input name, description, language, tags, and codes of a snippet.
 .. image:: ../../Design/code_snippet_input_dialog.png
-
--  Right click (or use keyboard shortcut (cmd-shift-A or ctrl-shift-A)) and save highlighted lines of code
--  Drag cell into panel to save
--  Select cell(s) and right click to save content as snippet
--  Select cell(s) and use keyboard shortcut (cmd-shift-A or ctrl-shift-A) to save content as snippet
-
+    :align:center
+2. More easily, just drag notebook cell(s) to the code snippet explorer on the left to create a new snippet. It will also open the dialog as above for your inputs.
 .. image:: ../../Design/create_from_scratch.png
--  Plus button to create a new snippet from scratch
+    :align:center
+
+3. Hit the plus button next to the search bar (refer to `Search of Code Snippets`_) to create a new snippet if you want to create a snippet not from the notebook cell.
 
 Use of Code Snippets
 --------------------
 
-.. image:: ../../Design/code_snippet_menu.png
--  Copy, Insert, Edit, Download, Delete snippet
--  Drag snippet into any JupyterLab workspace
+Click the three dots or right click anywhere on the snippet you want to use. It will open code snippet menu as below to insert, copy, edit, download, or delete the snippet.
+.. image:: ../../Design/Code Snippet Menu.png
+    :align:center
+
+Insert
+^^^^^^
+Click the insert option to insert. It will warn you if the language is different from the kernel langauge. 
+Additionally, on hover with six dots on the left (refer to `Search of Code Snippets`_), drag snippet into any JupyterLab workspace to insert the snippet!
+
+Copy
+^^^^
+Click the copy option to copy. It will create a message on the bottom right corner as below.
+.. image:: ../../Design/copy_snippet.png
+    :align:center
+
+Edit
+^^^^
+Edit the saved snippets by clicking the edit option. It will open a code snippet editor as below.
+.. image:: ../../Design/code_snippet_edit.png
+    :align:center
+
+Download
+^^^^^^^^
+Download snippets and share them with others by clicking the download option. It will open a box as below to input **relative path** to download the snippets.
+.. image:: ../../Design/download_snippets_box.png
+    :align:center
+
+Delete
+^^^^^^
+Delete snippets by clicking delete option. It will open a warning box as below.
+.. image:: ../../Design/delete snippet.png
+    :align:center
 
 Search of Code Snippets
 -----------------------
 
+With the filter box as below, **search** snippets with name, language, and code with search bar or **filter** them with language/filter tags!  
 .. image:: ../../Design/code_snippet_filter_box.png
--  Scrollable/resizable snippet explorer panel displaying snippets
--  Move snippet within snippet explorer
--  Search bar for snippets
--  Filter tags for snippets
+    :align:center
 
+Furthermore, hover over snippets to see the preview of each snippet.
 .. image:: ../../Design/code_snippet_preview.png
--  Snippet preview (on the side)
-
-Edit of Existing Code Snippets
-------------------------------
-
-.. image:: ../../Design/code_snippet_edit.png
--  Code Snippet Editor
+    :align:center

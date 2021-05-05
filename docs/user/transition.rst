@@ -95,8 +95,7 @@ This script will concatenate and print out all of the json objects in a /snippet
 in a project. After running the script, copy the output and paste into the User Preferences
 panel in settings, similar to the single snippet upload.
 
-NOTE: If adding objects to existing list of snippets in user preferences, change counter variable
- to n+1 where n is the ID of the last snippet stored in user preferences.
+**NOTE: If adding objects to existing list of snippets in user preferences, change counter variable to n+1 where n is the ID of the last snippet stored in user preferences.**
 
 This script will print something like : 
 
@@ -138,8 +137,8 @@ After generating this dictionary, one can simply delete the current contents of 
 This will delete the current snippets at the endpoint (will be default snippets if extension freshly updated)
 and replace them with the old snippets.
 
-NOTE: If adding objects onto an existing list of objects, make sure the ID numbers are all in sequential,
-ascending order.
+**NOTE: If adding objects onto an existing list of objects, make sure the ID numbers are all in sequential,
+ascending order.**
 
 Search and Tag Update
 ---------------------
@@ -147,8 +146,8 @@ Search and Tag Update
 .. image:: ../../Design/smallUnselectedTags.png
    :align: center
 
-NOTE: Snippet tags function on an OR basis, as in when the "data analytics" tag and the "import statements" tag are selected together, 
-the panel displays any tags that are tagged as import statements OR tagged as "data analytics."
+**NOTE: Snippet tags function on an OR basis, as in when the "data analytics" tag and the "import statements" tag are selected together, 
+the panel displays any tags that are tagged as import statements OR tagged as "data analytics."**
 ex) Snippet tags selected together:
 
 .. image:: ../../Design/smallSnippetTagsSelected.png
@@ -159,17 +158,17 @@ ex) Language tags selected together:
 .. image:: ../../Design/smallLanguageTagsSelected.png
    :align: center
 
-NOTE 2: Language tags and snippets tags have an AND relationship. As in when the "Python" tag and the "data analytics" tags are selected together, 
-only snippets that are both in the language Python AND tagged as data analytics will appear.
+**NOTE 2: Language tags and snippets tags have an AND relationship. As in when the "Python" tag and the "data analytics" tags are selected together, 
+only snippets that are both in the language Python AND tagged as data analytics will appear.**
 
 .. image:: ../../Design/smallLangAndSnippetTag.png
    :align: center
 
-NOTE 3: When language tags are selected, only snippet tags in that language will appear for ease of selection.
+**NOTE 3: When language tags are selected, only snippet tags in that language will appear for ease of selection.**
 
 .. image:: ../../Design/smallPythonTagOnly.png
    :align: center
 
-NOTE 4: If 2 of the same language tags appear in the Language Tags section this indicates that one of the snippets
+**NOTE 4: If 2 of the same language tags appear in the Language Tags section this indicates that one of the snippets
 contains a snippet tag that matches the language name. To get rid of the duplicate tag, filter through snippets and
-untag any snippets that have that Language in their snippet tags.
+untag any snippets that have that Language in their snippet tags.**
