@@ -5,7 +5,7 @@ Code Snippet Explorer
 ---------------------
 
 On the left side bar of the JupyterLab, you can click the snippet icon (</>) to open/close the code snippet explorer that contains all the saved snippets as below.
-You can scroll/resize code snippet explorer, order the snippets with drag and drop, and manage and search the snippets efficiently.
+You can scroll/resize code snippet explorer, order the snippets with drag and drop, and manage and search the snippets.
 
 .. image:: ../../Design/CodeSnippetExtensionPanel.png
     :align: center
@@ -13,23 +13,24 @@ You can scroll/resize code snippet explorer, order the snippets with drag and dr
 Creation of a New Snippet
 -------------------------
 
-There are several ways to create a new snippet. 
+There are several ways to create a new snippet.
+
 1. Highlight lines of code and right click (or use keyboard shortcut (cmd-shift-A or ctrl-shift-A)) to save the code as a snippet. Or, you can select cell(s) and right click (or use keyboard shortcut (cmd-shift-A or ctrl-shift-A)) to save content as a snippet. Then, you will see the "Save As Code Snippet" option in JupyterLab context menu as below:
 
     .. image:: ../../Design/right_click.png
         :align: center
 
-    Then, clicking the option will open the dialog as below where you can input name, description, language, tags, and codes of a snippet.
+    Clicking the option will open the dialog as below where you can input name, description, language, and tags of the snippet.
 
     .. image:: ../../Design/code_snippet_input_dialog.png
         :align: center
 
 2. More easily, just drag notebook cell(s) to the code snippet explorer on the left to create a new snippet. It will also open the dialog as above for your inputs.
 
-    .. image:: ../../Design/create_from_scratch.png
-        :align: center
+3. Hit the plus button next to the search bar (refer to `Search of Code Snippets`_) to create a new snippet from scratch.
 
-3. Hit the plus button next to the search bar (refer to `Search of Code Snippets`_) to create a new snippet if you want to create a snippet not from the notebook cell.
+.. image:: ../../Design/create_from_scratch.png
+        :align: center
 
 Use of Code Snippets
 --------------------
