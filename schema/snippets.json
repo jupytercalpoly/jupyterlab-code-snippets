@@ -62,6 +62,12 @@
                     "tags":["machine learning"]
                 }
             ]
+        },
+        "snippetPreviewFontSize": {
+            "title": "Font Size of Preview",
+            "type": "number",
+            "default": 3,
+            "description": "Change the font size of preview to see its content"
         }
     },
     "additionalProperties": false,
