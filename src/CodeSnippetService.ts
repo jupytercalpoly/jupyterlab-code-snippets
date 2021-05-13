@@ -69,6 +69,13 @@ export class CodeSnippetService {
 
       this.codeSnippetList = userSnippets;
     }
+
+    if (this.settingManager.get('snippetPreviewFontSize').user === undefined) {
+      this.settingManager.set(
+        'snippetPreviewFontSize',
+        this.settingManager.default('snippetPreviewFontSize')
+      );
+    }
   }
 
   private convertToICodeSnippetList(snippets: JSONArray): ICodeSnippet[] {
@@ -88,6 +95,10 @@ export class CodeSnippetService {
 
   static getCodeSnippetService(): CodeSnippetService {
     return this.codeSnippetService;
+  }
+
+  get settings(): Settings {
+    return this.settingManager;
   }
 
   get snippets(): ICodeSnippet[] {

@@ -9,7 +9,7 @@ import { Message, MessageLoop } from '@lumino/messaging';
 import { PromiseDelegate } from '@lumino/coreutils';
 import { ArrayExt } from '@lumino/algorithm';
 
-import { ICodeSnippet } from './CodeSnippetService';
+import { ICodeSnippet, CodeSnippetService } from './CodeSnippetService';
 
 /**
  * The class name for preview box
@@ -46,6 +46,7 @@ export class Preview<T> extends Widget {
   editor: CodeEditor.IEditor;
   codeSnippet: ICodeSnippet;
   editorServices: IEditorServices;
+  codeSnippetService: CodeSnippetService;
   private _hasRefreshedSinceAttach: boolean;
   constructor(
     options: Partial<Preview.IOptions<T>> = {},
@@ -57,6 +58,7 @@ export class Preview<T> extends Widget {
     this._id = options.id;
     this.codeSnippet = options.codeSnippet;
     this.editorServices = editorServices;
+    this.codeSnippetService = CodeSnippetService.getCodeSnippetService();
     this.addClass(PREVIEW_CLASS);
     const layout = (this.layout = new PanelLayout());
     const content = new Panel();
@@ -157,9 +159,21 @@ export class Preview<T> extends Widget {
       const getMimeTypeByLanguage = this.editorServices.mimeTypeService
         .getMimeTypeByLanguage;
 
+      let previewFontSize = this.codeSnippetService.settings.get(
+        'snippetPreviewFontSize'
+      ).composite as number;
+      if (
+        this.codeSnippetService.settings.get('snippetPreviewFontSize').user !==
+        undefined
+      ) {
+        previewFontSize = this.codeSnippetService.settings.get(
+          'snippetPreviewFontSize'
+        ).user as number;
+      }
+
       this.editor = editorFactory({
         host: document.getElementById(PREVIEW_CONTENT + this._id),
-        config: { readOnly: true, fontSize: 3 },
+        config: { readOnly: true, fontSize: previewFontSize },
         model: new CodeEditor.Model({
           value: this.codeSnippet.code.join('\n'),
           mimeType: getMimeTypeByLanguage({
