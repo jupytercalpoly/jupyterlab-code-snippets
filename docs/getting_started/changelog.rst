@@ -3,6 +3,10 @@
 Changelog
 ---------
 
+v2.1.1
+^^^^^^
+* Made font size of preview configurable in settings
+
 v2.1.0
 ^^^^^^
 * Made snippets globally accessible.

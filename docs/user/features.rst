@@ -85,3 +85,10 @@ Furthermore, hover over snippets to see the preview of each snippet.
 
 .. image:: ../../Design/code_snippet_preview.png
     :align: center
+
+Change Font Size of Snippet Preivew
+-----------------------------------
+In the JupyterLab Settings -> Advanced Settings Editor, users can set the size of code in snippet preview to see part of its content clearly.
+
+.. image:: ../../Design/changePreivewFontSize.gif
+    :align: center
