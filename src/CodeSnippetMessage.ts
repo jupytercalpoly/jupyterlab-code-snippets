@@ -103,8 +103,8 @@ namespace Private {
       message.textContent = 'Saved as Snippet!';
     } else if (type === 'copy') {
       message.textContent = 'Saved to Clipboard!';
-    } else if (type === 'download') {
-      message.textContent = 'Downloaded the Snippet!';
+    } else if (type === 'export') {
+      message.textContent = 'Exported the Snippet!';
     }
     messageContainer.appendChild(message);
     body.append(messageContainer);
