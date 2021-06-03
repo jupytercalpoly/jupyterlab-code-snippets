@@ -118,8 +118,7 @@ const CODE_SNIPPET_MORE_OTPIONS_COPY = 'jp-codeSnippet-more-options-copy';
 const CODE_SNIPPET_MORE_OTPIONS_INSERT = 'jp-codeSnippet-more-options-insert';
 const CODE_SNIPPET_MORE_OTPIONS_EDIT = 'jp-codeSnippet-more-options-edit';
 const CODE_SNIPPET_MORE_OTPIONS_DELETE = 'jp-codeSnippet-more-options-delete';
-const CODE_SNIPPET_MORE_OTPIONS_DOWNLOAD =
-  'jp-codeSnippet-more-options-download';
+const CODE_SNIPPET_MORE_OTPIONS_EXPORT = 'jp-codeSnippet-more-options-export';
 const CODE_SNIPPET_CREATE_NEW_BTN = 'jp-createSnippetBtn';
 const CODE_SNIPPET_NAME = 'jp-codeSnippet-name';
 const OPTIONS_BODY = 'jp-codeSnippet-options-body';
@@ -1488,35 +1487,37 @@ export class CodeSnippetDisplay extends React.Component<
     });
   }
 
-  private downloadCommand(codeSnippet: ICodeSnippet): void {
+  private exportCommand(codeSnippet: ICodeSnippet): void {
     // Request a text
     InputDialog.getText({
-      title: 'Download Snippet?',
-      label: 'Directory to Download: ',
+      title: 'Export Snippet?',
+      label: 'Directory to Export: ',
       placeholder: 'share/snippet',
-      okLabel: 'Download',
+      okLabel: 'Export',
     }).then((value: Dialog.IResult<string>) => {
       if (value.button.accept) {
         const dirs = value.value.split('/');
 
-        const codeSnippetDownloader = CodeSnippetContentsService.getInstance();
+        const codeSnippetContentsManager = CodeSnippetContentsService.getInstance();
 
         let path = '';
         for (let i = 0; i < dirs.length; i++) {
           path += dirs[i] + '/';
-          codeSnippetDownloader.save(path, { type: 'directory' }).catch((_) => {
-            alert('Path should be a relative path');
-          });
+          codeSnippetContentsManager
+            .save(path, { type: 'directory' })
+            .catch((_) => {
+              alert('Path should be a relative path');
+            });
         }
 
         path += codeSnippet.name + '.json';
 
-        codeSnippetDownloader.save(path, {
+        codeSnippetContentsManager.save(path, {
           type: 'file',
           format: 'text',
           content: JSON.stringify(codeSnippet),
         });
-        showMessage('download');
+        showMessage('export');
       }
     });
   }
@@ -1578,18 +1579,18 @@ export class CodeSnippetDisplay extends React.Component<
       this.removeOptionsNode();
     };
 
-    const downloadSnip = document.createElement('div');
-    downloadSnip.className = CODE_SNIPPET_MORE_OTPIONS_DOWNLOAD;
-    downloadSnip.textContent = 'Download snippet';
-    downloadSnip.onclick = (): void => {
-      this.downloadCommand(codeSnippet);
+    const exportSnip = document.createElement('div');
+    exportSnip.className = CODE_SNIPPET_MORE_OTPIONS_EXPORT;
+    exportSnip.textContent = 'Export snippet';
+    exportSnip.onclick = (): void => {
+      this.exportCommand(codeSnippet);
       this.removeOptionsNode();
     };
 
     optionsContainer.appendChild(insertSnip);
     optionsContainer.appendChild(copySnip);
     optionsContainer.appendChild(editSnip);
-    optionsContainer.appendChild(downloadSnip);
+    optionsContainer.appendChild(exportSnip);
     optionsContainer.appendChild(deleteSnip);
     body.append(optionsContainer);
     return body;
