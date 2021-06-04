@@ -290,8 +290,8 @@ export class CodeSnippetWidget extends ReactWidget {
         this.moveCodeSnippet(srcIdx, idx);
       }
     } else {
-      const notebook: Notebook = event.mimeData.getData('internal:cells')[0]
-        .parent;
+      const notebook: Notebook =
+        event.mimeData.getData('internal:cells')[0].parent;
 
       const language = notebook.model.defaultKernelLanguage;
       // Handle the case where we are copying cells

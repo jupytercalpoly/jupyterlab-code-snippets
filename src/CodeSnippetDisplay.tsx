@@ -525,9 +525,8 @@ export class CodeSnippetDisplay extends React.Component<
       if (target.innerHTML !== new_element.value) {
         const newName = new_element.value;
 
-        const isDuplicateName = this.props.codeSnippetManager.duplicateNameExists(
-          newName
-        );
+        const isDuplicateName =
+          this.props.codeSnippetManager.duplicateNameExists(newName);
 
         if (isDuplicateName) {
           await showDialog({
@@ -605,8 +604,8 @@ export class CodeSnippetDisplay extends React.Component<
       '--jp-content-font-color3'
     );
 
-    (this._dragData.dragImage
-      .children[0] as HTMLElement).style.color = dragImageTextColor;
+    (this._dragData.dragImage.children[0] as HTMLElement).style.color =
+      dragImageTextColor;
 
     // add CSS style
     this._dragData.dragImage.classList.add(SNIPPET_DRAG_IMAGE);
@@ -1498,7 +1497,8 @@ export class CodeSnippetDisplay extends React.Component<
       if (value.button.accept) {
         const dirs = value.value.split('/');
 
-        const codeSnippetContentsManager = CodeSnippetContentsService.getInstance();
+        const codeSnippetContentsManager =
+          CodeSnippetContentsService.getInstance();
 
         let path = '';
         for (let i = 0; i < dirs.length; i++) {

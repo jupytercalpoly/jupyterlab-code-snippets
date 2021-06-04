@@ -12,7 +12,7 @@ import { ArrayExt } from '@lumino/algorithm';
 import { ICodeSnippet, CodeSnippetService } from './CodeSnippetService';
 
 /**
- * The class name for preview box
+ * The class name for preview box.
  */
 const PREVIEW_CLASS = 'jp-codeSnippet-preview';
 const PREVIEW_CONTENT = 'jp-codeSnippet-preview-content';
@@ -156,8 +156,8 @@ export class Preview<T> extends Widget {
 
     if (!this.editor && document.getElementById(PREVIEW_CONTENT + this._id)) {
       const editorFactory = this.editorServices.factoryService.newInlineEditor;
-      const getMimeTypeByLanguage = this.editorServices.mimeTypeService
-        .getMimeTypeByLanguage;
+      const getMimeTypeByLanguage =
+        this.editorServices.mimeTypeService.getMimeTypeByLanguage;
 
       let previewFontSize = this.codeSnippetService.settings.get(
         'snippetPreviewFontSize'

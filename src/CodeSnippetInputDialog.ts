@@ -23,7 +23,6 @@ const FILE_DIALOG_CLASS = 'jp-codeSnippet-fileDialog';
 /**
  * CSS STYLING
  */
-// const CODE_SNIPPET_DIALOG_INPUT = 'jp-codeSnippet-dialog-input';
 const CODE_SNIPPET_DIALOG_NAME_INPUT = 'jp-codeSnippet-dialog-name-input';
 const CODE_SNIPPET_DIALOG_DESC_INPUT = 'jp-codeSnippet-dialog-desc-input';
 const CODE_SNIPPET_DIALOG_LANG_INPUT = 'jp-codeSnippet-dialog-lang-input';
@@ -242,15 +241,21 @@ class InputHandler extends Widget {
   getValue(): string[] {
     const inputs = [];
     inputs.push(
-      (this.node.querySelector(
-        `.${CODE_SNIPPET_DIALOG_NAME_INPUT}`
-      ) as HTMLInputElement).value,
-      (this.node.querySelector(
-        `.${CODE_SNIPPET_DIALOG_DESC_INPUT}`
-      ) as HTMLInputElement).value,
-      (this.node.querySelector(
-        `.${CODE_SNIPPET_DIALOG_LANG_INPUT}`
-      ) as HTMLInputElement).value
+      (
+        this.node.querySelector(
+          `.${CODE_SNIPPET_DIALOG_NAME_INPUT}`
+        ) as HTMLInputElement
+      ).value,
+      (
+        this.node.querySelector(
+          `.${CODE_SNIPPET_DIALOG_DESC_INPUT}`
+        ) as HTMLInputElement
+      ).value,
+      (
+        this.node.querySelector(
+          `.${CODE_SNIPPET_DIALOG_LANG_INPUT}`
+        ) as HTMLInputElement
+      ).value
     );
 
     inputs.push(...Private.selectedTags);
