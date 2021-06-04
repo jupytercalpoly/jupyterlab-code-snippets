@@ -8,7 +8,7 @@ export interface ICodeSnippet {
   name: string;
   description: string;
   language: string;
-  // code separated by new line
+  // code separated by a new line
   code: string[];
   id: number;
   tags?: string[];

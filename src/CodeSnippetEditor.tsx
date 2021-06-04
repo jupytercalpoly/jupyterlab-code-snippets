@@ -177,8 +177,8 @@ export class CodeSnippetEditor extends ReactWidget {
       document.getElementById('code-' + this._codeSnippetEditorMetaData.id)
     ) {
       const editorFactory = this.editorServices.factoryService.newInlineEditor;
-      const getMimeTypeByLanguage = this.editorServices.mimeTypeService
-        .getMimeTypeByLanguage;
+      const getMimeTypeByLanguage =
+        this.editorServices.mimeTypeService.getMimeTypeByLanguage;
 
       this.editor = editorFactory({
         host: document.getElementById(
@@ -257,15 +257,21 @@ export class CodeSnippetEditor extends ReactWidget {
             this.dispose();
             super.onCloseRequest(msg);
           } else if (response.button.label === 'Save') {
-            const name = (document.querySelector(
-              `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
-            ) as HTMLInputElement).value;
-            const description = (document.querySelector(
-              `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
-            ) as HTMLInputElement).value;
-            const language = (document.querySelector(
-              `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
-            ) as HTMLSelectElement).value;
+            const name = (
+              document.querySelector(
+                `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
+              ) as HTMLInputElement
+            ).value;
+            const description = (
+              document.querySelector(
+                `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
+              ) as HTMLInputElement
+            ).value;
+            const language = (
+              document.querySelector(
+                `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
+              ) as HTMLSelectElement
+            ).value;
 
             const validity = validateInputs(name, description, language);
             if (validity) {
@@ -333,15 +339,21 @@ export class CodeSnippetEditor extends ReactWidget {
   }
 
   saveChange(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
-    const name = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
-    ) as HTMLInputElement).value;
-    const description = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
-    ) as HTMLInputElement).value;
-    const language = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
-    ) as HTMLSelectElement).value;
+    const name = (
+      document.querySelector(
+        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
+      ) as HTMLInputElement
+    ).value;
+    const description = (
+      document.querySelector(
+        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
+      ) as HTMLInputElement
+    ).value;
+    const language = (
+      document.querySelector(
+        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
+      ) as HTMLSelectElement
+    ).value;
 
     const validity = validateInputs(name, description, language);
     if (validity) {
@@ -350,15 +362,21 @@ export class CodeSnippetEditor extends ReactWidget {
   }
 
   async updateSnippet(): Promise<boolean> {
-    const name = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
-    ) as HTMLInputElement).value;
-    const description = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
-    ) as HTMLInputElement).value;
-    const language = (document.querySelector(
-      `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
-    ) as HTMLSelectElement).value;
+    const name = (
+      document.querySelector(
+        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_NAME_INPUT}`
+      ) as HTMLInputElement
+    ).value;
+    const description = (
+      document.querySelector(
+        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_DESC_INPUT}`
+      ) as HTMLInputElement
+    ).value;
+    const language = (
+      document.querySelector(
+        `.${CODE_SNIPPET_EDITOR}-${this._codeSnippetEditorMetaData.id} .${CODE_SNIPPET_EDITOR_LANG_INPUT}`
+      ) as HTMLSelectElement
+    ).value;
 
     this._codeSnippetEditorMetaData.name = name;
     this._codeSnippetEditorMetaData.description = description;
@@ -409,11 +427,10 @@ export class CodeSnippetEditor extends ReactWidget {
           ).then((res: boolean) => {
             if (res) {
               // get the id of snippet you are editting
-              const removedSnippet = this.contentsService.getSnippet(
-                oldName
-              )[0];
+              const removedSnippet =
+                this.contentsService.getSnippet(oldName)[0];
 
-              // delete the one you are editting
+              // delete the one you are editing
               this.contentsService.deleteSnippet(removedSnippet.id);
             } else {
               return false;
