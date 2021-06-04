@@ -241,15 +241,21 @@ class InputHandler extends Widget {
   getValue(): string[] {
     const inputs = [];
     inputs.push(
-      (this.node.querySelector(
-        `.${CODE_SNIPPET_DIALOG_NAME_INPUT}`
-      ) as HTMLInputElement).value,
-      (this.node.querySelector(
-        `.${CODE_SNIPPET_DIALOG_DESC_INPUT}`
-      ) as HTMLInputElement).value,
-      (this.node.querySelector(
-        `.${CODE_SNIPPET_DIALOG_LANG_INPUT}`
-      ) as HTMLInputElement).value
+      (
+        this.node.querySelector(
+          `.${CODE_SNIPPET_DIALOG_NAME_INPUT}`
+        ) as HTMLInputElement
+      ).value,
+      (
+        this.node.querySelector(
+          `.${CODE_SNIPPET_DIALOG_DESC_INPUT}`
+        ) as HTMLInputElement
+      ).value,
+      (
+        this.node.querySelector(
+          `.${CODE_SNIPPET_DIALOG_LANG_INPUT}`
+        ) as HTMLInputElement
+      ).value
     );
 
     inputs.push(...Private.selectedTags);

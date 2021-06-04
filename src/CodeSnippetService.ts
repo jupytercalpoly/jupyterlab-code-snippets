@@ -29,7 +29,7 @@ export class CodeSnippetService {
       if (
         !JSONExt.deepEqual(
           newCodeSnippetList,
-          (this.codeSnippetList as unknown) as PartialJSONValue
+          this.codeSnippetList as unknown as PartialJSONValue
         )
       ) {
         this.codeSnippetList = this.convertToICodeSnippetList(
@@ -55,7 +55,7 @@ export class CodeSnippetService {
     if (this.settingManager.get('snippets').user === undefined) {
       // set the user setting + default in the beginning
       this.settingManager
-        .set('snippets', (defaultSnippets as unknown) as PartialJSONValue)
+        .set('snippets', defaultSnippets as unknown as PartialJSONValue)
         .then(() => {
           const userSnippets = this.convertToICodeSnippetList(
             this.settingManager.get('snippets').user as JSONArray
@@ -82,7 +82,7 @@ export class CodeSnippetService {
     const snippetList: ICodeSnippet[] = [];
 
     snippets.forEach((snippet) => {
-      snippetList.push((snippet as unknown) as ICodeSnippet);
+      snippetList.push(snippet as unknown as ICodeSnippet);
     });
     return snippetList;
   }
@@ -124,7 +124,7 @@ export class CodeSnippetService {
     }
 
     await this.settingManager
-      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .set('snippets', this.codeSnippetList as unknown as PartialJSONValue)
       .catch((_) => {
         return false;
       });
@@ -152,7 +152,7 @@ export class CodeSnippetService {
     }
 
     await this.settingManager
-      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .set('snippets', this.codeSnippetList as unknown as PartialJSONValue)
       .catch((_) => {
         return false;
       });
@@ -168,7 +168,7 @@ export class CodeSnippetService {
       }
     }
     await this.settingManager
-      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .set('snippets', this.codeSnippetList as unknown as PartialJSONValue)
       .catch((_) => {
         return false;
       });
@@ -196,7 +196,7 @@ export class CodeSnippetService {
     }
 
     await this.settingManager
-      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .set('snippets', this.codeSnippetList as unknown as PartialJSONValue)
       .catch((_) => {
         return false;
       });
@@ -228,7 +228,7 @@ export class CodeSnippetService {
     });
 
     await this.settingManager
-      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .set('snippets', this.codeSnippetList as unknown as PartialJSONValue)
       .catch((_) => {
         return false;
       });
@@ -245,7 +245,7 @@ export class CodeSnippetService {
     this.codeSnippetList.forEach((snippet, i) => (snippet.id = i));
 
     await this.settingManager
-      .set('snippets', (this.codeSnippetList as unknown) as PartialJSONValue)
+      .set('snippets', this.codeSnippetList as unknown as PartialJSONValue)
       .catch((_) => {
         return false;
       });

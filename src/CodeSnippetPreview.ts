@@ -156,8 +156,8 @@ export class Preview<T> extends Widget {
 
     if (!this.editor && document.getElementById(PREVIEW_CONTENT + this._id)) {
       const editorFactory = this.editorServices.factoryService.newInlineEditor;
-      const getMimeTypeByLanguage = 
-      this.editorServices.mimeTypeService.getMimeTypeByLanguage;
+      const getMimeTypeByLanguage =
+        this.editorServices.mimeTypeService.getMimeTypeByLanguage;
 
       let previewFontSize = this.codeSnippetService.settings.get(
         'snippetPreviewFontSize'
