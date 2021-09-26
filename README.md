@@ -2,7 +2,7 @@
 
 ## Save, reuse, and share code snippets using JupyterLab Code Snippets
 
-![Github Actions Status](https://github.com/jupytercalpoly/jupyterlab-code-snippets/workflows/Build/badge.svg) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/jupyterlab-code-snippets.git/master?urlpath=lab) [![npm version](https://badge.fury.io/js/jupyterlab-code-snippets.svg)](https://badge.fury.io/js/jupyterlab-code-snippets 'View this project on npm') [![PyPI version](https://badge.fury.io/py/jupyterlab-code-snippets.svg)](https://badge.fury.io/py/jupyterlab-code-snippets) [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause) [![Documentation Status](https://readthedocs.org/projects/jupyterlab-code-snippets-documentation/badge/?version=latest)](https://jupyterlab-code-snippets-documentation.readthedocs.io/en/latest/?badge=latest)
+![Github Actions Status](https://github.com/jupytercalpoly/jupyterlab-code-snippets/workflows/Build/badge.svg) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupytercalpoly/jupyterlab-code-snippets.git/master?urlpath=lab) [![npm version](https://badge.fury.io/js/jupyterlab-code-snippets.svg)](https://badge.fury.io/js/jupyterlab-code-snippets 'View this project on npm') [![PyPI version](https://badge.fury.io/py/jupyterlab-code-snippets.svg)](https://badge.fury.io/py/jupyterlab-code-snippets) [![Conda Version](https://img.shields.io/conda/vn/conda-forge/jupyterlab-code-snippets.svg)](https://anaconda.org/conda-forge/jupyterlab-code-snippets) [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause) [![Documentation Status](https://readthedocs.org/projects/jupyterlab-code-snippets-documentation/badge/?version=latest)](https://jupyterlab-code-snippets-documentation.readthedocs.io/en/latest/?badge=latest)
 
 This extension is a derivative of [Elyra](https://github.com/elyra-ai/elyra)'s original design and further developed by Jupyter Cal Poly Team.
 
@@ -31,6 +31,10 @@ Install using pip:
 
 ```bash
 pip install jupyterlab-code-snippets
+```
+
+```bash
+conda install -c conda-forge jupyterlab-code-snippets
 ```
 
 ## Troubleshoot
