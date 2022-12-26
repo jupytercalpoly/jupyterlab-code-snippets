@@ -22,8 +22,8 @@ const OPTIONS_BODY = 'jp-codeSnippet-options-body';
  *
  * @returns A promise that resolves with whether the code snippet options was accepted.
  */
-export function showMoreOptions<T>(
-  options: Partial<OptionsMessage.IOptions<T>> = {}
+export function showMoreOptions(
+  options: Partial<OptionsMessage.IOptions> = {}
 ): Promise<void> {
   const optionsMessage = new OptionsMessage(options);
   return optionsMessage.launch();
@@ -32,8 +32,8 @@ export function showMoreOptions<T>(
 /**
  * A widget used to show options message.
  */
-export class OptionsMessage<T> extends Widget {
-  constructor(options: Partial<OptionsMessage.IOptions<T>> = {}) {
+export class OptionsMessage extends Widget {
+  constructor(options: Partial<OptionsMessage.IOptions> = {}) {
     super();
     this.addClass(OPTIONS_CLASS);
     const renderer = OptionsMessage.defaultRenderer;
@@ -183,7 +183,7 @@ export namespace OptionsMessage {
    */
   export type Body = Widget;
 
-  export interface IOptions<T> {
+  export interface IOptions {
     /**
      * The main body element for the code snippet options or a message to display.
      * Defaults to an empty string.
@@ -254,7 +254,7 @@ export namespace OptionsMessage {
   /**
    * The code snippet options widget tracker.
    */
-  export const tracker = new WidgetTracker<OptionsMessage<any>>({
+  export const tracker = new WidgetTracker<OptionsMessage>({
     namespace: '@jupyterlab/code_snippet:OptionsWidget',
   });
 }

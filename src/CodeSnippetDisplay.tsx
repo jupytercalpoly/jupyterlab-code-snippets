@@ -41,7 +41,7 @@ import { CodeCellModel, MarkdownCell, CodeCell } from '@jupyterlab/cells';
 import { Widget } from '@lumino/widgets';
 import { find, StringExt } from '@lumino/algorithm';
 import { Drag } from '@lumino/dragdrop';
-import { MimeData } from '@lumino/coreutils';
+import { MimeData, ReadonlyPartialJSONObject } from '@lumino/coreutils';
 
 import React from 'react';
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
@@ -92,7 +92,6 @@ import {
   sasIcon,
   powershellIcon,
 } from './CodeSnippetLanguages';
-import { ICodeSnippetEditorMetadata } from './CodeSnippetEditor';
 import { showMessage } from './CodeSnippetMessage';
 
 /**
@@ -155,7 +154,7 @@ interface ICodeSnippetDisplayProps {
   codeSnippetManager: CodeSnippetService;
   app: JupyterFrontEnd;
   getCurrentWidget: () => Widget;
-  openCodeSnippetEditor: (args: ICodeSnippetEditorMetadata) => void;
+  openCodeSnippetEditor: (args: ReadonlyPartialJSONObject) => void;
   editorServices: IEditorServices;
   updateCodeSnippetWidget: () => void;
 }

@@ -23,7 +23,7 @@ import { Widget } from '@lumino/widgets';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
 import { IDragEvent } from '@lumino/dragdrop';
-import { MimeData } from '@lumino/coreutils';
+import { MimeData, ReadonlyPartialJSONObject } from '@lumino/coreutils';
 
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
@@ -94,7 +94,7 @@ export class CodeSnippetWidget extends ReactWidget {
     this.updateCodeSnippetWidget();
   }
 
-  openCodeSnippetEditor(args: any): void {
+  openCodeSnippetEditor(args: ReadonlyPartialJSONObject): void {
     this.app.commands.execute(commands.OPEN_CODE_SNIPPET_EDITOR, args);
   }
 
