@@ -90,6 +90,7 @@ import {
   rustIcon,
   qsharpIcon,
   sasIcon,
+  powershellIcon,
 } from './CodeSnippetLanguages';
 import { ICodeSnippetEditorMetadata } from './CodeSnippetEditor';
 import { showMessage } from './CodeSnippetMessage';
@@ -217,11 +218,7 @@ export class CodeSnippetDisplay extends React.Component<
       // language, title, code
       filteredSnippets.forEach((snippet) => {
         const matchResult = StringExt.matchSumOfSquares(
-          (
-            snippet.language +
-            snippet.name +
-            snippet.code.join('\n')
-          ).toLowerCase(),
+          (snippet.language + snippet.name + snippet.code).toLowerCase(),
           searchValue.replace(' ', '').toLowerCase()
         );
         if (matchResult) {
@@ -252,12 +249,12 @@ export class CodeSnippetDisplay extends React.Component<
     // filter with tags
     if (filterTags.length !== 0) {
       filteredSnippets = filteredSnippets.filter((codeSnippet) => {
-        return filterTags.some((tag) => {
+        return filterTags.some((filterTag) => {
           if (codeSnippet.tags) {
             if (selectedLangTags.length !== 0) {
               // lang tags selected
               if (
-                codeSnippet.tags.includes(tag) &&
+                codeSnippet.tags.includes(filterTag) &&
                 selectedLangTags.includes(codeSnippet.language)
               ) {
                 return true;
@@ -273,7 +270,7 @@ export class CodeSnippetDisplay extends React.Component<
               }
             } else {
               // no lang tags selected
-              if (codeSnippet.tags.includes(tag)) {
+              if (codeSnippet.tags.includes(filterTag)) {
                 return true;
               }
             }
@@ -308,7 +305,6 @@ export class CodeSnippetDisplay extends React.Component<
   // Handle code snippet insert into a notebook or document
   private insertCodeSnippet = async (snippet: ICodeSnippet): Promise<void> => {
     const widget: Widget = this.props.getCurrentWidget();
-    const snippetStr: string = snippet.code.join('\n');
 
     if (
       widget instanceof DocumentWidget &&
@@ -319,15 +315,18 @@ export class CodeSnippetDisplay extends React.Component<
       const fileEditor = (documentWidget.content as FileEditor).editor;
       const markdownRegex = /^\.(md|mkdn?|mdown|markdown)$/;
 
-      if (PathExt.extname(widget.context.path).match(markdownRegex) !== null) {
+      if (
+        PathExt.extname(documentWidget.context.path).match(markdownRegex) !==
+        null
+      ) {
         // Wrap snippet into a code block when inserting it into a markdown file
         fileEditor.replaceSelection(
-          '```' + snippet.language + '\n' + snippetStr + '\n```'
+          '```' + snippet.language + '\n' + snippet.code + '\n```'
         );
-      } else if (widget.constructor.name === 'PythonFileEditor') {
+      } else if (documentWidget.constructor.name === 'PythonFileEditor') {
         this.verifyLanguageAndInsert(snippet, 'python', fileEditor);
       } else {
-        fileEditor.replaceSelection(snippetStr);
+        fileEditor.replaceSelection(snippet.code);
       }
     } else if (widget instanceof NotebookPanel) {
       const notebookWidget = widget as NotebookPanel;
@@ -347,10 +346,10 @@ export class CodeSnippetDisplay extends React.Component<
       } else if (notebookCell instanceof MarkdownCell) {
         // Wrap snippet into a code block when inserting it into a markdown cell
         notebookCellEditor.replaceSelection(
-          '```' + snippet.language + '\n' + snippetStr + '\n```'
+          '```' + snippet.language + '\n' + snippet.code + '\n```'
         );
       } else {
-        notebookCellEditor.replaceSelection(snippetStr);
+        notebookCellEditor.replaceSelection(snippet.code);
       }
     } else {
       this.showErrDialog('Code snippet insert failed: Unsupported widget');
@@ -363,18 +362,17 @@ export class CodeSnippetDisplay extends React.Component<
     editorLanguage: string,
     editor: CodeEditor.IEditor
   ): Promise<void> => {
-    const snippetStr: string = snippet.code.join('\n');
     if (
       editorLanguage &&
       snippet.language.toLowerCase() !== editorLanguage.toLowerCase()
     ) {
       const result = await this.showWarnDialog(editorLanguage, snippet.name);
       if (result.button.accept) {
-        editor.replaceSelection(snippetStr);
+        editor.replaceSelection(snippet.code);
       }
     } else {
       // Language match or editorLanguage is unavailable
-      editor.replaceSelection(snippetStr);
+      editor.replaceSelection(snippet.code);
     }
   };
 
@@ -690,7 +688,7 @@ export class CodeSnippetDisplay extends React.Component<
     const target = event.target as HTMLElement;
 
     const model = new CodeCellModel({});
-    model.value.text = codeSnippet.code.join('\n');
+    model.value.text = codeSnippet.code;
     model.metadata;
 
     const selected: nbformat.ICell[] = [model.toJSON()];
@@ -704,7 +702,7 @@ export class CodeSnippetDisplay extends React.Component<
     });
 
     this._drag.mimeData.setData(JUPYTER_CELL_MIME, selected);
-    const textContent = codeSnippet.code.join('\n');
+    const textContent = codeSnippet.code;
     this._drag.mimeData.setData('text/plain', textContent);
 
     // Remove mousemove and mouseup listeners and start the drag.
@@ -728,7 +726,6 @@ export class CodeSnippetDisplay extends React.Component<
   }
 
   //Set the position of the preview to be next to the snippet title.
-
   private _setPreviewPosition(id: number): void {
     const realTarget = document.querySelector(`#${TITLE_CLASS}${id}`);
     const newTarget = document.querySelector(`#${CODE_SNIPPET_ITEM}${id}`);
@@ -1257,6 +1254,30 @@ export class CodeSnippetDisplay extends React.Component<
           />
         );
       }
+      case 'Markdown': {
+        return (
+          <markdownIcon.react
+            tag="span"
+            height="16px"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
+      }
+      case 'Powershell': {
+        return (
+          <powershellIcon.react
+            tag="span"
+            height="16px"
+            width="16px"
+            right="7px"
+            top="5px"
+            margin-right="3px"
+          />
+        );
+      }
       default: {
         return (
           <fileIcon.react
@@ -1383,7 +1404,7 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   renderDescription(codeSnippet: ICodeSnippet, id: number): JSX.Element {
-    if (codeSnippet.description.length !== 0) {
+    if (codeSnippet.description && codeSnippet.description.length !== 0) {
       return (
         <div className={CODE_SNIPPET_DESC} id={id.toString()}>
           <p id={id.toString()}>{`${codeSnippet.description}`}</p>
@@ -1407,15 +1428,13 @@ export class CodeSnippetDisplay extends React.Component<
   };
 
   getActiveTags(): string[][] {
-    const tags: string[] = [];
+    let tags: string[] = [];
     const languages: string[] = [];
     for (const codeSnippet of this.props.codeSnippets) {
       if (codeSnippet.tags) {
-        for (const tag of codeSnippet.tags) {
-          if (!tags.includes(tag)) {
-            tags.push(tag);
-          }
-        }
+        tags = tags.concat(
+          codeSnippet.tags.filter((tag) => !tags.includes(tag))
+        );
       }
       if (!languages.includes(codeSnippet.language)) {
         languages.push(codeSnippet.language);
@@ -1548,7 +1567,7 @@ export class CodeSnippetDisplay extends React.Component<
     copySnip.className = CODE_SNIPPET_MORE_OTPIONS_COPY;
     copySnip.textContent = 'Copy snippet to clipboard';
     copySnip.onclick = (): void => {
-      Clipboard.copyToSystem(codeSnippet.code.join('\n'));
+      Clipboard.copyToSystem(codeSnippet.code);
       showMessage('copy');
       this.removeOptionsNode();
     };
@@ -1564,7 +1583,7 @@ export class CodeSnippetDisplay extends React.Component<
         language: codeSnippet.language,
         code: codeSnippet.code,
         id: codeSnippet.id,
-        selectedTags: codeSnippet.tags, // snippet tags
+        tags: codeSnippet.tags, // snippet tags
         allSnippetTags: allSnippetTags,
         allLangTags: allLangTags,
         fromScratch: false,
@@ -1621,9 +1640,9 @@ export class CodeSnippetDisplay extends React.Component<
                 name: '',
                 description: '',
                 language: 'Python',
-                code: [],
+                code: '',
                 id: this.props.codeSnippets.length,
-                selectedTags: [],
+                tags: [],
                 allSnippetTags: this.getActiveTags()[0],
                 allLangTags: this.getActiveTags()[1],
                 fromScratch: true,

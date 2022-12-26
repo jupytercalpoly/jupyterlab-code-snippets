@@ -1,0 +1,1 @@
+{"name":"carbon_emissions","description":"Total carbon dioxide, in gigatonnes, by region, over time","language":"R","code":["co2_regions <- nations %>%","  filter(year <= 2014) %>%","  mutate(co2 = co2_percap * population / 10^9) %>%","  group_by(region, year) %>%","  summarize(total_co2 = sum(co2, na.rm = TRUE))"],"id":15,"tags":["Countries Project"]}

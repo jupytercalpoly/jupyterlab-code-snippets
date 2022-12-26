@@ -42,9 +42,11 @@ import { CodeSnippetService } from './CodeSnippetService';
 import { NotebookPanel } from '@jupyterlab/notebook';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 
+// Code Snippet Constants
 const CODE_SNIPPET_EXTENSION_ID = 'code-snippet-extension';
 
 const CODE_SNIPPET_SETTING_ID = 'jupyterlab-code-snippets:snippets';
+
 /**
  * Snippet Editor Icon
  */
@@ -77,7 +79,7 @@ function activateCodeSnippet(
   restorer: ILayoutRestorer,
   editorServices: IEditorServices
 ): void {
-  console.log('JupyterLab extension code-snippets is activated!');
+  console.log('JupyterLab extension jupyterlab-code-snippets is activated!');
 
   const getCurrentWidget = (): Widget => {
     return app.shell.currentWidget;
@@ -169,7 +171,7 @@ function activateCodeSnippet(
     },
   });
 
-  //Add an application command
+  // Add an application command
   const saveCommand = 'codeSnippet:save-as-snippet';
   const toggled = false;
   app.commands.addCommand(saveCommand, {
@@ -193,33 +195,39 @@ function activateCodeSnippet(
       if (highlightedCode === '') {
         //if user just right-clicks cell(s) to save
         const curr = document.getElementsByClassName('jp-Cell jp-mod-selected');
-        const resultArray = [];
+
+        let code = '';
         // changed i = 1 to i = 0.
         for (let i = 0; i < curr.length; i++) {
           //loop through each cell
           const text = curr[i] as HTMLElement;
-          const textContent = text.innerText;
-          const arrayInput = textContent.split('\n');
-          const indexedInput = arrayInput.slice(1);
-          for (let i = 0; i < indexedInput.length; i++) {
-            // looping through each line in cell
-            if (indexedInput[i].charCodeAt(0) === 8203) {
-              //check if first char in line is invalid
-              indexedInput[i] = ''; //replace invalid line with empty string
+          const cellInputWrappers = text.getElementsByClassName(
+            'jp-Cell-inputWrapper'
+          );
+
+          for (const cellInputWrapper of cellInputWrappers) {
+            const codeLines =
+              cellInputWrapper.querySelectorAll('.CodeMirror-line');
+            for (const codeLine of codeLines) {
+              let codeLineText = codeLine.textContent;
+              if (codeLineText.charCodeAt(0) === 8203) {
+                //check if first char in line is invalid
+                codeLineText = ''; //replace invalid line with empty string
+              }
+              code += codeLineText + '\n';
             }
-            resultArray.push(indexedInput[i]); //push cell code lines into result
           }
         }
         CodeSnippetInputDialog(
           codeSnippetWidget,
-          resultArray,
+          code,
           language,
           codeSnippetWidget.codeSnippetManager.snippets.length
         );
       } else {
         CodeSnippetInputDialog(
           codeSnippetWidget,
-          highlightedCode.split('\n'),
+          highlightedCode,
           language,
           codeSnippetWidget.codeSnippetManager.snippets.length
         );
@@ -280,7 +288,7 @@ function activateCodeSnippet(
         language: editorMetadata.language,
         code: editorMetadata.code,
         id: editorMetadata.id,
-        selectedTags: editorMetadata.selectedTags,
+        tags: editorMetadata.tags,
         allSnippetTags: editorMetadata.allSnippetTags,
         allLangTags: editorMetadata.allLangTags,
         fromScratch: editorMetadata.fromScratch,
@@ -301,7 +309,9 @@ const codeSnippetExtensionSetting: JupyterFrontEndPlugin<void> = {
       .load(CODE_SNIPPET_SETTING_ID)
       .then((settings) => {
         CodeSnippetService.init(settings as Settings, app);
-        console.log('JupyterLab extension code-snippets setting is activated!');
+        console.log(
+          'JupyterLab extension jupyterlab-code-snippets setting is activated!'
+        );
       })
       .catch((e) => console.log(e));
   },

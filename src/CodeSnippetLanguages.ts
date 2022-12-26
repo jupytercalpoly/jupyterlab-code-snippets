@@ -40,6 +40,8 @@ import sbtSVGstr from '../style/icon/language_icons/sbt.svg';
 import scalaSVGstr from '../style/icon/language_icons/scala.svg';
 import schemeSVGstr from '../style/icon/language_icons/scheme.svg';
 import typescriptSVGstr from '../style/icon/language_icons/typescript.svg';
+import markdownSVGstr from '../style/icon/language_icons/markdown.svg';
+import powershellSVGstr from '../style/icon/language_icons/powershell.svg';
 
 /**
  * List of languages supported by JupyterLab
@@ -108,6 +110,8 @@ export const SUPPORTED_LANGUAGES = [
   'Rust',
   'Rascal',
   'Q#',
+  'Markdown',
+  'Powershell',
 ];
 
 /**
@@ -295,4 +299,14 @@ export const rustIcon = new LabIcon({
 export const qsharpIcon = new LabIcon({
   name: 'custom-ui-components:qsharp',
   svgstr: qsharpSVGstr,
+});
+
+export const markdownIcon = new LabIcon({
+  name: 'custom-ui-components:markdown',
+  svgstr: markdownSVGstr,
+});
+
+export const powershellIcon = new LabIcon({
+  name: 'custom-ui-components:powershell',
+  svgstr: powershellSVGstr,
 });

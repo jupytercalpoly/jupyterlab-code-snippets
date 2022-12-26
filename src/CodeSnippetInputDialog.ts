@@ -96,7 +96,7 @@ function showCodeSnippetDialog<T>(
  */
 export function CodeSnippetInputDialog(
   codeSnippetWidget: CodeSnippetWidget,
-  code: string[],
+  code: string,
   language: string,
   idx: number
 ): Promise<Contents.IModel | null> {
@@ -141,7 +141,7 @@ export function showInputDialog(
   tags: string[],
   idx: number,
   codeSnippetManager: CodeSnippetService,
-  code: string[],
+  code: string,
   language: string,
   body: InputHandler
 ): Promise<Contents.IModel | null> {
@@ -154,10 +154,11 @@ export function showInputDialog(
       return null;
     }
 
-    if (
-      validateInputs(result.value[0], result.value[1], result.value[2]) ===
-      false
-    ) {
+    const nameInput = result.value[0];
+    const descriptionInput = result.value[1];
+    const languageInput = result.value[2];
+
+    if (!validateInputs(nameInput, descriptionInput, languageInput)) {
       showInputDialog(
         codeSnippetWidget,
         tags,
@@ -169,11 +170,10 @@ export function showInputDialog(
       );
     } else {
       const tags = result.value.slice(3);
-      //tags.push(result.value[2]);
       const newSnippet: ICodeSnippet = {
-        name: result.value[0].replace(' ', ''),
-        description: result.value[1],
-        language: result.value[2],
+        name: nameInput.replace(' ', ''),
+        description: descriptionInput,
+        language: languageInput,
         code: code,
         id: idx,
         tags: tags,

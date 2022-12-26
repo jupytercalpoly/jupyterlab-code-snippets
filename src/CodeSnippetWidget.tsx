@@ -84,8 +84,10 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   updateCodeSnippetWidget(): void {
-    const newSnippets = this.codeSnippetManager.snippets;
-    this.renderCodeSnippetsSignal.emit(newSnippets);
+    if (this.codeSnippetManager) {
+      const newSnippets = this.codeSnippetManager.snippets;
+      newSnippets && this.renderCodeSnippetsSignal.emit(newSnippets);
+    }
   }
 
   onAfterShow(msg: Message): void {
@@ -237,10 +239,10 @@ export class CodeSnippetWidget extends ReactWidget {
     snippetNode.classList.add(DROP_TARGET_CLASS);
   }
 
-  private findCellData(mime: MimeData): string[] {
+  private findCellData(mime: MimeData): string {
     const code = mime.getData('text/plain');
 
-    return code.split('\n');
+    return code;
   }
   /**
    * Handle the `'lm-drop'` event for the widget.

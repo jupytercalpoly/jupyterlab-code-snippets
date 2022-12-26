@@ -28,10 +28,10 @@ import { Message } from '@lumino/messaging';
 
 import React from 'react';
 
-import { CodeSnippetService } from './CodeSnippetService';
+import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { CodeSnippetWidget } from './CodeSnippetWidget';
 import { SUPPORTED_LANGUAGES } from './CodeSnippetLanguages';
-import { CodeSnippetEditorTags } from './CodeSnippetEditorTags';
+import { CodeSnippetEditorTags, ITag } from './CodeSnippetEditorTags';
 import { showMessage } from './CodeSnippetMessage';
 import { validateInputs, saveOverWriteFile } from './CodeSnippetUtilities';
 
@@ -52,14 +52,8 @@ const CODE_SNIPPET_EDITOR_INPUTAREA_MIRROR = 'jp-codeSnippetInputArea-editor';
 
 const EDITOR_DIRTY_CLASS = 'jp-mod-dirty';
 
-export interface ICodeSnippetEditorMetadata {
-  name: string;
-  description: string;
-  language: string;
-  code: string[];
-  id: number;
-  selectedTags: string[];
-  allSnippetTags: string[];
+export interface ICodeSnippetEditorMetadata extends ICodeSnippet {
+  allSnippetTags: string[]; // all snippet tags mean all the tags that snippets have, while tags refer to those specific to a snippet
   allLangTags: string[];
   fromScratch: boolean;
 }
@@ -185,7 +179,7 @@ export class CodeSnippetEditor extends ReactWidget {
           'code-' + this._codeSnippetEditorMetaData.id
         ),
         model: new CodeEditor.Model({
-          value: this._codeSnippetEditorMetaData.code.join('\n'),
+          value: this._codeSnippetEditorMetaData.code,
           mimeType: getMimeTypeByLanguage({
             name: this._codeSnippetEditorMetaData.language,
             codemirror_mode: this._codeSnippetEditorMetaData.language,
@@ -385,24 +379,26 @@ export class CodeSnippetEditor extends ReactWidget {
     const newName = this._codeSnippetEditorMetaData.name;
     const oldName = this.oldCodeSnippetName;
 
-    const newSnippet = {
+    const newSnippet: ICodeSnippet = {
       name: this._codeSnippetEditorMetaData.name,
       description: this._codeSnippetEditorMetaData.description,
       language: this._codeSnippetEditorMetaData.language,
       code: this._codeSnippetEditorMetaData.code,
       id: this._codeSnippetEditorMetaData.id,
-      tags: this._codeSnippetEditorMetaData.selectedTags,
+      tags: this._codeSnippetEditorMetaData.tags,
     };
+
+    this._codeSnippetEditorMetaData;
 
     const isDuplicatName = this.contentsService.duplicateNameExists(newName);
 
-    // set new name as an old name
+    // update new name as an old name
     this.oldCodeSnippetName = this._codeSnippetEditorMetaData.name;
 
     // add new snippet
     if (this._codeSnippetEditorMetaData.fromScratch) {
       if (isDuplicatName) {
-        const oldSnippet = this.contentsService.getSnippet(newName)[0];
+        const oldSnippet = this.contentsService.getSnippetByName(newName)[0];
         await saveOverWriteFile(this.contentsService, oldSnippet, newSnippet);
       } else {
         this.contentsService.addSnippet(newSnippet).then((res: boolean) => {
@@ -419,7 +415,7 @@ export class CodeSnippetEditor extends ReactWidget {
       if (newName !== oldName) {
         if (isDuplicatName) {
           // overwrite
-          const oldSnippet = this.contentsService.getSnippet(newName)[0];
+          const oldSnippet = this.contentsService.getSnippetByName(newName)[0];
           await saveOverWriteFile(
             this.contentsService,
             oldSnippet,
@@ -428,7 +424,7 @@ export class CodeSnippetEditor extends ReactWidget {
             if (res) {
               // get the id of snippet you are editting
               const removedSnippet =
-                this.contentsService.getSnippet(oldName)[0];
+                this.contentsService.getSnippetByName(oldName)[0];
 
               // delete the one you are editing
               this.contentsService.deleteSnippet(removedSnippet.id);
@@ -478,13 +474,17 @@ export class CodeSnippetEditor extends ReactWidget {
     return true;
   }
 
-  handleChangeOnTag(selectedTags: string[], allTags: string[]): void {
+  handleChangeOnTag(tags: ITag[]): void {
     if (!this.title.className.includes(EDITOR_DIRTY_CLASS)) {
       this.title.className += ` ${EDITOR_DIRTY_CLASS}`;
     }
 
-    this._codeSnippetEditorMetaData.selectedTags = selectedTags;
-    this._codeSnippetEditorMetaData.allSnippetTags = allTags;
+    this._codeSnippetEditorMetaData.tags = tags
+      .filter((tag: ITag) => tag.clicked)
+      .map((tag: ITag) => tag.name);
+    this._codeSnippetEditorMetaData.allSnippetTags = tags.map(
+      (tag: ITag) => tag.name
+    );
 
     this.saved = false;
   }
@@ -589,9 +589,21 @@ export class CodeSnippetEditor extends ReactWidget {
           {this.renderLanguages()}
           <label className={CODE_SNIPPET_EDITOR_LABEL}>Tags</label>
           <CodeSnippetEditorTags
-            selectedTags={this.codeSnippetEditorMetadata.selectedTags}
-            snippetTags={this.codeSnippetEditorMetadata.allSnippetTags}
-            langTags={this.codeSnippetEditorMetadata.allLangTags}
+            allSnippetTags={
+              this._codeSnippetEditorMetaData.allSnippetTags
+                ? this._codeSnippetEditorMetaData.allSnippetTags.map(
+                    (tag: string): ITag => ({
+                      name: tag,
+                      clicked:
+                        this._codeSnippetEditorMetaData.tags &&
+                        this._codeSnippetEditorMetaData.tags.includes(tag)
+                          ? true
+                          : false,
+                    })
+                  )
+                : []
+            }
+            langTags={this._codeSnippetEditorMetaData.allLangTags}
             handleChange={this.handleChangeOnTag}
           />
         </section>

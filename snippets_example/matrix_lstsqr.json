@@ -1,0 +1,1 @@
+{"name":"matrix_lstsqr","description":"Math equation for least squares","language":"Python","code":["import numpy as np","","def matrix_lstsqr(x, y):","    \"\"\" Computes the least-squares solution to a linear matrix equation. \"\"\"","    X = np.vstack([x, np.ones(len(x))]).T","    return (np.linalg.inv(X.T.dot(X)).dot(X.T)).dot(y)"],"id":2,"tags":["math"]}

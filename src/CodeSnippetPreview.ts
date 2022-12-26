@@ -175,7 +175,7 @@ export class Preview<T> extends Widget {
         host: document.getElementById(PREVIEW_CONTENT + this._id),
         config: { readOnly: true, fontSize: previewFontSize },
         model: new CodeEditor.Model({
-          value: this.codeSnippet.code.join('\n'),
+          value: this.codeSnippet.code,
           mimeType: getMimeTypeByLanguage({
             name: this.codeSnippet.language,
             codemirror_mode: this.codeSnippet.language,

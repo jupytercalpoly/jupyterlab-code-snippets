@@ -1,0 +1,1 @@
+{"name":"matplotlib_import","description":"Import statements to start plotting with matplotlib.","language":"Python","code":["import matplotlib as mpl","import matplotlib.pyplot as plt"],"id":3,"tags":["import statements"]}
