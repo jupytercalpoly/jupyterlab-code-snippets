@@ -7,6 +7,7 @@ node_modules/
 *.ipynb
 .eslintcache
 snippets/
+dist/
 
 */labextension/*.tgz
 # Created by https://www.gitignore.io/api/python
