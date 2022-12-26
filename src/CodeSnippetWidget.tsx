@@ -23,7 +23,7 @@ import { Widget } from '@lumino/widgets';
 import { Message } from '@lumino/messaging';
 import { Signal } from '@lumino/signaling';
 import { IDragEvent } from '@lumino/dragdrop';
-import { MimeData } from '@lumino/coreutils';
+import { MimeData, ReadonlyPartialJSONObject } from '@lumino/coreutils';
 
 import { CodeSnippetService, ICodeSnippet } from './CodeSnippetService';
 import { CodeSnippetDisplay } from './CodeSnippetDisplay';
@@ -84,15 +84,17 @@ export class CodeSnippetWidget extends ReactWidget {
   }
 
   updateCodeSnippetWidget(): void {
-    const newSnippets = this.codeSnippetManager.snippets;
-    this.renderCodeSnippetsSignal.emit(newSnippets);
+    if (this.codeSnippetManager) {
+      const newSnippets = this.codeSnippetManager.snippets;
+      newSnippets && this.renderCodeSnippetsSignal.emit(newSnippets);
+    }
   }
 
   onAfterShow(msg: Message): void {
     this.updateCodeSnippetWidget();
   }
 
-  openCodeSnippetEditor(args: any): void {
+  openCodeSnippetEditor(args: ReadonlyPartialJSONObject): void {
     this.app.commands.execute(commands.OPEN_CODE_SNIPPET_EDITOR, args);
   }
 
@@ -237,10 +239,10 @@ export class CodeSnippetWidget extends ReactWidget {
     snippetNode.classList.add(DROP_TARGET_CLASS);
   }
 
-  private findCellData(mime: MimeData): string[] {
+  private findCellData(mime: MimeData): string {
     const code = mime.getData('text/plain');
 
-    return code.split('\n');
+    return code;
   }
   /**
    * Handle the `'lm-drop'` event for the widget.

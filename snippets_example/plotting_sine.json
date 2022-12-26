@@ -1,0 +1,1 @@
+{"name":"plotting_sine","description":"Plotting code for sine graph using matplotlib.","language":"Python","code":["import matplotlib.pyplot as plt","import numpy as np","","x = np.linspace(0, 10, 100)","","plt.plot(x, np.sin(x))","plt.plot(x, np.cos(x))","","plt.show()"],"id":14,"tags":["math"]}

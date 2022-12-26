@@ -24,8 +24,8 @@ const PREVIEW_BODY = 'jp-codeSnippet-preview-body';
  * @param options - The preview setup options.
  *
  */
-export function showPreview<T>(
-  options: Partial<Preview.IOptions<T>> = {},
+export function showPreview(
+  options: Partial<Preview.IOptions> = {},
   editorServices: IEditorServices
 ): Promise<void> {
   //Insert check method to see if the preview is already open
@@ -39,7 +39,7 @@ export function showPreview<T>(
 /**
  * A widget used to show preview
  */
-export class Preview<T> extends Widget {
+export class Preview extends Widget {
   ready: boolean;
   _title: string;
   _id: number;
@@ -49,7 +49,7 @@ export class Preview<T> extends Widget {
   codeSnippetService: CodeSnippetService;
   private _hasRefreshedSinceAttach: boolean;
   constructor(
-    options: Partial<Preview.IOptions<T>> = {},
+    options: Partial<Preview.IOptions> = {},
     editorServices: IEditorServices
   ) {
     super();
@@ -175,7 +175,7 @@ export class Preview<T> extends Widget {
         host: document.getElementById(PREVIEW_CONTENT + this._id),
         config: { readOnly: true, fontSize: previewFontSize },
         model: new CodeEditor.Model({
-          value: this.codeSnippet.code.join('\n'),
+          value: this.codeSnippet.code,
           mimeType: getMimeTypeByLanguage({
             name: this.codeSnippet.language,
             codemirror_mode: this.codeSnippet.language,
@@ -198,7 +198,7 @@ export namespace Preview {
    */
   export type Body = Widget;
 
-  export interface IOptions<T> {
+  export interface IOptions {
     title: string;
     id: number;
     /**
@@ -261,7 +261,7 @@ export namespace Preview {
   /**
    * The preview widget tracker.
    */
-  export const tracker = new WidgetTracker<Preview<any>>({
+  export const tracker = new WidgetTracker<Preview>({
     namespace: '@jupyterlab/code_snippet:preview',
   });
 }

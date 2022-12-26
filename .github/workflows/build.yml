@@ -13,9 +13,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Install node
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
-       node-version: '10.x'
+       node-version: '16.x'
     - name: Install Python
       uses: actions/setup-python@v2
       with:
@@ -29,5 +29,5 @@ jobs:
         jlpm run eslint:check
         python -m pip install .
 
-        jupyter labextension list 2>&1 | grep -ie "jupyterlab-code-snippets.*OK"
+        jupyter labextension list
         python -m jupyterlab.browser_check

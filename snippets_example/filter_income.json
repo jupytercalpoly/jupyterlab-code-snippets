@@ -1,0 +1,1 @@
+{"name":"filter_income","description":"Find the ten high income countries with the shortest life expectancy from country data.","language":"R","code":["high_income_short_life <- longevity %>%","  filter(income == \"High income\") %>%","  arrange(life_expect) %>%","  head(10)"],"id":8,"tags":["Countries Project"]}

@@ -6,10 +6,10 @@ import { CodeSnippetWidget } from './CodeSnippetWidget';
 
 export interface ICodeSnippet {
   name: string;
-  description: string;
+  description?: string;
   language: string;
   // code separated by a new line
-  code: string[];
+  code: string;
   id: number;
   tags?: string[];
 }
@@ -22,7 +22,7 @@ export class CodeSnippetService {
   private constructor(settings: Settings, app: JupyterFrontEnd) {
     this.settingManager = settings;
 
-    // just in case when user changes the snippets using settingsEditor
+    // when user changes the snippets using settingsEditor
     this.settingManager.changed.connect(async (plugin) => {
       const newCodeSnippetList = plugin.get('snippets').user;
 
@@ -46,30 +46,29 @@ export class CodeSnippetService {
           }
           current = leftWidgets.next();
         }
+
+        // order code snippet and sync it with setting
+        this.orderSnippets();
+        await plugin
+          .set('snippets', this.codeSnippetList as unknown as PartialJSONValue)
+          .catch((e) => {
+            console.log(
+              'Error in syncing orders of snippets with those in settings'
+            );
+            console.log(e);
+          });
       }
     });
 
-    const defaultSnippets = this.convertToICodeSnippetList(
-      this.settingManager.default('snippets') as JSONArray
-    );
-    if (this.settingManager.get('snippets').user === undefined) {
-      // set the user setting + default in the beginning
-      this.settingManager
-        .set('snippets', defaultSnippets as unknown as PartialJSONValue)
-        .then(() => {
-          const userSnippets = this.convertToICodeSnippetList(
-            this.settingManager.get('snippets').user as JSONArray
-          );
-          this.codeSnippetList = userSnippets;
-        });
-    } else {
+    // load user's saved snippets
+    if (this.settingManager.get('snippets').user) {
       const userSnippets = this.convertToICodeSnippetList(
         this.settingManager.get('snippets').user as JSONArray
       );
-
       this.codeSnippetList = userSnippets;
     }
 
+    // set default preview font size
     if (this.settingManager.get('snippetPreviewFontSize').user === undefined) {
       this.settingManager.set(
         'snippetPreviewFontSize',
@@ -82,7 +81,9 @@ export class CodeSnippetService {
     const snippetList: ICodeSnippet[] = [];
 
     snippets.forEach((snippet) => {
-      snippetList.push(snippet as unknown as ICodeSnippet);
+      const newSnippet = snippet as unknown as ICodeSnippet;
+
+      snippetList.push(newSnippet);
     });
     return snippetList;
   }
@@ -105,7 +106,7 @@ export class CodeSnippetService {
     return this.codeSnippetList;
   }
 
-  getSnippet(snippetName: string): ICodeSnippet[] {
+  getSnippetByName(snippetName: string): ICodeSnippet[] {
     return this.codeSnippetList.filter(
       (snippet) => snippet.name.toLowerCase() === snippetName.toLowerCase()
     );
@@ -235,13 +236,9 @@ export class CodeSnippetService {
     return true;
   }
 
-  private sortSnippets(): void {
-    this.codeSnippetList.sort((a, b) => a.id - b.id);
-  }
-
   // order snippets just in case when it gets shared between users
   async orderSnippets(): Promise<boolean> {
-    this.sortSnippets();
+    this.codeSnippetList.sort((a, b) => a.id - b.id);
     this.codeSnippetList.forEach((snippet, i) => (snippet.id = i));
 
     await this.settingManager

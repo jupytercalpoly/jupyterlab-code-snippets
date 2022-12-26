@@ -16,52 +16,13 @@
           "selector": ".jp-FileEditor"
         }
     ],
-    "definitions": {
-        "snippet": {
-            "properties": {
-                "id": { "type": "number" },
-                "name": { "type": "string" },
-                "description": { "type": "string" },
-                "language": { "type": "string" },
-                "code": {"type": "array"},
-                "tags": {"type": "array"}
-            },
-            "required": ["id", "name", "language"],
-            "type": "object"
-        }
-    },
     "properties": {
         "snippets": {
-            "title": "Code Snippets",
-            "description": "The list of snippets.",
+            "title": "List of code snippets",
+            "description": "A snippet is defined by a 'id', 'name', and 'language'",
             "items": { "$ref": "#/definitions/snippet" },
             "type": "array",
-            "default": [
-                {
-                    "name": "Plotting_sine",
-                    "description":"Plotting code for sine graph using matplotlib.",
-                    "language":"Python",
-                    "code":["import matplotlib.pyplot as plt","import numpy as np","","x = np.linspace(0, 10, 100)","","plt.plot(x, np.sin(x))","plt.plot(x, np.cos(x))","","plt.show()"],
-                    "id":0,
-                    "tags":["plot"]
-                },
-                {
-                    "name": "Importing packages for data analytics",
-                    "description": "Import useful packages for data analytics",
-                    "language":"Python",
-                    "code":["import numpy as np", "import scipy", "import pandas as pd", "import matplotlib.pyplot as plt", "import seaborn as sns"],
-                    "id":1,
-                    "tags":["data analytics"]
-                },
-                {
-                    "name": "Importing packages for machine learning",
-                    "description": "Import useful packages for machine learning",
-                    "language":"Python",
-                    "code":["import keras", "import sklearn", "import torch", "import tensorflow as tf"],
-                    "id":2,
-                    "tags":["machine learning"]
-                }
-            ]
+            "default": []
         },
         "snippetPreviewFontSize": {
             "title": "Font Size of Preview",
@@ -71,5 +32,44 @@
         }
     },
     "additionalProperties": false,
-    "type": "object"
+    "type": "object",
+    "definitions": {
+        "snippet": {
+            "properties": {
+                "id": {
+                    "title": "Unique id", 
+                    "type": "number" 
+                },
+                "name": { 
+                    "title": "Unique name",
+                    "type": "string"
+                 },
+                "description": {
+                    "title": "Description", 
+                    "type": "string"
+                },
+                "language": { 
+                    "title": "Language", 
+                    "type": "string"
+                },
+                "code": {
+                    "title": "Code",
+                    "type": "string"
+                },
+                "tags": {
+                    "title": "Tags",
+                    "items": { "$ref": "#/definitions/tag"},
+                    "type": "array",
+                    "default": []
+                }
+            },
+            "required": ["id", "name", "language", "code"],
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "tag": {
+            "title": "Unique Tag Name",
+            "type": "string"
+        }
+    }
 }

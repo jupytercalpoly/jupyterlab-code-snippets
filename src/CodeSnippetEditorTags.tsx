@@ -2,21 +2,21 @@
 // Distributed under the terms of the BSD-3 Clause License.
 
 import { checkIcon, addIcon } from '@jupyterlab/ui-components';
-
 import React from 'react';
 
-interface ICodeSnippetEditorTagProps {
-  selectedTags: string[]; // selected snippet tags only
-  snippetTags: string[]; // snippet tags only
-  langTags: string[];
-  handleChange: (selectedTags: string[], allTags: string[]) => void;
+export interface ITag {
+  name: string;
+  clicked: boolean;
 }
 
+interface ICodeSnippetEditorTagProps {
+  allSnippetTags: ITag[]; // snippet tags only
+  langTags: string[];
+  handleChange: (tags: ITag[]) => void;
+}
 interface ICodeSnippetEditorTagState {
-  selectedTags: string[];
-  tags: string[];
-  plusIconShouldHide: boolean;
-  addingNewTag: boolean;
+  allSnippetTags: ITag[];
+  plusIconClicked: boolean;
 }
 
 /**
@@ -33,10 +33,8 @@ export class CodeSnippetEditorTags extends React.Component<
   constructor(props: ICodeSnippetEditorTagProps) {
     super(props);
     this.state = {
-      selectedTags: [],
-      tags: [],
-      plusIconShouldHide: false,
-      addingNewTag: false,
+      allSnippetTags: [],
+      plusIconClicked: false,
     };
     this.renderTags = this.renderTags.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -44,18 +42,15 @@ export class CodeSnippetEditorTags extends React.Component<
 
   componentDidMount(): void {
     this.setState({
-      selectedTags: this.props.selectedTags ? this.props.selectedTags : [],
-      tags: this.props.snippetTags ? this.props.snippetTags : [],
-      plusIconShouldHide: false,
-      addingNewTag: false,
+      allSnippetTags: this.props.allSnippetTags,
+      plusIconClicked: false,
     });
   }
 
   componentDidUpdate(prevProps: ICodeSnippetEditorTagProps): void {
     if (prevProps !== this.props) {
       this.setState({
-        selectedTags: this.props.selectedTags ? this.props.selectedTags : [],
-        tags: this.props.snippetTags ? this.props.snippetTags : [],
+        allSnippetTags: this.props.allSnippetTags,
       });
     }
   }
@@ -63,44 +58,30 @@ export class CodeSnippetEditorTags extends React.Component<
   handleClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
     const target = event.target as HTMLElement;
     const clickedTag = target.innerText;
-    const parent = target.parentElement;
 
+    this.handleClickHelper(clickedTag);
+  }
+
+  handleOnChange(): void {
+    this.props.handleChange(this.state.allSnippetTags);
+  }
+
+  handleClickHelper(
+    // parent: HTMLElement,
+    clickedTag: string
+  ): void {
     this.setState(
       (state) => ({
-        selectedTags: this.handleClickHelper(
-          parent,
-          state.selectedTags ? state.selectedTags : [],
-          clickedTag
+        allSnippetTags: state.allSnippetTags.map((tag: ITag) =>
+          tag.name === clickedTag ? { ...tag, clicked: !tag.clicked } : tag
         ),
       }),
       this.handleOnChange
     );
   }
 
-  handleOnChange(): void {
-    this.props.handleChange(this.state.selectedTags, this.state.tags);
-  }
-
-  handleClickHelper(
-    parent: HTMLElement,
-    tags: string[],
-    clickedTag: string
-  ): string[] {
-    const currentTags = tags.slice();
-    if (parent.classList.contains('unapplied-tag')) {
-      parent.classList.replace('unapplied-tag', 'applied-tag');
-      currentTags.splice(-1, 0, clickedTag);
-    } else if (parent.classList.contains('applied-tag')) {
-      parent.classList.replace('applied-tag', 'unapplied-tag');
-
-      const idx = currentTags.indexOf(clickedTag);
-      currentTags.splice(idx, 1);
-    }
-    return currentTags;
-  }
-
   addTagOnClick(event: React.MouseEvent<HTMLInputElement>): void {
-    this.setState({ plusIconShouldHide: true, addingNewTag: true });
+    this.setState({ plusIconClicked: true });
     const inputElement = event.target as HTMLInputElement;
     if (inputElement.value === 'Add Tag') {
       inputElement.value = '';
@@ -113,7 +94,11 @@ export class CodeSnippetEditorTags extends React.Component<
     const inputElement = event.target as HTMLInputElement;
 
     if (inputElement.value !== '' && event.key === 'Enter') {
-      if (this.state.tags.includes(inputElement.value)) {
+      if (
+        this.state.allSnippetTags.find(
+          (tag: ITag) => tag.name === inputElement.value
+        )
+      ) {
         alert('Duplicate Tag Name!');
         return;
       }
@@ -125,15 +110,12 @@ export class CodeSnippetEditorTags extends React.Component<
         return;
       }
 
-      const newTag = inputElement.value;
+      const newTag = { name: inputElement.value, clicked: true };
 
-      // update state all tag and selected tag
       this.setState(
         (state) => ({
-          selectedTags: [...state.selectedTags, newTag],
-          tags: [...state.tags, newTag],
-          plusIconShouldHide: false,
-          addingNewTag: false,
+          allSnippetTags: [...state.allSnippetTags, newTag],
+          plusIconClicked: false,
         }),
         this.handleOnChange
       );
@@ -146,13 +128,13 @@ export class CodeSnippetEditorTags extends React.Component<
     inputElement.style.width = '50px';
     inputElement.style.minWidth = '50px';
     inputElement.blur();
-    this.setState({ plusIconShouldHide: false, addingNewTag: false });
+    this.setState({ plusIconClicked: false });
   }
 
   renderTags(): JSX.Element {
-    const hasTags = this.state.tags;
+    const hasTags = this.state.allSnippetTags;
     const inputBox =
-      this.state.addingNewTag === true ? (
+      this.state.plusIconClicked === true ? (
         <ul
           className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}
           key={'editor-new-tag'}
@@ -172,7 +154,9 @@ export class CodeSnippetEditorTags extends React.Component<
         </ul>
       ) : (
         <ul className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}>
-          <button onClick={(): void => this.setState({ addingNewTag: true })}>
+          <button
+            onClick={(): void => this.setState({ plusIconClicked: true })}
+          >
             Add Tag
           </button>
           <addIcon.react
@@ -188,28 +172,26 @@ export class CodeSnippetEditorTags extends React.Component<
     return (
       <li className={CODE_SNIPPET_EDITOR_TAG_LIST}>
         {hasTags
-          ? this.state.tags.map((tag: string, index: number) =>
+          ? this.state.allSnippetTags.map((tag: ITag, index: number) =>
               ((): JSX.Element => {
-                if (!this.state.selectedTags) {
+                if (!tag.clicked) {
                   return (
                     <ul
                       className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}
-                      id={'editor' + '-' + tag + '-' + index}
-                      key={'editor' + '-' + tag + '-' + index}
+                      id={'editor' + '-' + tag.name + '-' + index}
+                      key={'editor' + '-' + tag.name + '-' + index}
                     >
-                      <button onClick={this.handleClick}>{tag}</button>
+                      <button onClick={this.handleClick}>{tag.name}</button>
                     </ul>
                   );
-                }
-
-                if (this.state.selectedTags.includes(tag)) {
+                } else {
                   return (
                     <ul
                       className={`${CODE_SNIPPET_EDITOR_TAG} tag applied-tag`}
-                      id={'editor' + '-' + tag + '-' + index}
-                      key={'editor' + '-' + tag + '-' + index}
+                      id={'editor' + '-' + tag.name + '-' + index}
+                      key={'editor' + '-' + tag.name + '-' + index}
                     >
-                      <button onClick={this.handleClick}>{tag}</button>
+                      <button onClick={this.handleClick}>{tag.name}</button>
                       <checkIcon.react
                         tag="span"
                         elementPosition="center"
@@ -218,16 +200,6 @@ export class CodeSnippetEditorTags extends React.Component<
                         marginLeft="5px"
                         marginRight="-3px"
                       />
-                    </ul>
-                  );
-                } else {
-                  return (
-                    <ul
-                      className={`${CODE_SNIPPET_EDITOR_TAG} tag unapplied-tag`}
-                      id={'editor' + '-' + tag + '-' + index}
-                      key={'editor' + '-' + tag + '-' + index}
-                    >
-                      <button onClick={this.handleClick}>{tag}</button>
                     </ul>
                   );
                 }
