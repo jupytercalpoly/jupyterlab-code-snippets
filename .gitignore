@@ -115,6 +115,5 @@ dmypy.json
 
 
 # Jupyter Stuff
-jupyterlab-code-snippets/
 _temp_extension/
 yarn.lock
