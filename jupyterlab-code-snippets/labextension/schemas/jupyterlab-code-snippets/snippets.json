@@ -1,0 +1,75 @@
+{
+    "jupyter.lab.setting-icon": "custom-ui-components:codeSnippetIcon",
+    "jupyter.lab.setting-icon-label": "Code Snippet",
+    "title": "Code Snippet Manager",
+    "description": "Code Snippet Manager Settings",
+    "version": "1.0.0",
+    "jupyter.lab.shortcuts": [
+        {
+          "command": "codeSnippet:save-as-snippet",
+          "keys": ["Accel Shift A"],
+          "selector": ".jp-Notebook"
+        },
+        {
+          "command": "codeSnippet:save-as-snippet",
+          "keys": ["Accel Shift A"],
+          "selector": ".jp-FileEditor"
+        }
+    ],
+    "properties": {
+        "snippets": {
+            "title": "List of code snippets",
+            "description": "A snippet is defined by a 'id', 'name', and 'language'",
+            "items": { "$ref": "#/definitions/snippet" },
+            "type": "array",
+            "default": []
+        },
+        "snippetPreviewFontSize": {
+            "title": "Font Size of Preview",
+            "type": "number",
+            "default": 3,
+            "description": "Change the font size of preview to see its content"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "definitions": {
+        "snippet": {
+            "properties": {
+                "id": {
+                    "title": "Unique id", 
+                    "type": "number" 
+                },
+                "name": { 
+                    "title": "Unique name",
+                    "type": "string"
+                 },
+                "description": {
+                    "title": "Description", 
+                    "type": "string"
+                },
+                "language": { 
+                    "title": "Language", 
+                    "type": "string"
+                },
+                "code": {
+                    "title": "Code",
+                    "type": "string"
+                },
+                "tags": {
+                    "title": "Tags",
+                    "items": { "$ref": "#/definitions/tag"},
+                    "type": "array",
+                    "default": []
+                }
+            },
+            "required": ["id", "name", "language", "code"],
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "tag": {
+            "title": "Unique Tag Name",
+            "type": "string"
+        }
+    }
+}
