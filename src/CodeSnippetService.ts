@@ -61,12 +61,19 @@ export class CodeSnippetService {
     });
 
     // load user's saved snippets
+    let userSnippets = new Array();
     if (this.settingManager.get('snippets').user) {
-      const userSnippets = this.convertToICodeSnippetList(
+      userSnippets = userSnippets.concat(this.convertToICodeSnippetList(
         this.settingManager.get('snippets').user as JSONArray
-      );
-      this.codeSnippetList = userSnippets;
+      ));
     }
+    // load global snippets 
+    if (this.settingManager.get('snippets').composite) {
+      userSnippets = userSnippets.concat(this.convertToICodeSnippetList(
+        this.settingManager.get('snippets').composite as JSONArray
+      ));
+    }
+    this.codeSnippetList = userSnippets;
 
     // set default preview font size
     if (this.settingManager.get('snippetPreviewFontSize').user === undefined) {
